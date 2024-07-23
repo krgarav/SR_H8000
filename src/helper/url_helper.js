@@ -28,5 +28,7 @@ export const DELETE_TEMPLATE = url + "DeleteLayout";
 export const SCAN_IMAGE = url + "GetScannedImage";
 
 export const CREATE_JOB = url + "CreateJobs";
+export const GET_ALL_JOBS = url + "GetAllJobs";
+
 
 

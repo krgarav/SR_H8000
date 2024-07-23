@@ -4,3 +4,4 @@ import * as url from "./url_helper"
 
 
 export const createJob = (payload) => post(url.CREATE_JOB, payload);
+export const getJobs = () => get(url.GET_ALL_JOBS);

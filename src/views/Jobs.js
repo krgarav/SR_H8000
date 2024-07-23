@@ -41,14 +41,53 @@ import {
 import Header from "components/Headers/Header.js";
 import NormalHeader from "components/Headers/NormalHeader";
 import { Modal } from "react-bootstrap";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select from "react-select";
 import Jobcard from "ui/Jobcard.js";
 import JobModal from "ui/JobModal";
+import { getJobs } from "helper/job_helper";
 
 const Jobs = () => {
   const [modalShow, setModalShow] = useState(false);
+  const [allJobs, setAllJobs] = useState([]);
+  useEffect(() => {
+    const fetchAllJobs = async () => {
+      const response = await getJobs();
+      console.log(response);
+      setAllJobs(response.result);
+    }
+    fetchAllJobs()
+  }, [])
 
+
+  const ALLJOBS = allJobs.map((item, index) => {
+    return <tr key={index}>
+      <td>{index + 1}</td>
+      <td>{"Job 1"}</td>
+      <td>{item.templateName}</td>
+      <td>{"Job 1"}</td>
+      <td>{item.imageType ? item.imageType : "Disabled"}</td>
+      <td className="text-right">
+        <UncontrolledDropdown>
+          <DropdownToggle
+            className="btn-icon-only text-light"
+            href="#pablo"
+            role="button"
+            size="sm"
+            color=""
+            onClick={(e) => e.preventDefault()}
+          >
+            <i className="fas fa-ellipsis-v" />
+          </DropdownToggle>
+          <DropdownMenu className="dropdown-menu-arrow" right>
+            <DropdownItem >Assign</DropdownItem>
+            <DropdownItem >Edit</DropdownItem>
+            <DropdownItem style={{ color: "red" }}>Delete</DropdownItem>
+          </DropdownMenu>
+        </UncontrolledDropdown>
+      </td>
+    </tr>
+  })
   return (
     <>
       <NormalHeader />
@@ -79,7 +118,7 @@ const Jobs = () => {
                   </tr>
                 </thead>
                 <tbody style={{ minHeight: "100rem" }}>
-                  <tr >
+                  {/* <tr >
                     <td>{1}</td>
                     <td>{"Job 1"}</td>
                     <td>{"Job 1"}</td>
@@ -104,8 +143,8 @@ const Jobs = () => {
                         </DropdownMenu>
                       </UncontrolledDropdown>
                     </td>
-                  </tr>
-
+                  </tr> */}
+                  {ALLJOBS}
                 </tbody>
               </Table>
             </Card>

@@ -67,16 +67,16 @@ const JobModal = (props) => {
         const getTemplates = async () => {
             const template = await fetchAllTemplate();
             const structuredTemplate = template?.map((item) => ({ id: item.id, name: item.layoutName }))
-            console.log(structuredTemplate)
+
             setAllTemplateOptions(structuredTemplate);
         };
         getTemplates();
     }, []);
-    console.log(allOperators)
+
     useEffect(() => {
         const getUsers = async () => {
             const data = await fetchAllUsers();
-            console.log(data)
+
             if (data?.success) {
                 const structuredOperators = data.result.map((item) => {
                     if (item.userRoleList[0]?.roleName === "Operator") {

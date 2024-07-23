@@ -1,21 +1,31 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Route, Routes, Navigate, useNavigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { jwtDecode } from 'jwt-decode';
 import AdminLayout from "layouts/Admin.js";
 import Operator from "layouts/Operator";
 import AuthLayout from "layouts/Auth.js";
 const useTokenRedirect = () => {
     const navigate = useNavigate();
-
+    const location = useLocation();
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
             try {
                 const decoded = jwtDecode(token);
                 if (decoded.Role === 'Operator') {
-                    navigate('/operator/index', { replace: true });
+                    if (location.pathname.includes("operator")) {
+                        navigate(location.pathname);
+                    } else {
+                        navigate('/operator/index', { replace: true });
+                    }
+
                 } else if (decoded.Role === 'Admin') {
-                    navigate('/admin/index', { replace: true });
+                    if (location.pathname.includes("admin")) {
+                        navigate(location.pathname);
+                    } else {
+                        navigate('/admin/index', { replace: true });
+                    }
+
                 }
             } catch (error) {
                 console.error('Invalid token:', error);
