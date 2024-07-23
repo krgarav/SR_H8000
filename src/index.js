@@ -1,23 +1,7 @@
-/*!
 
-=========================================================
-* Argon Dashboard React - v1.2.4
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/argon-dashboard-react
-* Copyright 2024 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/argon-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import './App.css'
 
 import "assets/plugins/nucleo/css/nucleo.css";
@@ -47,22 +31,19 @@ import '../node_modules/@syncfusion/ej2-popups/styles/material.css';
 import '../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css';
 import '../node_modules/@syncfusion/ej2-notifications/styles/material.css';
 import "../node_modules/@syncfusion/ej2-react-grids/styles/material.css";
+import App from "App";
 
 
 
 registerLicense('Ngo9BigBOggjHTQxAR8/V1NCaF5cXmZCeUx0TXxbf1x0ZFFMYFpbQXNPMyBoS35RckVlW3dedHRdQ2FaWUF2');
+
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <BrowserRouter>
     <DataProvider>
-      <Routes>
-        <Route path="/admin/*" element={<AdminLayout />} />
-        <Route path="/operator/*" element={<Operator />} />
-        <Route path="/auth/*" element={<AuthLayout />} />
-        <Route path="*" element={<Navigate to="/auth/login" replace />} />
-      </Routes>
+      <App />
       <ToastContainer />
     </DataProvider>
   </BrowserRouter>

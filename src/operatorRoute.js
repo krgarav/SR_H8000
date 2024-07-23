@@ -43,7 +43,7 @@ var operatorRoute = [
         layout: "/operator",
     },
     {
-        path: "/",
+        path: "/setting",
         name: "Settings",
         icon: "ni ni-settings-gear-65 text-primary",
         component: <Settings />,

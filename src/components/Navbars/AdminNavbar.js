@@ -34,6 +34,7 @@ import {
   Container,
   Media,
 } from "reactstrap";
+import { jwtDecode } from 'jwt-decode';
 
 const AdminNavbar = (props) => {
   const [name, setName] = useState("");
@@ -41,10 +42,11 @@ const AdminNavbar = (props) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userName = JSON.parse(localStorage.getItem("user"));
-    console.log(userName.userRoleList[0]?.roleName)
-    setName(userName.email.split("@")[0])
-    setRole(userName.userRoleList[0]?.roleName)
+    const token = localStorage.getItem("token");
+    const decoded = jwtDecode(token);
+
+    setName(decoded.UserName.split("@")[0])
+    setRole(decoded.Role)
     // console.log(userName.)
   }, [])
   const handleLogout = () => {

@@ -25,6 +25,7 @@ import Imageswitch from './Imageswitch';
 import { change } from '@syncfusion/ej2-react-grids';
 import { fetchAllUsers } from 'helper/userManagment_helper';
 import { fileType, imageTypeData, imageColorTypeData } from "data/helperData";
+import { jwtDecode } from 'jwt-decode';
 const JobModal = (props) => {
     const [modalShow, setModalShow] = useState(false);
     const [allTemplateOptions, setAllTemplateOptions] = useState([]);
@@ -33,6 +34,13 @@ const JobModal = (props) => {
     const [imageEnable, setImageEnable] = useState(false);
     const [allOperators, setAllOperators] = useState([]);
     const [selectedOperator, setSelectedOperator] = useState("");
+    const [imageType, setImageType] = useState("");
+    const [imageColor, setImageColor] = useState("");
+    // const [selectedOperator, setSelectedOperator] = useState("");
+    // const [selectedOperator, setSelectedOperator] = useState("");
+    // const [selectedOperator, setSelectedOperator] = useState("");
+
+    const [dataPath, setDataPath] = useState("")
     const handleFileChange = (event) => {
         const files = event.target.files;
         const fileArray = Array.from(files).map(file => file.webkitRelativePath || file.name);
@@ -81,6 +89,42 @@ const JobModal = (props) => {
     }, []);
 
     const createTemplateHandler = async () => {
+        const token = localStorage.getItem("token");
+        const decoded = jwtDecode(token);
+        console.log(decoded);
+        // return
+        const jobObj = {
+            "id": "0",
+            "templateId": selectedTemplate,
+            "dataPath": dataPath,
+            "dataType": selectedOperator,
+            "imagePath": "string",
+            "imageType": imageType,
+            "imageColor": "string",
+            "jobStatus": "pending",
+            "entryAt": new Date().toISOString(),
+            "entryBy": decoded.UserName,
+        }
+        const obj = {
+            "id": 0,
+            "assignUser": "string",
+            "templateId": 0,
+            "templateName": "string",
+            "dataPath": "string",
+            "dataType": "string",
+            "imagePath": "string",
+            "imageType": "string",
+            "imageColor": "string",
+            "jobStatus": "string",
+            "jobStart": true,
+            "jobComplete": true,
+            "entryAt": "2024-07-23T10:06:46.790Z",
+            "entryBy": "string",
+            "updatedAt": "2024-07-23T10:06:46.790Z",
+            "jobStartAt": "2024-07-23T10:06:46.790Z",
+            "jobCompletedAt": "2024-07-23T10:06:46.790Z",
+            "updatedBy": "string"
+        }
 
     }
     const handleFileChange2 = (event) => {
@@ -165,7 +209,7 @@ const JobModal = (props) => {
                             Data Path:
                         </label>
                         <div className="col-md-3">
-                            <input type='text' className="form-control" placeholder='Enter the data path' />
+                            <input type='text' value={dataPath} className="form-control" placeholder='Enter the data path' onChange={(e) => setDataPath(e.target.value)} />
 
                         </div>
                         <label

@@ -15,6 +15,7 @@ import { GridComponent, ColumnsDirective, ColumnDirective, Sort, Inject, Toolbar
 
 import { fetchAllTemplate } from "helper/TemplateHelper";
 // import Select, { components } from "react-select";
+import { jwtDecode } from 'jwt-decode';
 
 const Booklet32Page = () => {
     const [count, setCount] = useState(true)
@@ -49,9 +50,10 @@ const Booklet32Page = () => {
     // }, [data]);
 
     useEffect(() => {
-        const userInfo = JSON.parse(localStorage.getItem("user"));
-        const userRole = userInfo.userRoleList[0].roleName;
-        if (userRole === "Operator") {
+
+        const token = localStorage.getItem("token");
+        const decoded = jwtDecode(token);
+        if (decoded.Role === "Operator") {
             setToolbar(['Add', 'Edit', 'Delete', 'Update', 'Cancel', 'ExcelExport', 'CsvExport'])
             setServices([Sort, Toolbar, ExcelExport, Filter, Edit])
         } else {

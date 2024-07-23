@@ -36,6 +36,7 @@ import {
   Col,
 } from "reactstrap";
 import Spinner from 'react-bootstrap/Spinner';
+import { jwtDecode } from 'jwt-decode';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -72,19 +73,15 @@ const Login = () => {
         setIsLoading(false)
         return;
       }
-      const allUsers = await fetchAllUsers();
-      const userInfo = allUsers.result.filter(item => item.email === email)
-
-      // if (userInfo) {
-      //   localStorage.setItem("user", JSON.stringify(userInfo[0]));
-      //   const userRole = userInfo[0].userRoleList[0].roleName;
-      //   if (userRole === "Operator") {
-      //     navigate("/operator/index");
-      //   } else {
-      //     navigate("/admin/index");
-      //   }
-
-      // }
+      // const allUsers = await fetchAllUsers();
+      // const userInfo = allUsers.result.filter(item => item.email === email)
+      localStorage.setItem("token", res.token);
+      const decoded = jwtDecode(res.token);
+      if (decoded.Role === "Operator") {
+        navigate("/operator/index", { replace: true });
+      } else {
+        navigate("/admin/index", { replace: true });
+      }
       setIsLoading(false)
 
     } catch (error) {
