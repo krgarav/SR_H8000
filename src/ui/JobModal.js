@@ -46,11 +46,7 @@ const JobModal = (props) => {
     const generateUUID = () => {
         return uuidv4();
     };
-    const handleFileChange = (event) => {
-        const files = event.target.files;
-        const fileArray = Array.from(files).map(file => file.webkitRelativePath || file.name);
-        setFileNames(fileArray);
-    };
+
     const changeHandler = (val) => {
         console.log(val)
         setImageEnable(val)
@@ -113,6 +109,13 @@ const JobModal = (props) => {
         }
 
         const response = await createJob(jobObj);
+        if (response?.success) {
+            // alert(response.message)
+            toast.success(response.message);
+            props.onHide()
+
+        }
+
         console.log(response);
         const obj = {
             "id": 0,

@@ -29,6 +29,6 @@ export const SCAN_IMAGE = url + "GetScannedImage";
 
 export const CREATE_JOB = url + "CreateJobs";
 export const GET_ALL_JOBS = url + "GetAllJobs";
-
+export const DELETE_JOB = url + "DeleteJob";
 
 

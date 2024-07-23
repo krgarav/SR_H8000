@@ -46,26 +46,35 @@ import Select from "react-select";
 import Jobcard from "ui/Jobcard.js";
 import JobModal from "ui/JobModal";
 import { getJobs } from "helper/job_helper";
+import { deleteJob } from "helper/job_helper";
 
 const Jobs = () => {
   const [modalShow, setModalShow] = useState(false);
   const [allJobs, setAllJobs] = useState([]);
+  const [toggler, setToggler] = useState(true);
   useEffect(() => {
     const fetchAllJobs = async () => {
       const response = await getJobs();
-      console.log(response);
       setAllJobs(response.result);
     }
+    console.log("called")
     fetchAllJobs()
-  }, [])
+  }, [modalShow, toggler])
 
+  const deleteHandler = async (id) => {
+ 
+    const response = await deleteJob(id);
+    console.log(response);
+    setToggler(prev => !prev)
 
+  }
   const ALLJOBS = allJobs.map((item, index) => {
+
     return <tr key={index}>
       <td>{index + 1}</td>
-      <td>{"Job 1"}</td>
+      <td>{`Job ${index + 1}`}</td>
       <td>{item.templateName}</td>
-      <td>{"Job 1"}</td>
+      <td>{"Not Assigned"}</td>
       <td>{item.imageType ? item.imageType : "Disabled"}</td>
       <td className="text-right">
         <UncontrolledDropdown>
@@ -82,7 +91,7 @@ const Jobs = () => {
           <DropdownMenu className="dropdown-menu-arrow" right>
             <DropdownItem >Assign</DropdownItem>
             <DropdownItem >Edit</DropdownItem>
-            <DropdownItem style={{ color: "red" }}>Delete</DropdownItem>
+            <DropdownItem style={{ color: "red" }} onClick={() => deleteHandler(item.id)}>Delete</DropdownItem>
           </DropdownMenu>
         </UncontrolledDropdown>
       </td>
@@ -118,32 +127,7 @@ const Jobs = () => {
                   </tr>
                 </thead>
                 <tbody style={{ minHeight: "100rem" }}>
-                  {/* <tr >
-                    <td>{1}</td>
-                    <td>{"Job 1"}</td>
-                    <td>{"Job 1"}</td>
-                    <td>{"Enabled"}</td>
-                    <td>{"Job 1"}</td>
-                    <td className="text-right">
-                      <UncontrolledDropdown>
-                        <DropdownToggle
-                          className="btn-icon-only text-light"
-                          href="#pablo"
-                          role="button"
-                          size="sm"
-                          color=""
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          <i className="fas fa-ellipsis-v" />
-                        </DropdownToggle>
-                        <DropdownMenu className="dropdown-menu-arrow" right>
 
-                          <DropdownItem >Edit</DropdownItem>
-                          <DropdownItem style={{ color: "red" }}>Delete</DropdownItem>
-                        </DropdownMenu>
-                      </UncontrolledDropdown>
-                    </td>
-                  </tr> */}
                   {ALLJOBS}
                 </tbody>
               </Table>
