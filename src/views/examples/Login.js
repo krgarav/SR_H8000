@@ -66,6 +66,7 @@ const Login = () => {
       console.log(obj);
       setIsLoading(true)
       const res = await login(obj);
+      console.log(res)
       if (!res.success) {
         alert(res.message);
         setIsLoading(false)
@@ -74,16 +75,16 @@ const Login = () => {
       const allUsers = await fetchAllUsers();
       const userInfo = allUsers.result.filter(item => item.email === email)
 
-      if (userInfo) {
-        localStorage.setItem("user", JSON.stringify(userInfo[0]));
-        const userRole = userInfo[0].userRoleList[0].roleName;
-        if (userRole === "Operator") {
-          navigate("/operator/index");
-        } else {
-          navigate("/admin/index");
-        }
+      // if (userInfo) {
+      //   localStorage.setItem("user", JSON.stringify(userInfo[0]));
+      //   const userRole = userInfo[0].userRoleList[0].roleName;
+      //   if (userRole === "Operator") {
+      //     navigate("/operator/index");
+      //   } else {
+      //     navigate("/admin/index");
+      //   }
 
-      }
+      // }
       setIsLoading(false)
 
     } catch (error) {
