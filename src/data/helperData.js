@@ -173,3 +173,14 @@ export const imageColorTypeData = [
     { id: "grayscale", name: "Grayscale (Monochrome)" },
     { id: "blackandwhite", name: "Black and White (Binary)" },
 ]
+
+export const imageDPIData = [
+    { id: "100", name: "100" },
+    { id: "150", name: "150" },
+    { id: "200", name: "200" },
+    { id: "250", name: "250" },
+    { id: "300", name: "300" },
+    { id: "350", name: "350" },
+    { id: "400", name: "400" },
+    { id: "450", name: "450" },
+];

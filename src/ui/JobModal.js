@@ -24,8 +24,11 @@ import Select, { components } from "react-select";
 import Imageswitch from './Imageswitch';
 import { change } from '@syncfusion/ej2-react-grids';
 import { fetchAllUsers } from 'helper/userManagment_helper';
-import { fileType, imageTypeData, imageColorTypeData } from "data/helperData";
+import { fileType, imageTypeData, imageColorTypeData, imageDPIData } from "data/helperData";
 import { jwtDecode } from 'jwt-decode';
+import { v4 as uuidv4 } from 'uuid';
+import { createJob } from 'helper/job_helper';
+
 const JobModal = (props) => {
     const [modalShow, setModalShow] = useState(false);
     const [allTemplateOptions, setAllTemplateOptions] = useState([]);
@@ -34,13 +37,15 @@ const JobModal = (props) => {
     const [imageEnable, setImageEnable] = useState(false);
     const [allOperators, setAllOperators] = useState([]);
     const [selectedOperator, setSelectedOperator] = useState("");
+    const [dataPath, setDataPath] = useState("");
+    const [dataType, setDataType] = useState("");
+    const [imagePath, setImagePath] = useState("");
     const [imageType, setImageType] = useState("");
+    const [imageDpi, setImageDpi] = useState("");
     const [imageColor, setImageColor] = useState("");
-    // const [selectedOperator, setSelectedOperator] = useState("");
-    // const [selectedOperator, setSelectedOperator] = useState("");
-    // const [selectedOperator, setSelectedOperator] = useState("");
-
-    const [dataPath, setDataPath] = useState("")
+    const generateUUID = () => {
+        return uuidv4();
+    };
     const handleFileChange = (event) => {
         const files = event.target.files;
         const fileArray = Array.from(files).map(file => file.webkitRelativePath || file.name);
@@ -94,17 +99,21 @@ const JobModal = (props) => {
         console.log(decoded);
         // return
         const jobObj = {
-            "id": "0",
-            "templateId": selectedTemplate,
+            "id": 0,
+            "assignUser": "string",
+            "templateId": selectedTemplate.id,
             "dataPath": dataPath,
-            "dataType": selectedOperator,
-            "imagePath": "string",
-            "imageType": imageType,
-            "imageColor": "string",
+            "dataType": dataType.id,
+            "imagePath": imagePath,
+            "imageType": imageType.id,
+            "imageColor": imageColor,
             "jobStatus": "pending",
             "entryAt": new Date().toISOString(),
             "entryBy": decoded.UserName,
         }
+
+        const response = await createJob(jobObj);
+        console.log(response);
         const obj = {
             "id": 0,
             "assignUser": "string",
@@ -221,9 +230,9 @@ const JobModal = (props) => {
                         </label>
                         <div className="col-md-4">
                             <Select
-                                value={selectedOperator}
+                                value={dataType}
                                 onChange={(selectedValue) =>
-                                    setSelectedOperator(selectedValue)
+                                    setDataType(selectedValue)
                                 }
                                 options={fileType}
                                 getOptionLabel={(option) => option?.name || ""}
@@ -237,10 +246,10 @@ const JobModal = (props) => {
                     <Row className="mb-3">
                         <label
                             htmlFor="example-text-input"
-                            className="col-md-3 "
+                            className="col-md-3  col-form-label"
                             style={{ fontSize: ".9rem" }}
                         >
-                            Image :
+                            IMAGE
                         </label>
                         <div className="col-md-9">
                             <Imageswitch onChange={(val) => changeHandler(val)} />
@@ -263,14 +272,14 @@ const JobModal = (props) => {
                     {imageEnable && <Row className="mb-3">
                         <label
                             htmlFor="example-text-input"
-                            className="col-md-3 "
+                            className="col-md-3  col-form-label"
                             style={{ fontSize: ".9rem" }}
                         >
                             Image Path:
                         </label>
 
                         <div className="col-md-3">
-                            <input type='text' className="form-control" placeholder='Enter the data path' />
+                            <input type='text' className="form-control" value={imagePath} placeholder='Enter the data path' onChange={(e) => { setImagePath(e.target.value) }} />
                         </div>
                         <label
                             htmlFor="example-text-input"
@@ -281,30 +290,41 @@ const JobModal = (props) => {
                         </label>
                         <div className="col-md-4">
                             <Select
-                                value={selectedOperator}
+                                value={imageType}
                                 onChange={(selectedValue) =>
-                                    setSelectedOperator(selectedValue)
+                                    setImageType(selectedValue)
                                 }
                                 options={imageTypeData}
                                 getOptionLabel={(option) => option?.name || ""}
                                 getOptionValue={(option) =>
                                     option?.id?.toString() || ""
                                 }
-                                placeholder="Select file type..."
+                                placeholder="Select image type..."
                             />
                         </div>
                     </Row>}
                     {imageEnable && <Row className="mb-3">
                         <label
                             htmlFor="example-text-input"
-                            className="col-md-3 "
+                            className="col-md-3  col-form-label"
                             style={{ fontSize: ".9rem" }}
                         >
                             Image DPI:
                         </label>
 
                         <div className="col-md-3">
-                            <input type='text' className="form-control" placeholder='Enter the data path' />
+                            <Select
+                                value={imageDpi}
+                                onChange={(selectedValue) =>
+                                    setImageDpi(selectedValue)
+                                }
+                                options={imageDPIData}
+                                getOptionLabel={(option) => option?.name || ""}
+                                getOptionValue={(option) =>
+                                    option?.id?.toString() || ""
+                                }
+                                placeholder="Select dpi..."
+                            />
                         </div>
                         <label
                             htmlFor="example-text-input"
