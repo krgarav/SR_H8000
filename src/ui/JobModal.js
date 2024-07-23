@@ -117,26 +117,7 @@ const JobModal = (props) => {
         }
 
         console.log(response);
-        const obj = {
-            "id": 0,
-            "assignUser": "string",
-            "templateId": 0,
-            "templateName": "string",
-            "dataPath": "string",
-            "dataType": "string",
-            "imagePath": "string",
-            "imageType": "string",
-            "imageColor": "string",
-            "jobStatus": "string",
-            "jobStart": true,
-            "jobComplete": true,
-            "entryAt": "2024-07-23T10:06:46.790Z",
-            "entryBy": "string",
-            "updatedAt": "2024-07-23T10:06:46.790Z",
-            "jobStartAt": "2024-07-23T10:06:46.790Z",
-            "jobCompletedAt": "2024-07-23T10:06:46.790Z",
-            "updatedBy": "string"
-        }
+
 
     }
     const handleFileChange2 = (event) => {
