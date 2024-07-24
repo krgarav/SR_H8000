@@ -31,4 +31,5 @@ export const CREATE_JOB = url + "CreateJobs";
 export const GET_ALL_JOBS = url + "GetAllJobs";
 export const DELETE_JOB = url + "DeleteJob";
 
-
+export const ASSIGN_JOB = url + "AssignJob";
+export const GET_ASSIGNED_JOB = url + "GetJobQueueList";

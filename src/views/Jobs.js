@@ -47,34 +47,44 @@ import Jobcard from "ui/Jobcard.js";
 import JobModal from "ui/JobModal";
 import { getJobs } from "helper/job_helper";
 import { deleteJob } from "helper/job_helper";
+import AssignModal from "ui/AssignModal";
+import { fetchAllUsers } from "helper/userManagment_helper";
 
 const Jobs = () => {
   const [modalShow, setModalShow] = useState(false);
+  const [assignModalShow, setAssignModalShow] = useState(false);
   const [allJobs, setAllJobs] = useState([]);
   const [toggler, setToggler] = useState(true);
+  const [currentJobData, setCurrentJobData] = useState({});
   useEffect(() => {
     const fetchAllJobs = async () => {
       const response = await getJobs();
-      setAllJobs(response.result);
+      if (response) {
+        setAllJobs(response.result);
+      }
+      console.log(response.result)
     }
-    console.log("called")
     fetchAllJobs()
-  }, [modalShow, toggler])
+  }, [modalShow, toggler, assignModalShow])
 
   const deleteHandler = async (id) => {
- 
+
     const response = await deleteJob(id);
     console.log(response);
     setToggler(prev => !prev)
 
   }
-  const ALLJOBS = allJobs.map((item, index) => {
 
+  const ALLJOBS = allJobs.map((item, index) => {
+    let assignuser = "Not Assigned"
+    if (item.assignUser !== "string" || item.assignUser !== "") {
+      assignuser = item.assignUser
+    }
     return <tr key={index}>
       <td>{index + 1}</td>
       <td>{`Job ${index + 1}`}</td>
       <td>{item.templateName}</td>
-      <td>{"Not Assigned"}</td>
+      <td>{assignuser}</td>
       <td>{item.imageType ? item.imageType : "Disabled"}</td>
       <td className="text-right">
         <UncontrolledDropdown>
@@ -89,8 +99,8 @@ const Jobs = () => {
             <i className="fas fa-ellipsis-v" />
           </DropdownToggle>
           <DropdownMenu className="dropdown-menu-arrow" right>
-            <DropdownItem >Assign</DropdownItem>
-            <DropdownItem >Edit</DropdownItem>
+            <DropdownItem onClick={() => { setAssignModalShow(true); setCurrentJobData(item) }} >Assign</DropdownItem>
+            <DropdownItem  >Edit</DropdownItem>
             <DropdownItem style={{ color: "red" }} onClick={() => deleteHandler(item.id)}>Delete</DropdownItem>
           </DropdownMenu>
         </UncontrolledDropdown>
@@ -135,8 +145,11 @@ const Jobs = () => {
           </div>
         </Row>
       </Container>
-
-      <JobModal show={modalShow} onHide={() => setModalShow(false)} />
+      {assignModalShow &&
+        <AssignModal show={assignModalShow} onHide={() => setAssignModalShow(false)} jobData={currentJobData} />
+      }
+      {modalShow &&
+        <JobModal show={modalShow} onHide={() => setModalShow(false)} />}
     </>
   );
 };
