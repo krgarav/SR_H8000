@@ -10,6 +10,7 @@ import Sidebar from "components/Sidebar/Sidebar.js";
 import operatorRoute from "operatorRoute.js";
 import DesignTemplate from "views/DesignTemplate";
 import FolderStructure from "views/FolderStructure";
+import ScanJob from 'views/ScanJob';
 
 
 const Operator = (props) => {
@@ -63,9 +64,9 @@ const Operator = (props) => {
                 />
                 <Routes>
                     {getRoutes(operatorRoute)}
+
                     <Route path="*" element={<Navigate to="/operator/index" replace />} />
-
-
+                    <Route path="/scanjob" element={<ScanJob />} />
                 </Routes>
                 {/* <Container fluid>
           <AdminFooter />

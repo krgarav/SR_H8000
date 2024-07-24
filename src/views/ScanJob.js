@@ -1,5 +1,3 @@
-
-// core components
 import Header from "components/Headers/Header.js";
 import NormalHeader from "components/Headers/NormalHeader";
 import { Modal } from "react-bootstrap";
@@ -16,8 +14,10 @@ import { GridComponent, ColumnsDirective, ColumnDirective, Sort, Inject, Toolbar
 import { fetchAllTemplate } from "helper/TemplateHelper";
 // import Select, { components } from "react-select";
 import { jwtDecode } from 'jwt-decode';
+import { useLocation, useNavigate } from "react-router-dom";
 
-const Booklet32Page = () => {
+
+const ScanJob = () => {
     const [count, setCount] = useState(true)
     const [processedData, setProcessedData] = useState([
         { OrderID: 10248, CustomerID: 'VINET' },
@@ -29,10 +29,27 @@ const Booklet32Page = () => {
     const editSettings = { allowEditing: true, allowAdding: true, allowDeleting: true };
     const [items, setItems] = useState([]);
     const [templateOptions, setTemplateOptions] = useState([]);
-    const [selectedValue, setSelectedValue] = useState(null);
+    const [selectedValue, setSelectedValue] = useState();
     const [toolbar, setToolbar] = useState(['ExcelExport', 'CsvExport'])
     const [services, setServices] = useState([Sort, Toolbar, ExcelExport, Filter])
     const gridRef = useRef();
+
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        console.log(location.state === null)
+        if (!location.state) {
+            navigate("/operator/job-queue", { replace: true });
+            return;
+        }
+        const { templateId } = location?.state;
+        if (templateId) {
+            setSelectedValue(templateId)
+        }
+
+    }, [location]);
+    console.log(selectedValue)
     // useEffect(() => {
     //     const interval = setInterval(() => {
     //         setItems(prevItems => {
@@ -64,7 +81,7 @@ const Booklet32Page = () => {
     const getScanData = async () => {
         try {
             // Fetch data based on selected value ID
-            const data = await fetchProcessData(selectedValue.id);
+            const data = await fetchProcessData(selectedValue);
             console.log(data);
 
             // Check if the data fetch was successful
@@ -141,7 +158,7 @@ const Booklet32Page = () => {
             setScanning(true)
         }
 
-        const response = await scanFiles(selectedValue.id);
+        const response = await scanFiles(selectedValue);
         if (response) {
             setScanning(false)
         }
@@ -197,22 +214,7 @@ const Booklet32Page = () => {
     return (
         <>
             <NormalHeader />
-
             <Container className="mt--7" fluid>
-                <div className="d-flex">
-                    <h2 style={{ color: "white", zIndex: 999 }}>Choose Template : </h2>
-                    <Select
-                        value={selectedValue}
-                        onChange={(selectedValue) => { setSelectedValue(selectedValue); setProcessedData([]) }}
-                        options={templateOptions}
-                        getOptionLabel={(option) => option?.value || ""}
-                        getOptionValue={(option) =>
-                            option?.id?.toString() || ""
-                        }
-                        placeholder="Select Template"
-                    />
-                </div>
-
                 <br />
                 <div className='control-pane'>
                     <div className='control-section'>
@@ -244,6 +246,6 @@ const Booklet32Page = () => {
     );
 };
 
-export default Booklet32Page;
+export default ScanJob;
 
 

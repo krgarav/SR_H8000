@@ -34,14 +34,6 @@ var operatorRoute = [
         layout: "/operator",
     },
 
-
-    {
-        path: "/32-page-booklet",
-        name: "Scan Template",
-        icon: "ni ni-books text-success",
-        component: <Booklet32Page />,
-        layout: "/operator",
-    },
     {
         path: "/setting",
         name: "Settings",

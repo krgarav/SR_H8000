@@ -46,9 +46,7 @@ const JobModal = (props) => {
     const generateUUID = () => {
         return uuidv4();
     };
-
     const changeHandler = (val) => {
-        console.log(val)
         setImageEnable(val)
     }
     useEffect(() => {
@@ -90,13 +88,8 @@ const JobModal = (props) => {
     }, []);
 
     const createTemplateHandler = async () => {
-        const token = localStorage.getItem("token");
-        const decoded = jwtDecode(token);
-        console.log(decoded);
-        // return
         const jobObj = {
-            "id": 0,
-            "assignUser": "string",
+            "assignUser": "",
             "templateId": selectedTemplate.id,
             "dataPath": dataPath,
             "dataType": dataType.id,
@@ -105,7 +98,6 @@ const JobModal = (props) => {
             "imageColor": imageColor,
             "jobStatus": "pending",
             "entryAt": new Date().toISOString(),
-            "entryBy": decoded.UserName,
         }
 
         const response = await createJob(jobObj);

@@ -29,28 +29,34 @@ import {
 } from "reactstrap";
 import { getAssignedJob } from "helper/job_helper";
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from "react-router-dom";
 const JobQueue = () => {
     const [allJob, setAllJob] = useState([]);
+    const navigate = useNavigate();
     useEffect(() => {
-        const token= localStorage.getItem("token");
+        const token = localStorage.getItem("token");
         const decoded = jwtDecode(token);
         const UserId = decoded.UserId
-        console.log(decoded.UserId)
         const fetchAssignedJobs = async () => {
-            const response = await getAssignedJob(UserId)
+            const response = await getAssignedJob(UserId);
+            if (response.success) {
+                setAllJob(response.result)
+            }
         }
         fetchAssignedJobs();
     }, [])
-    useEffect(() => {
-       const token= localStorage.getItem("token");
-        const decoded = jwtDecode(token);
-        console.log(decoded.UserId)
-    }, [])
+    const startHandler = (templateId) => {
+        console.log(templateId);
+
+        navigate("/operator/scanjob", { state: { templateId: templateId } })
+    }
+
     const ALLJOBS = allJob.map((item, index) => {
         let assignuser = "Not Assigned"
         if (item.assignUser !== "string" || item.assignUser !== "") {
             assignuser = item.assignUser
         }
+        console.log(item)
         return <tr key={index}>
             <td>{index + 1}</td>
             <td>{`Job ${index + 1}`}</td>
@@ -58,7 +64,7 @@ const JobQueue = () => {
             <td>{assignuser}</td>
             <td>{item.imageType ? item.imageType : "Disabled"}</td>
             <td className="text-right">
-                <UncontrolledDropdown>
+                {/* <UncontrolledDropdown>
                     <DropdownToggle
                         className="btn-icon-only text-light"
                         href="#pablo"
@@ -74,7 +80,8 @@ const JobQueue = () => {
                         <DropdownItem  >Edit</DropdownItem>
                         <DropdownItem >Delete</DropdownItem>
                     </DropdownMenu>
-                </UncontrolledDropdown>
+                </UncontrolledDropdown> */}
+                <Button color="default" onClick={() => startHandler(item.templateId)}>Start</Button>
             </td>
         </tr>
     })
@@ -99,7 +106,7 @@ const JobQueue = () => {
                                         <th scope="col">Sno.</th>
                                         <th scope="col">Job Name</th>
                                         <th scope="col">Template</th>
-                                        <th scope="col">Operator </th>
+                                        <th scope="col">Assigned By </th>
                                         <th scope="col">Image</th>
                                         <th scope="col"></th>
                                     </tr>
