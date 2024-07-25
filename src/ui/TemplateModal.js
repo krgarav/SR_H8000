@@ -42,6 +42,7 @@ import axios from "axios";
 import ImageSelection from './imageSelection';
 import { getScannedImage } from 'helper/TemplateHelper';
 import { toast } from 'react-toastify';
+import Jobcard from './Jobcard';
 
 const TemplateModal = (props) => {
     const [modalShow, setModalShow] = useState(false);
@@ -90,6 +91,16 @@ const TemplateModal = (props) => {
     const [imageModal, setImageModal] = useState();
     const [image, setImage] = useState();
     const [imageTempFile, setTempImageFile] = useState();
+    const [selectedUI, setSelectedUI] = useState("")
+    const [activeTab, setActiveTab] = useState('simplex');
+    const jobHandler = (e) => {
+        // console.log(e)
+        setSelectedUI(e)
+    }
+    const handleSelect = (selectedKey) => {
+        console.log(selectedKey)
+        setActiveTab(selectedKey);
+    };
     const imageModalHandler = () => {
         setImageModal(true);
     }
@@ -110,6 +121,11 @@ const TemplateModal = (props) => {
             setModalShow(false);
         }
     }, [props.show]);
+    useEffect(() => {
+        if (props.onHide) {
+            setSelectedUI("");
+        }
+    }, [props.onHide]);
     const Option = (props) => {
         return (
             <components.Option {...props}>
@@ -285,11 +301,28 @@ const TemplateModal = (props) => {
                 backdrop="static"
                 keyboard={false}
             >
-                <Modal.Header>
-                    <Modal.Title id="modal-custom-navbar">Create Template</Modal.Title>
+                <Modal.Header className="d-flex flex-column w-100">
+                    <Modal.Title id="modal-custom-navbar" className="mb-2 ">
+                        Create Template
+                    </Modal.Title>
+                    {selectedUI === "DUPLEX" && (
+                        <Nav fill variant="tabs" activeKey={activeTab} onSelect={handleSelect} className="w-100">
+                            <Nav.Item>
+                                <Nav.Link eventKey="simplex">Simplex Data</Nav.Link>
+                            </Nav.Item>
+                            <Nav.Item>
+                                <Nav.Link eventKey="duplex">Duplex Data</Nav.Link>
+                            </Nav.Item>
+                        </Nav>
+                    )}
                 </Modal.Header>
                 <Modal.Body style={{ height: '65dvh' }} >
-                    <Tab.Container
+                    {selectedUI === "" && <div className='d-flex' style={{ justifyContent: "space-evenly" }}>
+                        <Jobcard text="SIMPLEX" handleJob={jobHandler} />
+                        <Jobcard text={"DUPLEX"} handleJob={jobHandler} />
+                    </div>}
+
+                    {(selectedUI === "SIMPLEX" || activeTab === "simplex" && selectedUI !== "") && <Tab.Container
                         activeKey={activeKey}
                         onSelect={(k) => setActiveKey(k)}
                     >
@@ -447,7 +480,7 @@ const TemplateModal = (props) => {
                                                     settoggle((item) => ({ ...item, barcode: false }));
                                                     setBarCount(e.target.value)
                                                 }}
-                                                    style={{ border: toggle.barcode ? "1px solid red" : "" }}
+                                                     style={{ border: toggle.barcode ? "1px solid red" : "" }}
                                                 />
                                                 {!selectedBubble && (
                                                     <span style={{ color: "red", display: spanDisplay }}>
@@ -1228,7 +1261,108 @@ const TemplateModal = (props) => {
                                 </Tab.Content>
                             </Col>
                         </Row>
-                    </Tab.Container>
+                    </Tab.Container>}
+
+                    {(selectedUI === "DUPLEX" && activeTab === "duplex" && selectedUI !== "") &&
+                        <Tab.Container
+                            activeKey={activeKey}
+                            onSelect={(k) => setActiveKey(k)}
+                        >
+                            <Row>
+                                <Col sm={12}>
+                                    {/* Adjusted column span to full width if needed */}
+                                    <Nav
+                                        variant="pills"
+                                        className="flex-row justify-content-center"
+                                    >
+                                        <Nav.Item>
+                                            <Nav.Link eventKey="general">General</Nav.Link>
+                                        </Nav.Item>
+                                        <Nav.Item>
+                                            <Nav.Link eventKey="barcode">Barcode</Nav.Link>
+                                        </Nav.Item>
+                                        {imageStatus.id !== "0" && <Nav.Item>
+                                            <Nav.Link eventKey="image">Image</Nav.Link>
+                                        </Nav.Item>
+                                        }
+                                    </Nav>
+                                </Col>
+                                <Col sm={12} className="mt-3">
+                                    <Tab.Content>
+                                        <Tab.Pane eventKey="general">
+                                            <Row className="mb-3">
+                                                <Col md={6}>
+                                                    <Row>
+                                                        <label
+                                                            htmlFor="example-text-input"
+                                                            className="col-md-4 col-form-label"
+                                                            style={{ fontSize: ".9rem" }}
+                                                        >
+                                                            No. of Rows :
+                                                        </label>
+                                                        <div className="col-md-6">
+                                                            <input
+                                                                type="number"
+                                                                className="form-control"
+                                                                value={numberOfLines}
+                                                                placeholder="Enter rows"
+                                                                onChange={(e) => {
+                                                                    settoggle((item) => ({ ...item, row: false }));
+                                                                    setNumberOfLines(e.target.value)
+                                                                }}
+                                                                style={{ border: toggle.row ? "1px solid red" : "" }}
+                                                            />
+                                                            {!numberOfLines && (
+                                                                <span
+                                                                    style={{ color: "red", display: spanDisplay }}
+                                                                >
+                                                                    This feild is required
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </Row>
+                                                </Col>
+                                                <Col md={6}>
+                                                    <Row>
+                                                        <label
+                                                            htmlFor="example-text-input"
+                                                            className="col-md-6 col-form-label "
+                                                            style={{ fontSize: ".9rem" }}
+                                                        >
+                                                            Number of columns:
+                                                        </label>
+                                                        <div className="col-md-6">
+                                                            <input
+                                                                placeholder="Enter columns"
+                                                                type="number"
+                                                                className="form-control"
+                                                                value={numberOfFrontSideColumn}
+                                                                onChange={(e) => {
+                                                                    settoggle((item) => ({ ...item, col: false }));
+                                                                    setNumberOfFrontSideColumn(e.target.value)
+                                                                }
+                                                                }
+                                                                style={{ border: toggle.col ? "1px solid red" : "" }}
+                                                            />
+                                                            {!numberOfFrontSideColumn && (
+                                                                <span
+                                                                    style={{ color: "red", display: spanDisplay }}
+                                                                >
+                                                                    This feild is required
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </Row>
+                                                </Col>
+                                            </Row>
+
+                                        </Tab.Pane>
+                                    </Tab.Content>
+                                </Col>
+                            </Row>
+                        </Tab.Container>
+
+                    }
                 </Modal.Body>
                 <Modal.Footer>
                     <div style={{ width: "50%" }}>
@@ -1238,14 +1372,28 @@ const TemplateModal = (props) => {
                     </div> */}
                         <div>
                             {/* {imageFile?.name}  */}
-                            {!imageFile && <Button onClick={imageModalHandler}>Select Image</Button>}
+                            {/* {!imageFile && <Button onClick={imageModalHandler}>Select Image</Button>}
 
                             {imageFile &&
                                 <div >
                                     <Button variant='info' onClick={imageModalHandler}>Choose another</Button>
                                     <img src={image} alt="Fetched Thumbnail" style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
                                 </div>
-                            }
+                            } */}
+
+                            <div>
+                                {selectedUI && (
+                                    !imageFile ? (
+                                        <Button onClick={imageModalHandler}>Select Image</Button>
+                                    ) : (
+                                        <div>
+                                            <Button variant='info' onClick={imageModalHandler}>Choose another</Button>
+                                            <img src={image} alt="Fetched Thumbnail" style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
+                                        </div>
+                                    )
+                                )}
+                            </div>
+
                         </div>
                     </div>
 

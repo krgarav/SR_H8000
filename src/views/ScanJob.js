@@ -19,9 +19,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const ScanJob = () => {
     const [count, setCount] = useState(true)
-    const [processedData, setProcessedData] = useState([
-        { OrderID: 10248, CustomerID: 'VINET' },
-        { OrderID: 10249, CustomerID: 'TOMSP' }]);
+    const [processedData, setProcessedData] = useState([]);
     const [scanning, setScanning] = useState(false);
     const [headData, setHeadData] = useState(["OrderID"]);
     const filterSettings = { type: 'Excel' };
@@ -67,7 +65,6 @@ const ScanJob = () => {
     // }, [data]);
 
     useEffect(() => {
-
         const token = localStorage.getItem("token");
         const decoded = jwtDecode(token);
         if (decoded.Role === "Operator") {
@@ -105,10 +102,10 @@ const ScanJob = () => {
             toast.error("Something went wrong");
 
             // Set scanning to false in case of error
-            setScanning(false);
+            // setScanning(false);
         }
     };
-
+    console.log(scanning)
     useEffect(() => {
         const fetchData = async () => {
             const template = await fetchAllTemplate()
@@ -121,9 +118,13 @@ const ScanJob = () => {
         fetchData();
     }, [])
     useEffect(() => {
+        if (!scanning) return;
+
         const intervalId = setInterval(() => {
             if (scanning) {
                 getScanData();
+            } else {
+                clearInterval(intervalId);
             }
         }, 1000);
 
