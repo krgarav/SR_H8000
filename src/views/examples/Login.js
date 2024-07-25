@@ -45,10 +45,6 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log(email);
-    console.log(password);
-  }, [email, password]);
   const signInHandler = async (e) => {
     e.preventDefault()
     if (!email) {
@@ -64,7 +60,6 @@ const Login = () => {
         email,
         password,
       };
-      console.log(obj);
       setIsLoading(true)
       const res = await login(obj);
       console.log(res)
@@ -73,8 +68,6 @@ const Login = () => {
         setIsLoading(false)
         return;
       }
-      // const allUsers = await fetchAllUsers();
-      // const userInfo = allUsers.result.filter(item => item.email === email)
       localStorage.setItem("token", res.token);
       const decoded = jwtDecode(res.token);
       if (decoded.Role === "Operator") {
@@ -117,6 +110,7 @@ const Login = () => {
                     type="email"
                     autoComplete="new-email"
                     value={email}
+                    required
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </InputGroup>
@@ -133,6 +127,7 @@ const Login = () => {
                     type="password"
                     autoComplete="new-password"
                     value={password}
+                    required
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </InputGroup>

@@ -43,10 +43,13 @@ const AdminNavbar = (props) => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const decoded = jwtDecode(token);
+    if (token) {
+      const decoded = jwtDecode(token);
 
-    setName(decoded.UserName.split("@")[0])
-    setRole(decoded.Role)
+      setName(decoded.UserName.split("@")[0])
+      setRole(decoded.Role)
+    }
+
     // console.log(userName.)
   }, [])
   const handleLogout = () => {
