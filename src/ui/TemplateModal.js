@@ -43,6 +43,7 @@ import ImageSelection from './imageSelection';
 import { getScannedImage } from 'helper/TemplateHelper';
 import { toast } from 'react-toastify';
 import Jobcard from './Jobcard';
+import DuplexJob from './DuplexJob';
 
 const TemplateModal = (props) => {
     const [modalShow, setModalShow] = useState(false);
@@ -308,10 +309,10 @@ const TemplateModal = (props) => {
                     {selectedUI === "DUPLEX" && (
                         <Nav fill variant="tabs" activeKey={activeTab} onSelect={handleSelect} className="w-100">
                             <Nav.Item>
-                                <Nav.Link eventKey="simplex">Simplex Data</Nav.Link>
+                                <Nav.Link eventKey="simplex">Front Side</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="duplex">Duplex Data</Nav.Link>
+                                <Nav.Link eventKey="duplex">Back Side</Nav.Link>
                             </Nav.Item>
                         </Nav>
                     )}
@@ -320,6 +321,7 @@ const TemplateModal = (props) => {
                     {selectedUI === "" && <div className='d-flex' style={{ justifyContent: "space-evenly" }}>
                         <Jobcard text="SIMPLEX" handleJob={jobHandler} />
                         <Jobcard text={"DUPLEX"} handleJob={jobHandler} />
+                        {/* <DuplexJob/> */}
                     </div>}
 
                     {(selectedUI === "SIMPLEX" || activeTab === "simplex" && selectedUI !== "") && <Tab.Container
@@ -480,7 +482,7 @@ const TemplateModal = (props) => {
                                                     settoggle((item) => ({ ...item, barcode: false }));
                                                     setBarCount(e.target.value)
                                                 }}
-                                                     style={{ border: toggle.barcode ? "1px solid red" : "" }}
+                                                    style={{ border: toggle.barcode ? "1px solid red" : "" }}
                                                 />
                                                 {!selectedBubble && (
                                                     <span style={{ color: "red", display: spanDisplay }}>

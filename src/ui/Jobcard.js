@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import classes from "./Jobcard.module.css";
+import DuplexJob from "./DuplexJob";
 const Jobcard = (props) => {
-  const [stateValue , setStateValue] = useState();
-  // useEffect(() => {
-  //   props.handleJob(props.text);
-  // }, [props]);
+
 
   const handleClick = () => {
-    // setStateValue(props.text);
+
     props.handleJob(props.text);
   };
-  return <div className={classes.card} onClick={handleClick}>{props.text}</div>;
+  return <div className={classes.card} onClick={handleClick}>
+    <div className={classes.inner}>{props.text}</div>
+    {/* {props.text === "DUPLEX" && <DuplexJob />} */}
+  </div>;
 };
 
 export default Jobcard;
