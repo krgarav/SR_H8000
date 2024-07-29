@@ -2,6 +2,10 @@ import { FaLeaf, FaRegCircle } from "react-icons/fa";
 import { MdOutlineRectangle } from "react-icons/md";
 import { LuRectangleHorizontal } from "react-icons/lu";
 import { TbOvalVertical } from "react-icons/tb";
+export const barcodeOptionData = [
+    { id: "enable", name: "Enable" },
+    { id: "disable", name: "Disable" },
+]
 export const rejectData = [
     { id: 1, name: "0", showName: "False" },
     { id: 2, name: "1", showName: "True" },
@@ -49,14 +53,16 @@ export const errorOfTheNumberOfTimingMarksData = [
 export const windowNgData = [
     { id: "0x00000001", name: "SKDV_ACTION_SELECT(0x00000001)", showName: "Paper ejection to select stacker" },
     { id: "0x00000002", name: "SKDV_ACTION_STOP(0x00000002)", showName: "Stop reading" },
-    { id: "0x00000004", name: "SKDV_ACTION_NOPRINT (0x00000004)", showName: "Do not print" },
 ];
 
 export const faceData = [
     { id: 0, name: "Front Side" },
     { id: 1, name: "Back Side" },
 ];
-
+export const IdOptionData = [
+    { id: "present", name: "Present" },
+    { id: "not present", name: "Not Present" },
+];
 export const directionData = [
     { id: "Top To Bottom", name: "Top To Bottom" },
     { id: "Bottom To Top", name: "Bottom To Top" },

@@ -11,6 +11,25 @@ import { MultiSelect } from "react-multi-select-component";
 import axios from 'axios';
 import { createTemplate } from "helper/TemplateHelper";
 import { getLayoutDataById } from "helper/TemplateHelper";
+import {
+    Badge,
+    Card,
+    CardHeader,
+    CardFooter,
+    DropdownMenu,
+    DropdownItem,
+    UncontrolledDropdown,
+    DropdownToggle,
+    Media,
+    Pagination,
+    PaginationItem,
+    PaginationLink,
+    Progress,
+    Table,
+    Container,
+    UncontrolledTooltip,
+} from "reactstrap";
+import SmallHeader from "components/Headers/SmallHeader";
 const URL = process.env.REACT_APP_BACKEND_URL;
 const DesignTemplate = () => {
     const [selected, setSelected] = useState({});
@@ -555,131 +574,134 @@ const DesignTemplate = () => {
         console.log(fullRequestData);
 
         // Send the request and handle the response
-        // try {
-        //     const res = await createTemplate(fullRequestData);
-        //     console.log(res);
-        //     alert(`Response : ${JSON.stringify(res.message)}`);
-        //     navigate("/admin/template", { replace: true });
-        // } catch (error) {
-        //     alert(`Error creating template`);
-        //     console.error('Error sending POST request:', error);
-        // }
+        try {
+            const res = await createTemplate(fullRequestData);
+            console.log(res);
+            alert(`Response : ${JSON.stringify(res.message)}`);
+            navigate("/admin/template", { replace: true });
+        } catch (error) {
+            alert(`Error creating template`);
+            console.error('Error sending POST request:', error);
+        }
     };
 
     return (
         <>
-            <Button onClick={sendHandler}> {!loading ? "Save" : "Saving"}</Button>
-            <div className="containers" >
 
-                <div id="imagecontainer" className={classes.img} >
-                    <Rnd
-                        default={{
-                            x: 0,
-                            y: 0,
-                            width: 400,
-                            height: 400,
-                        }}
-                        minWidth={100}
-                        minHeight={100}
-                        position={{ x: position?.x, y: position?.y }}
-                        size={{ width: position?.width, height: position?.height }}
-                        onDragStop={handleDragStop}
-                        onResizeStop={handleResizeStop}
-                        bounds={null}
-                        style={{
-                            border: '1px solid #ddd',
-                        }}
+            <SmallHeader />
+            <div>
+                <Button onClick={sendHandler}> {!loading ? "Save" : "Saving"}</Button>
+                <div className="containers" >
 
-                    >
-                        <img
-                            src={templateImagePath}
-                            className={`${classes["object-contain"]} ${classes["draggable-resizable-image"]} rounded`}
-                            alt="omr sheet"
+                    <div id="imagecontainer" className={classes.img} >
+                        <Rnd
+                            default={{
+                                x: 0,
+                                y: 0,
+                                width: 400,
+                                height: 400,
+                            }}
+                            minWidth={100}
+                            minHeight={100}
+                            position={{ x: position?.x, y: position?.y }}
+                            size={{ width: position?.width, height: position?.height }}
+                            onDragStop={handleDragStop}
+                            onResizeStop={handleResizeStop}
+                            bounds={null}
+                            style={{
+                                border: '1px solid #ddd',
+                            }}
 
-                        />
-                    </Rnd>
-                </div>
-                <div className="d-flex">
-                    <div style={{ marginRight: "1rem" }}>
-                        <div className="top"></div>
-                        {Array.from({ length: numRows }).map((_, rowIndex) => (
-                            <div key={rowIndex} className="row">
-                                <div className="left-nums">{rowIndex + 1}</div>
-                            </div>
-                        ))}
+                        >
+                            <img
+                                src={templateImagePath}
+                                className={`${classes["object-contain"]} ${classes["draggable-resizable-image"]} rounded`}
+                                alt="omr sheet"
+
+                            />
+                        </Rnd>
                     </div>
-                    <div>
-                        <div className="top-row">
-                            <div className="corner"></div>
-                            {Array.from({ length: numCols }).map((_, index) => (
-                                <div key={index} className="top-num">{index + 1}</div>
+                    <div className="d-flex">
+                        <div style={{ marginRight: "1rem" }}>
+                            <div className="top"></div>
+                            {Array.from({ length: numRows }).map((_, rowIndex) => (
+                                <div key={rowIndex} className="row">
+                                    <div className="left-nums">{rowIndex + 1}</div>
+                                </div>
                             ))}
                         </div>
-                        <div style={{ border: "2px solid black", paddingTop: "2.0rem", padding: "1rem", paddingLeft: ".5rem" }}>
-                            <div className="grid"
-                                ref={imageRef}
-                                onMouseDown={handleMouseDown}
-                                onMouseUp={handleMouseUp}
-                                onMouseMove={handleMouseMove}
-                            >
-                                {Array.from({ length: numRows }).map((_, rowIndex) => (
-                                    <div key={rowIndex} className="row">
-                                        <div className="left-num" sty><div className="timing-mark "></div></div>
-                                        {Array.from({ length: numCols }).map((_, colIndex) => (
-                                            <div key={colIndex} className={`${bubbleType} ${selected[`${rowIndex},${colIndex}`] ? 'selected' : ''}`}></div>
-                                        ))}
-
-                                    </div>
+                        <div>
+                            <div className="top-row">
+                                <div className="corner"></div>
+                                {Array.from({ length: numCols }).map((_, index) => (
+                                    <div key={index} className="top-num">{index + 1}</div>
                                 ))}
+                            </div>
+                            <div style={{ border: "2px solid black", paddingTop: "2.0rem", padding: "1rem", paddingLeft: ".5rem" }}>
+                                <div className="grid"
+                                    ref={imageRef}
+                                    onMouseDown={handleMouseDown}
+                                    onMouseUp={handleMouseUp}
+                                    onMouseMove={handleMouseMove}
+                                >
+                                    {Array.from({ length: numRows }).map((_, rowIndex) => (
+                                        <div key={rowIndex} className="row">
+                                            <div className="left-num" sty><div className="timing-mark "></div></div>
+                                            {Array.from({ length: numCols }).map((_, colIndex) => (
+                                                <div key={colIndex} className={`${bubbleType} ${selected[`${rowIndex},${colIndex}`] ? 'selected' : ''}`}></div>
+                                            ))}
 
-                                {selectedCoordinates.map((data, index) => (
-                                    <div
-                                        key={index}
-                                        className="border-blue-900"
-                                        style={{
-                                            border: "3px solid #007bff",
-                                            position: "absolute",
-                                            left: `${(data.startCol * (imageRef.current.getBoundingClientRect().width / numCols)) - 4}px`,
-                                            top: `${(data.startRow * (imageRef.current.getBoundingClientRect().height / numRows)) - 3}px`,
-                                            width: `${((data.endCol - data.startCol + 1) * (imageRef.current.getBoundingClientRect().width / numCols))}px`,
-                                            height: `${((data.endRow - data.startRow + 1) * (imageRef.current.getBoundingClientRect().height / numRows))}px`,
-
-                                        }}
-                                        onClick={(e) => e.stopPropagation()}
-                                    >
-
-                                        <div className="d-flex justify-content-between align-items-center bg-dark text-white p-1" style={{ opacity: 0.8, fontSize: '12px', position: 'relative' }}>
-                                            <span className="user-select-none">
-                                                {data.name}
-                                            </span>
-                                            <span className="d-flex align-items-center user-select-none gap-10">
-                                                <i className="fas fa-eye me-2 mr-1" onMouseUp={handleIconMouseUp} onClick={(e) => { handleEyeClick(data); }} style={{ cursor: 'pointer' }}></i>
-                                                <i className="fas fa-times text-danger cross-icon  ml-1" onMouseUp={handleIconMouseUp} onClick={() => { handleCrossClick(data); }} style={{ cursor: 'pointer' }}></i>
-                                            </span>
                                         </div>
+                                    ))}
 
-                                    </div>
-                                ))}
-                                {selection && (
-                                    <div
-                                        className="border-green-700"
-                                        style={{
-                                            border: "2px solid green",
-                                            position: "absolute",
-                                            left: `${(selection.startCol * (imageRef.current.getBoundingClientRect().width / numCols)) - 4}px`,
-                                            top: `${(selection.startRow * (imageRef.current.getBoundingClientRect().height / numRows)) - 3}px`,
-                                            width: `${(selection.endCol - selection.startCol + 1) * (imageRef.current.getBoundingClientRect().width / numCols)}px`,
-                                            height: `${(selection.endRow - selection.startRow + 1) * (imageRef.current.getBoundingClientRect().height / numRows)}px`,
-                                            content: "question field"
-                                        }}
-                                    ></div>
-                                )}
+                                    {selectedCoordinates.map((data, index) => (
+                                        <div
+                                            key={index}
+                                            className="border-blue-900"
+                                            style={{
+                                                border: "3px solid #007bff",
+                                                position: "absolute",
+                                                left: `${(data.startCol * (imageRef.current.getBoundingClientRect().width / numCols)) - 4}px`,
+                                                top: `${(data.startRow * (imageRef.current.getBoundingClientRect().height / numRows)) - 3}px`,
+                                                width: `${((data.endCol - data.startCol + 1) * (imageRef.current.getBoundingClientRect().width / numCols))}px`,
+                                                height: `${((data.endRow - data.startRow + 1) * (imageRef.current.getBoundingClientRect().height / numRows))}px`,
+
+                                            }}
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+
+                                            <div className="d-flex justify-content-between align-items-center bg-dark text-white p-1" style={{ opacity: 0.8, fontSize: '12px', position: 'relative' }}>
+                                                <span className="user-select-none">
+                                                    {data.name}
+                                                </span>
+                                                <span className="d-flex align-items-center user-select-none gap-10">
+                                                    <i className="fas fa-eye me-2 mr-1" onMouseUp={handleIconMouseUp} onClick={(e) => { handleEyeClick(data); }} style={{ cursor: 'pointer' }}></i>
+                                                    <i className="fas fa-times text-danger cross-icon  ml-1" onMouseUp={handleIconMouseUp} onClick={() => { handleCrossClick(data); }} style={{ cursor: 'pointer' }}></i>
+                                                </span>
+                                            </div>
+
+                                        </div>
+                                    ))}
+                                    {selection && (
+                                        <div
+                                            className="border-green-700"
+                                            style={{
+                                                border: "2px solid green",
+                                                position: "absolute",
+                                                left: `${(selection.startCol * (imageRef.current.getBoundingClientRect().width / numCols)) - 4}px`,
+                                                top: `${(selection.startRow * (imageRef.current.getBoundingClientRect().height / numRows)) - 3}px`,
+                                                width: `${(selection.endCol - selection.startCol + 1) * (imageRef.current.getBoundingClientRect().width / numCols)}px`,
+                                                height: `${(selection.endRow - selection.startRow + 1) * (imageRef.current.getBoundingClientRect().height / numRows)}px`,
+                                                content: "question field"
+                                            }}
+                                        ></div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
             <Modal
                 show={modalShow}
                 size="lg"

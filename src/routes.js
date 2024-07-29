@@ -14,6 +14,7 @@ import Booklet32Page from "views/Booklet32Page";
 import Booklet24Page from "views/Booklet24Page";
 import ImageGrid from "views/Imagegrid";
 import FolderStructure from "views/FolderStructure";
+import ReactFile from "views/ReactFile";
 
 var routes = [
   {

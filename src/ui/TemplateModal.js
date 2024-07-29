@@ -9,9 +9,11 @@ import {
     Col,
 } from "react-bootstrap";
 import {
+    IdOptionData,
     rejectData,
     sizeData,
     bubbleData,
+    barcodeOptionData,
     windowNgData,
     faceData,
     directionData,
@@ -94,6 +96,9 @@ const TemplateModal = (props) => {
     const [imageTempFile, setTempImageFile] = useState();
     const [selectedUI, setSelectedUI] = useState("")
     const [activeTab, setActiveTab] = useState('simplex');
+    const [barcodeEnable, setBarcodeEnable] = useState("disable");
+    const [imageUrl, setImageUrl] = useState("");
+    const [idPresent, setIdPresent] = useState("");
     const jobHandler = (e) => {
         // console.log(e)
         setSelectedUI(e)
@@ -155,7 +160,7 @@ const TemplateModal = (props) => {
 
     const createTemplateHandler = async () => {
 
-        if (!name || !numberOfLines || !numberOfFrontSideColumn || !barCount) {
+        if (!name || !numberOfLines || !numberOfFrontSideColumn) {
             settoggle((prevData) => ({
                 ...prevData,
                 name: !name ? true : prevData.name,
@@ -168,23 +173,27 @@ const TemplateModal = (props) => {
         }
 
         try {
-            const formData = new FormData();
-            formData.append('file', imageFile);
-            formData.append('upload_preset', 'Sekonic'); // Replace with your Cloudinary upload preset
+            if (imageFile) {
+                const formData = new FormData();
+                formData.append('file', imageFile);
+                formData.append('upload_preset', 'Sekonic'); // Replace with your Cloudinary upload preset
 
-            const response = await axios.post(
-                'https://api.cloudinary.com/v1_1/dje269eh5/image/upload',
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                        // Add authorization header if required (depending on your Cloudinary setup)
-                        // 'Authorization': 'Bearer YOUR_CLOUDINARY_API_KEY_AND_SECRET'
+                const response = await axios.post(
+                    'https://api.cloudinary.com/v1_1/dje269eh5/image/upload',
+                    formData,
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                            // Add authorization header if required (depending on your Cloudinary setup)
+                            // 'Authorization': 'Bearer YOUR_CLOUDINARY_API_KEY_AND_SECRET'
+                        }
                     }
-                }
-            );
+                );
 
-            const imgUrl = response.data.secure_url;
+
+                setImageUrl(response?.data.secure_url)
+            }
+
 
             const templateData = [{
                 "layoutParameters": {
@@ -194,7 +203,7 @@ const TemplateModal = (props) => {
                     "iFace": +face.id,
                     "totalColumns": +numberOfFrontSideColumn,
                     "bubbleType": selectedBubble.name,
-                    "templateImagePath": imgUrl,
+                    "templateImagePath": imageUrl,
                     "iSensitivity": +sensitivity,
                     "iDifference": +difference,
                     "ngAction": windowNgOption.id,
@@ -239,7 +248,7 @@ const TemplateModal = (props) => {
                     templateIndex: index,
                     timingMarks: numberOfLines,
                     totalColumns: numberOfFrontSideColumn,
-                    templateImagePath: imgUrl,
+                    templateImagePath: imageUrl,
                     bubbleType: selectedBubble.name,
                     iSensitivity: sensitivity,
                     iDifference: difference,
@@ -277,7 +286,6 @@ const TemplateModal = (props) => {
     }
     const systemHandler = () => {
         document.getElementById('formFile').click();
-
 
     };
     const saveHandler = () => {
@@ -338,9 +346,9 @@ const TemplateModal = (props) => {
                                     <Nav.Item>
                                         <Nav.Link eventKey="general">General</Nav.Link>
                                     </Nav.Item>
-                                    <Nav.Item>
+                                    {barcodeEnable.id === "enable" && <Nav.Item>
                                         <Nav.Link eventKey="barcode">Barcode</Nav.Link>
-                                    </Nav.Item>
+                                    </Nav.Item>}
                                     {imageStatus.id !== "0" && <Nav.Item>
                                         <Nav.Link eventKey="image">Image</Nav.Link>
                                     </Nav.Item>
@@ -365,11 +373,29 @@ const TemplateModal = (props) => {
                                                     placeholder="Enter Template Name"
                                                     value={name}
                                                     onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        const regex = /^[a-zA-Z0-9]*$/;
+
+                                                        if (regex.test(value)) {
+                                                            settoggle((item) => ({ ...item, name: false }));
+                                                            setName(value);
+                                                        } else {
+                                                            alert('Please enter only numbers and alphabets');
+                                                        }
+                                                    }}
+                                                    style={{ border: toggle.name ? "1px solid red" : "" }}
+                                                />
+                                                {/* <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    placeholder="Enter Template Name"
+                                                    value={name}
+                                                    onChange={(e) => {
                                                         settoggle((item) => ({ ...item, name: false }));
                                                         setName(e.target.value)
                                                     }}
                                                     style={{ border: toggle.name ? "1px solid red" : "" }}
-                                                />
+                                                /> */}
                                                 {!name && (
                                                     <span style={{ color: "red", display: spanDisplay }}>
                                                         This feild is required
@@ -377,7 +403,7 @@ const TemplateModal = (props) => {
                                                 )}
                                             </div>
                                         </Row>
-                                        <Row className="mb-3">
+                                        {/* <Row className="mb-3">
                                             <label
                                                 htmlFor="example-text-input"
                                                 className="col-md-2 "
@@ -401,7 +427,7 @@ const TemplateModal = (props) => {
                                                     </span>
                                                 )}
                                             </div>
-                                        </Row>
+                                        </Row> */}
                                         <Row className="mb-3">
                                             <Col md={6}>
                                                 <Row>
@@ -469,6 +495,92 @@ const TemplateModal = (props) => {
                                         </Row>
                                         <Row className='mb-3'>
 
+                                            <label
+                                                htmlFor="example-text-input"
+                                                className="col-md-2 col-form-label "
+                                                style={{ fontSize: ".85rem" }}
+                                            >
+                                                ID :
+                                            </label>
+                                            <div className="col-md-4">
+                                                <Select
+                                                    value={idPresent}
+                                                    onChange={(selectedValue) => {
+                                                        setIdPresent(selectedValue);
+                                                    }
+
+                                                    }
+                                                    options={IdOptionData}
+                                                    getOptionLabel={(option) => option?.name || ""}
+                                                    getOptionValue={(option) =>
+                                                        option?.id?.toString() || ""
+                                                    }
+
+                                                />
+                                            </div>
+
+                                            <label
+                                                htmlFor="example-text-input"
+                                                className="col-md-2 col-form-label "
+                                                style={{ fontSize: ".85rem" }}
+                                            >
+                                                Id Mark:
+                                            </label>
+                                            <div className="col-md-4">
+                                                <Select
+                                                    value={face}
+                                                    onChange={(selectedValue) =>
+                                                        setFace(selectedValue)
+                                                    }
+                                                    options={faceData}
+                                                    getOptionLabel={(option) => option?.name || ""}
+                                                    getOptionValue={(option) =>
+                                                        option?.id?.toString() || ""
+                                                    }
+                                                />
+                                                {!numberOfLines && (
+                                                    <span
+                                                        style={{ color: "red", display: spanDisplay }}
+                                                    >
+                                                        This feild is required
+                                                    </span>
+                                                )}
+
+                                            </div>
+
+                                        </Row>
+                                        <Row className='mb-3'>
+
+                                            <label
+                                                htmlFor="example-text-input"
+                                                className="col-md-2 col-form-label "
+                                                style={{ fontSize: ".85rem" }}
+                                            >
+                                                Barcode :
+                                            </label>
+                                            <div className="col-md-4">
+                                                <Select
+                                                    value={barcodeEnable}
+                                                    onChange={(selectedValue) => {
+                                                        const barcodeInput = document.getElementById("barcodeCount");
+                                                        setBarcodeEnable(selectedValue);
+                                                        if (selectedValue.id === "disable") {
+                                                            // barcodeInput.style=
+                                                            setBarCount(0)
+                                                        } else {
+                                                            setBarCount("")
+                                                        }
+                                                    }
+
+                                                    }
+                                                    options={barcodeOptionData}
+                                                    getOptionLabel={(option) => option?.name || ""}
+                                                    getOptionValue={(option) =>
+                                                        option?.id?.toString() || ""
+                                                    }
+
+                                                />
+                                            </div>
 
                                             <label
                                                 htmlFor="example-text-input"
@@ -477,12 +589,12 @@ const TemplateModal = (props) => {
                                             >
                                                 Barcode Count:
                                             </label>
-                                            <div className="col-md-10">
-                                                <input placeholder="Enter barcode count" type="number" className="form-control" onChange={(e) => {
-                                                    settoggle((item) => ({ ...item, barcode: false }));
+                                            <div className="col-md-4">
+                                                <input disabled={barCount === 0 ? true : false} value={barCount} placeholder="Enter barcode count" type="number" id="barcodeCount" className="form-control" onChange={(e) => {
+                                                    // settoggle((item) => ({ ...item, barcode: false }));
                                                     setBarCount(e.target.value)
                                                 }}
-                                                    style={{ border: toggle.barcode ? "1px solid red" : "" }}
+                                                // style={{ border: toggle.barcode ? "1px solid red" : "" }}
                                                 />
                                                 {!selectedBubble && (
                                                     <span style={{ color: "red", display: spanDisplay }}>

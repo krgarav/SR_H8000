@@ -102,10 +102,10 @@ const DataProvider = (props) => {
 
     const imageCoordinates = layoutParameters.imageCoordinates;
     const imageStructureData = {
-      height: imageCoordinates.height,
-      x: imageCoordinates.x,
-      y: imageCoordinates.y,
-      width: imageCoordinates.width,
+      height: imageCoordinates?.height,
+      x: imageCoordinates?.x,
+      y: imageCoordinates?.y,
+      width: imageCoordinates?.width,
     };
 
     const layoutCoordinates = layoutParameters.layoutCoordinates;
