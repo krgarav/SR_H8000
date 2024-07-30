@@ -11,6 +11,7 @@ import { MultiSelect } from "react-multi-select-component";
 import axios from 'axios';
 import { createTemplate } from "helper/TemplateHelper";
 import { getLayoutDataById } from "helper/TemplateHelper";
+import jsonData from "data/csvjson";
 import {
     Badge,
     Card,
@@ -91,6 +92,10 @@ const DesignTemplate = () => {
     const [options, setOptions] = useState([]);
     const [idNumber, setIdNumber] = useState("");
     const [layoutFieldData, setLayoutFieldData] = useState();
+    const [multipleValue, setMultipleValue] = useState("");
+    const [blankValue, setBlankValue] = useState("");
+    const [multiple, setMultiple] = useState("");
+    const [blank, setBlank] = useState("");
     const rndRef = useRef();
     const navigate = useNavigate();
     const numRows = timingMarks;
@@ -162,7 +167,6 @@ const DesignTemplate = () => {
 
     useEffect(() => {
         const fetchDetails = async () => {
-            console.log(templateId);
             try {
                 // Fetch layout data by template ID
                 const response = await getLayoutDataById(templateId);
@@ -403,8 +407,8 @@ const DesignTemplate = () => {
                     "name": name
                 },
                 "ngAction": windowNgOption,
-                "iMinimumMark": +minimumMark,
-                "iMaximumMark": +maximumMark,
+                "iMinimumMarks": +minimumMark,
+                "iMaximumMarks": +maximumMark,
                 "skewMark": +skewoption,
                 "iType": type,
 
@@ -425,8 +429,8 @@ const DesignTemplate = () => {
                 "iSensitivity": +iSensitivity,
                 "iDifference": +iDifference,
                 "iOption": +option,
-                "iMinimumMark": +minimumMark,
-                "iMaximumMark": +maximumMark,
+                "iMinimumMarks": +minimumMark,
+                "iMaximumMarks": +maximumMark,
                 "iType": type,
                 "ngAction": windowNgOption,
                 "Coordinate": {
@@ -445,7 +449,6 @@ const DesignTemplate = () => {
         setSelectedCoordinates((prev) => [...prev, newSelected]);
         setSelection(null);
         setModalShow(false);
-        console.log(newData)
         dataCtx.modifyAllTemplate(templateIndex, newData, selectedFieldType);
     };
     const handleSkewMarkOptionChange = (event) => {
@@ -644,15 +647,18 @@ const DesignTemplate = () => {
                                     onMouseUp={handleMouseUp}
                                     onMouseMove={handleMouseMove}
                                 >
-                                    {Array.from({ length: numRows }).map((_, rowIndex) => (
-                                        <div key={rowIndex} className="row">
-                                            <div className="left-num" sty><div className="timing-mark "></div></div>
-                                            {Array.from({ length: numCols }).map((_, colIndex) => (
-                                                <div key={colIndex} className={`${bubbleType} ${selected[`${rowIndex},${colIndex}`] ? 'selected' : ''}`}></div>
-                                            ))}
+                                    {Array.from({ length: numRows }).map((_, rowIndex) => {
+                                        const result = [...jsonData.map(Object.values)];
+                                        return (
+                                            <div key={rowIndex} className="row">
+                                                <div className="left-num" sty><div className="timing-mark "></div></div>
+                                                {Array.from({ length: numCols }).map((_, colIndex) => (
+                                                    <div key={colIndex} style={{ backgroundColor: result[rowIndex][colIndex] !== 0 ? "black" : "" }} className={`${bubbleType} ${selected[`${rowIndex},${colIndex}`] ? 'selected' : ''}`}></div>
+                                                ))}
 
-                                        </div>
-                                    ))}
+                                            </div>
+                                        )
+                                    })}
 
                                     {selectedCoordinates.map((data, index) => (
                                         <div
@@ -800,17 +806,32 @@ const DesignTemplate = () => {
                         <div className="col-md-4">
                             <select
                                 className="form-control"
-                                // value={windowNgOption}
-                                // onChange={handleWindowNgOptionChange}
+                                value={multiple}
+                                onChange={(e) => { setMultiple(e.target.value) }}
                                 defaultValue={""}
                             >
                                 <option value="">Select an option</option>
-                                <option value="0x00000001">Allow All</option>
-                                <option value="0x00000002">Allow None</option>
+                                <option value="allow">Allow All</option>
+                                <option value="not allow">Allow None</option>
 
                             </select>
 
                         </div>
+                        <label
+                            htmlFor="example-text-input"
+                            className="col-md-2 "
+                        >
+                            Multiple Value
+                        </label>
+                        <div className="col-md-4">
+                            <input type="number" className='form-control' placeholder="Character of Multiple" value={multipleValue}
+                                onChange={(e) => setMultipleValue(e.target.value)}
+                                required />
+                        </div>
+
+
+                    </Row>
+                    <Row>
                         <label
                             htmlFor="example-text-input"
                             className="col-md-2 col-form-label"
@@ -821,29 +842,19 @@ const DesignTemplate = () => {
                         <div className="col-md-4">
                             <select
                                 className="form-control"
-                                // value={windowNgOption}
-                                // onChange={handleWindowNgOptionChange}
+                                value={blank}
+                                onChange={(e) => {
+                                    setBlank(e.target.value
+                                    )
+                                }}
                                 defaultValue={""}
                             >
                                 <option value="">Select an option</option>
-                                <option value="0x00000001">Allow All</option>
-                                <option value="0x00000002">Allow None</option>
+                                <option value="allow">Allow All</option>
+                                <option value="not allow">Allow None</option>
 
                             </select>
 
-                        </div>
-                    </Row>
-                    <Row>
-                        <label
-                            htmlFor="example-text-input"
-                            className="col-md-2 "
-                        >
-                            Multiple Value
-                        </label>
-                        <div className="col-md-4">
-                            <input type="number" className='form-control' placeholder="Character of Multiple" value={maximumMark}
-                                onChange={(e) => setMaximumMark(e.target.value)}
-                                required />
                         </div>
                         <label
                             htmlFor="example-text-input"
@@ -852,8 +863,8 @@ const DesignTemplate = () => {
                             Blank Value
                         </label>
                         <div className="col-md-4">
-                            <input type="number" className='form-control' placeholder="Character of Blank" value={maximumMark}
-                                onChange={(e) => setMaximumMark(e.target.value)}
+                            <input type="number" className='form-control' placeholder="Character of Blank" value={blankValue}
+                                onChange={(e) => setBlankValue(e.target.value)}
                                 required />
                         </div>
                     </Row>

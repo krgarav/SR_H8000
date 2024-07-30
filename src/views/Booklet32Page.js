@@ -71,20 +71,24 @@ const Booklet32Page = () => {
             if (data?.result?.success) {
                 // Extract keys from the first item in the data array
                 const newDataKeys = Object.keys(data.result.data[0]);
-
+                console.log(processedData)
                 // Add a serial number to each entry
-                let num = processedData.length + 1;
-                const updatedData = [...processedData, ...data.result.data.map(item => ({ "Serial No": num++, ...item }))];
+                if (processedData) {
 
-                // Set headData with the new keys, ensuring "Serial No" is included as a heading
-                setHeadData(["Serial No", ...newDataKeys]);
-                console.log(updatedData);
 
-                // Update the data state with the fetched data
-                setProcessedData(updatedData);
+                    let num = processedData.length + 1;
+                    const updatedData = [...processedData, ...data.result.data.map(item => ({ "Serial No": num++, ...item }))];
+
+                    // Set headData with the new keys, ensuring "Serial No" is included as a heading
+                    setHeadData(["Serial No", ...newDataKeys]);
+                    console.log(updatedData);
+
+                    // Update the data state with the fetched data
+                    setProcessedData(updatedData);
+                }
             }
         } catch (error) {
-            console.error(error);
+            console.log(error);
             toast.error("Something went wrong");
 
             // Set scanning to false in case of error
@@ -130,6 +134,7 @@ const Booklet32Page = () => {
 
     const handleStart = async () => {
 
+
         if (!selectedValue) {
             alert("Choose Template");
             return
@@ -137,14 +142,23 @@ const Booklet32Page = () => {
         if (scanning) {
             setScanning(false);
             return;
+        }
+        setProcessedData([])
+        setTimeout(async () => {
+            setScanning(prev => !prev)
+        }, 5000);
+        const response = await scanFiles(selectedValue.id);
+        console.log(response)
+        if (!response.result.success) {
+            toast.error(response.result.message)
         } else {
-            setScanning(true)
+            toast.success(response.result.message)
         }
 
-        const response = await scanFiles(selectedValue.id);
         if (response) {
-            setScanning(false)
+            setScanning(prev => !prev)
         }
+
     };
 
 
@@ -214,24 +228,24 @@ const Booklet32Page = () => {
                 </div>
 
                 <br />
-             
-                        <GridComponent
-                            ref={gridRef}
-                            actionComplete={handleSave} dataSource={processedData} height='350' allowSorting={false} editSettings={editSettings} allowFiltering={false} filterSettings={filterSettings} toolbar={toolbar}
-                            toolbarClick={handleToolbarClick} allowExcelExport={true} allowPdfExport={true}
-                            allowEditing={false} >
-                            <ColumnsDirective>
-                                {columnsDirective}
-                            </ColumnsDirective>
-                            <Inject services={services} />
 
-                        </GridComponent>
-                        <div className="m-2" style={{ float: "right" }}>
-                            <Button className="" color={scanning ? "warning" : "success"} type="button" onClick={handleStart}>
-                                {scanning ? "Stop" : "Start"}
-                            </Button>
-                            <Button className="" color="danger" type="button" onClick={handleRefresh} >Refresh</Button>
-                        </div>
+                <GridComponent
+                    ref={gridRef}
+                    actionComplete={handleSave} dataSource={processedData} height='350' allowSorting={false} editSettings={editSettings} allowFiltering={false} filterSettings={filterSettings} toolbar={toolbar}
+                    toolbarClick={handleToolbarClick} allowExcelExport={true} allowPdfExport={true}
+                    allowEditing={false} >
+                    <ColumnsDirective>
+                        {columnsDirective}
+                    </ColumnsDirective>
+                    <Inject services={services} />
+
+                </GridComponent>
+                <div className="m-2" style={{ float: "right" }}>
+                    <Button className="" color={scanning ? "warning" : "success"} type="button" onClick={handleStart}>
+                        {scanning ? "Stop" : "Start"}
+                    </Button>
+                    <Button className="" color="danger" type="button" onClick={handleRefresh} >Refresh</Button>
+                </div>
 
 
             </Container >
