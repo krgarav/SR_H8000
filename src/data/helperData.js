@@ -92,11 +92,11 @@ export const colorTypeData = [
 
 ];
 export const encodingOptionData = [
-    { id: "0", name: "Bit map format" },
-    { id: "1", name: "GIF format" },
-    { id: "2", name: "Jpeg format" },
-    { id: "3", name: "PNG format" },
-    { id: "4", name: "Tiff format" },
+    { id: "0", name: "Bit map " },
+    { id: "1", name: "GIF" },
+    { id: "2", name: "Jpeg" },
+    { id: "3", name: "PNG" },
+    { id: "4", name: "Tiff" },
 ];
 export const rotationOptionData = [
     { id: "0", name: "No rotation" },
@@ -106,11 +106,11 @@ export const rotationOptionData = [
 ];
 
 export const resolutionOptionData = [
-    { id: "0", name: "600dpi" },
-    { id: "1", name: "300dpi" },
-    { id: "2", name: "200dpi" },
-    { id: "3", name: "150dpi" },
-    { id: "4", name: "100dpi" },
+    { id: "4", name: "100 DPI" },
+    { id: "3", name: "150 DPI" },
+    { id: "2", name: "200 DPI" },
+    { id: "1", name: "300 DPI" },
+    { id: "0", name: "600 DPI" },
 ];
 
 export const scanningSideData = [

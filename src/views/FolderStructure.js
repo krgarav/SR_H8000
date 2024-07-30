@@ -10,15 +10,17 @@ import '@syncfusion/ej2-navigations/styles/bootstrap5.css';
 import '@syncfusion/ej2-layouts/styles/bootstrap5.css';
 import '@syncfusion/ej2-grids/styles/bootstrap5.css';
 import '@syncfusion/ej2-react-filemanager/styles/bootstrap5.css';
-
+import SmallHeader from 'components/Headers/SmallHeader';
+import { Container } from "reactstrap";
+import "../App.css"
 const Overview = () => {
     const hostUrl = "https://28mdpn6d-5289.inc1.devtunnels.ms/";
 
     return (
-        <div>
-            <div className="control-section" style={{ height: "200dvh" }}>
+        <div className="full-height-container">
+            <SmallHeader />
+            <div style={{ height: "200px" }}>
                 <FileManagerComponent
-                    style={{ height: "100vh" }}
                     id="overview_file"
                     ajaxSettings={{
                         url: hostUrl + "api/FileManager/FileOperations",

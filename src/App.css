@@ -166,3 +166,15 @@ input[type="number"] {
 .field-label {
   cursor: pointer;
 }
+
+
+/* In your CSS file or a style block */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#root, .full-height-container {
+  height: 100%;
+}

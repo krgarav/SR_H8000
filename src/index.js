@@ -35,7 +35,7 @@ import App from "App";
 
 
 
-registerLicense('Ngo9BigBOggjHTQxAR8/V1NCaF5cXmZCeUx0TXxbf1x0ZFFMYFpbQXNPMyBoS35RckVlW3dedHRdQ2FaWUF2');
+registerLicense('Ngo9BigBOggjHTQxAR8/V1NCaF5cXmZCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWXhdcHRVQmVeV0F3Wks=');
 
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

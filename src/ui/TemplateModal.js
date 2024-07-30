@@ -56,7 +56,7 @@ const TemplateModal = (props) => {
 
     const [sensitivity, setSensitivity] = useState(1)
     const [difference, setDifference] = useState("");
-    const [barCount, setBarCount] = useState("")
+    const [barCount, setBarCount] = useState(0)
     const [selectedBubble, setSelectedBubble] = useState({})
     const [reject, setReject] = useState()
     const [numberOfFrontSideColumn, setNumberOfFrontSideColumn] = useState("");
@@ -96,7 +96,7 @@ const TemplateModal = (props) => {
     const [imageTempFile, setTempImageFile] = useState();
     const [selectedUI, setSelectedUI] = useState("")
     const [activeTab, setActiveTab] = useState('simplex');
-    const [barcodeEnable, setBarcodeEnable] = useState("disable");
+    const [barcodeEnable, setBarcodeEnable] = useState({ id: "disable", name: "Disable" });
     const [imageUrl, setImageUrl] = useState("");
     const [idPresent, setIdPresent] = useState("");
     const jobHandler = (e) => {
@@ -325,7 +325,7 @@ const TemplateModal = (props) => {
                         </Nav>
                     )}
                 </Modal.Header>
-                <Modal.Body style={{ height: '65dvh' }} >
+                <Modal.Body style={{ height: '65dvh', overflow: "auto" }} >
                     {selectedUI === "" && <div className='d-flex' style={{ justifyContent: "space-evenly" }}>
                         <Jobcard text="SIMPLEX" handleJob={jobHandler} />
                         <Jobcard text={"DUPLEX"} handleJob={jobHandler} />
@@ -364,7 +364,7 @@ const TemplateModal = (props) => {
                                                 className="col-md-2 "
                                                 style={{ fontSize: ".9rem" }}
                                             >
-                                                Name:
+                                                Name
                                             </label>
                                             <div className="col-md-10">
                                                 <input
@@ -436,7 +436,7 @@ const TemplateModal = (props) => {
                                                         className="col-md-4 col-form-label"
                                                         style={{ fontSize: ".9rem" }}
                                                     >
-                                                        No. of Rows :
+                                                        No. of Rows
                                                     </label>
                                                     <div className="col-md-6">
                                                         <input
@@ -467,7 +467,7 @@ const TemplateModal = (props) => {
                                                         className="col-md-6 col-form-label "
                                                         style={{ fontSize: ".9rem" }}
                                                     >
-                                                        Number of columns:
+                                                        Number of columns
                                                     </label>
                                                     <div className="col-md-6">
                                                         <input
@@ -500,7 +500,7 @@ const TemplateModal = (props) => {
                                                 className="col-md-2 col-form-label "
                                                 style={{ fontSize: ".85rem" }}
                                             >
-                                                ID :
+                                                ID
                                             </label>
                                             <div className="col-md-4">
                                                 <Select
@@ -524,7 +524,7 @@ const TemplateModal = (props) => {
                                                 className="col-md-2 col-form-label "
                                                 style={{ fontSize: ".85rem" }}
                                             >
-                                                Id Mark:
+                                                Id Mark
                                             </label>
                                             <div className="col-md-4">
                                                 <Select
@@ -556,7 +556,7 @@ const TemplateModal = (props) => {
                                                 className="col-md-2 col-form-label "
                                                 style={{ fontSize: ".85rem" }}
                                             >
-                                                Barcode :
+                                                Barcode
                                             </label>
                                             <div className="col-md-4">
                                                 <Select
@@ -587,7 +587,7 @@ const TemplateModal = (props) => {
                                                 className="col-md-2 col-form-label "
                                                 style={{ fontSize: ".85rem" }}
                                             >
-                                                Barcode Count:
+                                                Barcode Count
                                             </label>
                                             <div className="col-md-4">
                                                 <input disabled={barCount === 0 ? true : false} value={barCount} placeholder="Enter barcode count" type="number" id="barcodeCount" className="form-control" onChange={(e) => {
@@ -610,7 +610,7 @@ const TemplateModal = (props) => {
                                                 className="col-md-2  col-form-label"
                                                 style={{ fontSize: ".87rem" }}
                                             >
-                                                Bubble Variant:
+                                                Bubble Variant
                                             </label>
                                             <div className="col-md-10">
                                                 <Select
@@ -662,7 +662,7 @@ const TemplateModal = (props) => {
                                                 className="col-md-2 col-form-label  "
                                                 style={{ fontSize: ".9rem", textAlign: "right" }}
                                             >
-                                                Rejected:
+                                                Rejected
                                             </label>
                                             <div className="col-md-3">
                                                 <Select
@@ -714,7 +714,7 @@ const TemplateModal = (props) => {
                                                 className="col-md-2 col-form-label  "
                                                 style={{ fontSize: ".9rem" }}
                                             >
-                                                Sensitivity :
+                                                Sensitivity
                                             </label>
                                             <div className="col-md-5" style={{
                                                 display: "flex", gap: "5px", width: "100%"
@@ -764,7 +764,7 @@ const TemplateModal = (props) => {
                                                 className="col-md-2 col-form-label "
                                                 style={{ fontSize: ".9rem", textAlign: "right" }}
                                             >
-                                                Difference :
+                                                Difference
                                             </label>
                                             <div className="col-md-3">
                                                 <input
@@ -799,7 +799,7 @@ const TemplateModal = (props) => {
                                                 className="col-md-2  col-form-label "
                                                 style={{ fontSize: ".9rem" }}
                                             >
-                                                Face:
+                                                Face
                                             </label>
                                             <div className="col-md-4">
                                                 <Select
@@ -826,7 +826,7 @@ const TemplateModal = (props) => {
                                                 className="col-md-3 col-form-label  "
                                                 style={{ fontSize: ".9rem", textAlign: "right" }}
                                             >
-                                                Page Position :
+                                                Page Position
                                             </label>
                                             <div className="col-md-3">
                                                 <Select
@@ -848,7 +848,7 @@ const TemplateModal = (props) => {
                                                 className="col-md-2 col-form-label  "
                                                 style={{ fontSize: ".95rem" }}
                                             >
-                                                Image Status :
+                                                Image Status
                                             </label>
                                             <div className="col-md-10">
                                                 <Select
@@ -1344,8 +1344,14 @@ const TemplateModal = (props) => {
                                                         }
                                                         placeholder="Select rotation option..."
                                                     />
+                                                    {resolution?.id === "0" && (
+                                                        <span style={{ color: "orangered", display: "block" }}>
+                                                            *Scanning will be slow on 600DPI*
+                                                        </span>
+                                                    )}
 
                                                 </div>
+
                                             </Row>
                                             <Row className="mb-3">
                                                 <label

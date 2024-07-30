@@ -214,8 +214,7 @@ const Booklet32Page = () => {
                 </div>
 
                 <br />
-                <div className='control-pane'>
-                    <div className='control-section'>
+             
                         <GridComponent
                             ref={gridRef}
                             actionComplete={handleSave} dataSource={processedData} height='350' allowSorting={false} editSettings={editSettings} allowFiltering={false} filterSettings={filterSettings} toolbar={toolbar}
@@ -234,9 +233,6 @@ const Booklet32Page = () => {
                             <Button className="" color="danger" type="button" onClick={handleRefresh} >Refresh</Button>
                         </div>
 
-                    </div>
-
-                </div>
 
             </Container >
 
