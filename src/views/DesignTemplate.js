@@ -101,6 +101,10 @@ const DesignTemplate = () => {
   const [blankValue, setBlankValue] = useState("");
   const [multiple, setMultiple] = useState("");
   const [blank, setBlank] = useState("");
+  const [startRowInput, setStartRowInput] = useState("");
+  const [startColInput, setStartColInput] = useState("");
+  const [endRowInput, setEndRowInput] = useState("");
+  const [endColInput, setEndColInput] = useState("");
   const rndRef = useRef();
   const navigate = useNavigate();
   const numRows = timingMarks;
@@ -136,6 +140,11 @@ const DesignTemplate = () => {
     }
     return null;
   };
+
+  useEffect(() => {
+    setStartRowInput(selection?.startRow + 1);
+    setEndRowInput(selection?.endRow + 1);
+  }, [selection]);
   useEffect(() => {
     const gridDiv = document.getElementById("grid-div");
     const imgDiv = document.getElementById("imagecontainer");
@@ -1120,23 +1129,23 @@ const DesignTemplate = () => {
               <input
                 id="startRow"
                 type="number"
-                value={selection?.startRow + 1}
-                // onChange={(e) => e.target.valueAsNumber >= 0}
-                onChange={(e) => {
-                  const newValue1 = e.target.value;
-                  console.log(newValue1)
-                  const newValue = newValue1===""?0:newValue1
-                  console.log(newValue)
-                  if (newValue >= 0 || newValue==="") {
+                value={startRowInput}
+                onBlur={(e) => {
+                  const newValue = e.target.valueAsNumber;
+                  if (newValue > 0) {
                     setSelection((item) => ({
                       ...item,
                       startRow: newValue - 1,
                     }));
                   } else {
-                    e.target.value = selection.startRow + 1; // Reset to previous valid value
+                    setStartRowInput(selection.startRow + 1); // Reset to previous valid value
                   }
                 }}
-               
+                onChange={(e) => {
+                  setStartRowInput(
+                    e.target.valueAsNumber >= 0 ? e.target.value : ""
+                  );
+                }}
                 className="form-control"
               />
             </div>
@@ -1148,10 +1157,31 @@ const DesignTemplate = () => {
             </label>
             <div className="col-2">
               <input
+                type="number"
+                value={endRowInput}
+                onBlur={(e) => {
+                  const newValue = e.target.valueAsNumber;
+                  if (newValue > 0) {
+                    setSelection((item) => ({
+                      ...item,
+                      endRow: newValue - 1,
+                    }));
+                  } else {
+                    setEndRowInput(selection?.endRow + 1); // Reset to previous valid value
+                  }
+                }}
+                onChange={(e) => {
+                  setEndRowInput(
+                    e.target.valueAsNumber >= 0 ? e.target.value : ""
+                  );
+                }}
+                className="form-control"
+              />
+              {/* <input
                 value={selection?.endRow + 1}
                 readOnly
                 className="form-control"
-              />
+              /> */}
             </div>
             <label
               htmlFor="example-select-input"
