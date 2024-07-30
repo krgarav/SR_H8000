@@ -137,6 +137,17 @@ const DesignTemplate = () => {
     return null;
   };
   useEffect(() => {
+    const gridDiv = document.getElementById("grid-div");
+    const imgDiv = document.getElementById("imagecontainer");
+
+    if (gridDiv && imgDiv) {
+      const gridHeight = gridDiv.clientHeight;
+      const gridWidth = gridDiv.clientWidth;
+      imgDiv.style.height = `${gridHeight + 250}px`;
+      imgDiv.style.width = `${gridWidth + 130}px`; // Adding 50 pixels to the width
+    }
+  }, []);
+  useEffect(() => {
     if (arr) {
       // Extract parameters from the first element of the array (if it exists)
       const formFieldData = arr[0]?.formFieldWindowParameters;
@@ -636,10 +647,12 @@ const DesignTemplate = () => {
               size={{ width: position?.width, height: position?.height }}
               onDragStop={handleDragStop}
               onResizeStop={handleResizeStop}
-              bounds={null}
-              style={{
-                border: "1px solid #ddd",
-              }}
+              //   bounds={null}
+              style={
+                {
+                  // border: "1px solid #ddd",
+                }
+              }
             >
               <img
                 src={templateImagePath}
@@ -667,6 +680,7 @@ const DesignTemplate = () => {
                 ))}
               </div>
               <div
+                id="grid-div"
                 style={{
                   border: "2px solid black",
                   paddingTop: "2.0rem",
@@ -914,79 +928,85 @@ const DesignTemplate = () => {
               </div>
             </Row>
           )}
-          <Row className="mb-2">
-            <label
-              htmlFor="example-text-input"
-              className="col-md-2 col-form-label"
-            >
-              Multiple
-            </label>
-            <div className="col-md-4">
-              <select
-                className="form-control"
-                value={multiple}
-                onChange={(e) => {
-                  setMultiple(e.target.value);
-                }}
-                defaultValue={""}
+          {(selectedFieldType === "questionField" ||
+            selectedFieldType === "formField") && (
+            <Row className="mb-1">
+              <label
+                htmlFor="example-text-input"
+                className="col-md-2 col-form-label"
               >
-                <option value="">Select an option</option>
-                <option value="allow">Allow All</option>
-                <option value="not allow">Allow None</option>
-              </select>
-            </div>
-            <label htmlFor="example-text-input" className="col-md-2 ">
-              Multiple Value
-            </label>
-            <div className="col-md-4">
-              <input
-                type="number"
-                className="form-control"
-                placeholder="Character of Multiple"
-                value={multipleValue}
-                onChange={(e) => setMultipleValue(e.target.value)}
-                required
-              />
-            </div>
-          </Row>
-          <Row>
-            <label
-              htmlFor="example-text-input"
-              className="col-md-2 col-form-label"
-            >
-              Blanks
-            </label>
-            <div className="col-md-4">
-              <select
-                className="form-control"
-                value={blank}
-                onChange={(e) => {
-                  setBlank(e.target.value);
-                }}
-                defaultValue={""}
+                Multiple
+              </label>
+              <div className="col-md-4">
+                <select
+                  className="form-control"
+                  value={multiple}
+                  onChange={(e) => {
+                    setMultiple(e.target.value);
+                  }}
+                  defaultValue={""}
+                >
+                  <option value="">Select an option</option>
+                  <option value="allow">Allow All</option>
+                  <option value="not allow">Allow None</option>
+                </select>
+              </div>
+              <label htmlFor="example-text-input" className="col-md-2 ">
+                Multiple Value
+              </label>
+              <div className="col-md-4">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Character of Multiple"
+                  value={multipleValue}
+                  onChange={(e) => setMultipleValue(e.target.value)}
+                  required
+                />
+              </div>
+            </Row>
+          )}
+          {(selectedFieldType === "questionField" ||
+            selectedFieldType === "formField") && (
+            <Row className="mb-2">
+              <label
+                htmlFor="example-text-input"
+                className="col-md-2 col-form-label"
               >
-                <option value="">Select an option</option>
-                <option value="allow">Allow All</option>
-                <option value="not allow">Allow None</option>
-              </select>
-            </div>
-            <label
-              htmlFor="example-text-input"
-              className="col-md-2 col-form-label"
-            >
-              Blank Value
-            </label>
-            <div className="col-md-4">
-              <input
-                type="number"
-                className="form-control"
-                placeholder="Character of Blank"
-                value={blankValue}
-                onChange={(e) => setBlankValue(e.target.value)}
-                required
-              />
-            </div>
-          </Row>
+                Blanks
+              </label>
+              <div className="col-md-4">
+                <select
+                  className="form-control"
+                  value={blank}
+                  onChange={(e) => {
+                    setBlank(e.target.value);
+                  }}
+                  defaultValue={""}
+                >
+                  <option value="">Select an option</option>
+                  <option value="allow">Allow All</option>
+                  <option value="not allow">Allow None</option>
+                </select>
+              </div>
+              <label
+                htmlFor="example-text-input"
+                className="col-md-2 col-form-label"
+              >
+                Blank Value
+              </label>
+              <div className="col-md-4">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Character of Blank"
+                  value={blankValue}
+                  onChange={(e) => setBlankValue(e.target.value)}
+                  required
+                />
+              </div>
+            </Row>
+          )}
           {selectedFieldType !== "idField" && (
             <Row className="mb-2">
               <label
@@ -1099,8 +1119,24 @@ const DesignTemplate = () => {
             <div className="col-2 ">
               <input
                 id="startRow"
+                type="number"
                 value={selection?.startRow + 1}
-                readOnly
+                // onChange={(e) => e.target.valueAsNumber >= 0}
+                onChange={(e) => {
+                  const newValue1 = e.target.value;
+                  console.log(newValue1)
+                  const newValue = newValue1===""?0:newValue1
+                  console.log(newValue)
+                  if (newValue >= 0 || newValue==="") {
+                    setSelection((item) => ({
+                      ...item,
+                      startRow: newValue - 1,
+                    }));
+                  } else {
+                    e.target.value = selection.startRow + 1; // Reset to previous valid value
+                  }
+                }}
+               
                 className="form-control"
               />
             </div>
