@@ -9,15 +9,15 @@ const DataProvider = (props) => {
 
   // Save dataState to localStorage whenever it changes
 
-  useEffect(() => {
-    const stringifiedTemdata = JSON.stringify(dataState.allTemplates);
-    localStorage.setItem("Template", stringifiedTemdata);
-  }, [dataState]);
+  // useEffect(() => {
+  //   const stringifiedTemdata = JSON.stringify(dataState.allTemplates);
+  //   localStorage.setItem("Template", stringifiedTemdata);
+  // }, [dataState]);
 
   const templateHandler = (template) => {
     let newIndex;
     setDataState((item) => {
-      newIndex = item.allTemplates.length; // Calculate the new index
+      newIndex = item?.allTemplates?.length; // Calculate the new index
       return {
         ...item,
         allTemplates: [...item.allTemplates, template],
