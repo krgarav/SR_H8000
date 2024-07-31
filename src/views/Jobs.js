@@ -49,6 +49,7 @@ import { getJobs } from "helper/job_helper";
 import { deleteJob } from "helper/job_helper";
 import AssignModal from "ui/AssignModal";
 import { fetchAllUsers } from "helper/userManagment_helper";
+import { toast } from "react-toastify";
 
 const Jobs = () => {
   const [modalShow, setModalShow] = useState(false);
@@ -59,68 +60,90 @@ const Jobs = () => {
   useEffect(() => {
     const fetchAllJobs = async () => {
       const response = await getJobs();
+      console.log(response);
       if (response) {
         setAllJobs(response.result);
       }
-      console.log(response.result)
-    }
-    fetchAllJobs()
-  }, [modalShow, toggler, assignModalShow])
+      if (response === undefined) {
+        toast.error("Cant connect to network");
+      }
+      // console.log(response.result)
+    };
+    fetchAllJobs();
+  }, [modalShow, toggler, assignModalShow]);
 
   const deleteHandler = async (id) => {
-
     const response = await deleteJob(id);
     console.log(response);
-    setToggler(prev => !prev)
-
-  }
+    setToggler((prev) => !prev);
+  };
 
   const ALLJOBS = allJobs.map((item, index) => {
-    let assignuser = "Not Assigned"
+    let assignuser = "Not Assigned";
     if (item.assignUser !== "string" || item.assignUser !== "") {
-      assignuser = item.assignUser
+      assignuser = item.assignUser;
     }
-    return <tr key={index}>
-      <td>{index + 1}</td>
-      <td>{`Job ${index + 1}`}</td>
-      <td>{item.templateName}</td>
-      <td>{assignuser}</td>
-      <td>{item.imageType ? item.imageType : "Disabled"}</td>
-      <td className="text-right">
-        <UncontrolledDropdown>
-          <DropdownToggle
-            className="btn-icon-only text-light"
-            href="#pablo"
-            role="button"
-            size="sm"
-            color=""
-            onClick={(e) => e.preventDefault()}
-          >
-            <i className="fas fa-ellipsis-v" />
-          </DropdownToggle>
-          <DropdownMenu className="dropdown-menu-arrow" right>
-            <DropdownItem onClick={() => { setAssignModalShow(true); setCurrentJobData(item) }} >Assign</DropdownItem>
-            <DropdownItem  >Edit</DropdownItem>
-            <DropdownItem style={{ color: "red" }} onClick={() => deleteHandler(item.id)}>Delete</DropdownItem>
-          </DropdownMenu>
-        </UncontrolledDropdown>
-      </td>
-    </tr>
-  })
+    return (
+      <tr key={index}>
+        <td>{index + 1}</td>
+        <td>{`Job ${index + 1}`}</td>
+        <td>{item.templateName}</td>
+        <td>{assignuser}</td>
+        <td>{item.imageType ? item.imageType : "Disabled"}</td>
+        <td className="text-right">
+          <UncontrolledDropdown>
+            <DropdownToggle
+              className="btn-icon-only text-light"
+              href="#pablo"
+              role="button"
+              size="sm"
+              color=""
+              onClick={(e) => e.preventDefault()}
+            >
+              <i className="fas fa-ellipsis-v" />
+            </DropdownToggle>
+            <DropdownMenu className="dropdown-menu-arrow" right>
+              <DropdownItem
+                onClick={() => {
+                  setAssignModalShow(true);
+                  setCurrentJobData(item);
+                }}
+              >
+                Assign
+              </DropdownItem>
+              <DropdownItem>Edit</DropdownItem>
+              <DropdownItem
+                style={{ color: "red" }}
+                onClick={() => deleteHandler(item.id)}
+              >
+                Delete
+              </DropdownItem>
+            </DropdownMenu>
+          </UncontrolledDropdown>
+        </td>
+      </tr>
+    );
+  });
   return (
     <>
       <NormalHeader />
       {/* Page content */}
 
-      <Container className="mt--7" fluid >
-
+      <Container className="mt--7" fluid>
         <Row>
           <div className="col">
             <Card className="shadow">
               <CardHeader className="border-0">
                 <div className="d-flex justify-content-between">
                   <h3 className="mt-2">All Jobs</h3>
-                  <Button className="" color="primary" type="button" onClick={() => { setModalShow(true) }} >
+                  <Button
+                    className=""
+                    color="primary"
+                    type="button"
+                    onClick={() => {
+                      setModalShow(true);
+                    }}
+                  >
                     Add Job
                   </Button>
                 </div>
@@ -136,20 +159,22 @@ const Jobs = () => {
                     <th scope="col"></th>
                   </tr>
                 </thead>
-                <tbody style={{ minHeight: "100rem" }}>
-
-                  {ALLJOBS}
-                </tbody>
+                <tbody style={{ minHeight: "100rem" }}>{ALLJOBS}</tbody>
               </Table>
             </Card>
           </div>
         </Row>
       </Container>
-      {assignModalShow &&
-        <AssignModal show={assignModalShow} onHide={() => setAssignModalShow(false)} jobData={currentJobData} />
-      }
-      {modalShow &&
-        <JobModal show={modalShow} onHide={() => setModalShow(false)} />}
+      {assignModalShow && (
+        <AssignModal
+          show={assignModalShow}
+          onHide={() => setAssignModalShow(false)}
+          jobData={currentJobData}
+        />
+      )}
+      {modalShow && (
+        <JobModal show={modalShow} onHide={() => setModalShow(false)} />
+      )}
     </>
   );
 };

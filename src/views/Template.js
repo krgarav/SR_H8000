@@ -39,11 +39,14 @@ const Template = () => {
 
     const fetchData = async () => {
       const templates = await fetchAllTemplate();
+      if(templates===undefined){
+        toast.error('Error fetching templates'); 
+      
+      }
       const mpObj = templates?.map((item) => {
         return [{ layoutParameters: item }]
       })
-      dataCtx.addToAllTemplate(mpObj)
-
+      dataCtx.addToAllTemplate(mpObj);
 
     }
     fetchData()
