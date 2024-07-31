@@ -112,7 +112,7 @@ const Booklet32Page = () => {
             if (scanning) {
                 getScanData();
             }
-        }, 1000);
+        }, 2000);
 
         return () => clearInterval(intervalId);
     }, [scanning]);
@@ -145,8 +145,8 @@ const Booklet32Page = () => {
         }
         setProcessedData([])
         setTimeout(async () => {
-            setScanning(prev => !prev)
-        }, 5000);
+            setScanning(true)
+        }, 6000);
         const response = await scanFiles(selectedValue.id);
         console.log(response)
         if (!response.result.success) {
@@ -154,11 +154,9 @@ const Booklet32Page = () => {
         } else {
             toast.success(response.result.message)
         }
-
         if (response) {
-            setScanning(prev => !prev)
+            setScanning(false)
         }
-
     };
 
 
