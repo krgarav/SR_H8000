@@ -92,6 +92,7 @@ const DesignTemplate = () => {
     iFace,
     arr,
     templateId,
+    excelJsonFile
   } = useLocation().state;
   const [selectedCol, setSelectedCol] = useState([]);
   const [options, setOptions] = useState([]);
@@ -105,6 +106,7 @@ const DesignTemplate = () => {
   const [startColInput, setStartColInput] = useState("");
   const [endRowInput, setEndRowInput] = useState("");
   const [endColInput, setEndColInput] = useState("");
+  const [idType,setIdType]= useState("");
   const rndRef = useRef();
   const navigate = useNavigate();
   const numRows = timingMarks;
@@ -130,7 +132,7 @@ const DesignTemplate = () => {
       return newState;
     });
   };
-
+console.log(idType)
   // Function to get the current position and dimensions
   const getCurrentImageState = () => {
     if (rndRef.current) {
@@ -296,13 +298,13 @@ const DesignTemplate = () => {
   useEffect(() => {
     // Create an array to hold the options
     const options = Array.from({ length: +totalColumns }, (v, i) => ({
-      label: `Col ${i + 1}`, // Set the label as 'Col X' where X is the column number
+      label: `${idType} ${i + 1}`, // Set the label as 'Col X' where X is the column number
       value: i, // Set the value as the index
     }));
 
     // Update the state with the new options array
     setOptions(options);
-  }, [totalColumns]);
+  }, [totalColumns,idType]);
 
   useEffect(() => {
     if (selectedCol.length > 0) {
@@ -635,7 +637,8 @@ const DesignTemplate = () => {
       console.error("Error sending POST request:", error);
     }
   };
-
+console.log(excelJsonFile)
+console.log(jsonData)
   return (
     <>
       <SmallHeader />
@@ -705,7 +708,7 @@ const DesignTemplate = () => {
                   onMouseMove={handleMouseMove}
                 >
                   {Array.from({ length: numRows }).map((_, rowIndex) => {
-                    const result = [...jsonData.map(Object.values)];
+                    const result = [...excelJsonFile.map(Object.values)];
                     return (
                       <div key={rowIndex} className="row">
                         <div className="left-num" sty>
@@ -716,7 +719,7 @@ const DesignTemplate = () => {
                             key={colIndex}
                             style={{
                               backgroundColor:
-                                result[rowIndex][colIndex] !== 0 ? "black" : "",
+                                (result[rowIndex][colIndex] !== 0||result[rowIndex][colIndex] !== "0") ? "black" : "",
                             }}
                             className={`${bubbleType} ${
                               selected[`${rowIndex},${colIndex}`]
@@ -939,7 +942,7 @@ const DesignTemplate = () => {
           )}
           {(selectedFieldType === "questionField" ||
             selectedFieldType === "formField") && (
-            <Row className="mb-1">
+            <Row className="mb-0">
               <label
                 htmlFor="example-text-input"
                 className="col-md-2 col-form-label"
@@ -1077,9 +1080,9 @@ const DesignTemplate = () => {
               </label>
 
               <div className="col-md-2">
-                <select className=" form-control">
-                  <option>Row</option>
-                  <option>Col</option>
+                <select value={idType} onChange={(e)=>{setIdType(e.target.value)}} className=" form-control">
+                  <option value="Row">Row</option>
+                  <option value="Col">Col</option>
                 </select>
               </div>
               <label htmlFor="example-select-input" className="col-md-2 ">
