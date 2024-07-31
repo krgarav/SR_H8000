@@ -1177,11 +1177,6 @@ const DesignTemplate = () => {
                 }}
                 className="form-control"
               />
-              {/* <input
-                value={selection?.endRow + 1}
-                readOnly
-                className="form-control"
-              /> */}
             </div>
             <label
               htmlFor="example-select-input"
@@ -1228,10 +1223,31 @@ const DesignTemplate = () => {
             </label>
             <div className="col-2">
               <input
+                type="number"
+                value={startColInput}
+                onBlur={(e) => {
+                  const newValue = e.target.valueAsNumber;
+                  if (newValue > 0) {
+                    setSelection((item) => ({
+                      ...item,
+                      startCol: newValue ,
+                    }));
+                  } else {
+                    setStartColInput(selection?.startCol); // Reset to previous valid value
+                  }
+                }}
+                onChange={(e) => {
+                  setStartColInput(
+                    e.target.valueAsNumber >= 0 ? e.target.value : ""
+                  );
+                }}
+                className="form-control"
+              />
+              {/* <input
                 value={selection?.startCol}
                 readOnly
                 className="form-control"
-              />
+              /> */}
             </div>
 
             <label
@@ -1242,10 +1258,31 @@ const DesignTemplate = () => {
             </label>
             <div className="col-2">
               <input
+                type="number"
+                value={endColInput}
+                onBlur={(e) => {
+                  const newValue = e.target.valueAsNumber;
+                  if (newValue > 0) {
+                    setSelection((item) => ({
+                      ...item,
+                      endCol: newValue ,
+                    }));
+                  } else {
+                    setEndColInput(selection?.endCol); // Reset to previous valid value
+                  }
+                }}
+                onChange={(e) => {
+                  setEndColInput(
+                    e.target.valueAsNumber >= 0 ? e.target.value : ""
+                  );
+                }}
+                className="form-control"
+              />
+              {/* <input
                 value={selection?.endCol}
                 readOnly
                 className="form-control"
-              />
+              /> */}
             </div>
             <label
               htmlFor="example-select-input"

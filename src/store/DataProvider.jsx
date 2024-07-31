@@ -16,11 +16,13 @@ const DataProvider = (props) => {
 
   const templateHandler = (template) => {
     let newIndex;
-    setDataState((item) => {
-      newIndex = item?.allTemplates?.length; // Calculate the new index
+    setDataState((prevState) => {
+      // Ensure prevState.allTemplates is always an array
+      const allTemplates = Array.isArray(prevState.allTemplates) ? prevState.allTemplates : [];
+      newIndex = allTemplates.length; // Calculate the new index
       return {
-        ...item,
-        allTemplates: [...item.allTemplates, template],
+        ...prevState,
+        allTemplates: [...allTemplates, template],
       };
     });
     return newIndex; // Return the new index

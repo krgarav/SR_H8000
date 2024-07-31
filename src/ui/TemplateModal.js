@@ -322,7 +322,7 @@ const TemplateModal = (props) => {
     }
 
     try {
-        console.log("entered")
+      let img = "";
       if (imageFile) {
         const formData = new FormData();
         formData.append("file", imageFile);
@@ -339,11 +339,12 @@ const TemplateModal = (props) => {
             },
           }
         );
-
-        setImageUrl(response?.data.secure_url);
+        console.log(response);
+        img = response?.data.secure_url;
+        // setImageUrl(response?.data.secure_url);
       }
-      console.log(imageUrl);
-    
+      console.log(img);
+
       const templateData = [
         {
           layoutParameters: {
@@ -353,7 +354,7 @@ const TemplateModal = (props) => {
             iFace: +face.id,
             totalColumns: +numberOfFrontSideColumn,
             bubbleType: selectedBubble?.name,
-            templateImagePath: imageUrl,
+            templateImagePath: img,
             iSensitivity: +sensitivity,
             iDifference: +difference,
             ngAction: windowNgOption?.id,
@@ -392,6 +393,8 @@ const TemplateModal = (props) => {
           },
         },
       ];
+      console.log(templateData)
+     
       const index = dataCtx.setAllTemplates(templateData);
       setModalShow(false);
       navigate("/admin/design-template", {
@@ -399,7 +402,7 @@ const TemplateModal = (props) => {
           templateIndex: index,
           timingMarks: numberOfLines,
           totalColumns: numberOfFrontSideColumn,
-          templateImagePath: imageUrl,
+          templateImagePath: img,
           bubbleType: selectedBubble.name,
           iSensitivity: sensitivity,
           iDifference: difference,
