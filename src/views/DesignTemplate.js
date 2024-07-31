@@ -209,7 +209,10 @@ const DesignTemplate = () => {
         }
     }, [location.state]);
 
+    useEffect(() => {
 
+
+    })
     useEffect(() => {
         setStartRowInput(selection?.startRow + 1);
         setEndRowInput(selection?.endRow + 1);
@@ -217,6 +220,7 @@ const DesignTemplate = () => {
         setEndColInput(selection?.endCol)
     }, [selection]);
     useEffect(() => {
+        const img = document.getElementById("omr-style-sheet");
         const gridDiv = document.getElementById("grid-div");
         const imgDiv = document.getElementById("imagecontainer");
 
@@ -225,6 +229,8 @@ const DesignTemplate = () => {
             const gridWidth = gridDiv.clientWidth;
             imgDiv.style.height = `${gridHeight + 250}px`;
             imgDiv.style.width = `${gridWidth + 130}px`; // Adding 50 pixels to the width
+            img.style.width = `${gridWidth}px`;
+            img.style.height = `${gridHeight}px`;
         }
     }, []);
     useEffect(() => {
@@ -888,6 +894,7 @@ const DesignTemplate = () => {
                                 src={data.templateImagePath}
                                 className={`${classes["object-contain"]} ${classes["draggable-resizable-image"]} rounded`}
                                 alt="omr sheet"
+                                id="omr-style-sheet"
                             />
                         </Rnd>
                     </div>
