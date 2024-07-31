@@ -229,8 +229,13 @@ const DesignTemplate = () => {
             const gridWidth = gridDiv.clientWidth;
             imgDiv.style.height = `${gridHeight + 250}px`;
             imgDiv.style.width = `${gridWidth + 130}px`; // Adding 50 pixels to the width
-            img.style.width = `${gridWidth}px`;
-            img.style.height = `${gridHeight}px`;
+            setPosition({
+                x: 0,
+                y: 0,
+                width: `${gridWidth}px`,
+                height: `${gridHeight}px`,
+            });
+         
         }
     }, []);
     useEffect(() => {
