@@ -82,22 +82,22 @@ const DesignTemplate = () => {
     });
     const [loading, setLoading] = useState(false);
     const dataCtx = useContext(DataContext);
-    const {
-        totalColumns,
-        timingMarks,
-        templateImagePath,
-        bubbleType,
-        templateIndex,
-        iSensitivity,
-        iDifference,
-        iReject,
-        iFace,
-        arr,
-        templateId,
-        excelJsonFile,
-        imageTempFile,
-        excelFile
-    } = useLocation().state;
+    // const {
+    //     totalColumns,
+    //     timingMarks,
+    //     templateImagePath,
+    //     bubbleType,
+    //     templateIndex,
+    //     iSensitivity,
+    //     iDifference,
+    //     iReject,
+    //     iFace,
+    //     arr,
+    //     templateId,
+    //     excelJsonFile,
+    //     imageTempFile,
+    //     excelFile
+    // } = useLocation().state;
     const [selectedCol, setSelectedCol] = useState([]);
     const [options, setOptions] = useState([]);
     const [idNumber, setIdNumber] = useState("0000000000000000000000000000");
@@ -111,12 +111,55 @@ const DesignTemplate = () => {
     const [endRowInput, setEndRowInput] = useState("");
     const [endColInput, setEndColInput] = useState("");
     const [idType, setIdType] = useState("");
+    const [customValue, setCustomValue] = useState("");
+
+
+    // Function to get values from sessionStorage or provide default
+    const getSessionStorageOrDefault = (key, defaultValue) => {
+        const stored = sessionStorage.getItem(key);
+
+
+        if (stored === null) {
+            return defaultValue;
+        }
+
+        try {
+            const parsed = JSON.parse(stored);
+            // Check for 'undefined' string which is not a valid JSON
+            if (parsed === undefined) {
+                return defaultValue;
+            }
+            return parsed;
+        } catch (e) {
+            console.warn(`Error parsing sessionStorage item with key "${key}":`, e);
+            return defaultValue;
+        }
+    };
+    const location = useLocation();
+    const state = location.state || {};
+    // Initialize state with values from sessionStorage or location.state
+    const [data, setData] = useState(() => ({
+        totalColumns: getSessionStorageOrDefault('totalColumns', state.totalColumns),
+        timingMarks: getSessionStorageOrDefault('timingMarks', state.timingMarks),
+        templateImagePath: getSessionStorageOrDefault('templateImagePath', state.templateImagePath),
+        bubbleType: getSessionStorageOrDefault('bubbleType', state.bubbleType),
+        templateIndex: getSessionStorageOrDefault('templateIndex', state.templateIndex),
+        iSensitivity: getSessionStorageOrDefault('iSensitivity', state.iSensitivity),
+        iDifference: getSessionStorageOrDefault('iDifference', state.iDifference),
+        iReject: getSessionStorageOrDefault('iReject', state.iReject),
+        iFace: getSessionStorageOrDefault('iFace', state.iFace),
+        arr: getSessionStorageOrDefault('arr', state.arr),
+        templateId: getSessionStorageOrDefault('templateId', state.templateId),
+        excelJsonFile: getSessionStorageOrDefault('excelJsonFile', state.excelJsonFile),
+        imageTempFile: getSessionStorageOrDefault('imageTempFile', state.imageTempFile),
+        excelFile: getSessionStorageOrDefault('excelFile', state.excelFile),
+    }));
 
     const rndRef = useRef();
     const navigate = useNavigate();
-    const numRows = timingMarks;
-    const numCols = totalColumns;
-
+    const numRows = data.timingMarks;
+    const numCols = data.totalColumns;
+    console.log(data.templateImagePath)
     const handleDragStop = (e, d) => {
         setPosition((prev) => ({ ...prev, x: d.x, y: d.y }));
     };
@@ -147,6 +190,25 @@ const DesignTemplate = () => {
         }
         return null;
     };
+    useEffect(() => {
+        if (location.state) {
+            sessionStorage.setItem('totalColumns', JSON.stringify(state.totalColumns));
+            sessionStorage.setItem('timingMarks', JSON.stringify(state.timingMarks));
+            sessionStorage.setItem('templateImagePath', JSON.stringify(state.templateImagePath));
+            sessionStorage.setItem('bubbleType', JSON.stringify(state.bubbleType));
+            sessionStorage.setItem('templateIndex', JSON.stringify(state.templateIndex));
+            sessionStorage.setItem('iSensitivity', JSON.stringify(state.iSensitivity));
+            sessionStorage.setItem('iDifference', JSON.stringify(state.iDifference));
+            sessionStorage.setItem('iReject', JSON.stringify(state.iReject));
+            sessionStorage.setItem('iFace', JSON.stringify(state.iFace));
+            sessionStorage.setItem('arr', JSON.stringify(state.arr));
+            sessionStorage.setItem('templateId', JSON.stringify(state.templateId));
+            sessionStorage.setItem('excelJsonFile', JSON.stringify(state.excelJsonFile));
+            sessionStorage.setItem('imageTempFile', JSON.stringify(state.imageTempFile));
+            sessionStorage.setItem('excelFile', JSON.stringify(state.excelFile));
+        }
+    }, [location.state]);
+
 
     useEffect(() => {
         setStartRowInput(selection?.startRow + 1);
@@ -166,12 +228,12 @@ const DesignTemplate = () => {
         }
     }, []);
     useEffect(() => {
-        if (arr) {
+        if (data.arr) {
             // Extract parameters from the first element of the array (if it exists)
-            const formFieldData = arr[0]?.formFieldWindowParameters;
-            const questionField = arr[0]?.questionsWindowParameters;
-            const skewField = arr[0]?.skewMarksWindowParameters;
-            const idField = arr[0]?.layoutParameters;
+            const formFieldData = data.arr[0]?.formFieldWindowParameters;
+            const questionField = data.arr[0]?.questionsWindowParameters;
+            const skewField = data.arr[0]?.skewMarksWindowParameters;
+            const idField = data.arr[0]?.layoutParameters;
 
             // Map each set of parameters to their coordinates or default to an empty array
             const coordinateOfFormData =
@@ -212,7 +274,7 @@ const DesignTemplate = () => {
         const fetchDetails = async () => {
             try {
                 // Fetch layout data by template ID
-                const response = await getLayoutDataById(templateId);
+                const response = await getLayoutDataById(data.templateId);
                 console.log(response);
                 setLayoutFieldData(response);
                 if (response) {
@@ -271,17 +333,17 @@ const DesignTemplate = () => {
 
         // Call the fetch details function
         fetchDetails();
-    }, [templateId]);
+    }, [data.templateId]);
     useEffect(() => {
-        console.log(templateIndex);
-        console.log(layoutFieldData);
+
+
         if (layoutFieldData) {
-            dataCtx.addFieldToTemplate(layoutFieldData, templateIndex);
+            dataCtx.addFieldToTemplate(layoutFieldData, data.templateIndex);
             console.log("called");
         }
     }, [layoutFieldData]);
     useEffect(() => {
-        switch (bubbleType) {
+        switch (data.bubbleType) {
             case "rounded rectangle":
                 setSelectedClass("rounded-rectangle");
                 break;
@@ -304,19 +366,19 @@ const DesignTemplate = () => {
 
     useEffect(() => {
         // Create an array to hold the options
-        const options = Array.from({ length: +totalColumns }, (v, i) => ({
+        const options = Array.from({ length: + data.totalColumns }, (v, i) => ({
             label: `${idType} ${i + 1}`, // Set the label as 'Col X' where X is the column number
             value: i, // Set the value as the index
         }));
 
         // Update the state with the new options array
         setOptions(options);
-    }, [totalColumns, idType]);
+    }, [data.totalColumns, idType]);
 
     useEffect(() => {
         if (selectedCol.length > 0) {
             const value = selectedCol.map((item) => item.value);
-            const arr = Array(+totalColumns).fill(0);
+            const arr = Array(+ data.totalColumns).fill(0);
             for (let j = 0; j < value.length; j++) {
                 arr[value[j]] = 1;
             }
@@ -521,17 +583,17 @@ const DesignTemplate = () => {
             };
         } else if (selectedFieldType === "skewMarkField") {
             newData = {
-                iFace: +iFace,
+                iFace: + data.iFace,
                 columnStart: +selection?.startCol,
                 columnNumber: +noInCol,
                 columnStep: +noOfStepInCol,
                 rowStart: +selection?.startRow + 1,
                 rowNumber: +noInRow,
                 rowStep: +noOfStepInRow,
-                iSensitivity: +iSensitivity,
-                iDifference: +iDifference,
+                iSensitivity: + data.iSensitivity,
+                iDifference: + data.iDifference,
                 iOption: +option,
-                iReject: +iReject,
+                iReject: + data.iReject,
                 iDirection: +readingDirectionOption,
                 windowName: name,
                 Coordinate: {
@@ -550,7 +612,7 @@ const DesignTemplate = () => {
             };
         } else {
             newData = {
-                iFace: +iFace,
+                iFace: + data.iFace,
                 windowName: name,
                 columnStart: +selection?.startCol,
                 columnNumber: +noInCol,
@@ -559,8 +621,8 @@ const DesignTemplate = () => {
                 rowNumber: +noInRow,
                 rowStep: +noOfStepInRow,
                 iDirection: +readingDirectionOption,
-                iSensitivity: +iSensitivity,
-                iDifference: +iDifference,
+                iSensitivity: + data.iSensitivity,
+                iDifference: + data.iDifference,
                 iOption: +option,
                 iMinimumMarks: +minimumMark,
                 iMaximumMarks: +maximumMark,
@@ -590,7 +652,7 @@ const DesignTemplate = () => {
         setSelectedCoordinates((prev) => [...prev, newSelected]);
         setSelection(null);
         setModalShow(false);
-        dataCtx.modifyAllTemplate(templateIndex, newData, selectedFieldType);
+        dataCtx.modifyAllTemplate(data.templateIndex, newData, selectedFieldType);
     };
     const handleSkewMarkOptionChange = (event) => {
         setSkewOption(event.target.value);
@@ -603,7 +665,7 @@ const DesignTemplate = () => {
     };
 
     const handleEyeClick = (data) => {
-        const template = dataCtx.allTemplates[templateIndex];
+        const template = dataCtx.allTemplates[data.templateIndex];
 
         if (data.name === "Id Field") {
             const data = template[0].layoutParameters;
@@ -631,7 +693,8 @@ const DesignTemplate = () => {
 
     const sendHandler = async () => {
         // Retrieve the selected template
-        const template = dataCtx.allTemplates[templateIndex];
+
+        const template = dataCtx.allTemplates[data.templateIndex];
         console.log(template);
 
         // Extract layout parameters and its coordinates
@@ -735,26 +798,26 @@ const DesignTemplate = () => {
         console.log(fullRequestData);
         const formdata = new FormData();
         formdata.append("LayoutId", 1);
-        formdata.append("ImageFile", imageTempFile);
-        formdata.append("ExcelFile", excelFile);
+        formdata.append("ImageFile", data.imageTempFile);
+        formdata.append("ExcelFile", data.excelFile);
 
         // Iterate over the FormData entries and log them
         for (let [key, value] of formdata.entries()) {
             console.log(`${key}: ${value}`);
         }
         // Send the request and handle the response
-        try {
-            setLoading(true)
-            const res = await createTemplate(fullRequestData);
-            console.log(res);
-            // const res2 = await sendFile()
-            setLoading(false)
-            // alert(`Response : ${JSON.stringify(res.message)}`);
-            // navigate("/admin/template", { replace: true });
-        } catch (error) {
-            alert(`Error creating template`);
-            console.error("Error sending POST request:", error);
-        }
+        // try {
+        //     setLoading(true)
+        //     const res = await createTemplate(fullRequestData);
+        //     console.log(res);
+        //     // const res2 = await sendFile()
+        //     setLoading(false)
+        //     // alert(`Response : ${JSON.stringify(res.message)}`);
+        //     // navigate("/admin/template", { replace: true });
+        // } catch (error) {
+        //     alert(`Error creating template`);
+        //     console.error("Error sending POST request:", error);
+        // }
     };
 
     return (
@@ -822,7 +885,7 @@ const DesignTemplate = () => {
                             }
                         >
                             <img
-                                src={templateImagePath}
+                                src={data.templateImagePath}
                                 className={`${classes["object-contain"]} ${classes["draggable-resizable-image"]} rounded`}
                                 alt="omr sheet"
                             />
@@ -863,7 +926,7 @@ const DesignTemplate = () => {
                                     onMouseMove={handleMouseMove}
                                 >
                                     {Array.from({ length: numRows }).map((_, rowIndex) => {
-                                        const result = [...excelJsonFile.map(Object.values)];
+                                        const result = [...data.excelJsonFile.map(Object.values)];
                                         return (
                                             <div key={rowIndex} className="row">
                                                 <div className="left-num" sty>
@@ -876,7 +939,7 @@ const DesignTemplate = () => {
                                                             backgroundColor:
                                                                 (result[rowIndex][colIndex] != 0) ? "black" : "",
                                                         }}
-                                                        className={`${bubbleType} ${selected[`${rowIndex},${colIndex}`]
+                                                        className={`${data.bubbleType} ${selected[`${rowIndex},${colIndex}`]
                                                             ? "selected"
                                                             : ""
                                                             }`}
@@ -1549,7 +1612,7 @@ const DesignTemplate = () => {
                     )}
                     {(selectedFieldType === "questionField" ||
                         selectedFieldType === "formField") && (
-                            <Row>
+                            <Row className="mb-2">
                                 <label
                                     htmlFor="example-text-input"
                                     className="col-md-2 col-form-label "
@@ -1583,8 +1646,32 @@ const DesignTemplate = () => {
                                         <option value="">Select field type... </option>
                                         <option value="numeric">Numeric </option>
                                         <option value="alphabet">Alphabet </option>
+                                        <option value="alphabet">Custom </option>
                                     </select>
                                 </div>
+                            </Row>
+                        )}
+                    {(selectedFieldType === "questionField" ||
+                        selectedFieldType === "formField") && (
+
+                            <Row>
+                                <label
+                                    htmlFor="example-text-input"
+                                    className="col-md-2 "
+                                >
+                                    Custom Value :
+                                </label>
+                                <div className="col-10 ">
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        value={customValue}
+                                        onChange={(e) => setCustomValue(e.target.value)}
+                                        placeholder="Enter value separated by value, For Eg (2,3,4,Feild1, Feild2)"
+                                    />
+                                    <small style={{ color: "red" }} >*Custom value should be in the reading direction</small>
+                                </div>
+
                             </Row>
                         )}
                 </Modal.Body>

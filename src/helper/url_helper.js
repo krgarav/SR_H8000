@@ -27,7 +27,7 @@ export const GET_LAYOUT_DATA = url + "GetLayoutDataById"
 export const CREATE_TEMPLATE = url + "LayoutSetting";
 export const SEND_FILE = url + "SaveLayoutFiles";
 export const DELETE_TEMPLATE = url + "DeleteLayout";
-export const SCAN_IMAGE = url + "GetScannedImage";
+
 
 export const CREATE_JOB = url + "CreateJobs";
 export const GET_ALL_JOBS = url + "GetAllJobs";
@@ -35,3 +35,4 @@ export const DELETE_JOB = url + "DeleteJob";
 
 export const ASSIGN_JOB = url + "AssignJob";
 export const GET_ASSIGNED_JOB = url + "GetJobQueueList";
+export const GET_SCANNED_IMAGE = url + "GetSampleData"

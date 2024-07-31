@@ -70,7 +70,14 @@ const Booklet32Page = () => {
             // Check if the data fetch was successful
             if (data?.result?.success) {
                 // Extract keys from the first item in the data array
-                const newDataKeys = Object.keys(data.result.data[0]);
+                console.log(data.result.data[0]["Paper No."])
+                const newDataKeys = Object.keys(data.result.data[0]).map(key => {
+                    if (key === "Paper No.") {
+                        console.log("occur")
+                    }
+                    return key.trim()
+                });
+
                 console.log(processedData)
                 // Add a serial number to each entry
                 if (processedData) {
@@ -79,10 +86,12 @@ const Booklet32Page = () => {
                     let num = processedData.length + 1;
                     const updatedData = [...processedData, ...data.result.data.map(item => ({ "Serial No": num++, ...item }))];
 
+
+
                     // Set headData with the new keys, ensuring "Serial No" is included as a heading
                     setHeadData(["Serial No", ...newDataKeys]);
                     console.log(updatedData);
-
+                    console.log(newDataKeys)
                     // Update the data state with the fetched data
                     setProcessedData(updatedData);
                 }
@@ -229,9 +238,10 @@ const Booklet32Page = () => {
 
                 <GridComponent
                     ref={gridRef}
-                    actionComplete={handleSave} dataSource={processedData} height='350' allowSorting={false} editSettings={editSettings} allowFiltering={false} filterSettings={filterSettings} toolbar={toolbar}
+                    actionComplete={handleSave} dataSource={processedData} height={450} allowSorting={false} editSettings={editSettings} allowFiltering={false} filterSettings={filterSettings} toolbar={toolbar}
                     toolbarClick={handleToolbarClick} allowExcelExport={true} allowPdfExport={true}
-                    allowEditing={false} >
+                    allowEditing={false}
+                >
                     <ColumnsDirective>
                         {columnsDirective}
                     </ColumnsDirective>

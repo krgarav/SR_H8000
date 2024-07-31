@@ -40,12 +40,36 @@ import Jobcard from "./Jobcard";
 import DuplexJob from "./DuplexJob";
 // import { Rejected } from "@aws-amplify/ui-react/dist/types/primitives/DropZone/DropZoneChildren";
 import Papa from "papaparse";
+import { getSampleData } from "helper/TemplateHelper";
+
+function base64ToFile(base64Url, filename) {
+  // Extract base64 data and content type from URL
+  const [header, base64Data] = base64Url.split(',');
+  const mime = header.match(/:(.*?);/)[1];
+
+  // Decode base64 data to binary
+  const binaryString = window.atob(base64Data);
+
+  // Create a Uint8Array to hold the binary data
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+
+  // Create a Blob from the binary data
+  const blob = new Blob([bytes], { type: mime });
+
+  // Create a File from the Blob
+  return new File([blob], filename, { type: mime });
+}
 const TemplateModal = (props) => {
   const [modalShow, setModalShow] = useState(false);
   const [name, setName] = useState("");
   const [size, setSize] = useState({ id: 1, name: "A4" });
   const [numberOfLines, setNumberOfLines] = useState("");
-  const [imageSrc, setImageSrc] = useState("/img.jpg");
+  const [imageSrc, setImageSrc] = useState("");
 
   const [sensitivity, setSensitivity] = useState(1);
   const [difference, setDifference] = useState("");
@@ -82,12 +106,6 @@ const TemplateModal = (props) => {
   const [barcodeTopPos, setBarcodeTopPos] = useState();
   const [barcodeBottomPos, setBarcodeBottomPos] = useState();
   const [option, setOption] = useState(null);
-  const [selectedColumn, setSelectedColumn] = useState(null);
-  const columns = Array.from({ length: 48 }, (_, i) => i + 1);
-  const [values, setValues] = useState(Array(48).fill(0));
-  const [options, setOptions] = useState([]);
-  const [colIdPattern, setColIdPattern] = useState();
-  const [idNumber, setIdNumber] = useState("");
   const [imageFile, setImageFile] = useState();
   const [imageModal, setImageModal] = useState();
   const [image, setImage] = useState();
@@ -115,13 +133,7 @@ const TemplateModal = (props) => {
   const imageModalHandler = () => {
     setImageModal(true);
   };
-  const handleColumnChange = (event) => {
-    const columnIndex = event.value - 1;
-    const newValues = Array(48).fill(0);
-    newValues[columnIndex] = 1;
-    setSelectedColumn(event.value);
-    setValues(newValues);
-  };
+
 
   const navigate = useNavigate();
 
@@ -170,8 +182,8 @@ const TemplateModal = (props) => {
     // setImage(undefined);
     // setTempImageFile(undefined);
     // setSelectedUI("");
-    // setActiveTab("simplex");
-    // setBarcodeEnable({ id: "disable", name: "Disable" });
+    setActiveTab("simplex");
+    setBarcodeEnable({ id: "disable", name: "Disable" });
     // setImageUrl("");
     // setIdPresent("");
     // createTemplateHandler();
@@ -216,6 +228,7 @@ const TemplateModal = (props) => {
         header: true,
         complete: (results) => {
           const json = results.data;
+
           setExcelFile(file)
           setExcelJsonFile(json);
         },
@@ -326,28 +339,28 @@ const TemplateModal = (props) => {
     }
 
     try {
-      let img = "";
-      if (imageFile) {
-        const formData = new FormData();
-        formData.append("file", imageFile);
-        formData.append("upload_preset", "Sekonic"); // Replace with your Cloudinary upload preset
+      // let img = "";
+      // if (imageFile) {
+      //   const formData = new FormData();
+      //   formData.append("file", imageFile);
+      //   formData.append("upload_preset", "Sekonic"); // Replace with your Cloudinary upload preset
 
-        const response = await axios.post(
-          "https://api.cloudinary.com/v1_1/dje269eh5/image/upload",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              // Add authorization header if required (depending on your Cloudinary setup)
-              // 'Authorization': 'Bearer YOUR_CLOUDINARY_API_KEY_AND_SECRET'
-            },
-          }
-        );
-        console.log(response);
-        img = response?.data.secure_url;
-        // setImageUrl(response?.data.secure_url);
-      }
-      console.log(img);
+      //   const response = await axios.post(
+      //     "https://api.cloudinary.com/v1_1/dje269eh5/image/upload",
+      //     formData,
+      //     {
+      //       headers: {
+      //         "Content-Type": "multipart/form-data",
+      //         // Add authorization header if required (depending on your Cloudinary setup)
+      //         // 'Authorization': 'Bearer YOUR_CLOUDINARY_API_KEY_AND_SECRET'
+      //       },
+      //     }
+      //   );
+      //   console.log(response);
+      //   img = response?.data.secure_url;
+      //   // setImageUrl(response?.data.secure_url);
+      // }
+
 
       const templateData = [
         {
@@ -358,7 +371,7 @@ const TemplateModal = (props) => {
             iFace: +face.id,
             totalColumns: +numberOfFrontSideColumn,
             bubbleType: selectedBubble?.name,
-            templateImagePath: img,
+            templateImagePath: imageSrc,
             iSensitivity: +sensitivity,
             iDifference: +difference,
             ngAction: windowNgOption?.id,
@@ -407,7 +420,7 @@ const TemplateModal = (props) => {
           templateIndex: index,
           timingMarks: numberOfLines,
           totalColumns: numberOfFrontSideColumn,
-          templateImagePath: img,
+          templateImagePath: imageSrc,
           bubbleType: selectedBubble.name,
           iSensitivity: sensitivity,
           iDifference: difference,
@@ -425,24 +438,19 @@ const TemplateModal = (props) => {
   };
   const scannerHandler = async () => {
     try {
-      const response = await axios.get(
-        "https://28mdpn6d-5289.inc1.devtunnels.ms/GetScannedImage",
-        {
-          responseType: "arraybuffer",
-        }
-      );
+      const response = await getSampleData();
       console.log(response);
-
-      // const arrayBuffer = await response.arrayBuffer();
-      const blob = new Blob([response?.data], { type: "image/jpeg" });
-      const imageURL = URL.createObjectURL(blob);
-      // Save the file format (for example, you can derive it from the MIME type)
-      const file = new File([blob], "downloaded_image.jpeg", {
-        type: "image/jpeg",
-      });
+      const jsonData = response?.data;
+      const base64ImageUrl = response?.image
+      console.log(jsonData)
+      setExcelJsonFile(jsonData)
+      const file = base64ToFile(base64ImageUrl, 'image.png');
+      // Convert the File object to an image URL
+      const imageUrl = URL.createObjectURL(file);
       setTempImageFile(file);
       // Set the image URL to be used in the component
-      setImage(imageURL);
+      setImage(imageUrl);
+      setImageSrc(imageUrl);
     } catch (error) {
       console.log(error);
       toast.error(error.message);

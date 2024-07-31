@@ -22,6 +22,7 @@ const Overview = () => {
             <div style={{ height: "200px" }}>
                 <FileManagerComponent
                     id="overview_file"
+                    height={600} 
                     ajaxSettings={{
                         url: hostUrl + "api/FileManager/FileOperations",
                         getImageUrl: hostUrl + "api/FileManager/GetImage",
