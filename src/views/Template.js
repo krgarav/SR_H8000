@@ -26,35 +26,17 @@ import TemplateModal from "../ui/TemplateModal";
 import { fetchAllTemplate } from "helper/TemplateHelper";
 import { deleteTemplate } from "helper/TemplateHelper";
 import CryptoJS from 'crypto-js';
-
-const URL = process.env.REACT_APP_BACKEND_URL;
+import { toast } from "react-toastify";
 
 const Template = () => {
   const [modalShow, setModalShow] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false)
   const [templateDatail, setTemplateDetail] = useState([]);
+  const [toggle, setToggle] = useState(false)
   const navigate = useNavigate();
   const dataCtx = useContext(DataContext);
-  // console.log(process.env.REACT_APP_CLOUD_NAME)
   useEffect(() => {
-    // const fetchAllTemplate = async () => {
-    //   try {
-    //     const response = await axios.get(`${URL}GetAllLayout`);
 
-    //     if (response.data) {
-    //       const mpObj = response.data.map((item) => {
-    //         return [{ layoutParameters: item }]
-
-    //       })
-
-    //       dataCtx.addToAllTemplate(mpObj)
-
-    //     }
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // }
-    // fetchAllTemplate()
     const fetchData = async () => {
       const templates = await fetchAllTemplate();
       const mpObj = templates?.map((item) => {
@@ -63,11 +45,10 @@ const Template = () => {
       dataCtx.addToAllTemplate(mpObj)
 
 
-
     }
     fetchData()
 
-  }, []);
+  }, [toggle]);
   const showHandler = (arr) => {
     setShowDetailModal(true);
     setTemplateDetail(arr)
@@ -94,41 +75,6 @@ const Template = () => {
 
     });
   };
-  // const deleteImage = async (imageUrl) => {
-  //   const cloudName = 'dje269eh5'; // Your Cloudinary cloud name
-  //   const apiKey = '971669377151177'; // Your Cloudinary API key
-  //   const apiSecret = '-IqCm6flDTtNFYN5pY5JKbtWYSE'; // Your Cloudinary API secret
-
-  //   // Extract public ID from URL
-  //   const publicId = imageUrl.split('/').pop().split('.')[0];
-
-  //   // Create the timestamp and signature
-  //   const timestamp = Math.floor(new Date().getTime() / 1000);
-  //   const stringToSign = `public_id=${publicId}&timestamp=${timestamp}${apiSecret}`;
-  //   const signature = crypto.createHash('sha1').update(stringToSign).digest('hex');
-
-  //   // Form data for the request
-  //   const formData = new FormData();
-  //   formData.append('public_id', publicId);
-  //   formData.append('timestamp', timestamp);
-  //   formData.append('api_key', apiKey);
-  //   formData.append('signature', signature);
-
-  //   // Make the API request to delete the image
-  //   const response = await axios.post(
-  //     `https://api.cloudinary.com/v1_1/${cloudName}/image/destroy`,
-  //     formData,
-  //     {
-  //       headers: {
-  //         'Content-Type': 'multipart/form-data'
-  //       }
-  //     }
-  //   );
-
-  //   console.log(response.data);
-  // };
-
-
 
   const deleteImage = async (imageUrl) => {
 
@@ -177,7 +123,6 @@ const Template = () => {
     }
   };
 
-
   const deleteHandler = async (arr, index) => {
     const result = window.confirm("Are you sure you want to delete template ?");
     if (result) {
@@ -186,6 +131,10 @@ const Template = () => {
       const result = await deleteImage(imageUrl);
       const res = await deleteTemplate(id)
       console.log(res)
+      if (res.success) {
+        setToggle(prev => !prev);
+        toast.success("Successfully deleted template")
+      }
 
       // dataCtx.deleteTemplate(index)
     } else { return }

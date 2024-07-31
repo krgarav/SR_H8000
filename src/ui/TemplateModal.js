@@ -82,7 +82,6 @@ const TemplateModal = (props) => {
   const [barcodeTopPos, setBarcodeTopPos] = useState();
   const [barcodeBottomPos, setBarcodeBottomPos] = useState();
   const [option, setOption] = useState(null);
-  const [selected, setSelected] = useState([]);
   const [selectedColumn, setSelectedColumn] = useState(null);
   const columns = Array.from({ length: 48 }, (_, i) => i + 1);
   const [values, setValues] = useState(Array(48).fill(0));
@@ -104,7 +103,7 @@ const TemplateModal = (props) => {
   const [idPresent, setIdPresent] = useState();
   const [fileModal, setFileModal] = useState(false);
   const [excelJsonFile, setExcelJsonFile] = useState();
-
+  const [excelFile, setExcelFile] = useState("")
   const jobHandler = (e) => {
     // console.log(e)
     setSelectedUI(e);
@@ -125,8 +124,8 @@ const TemplateModal = (props) => {
   };
 
   const navigate = useNavigate();
+
   const resetModalHandler = () => {
-    console.log("object getting printed");
     settoggle({});
     // setModalShow(false);
     setName("");
@@ -142,7 +141,6 @@ const TemplateModal = (props) => {
     setWindowNgOption("");
     setFace("");
     setDirection(undefined);
-
     // setActiveKey("general");
     // setSpanDisplay("none");
     // setColorType(undefined);
@@ -212,11 +210,13 @@ const TemplateModal = (props) => {
   };
   const handleExcelUpload = (e) => {
     const file = e.target.files[0];
+
     if (file) {
       Papa.parse(file, {
         header: true,
         complete: (results) => {
           const json = results.data;
+          setExcelFile(file)
           setExcelJsonFile(json);
         },
         error: (error) => {
@@ -364,22 +364,23 @@ const TemplateModal = (props) => {
             ngAction: windowNgOption?.id,
             dataReadDirection: direction?.id,
             iReject: +reject?.name,
+            idMarksPattern: "000000000000000000000000"
           },
           barcodeData: {
             barcodeSide: 0,
             barcodeColor: 0,
-            barcodeType: barcodeType?.id,
+            barcodeType: barcodeType?.id ? barcodeType?.id : "",
             barcodeCheckDigit: checkDigit !== null ? +checkDigit?.id : 0,
             barcodeOption: option !== null ? +option?.id : 0,
-            barcodeRightPos: +barcodeRightPos,
-            barcodeLeftPos: +barcodeLeftPos,
-            barcodeTopPos: +barcodeTopPos,
-            barcodeBottomPos: +barcodeBottomPos,
+            barcodeRightPos: barcodeRightPos ? +barcodeRightPos : 0,
+            barcodeLeftPos: barcodeLeftPos ? +barcodeLeftPos : 0,
+            barcodeTopPos: barcodeTopPos ? +barcodeTopPos : 0,
+            barcodeBottomPos: barcodeBottomPos ? +barcodeBottomPos : 0,
           },
           imageData: {
             imageEnable: imageStatus ? +imageStatus?.id : 0,
-            imageColor: colorType ? +colorType?.id : "",
-            imageType: encoding ? +encoding?.id : "",
+            imageColor: colorType ? +colorType?.id : 0,
+            imageType: encoding ? +encoding?.id : 0,
             imageParam: 0,
             imageRotation: rotation ? +rotation?.id : 0,
             imageResoMode: 0,
@@ -414,6 +415,8 @@ const TemplateModal = (props) => {
           iReject: reject.id,
           iFace: face.id,
           excelJsonFile: excelJsonFile,
+          imageTempFile: imageTempFile,
+          excelFile: excelFile
         },
       });
     } catch (error) {
@@ -719,7 +722,7 @@ const TemplateModal = (props) => {
                               onChange={(selectedValue) => {
                                 settoggle((item) => ({ ...item, ID: false }));
                                 setIdPresent(selectedValue);
-                                console.log(selectedValue);
+
 
                                 if (selectedValue.id === "not present") {
                                   setWindowNgOption({
@@ -1124,7 +1127,7 @@ const TemplateModal = (props) => {
                             )}
                           </div>
                         </Row>
-                        {console.log(face)}
+
                         <Row className="mb-3">
                           <label
                             htmlFor="example-text-input"

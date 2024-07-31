@@ -32,6 +32,7 @@ import {
 } from "reactstrap";
 import SmallHeader from "components/Headers/SmallHeader";
 import { toast } from "react-toastify";
+import { TbDualScreen } from "react-icons/tb";
 const URL = process.env.REACT_APP_BACKEND_URL;
 const DesignTemplate = () => {
     const [selected, setSelected] = useState({});
@@ -93,7 +94,9 @@ const DesignTemplate = () => {
         iFace,
         arr,
         templateId,
-        excelJsonFile
+        excelJsonFile,
+        imageTempFile,
+        excelFile
     } = useLocation().state;
     const [selectedCol, setSelectedCol] = useState([]);
     const [options, setOptions] = useState([]);
@@ -543,6 +546,7 @@ const DesignTemplate = () => {
                 iMaximumMarks: +maximumMark,
                 skewMark: +skewoption,
                 iType: type,
+                // imageStructureData: position,
             };
         } else {
             newData = {
@@ -571,6 +575,12 @@ const DesignTemplate = () => {
                 },
                 totalNumberOfFields: numberOfField,
                 numericOrAlphabets: fieldType,
+                multipleAllow: multiple,
+                multipleValue: multipleValue ? multipleValue : "",
+                blankAllow: blank,
+                blankValue: blankValue ? blankValue : "",
+
+                // imageStructureData: position,
             };
         }
         const newSelected = {
@@ -723,14 +733,24 @@ const DesignTemplate = () => {
             formFieldWindowParameters,
         };
         console.log(fullRequestData);
+        const formdata = new FormData();
+        formdata.append("LayoutId", 1);
+        formdata.append("ImageFile", imageTempFile);
+        formdata.append("ExcelFile", excelFile);
 
+        // Iterate over the FormData entries and log them
+        for (let [key, value] of formdata.entries()) {
+            console.log(`${key}: ${value}`);
+        }
         // Send the request and handle the response
         try {
             setLoading(true)
             const res = await createTemplate(fullRequestData);
             console.log(res);
-            alert(`Response : ${JSON.stringify(res.message)}`);
-            navigate("/admin/template", { replace: true });
+            // const res2 = await sendFile()
+            setLoading(false)
+            // alert(`Response : ${JSON.stringify(res.message)}`);
+            // navigate("/admin/template", { replace: true });
         } catch (error) {
             alert(`Error creating template`);
             console.error("Error sending POST request:", error);
@@ -739,10 +759,24 @@ const DesignTemplate = () => {
 
     return (
         <>
-            <div style={{ zIndex: "999" }}>
+            <div >
                 <SmallHeader />
 
             </div>
+            {(!modalShow && selection) && <Button
+                onClick={() => { setModalShow(true) }}
+                variant="primary"
+                style={{
+                    position: 'fixed',
+                    top: '20px', // Adjust the top value as needed
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    zIndex: "999"
+                }}
+            >
+                Show Modal
+            </Button>}
+
             <div style={{ overflow: "auto" }}>
                 <Button
                     onClick={sendHandler}
@@ -1554,25 +1588,31 @@ const DesignTemplate = () => {
                             </Row>
                         )}
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button
-                        type="button"
-                        color="primary"
-                        onClick={handleCancel}
-                        className="waves-effect waves-light"
-                    >
-                        Cancel
-                    </Button>{" "}
-                    <Button
-                        type="button"
-                        color="success"
-                        onClick={handleSave}
-                        className="waves-effect waves-light"
-                    >
-                        Save
-                    </Button>{" "}
+                <Modal.Footer style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Button onClick={() => { setModalShow(false) }} variant="warning" style={{ marginRight: 'auto' }}>
+                        Hide Modal
+                    </Button>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <Button
+                            type="button"
+                            variant="danger"
+                            onClick={handleCancel}
+                            className="waves-effect waves-light"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="button"
+                            color="success"
+                            onClick={handleSave}
+                            className="waves-effect waves-light"
+                        >
+                            Save
+                        </Button>
+                    </div>
                 </Modal.Footer>
-            </Modal>
+
+            </Modal >
         </>
     );
 };
