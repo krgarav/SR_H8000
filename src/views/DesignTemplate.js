@@ -719,7 +719,7 @@ console.log(jsonData)
                             key={colIndex}
                             style={{
                               backgroundColor:
-                                (result[rowIndex][colIndex] !== 0||result[rowIndex][colIndex] !== "0") ? "black" : "",
+                                (result[rowIndex][colIndex] != 0) ? "black" : "",
                             }}
                             className={`${bubbleType} ${
                               selected[`${rowIndex},${colIndex}`]
