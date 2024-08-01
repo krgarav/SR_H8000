@@ -2193,7 +2193,7 @@ const TemplateModal = (props) => {
           </div>
           <Row className="d-flex justify-content-center mt-4">
             {image && (
-              <img src={image} alt="Scanned" width={500} height={400} />
+              <img src={image} alt="Scanned" width={200} height={200} />
             )}
             {!image && <p>Please select the image</p>}
           </Row>

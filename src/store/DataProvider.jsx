@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import DataContext from "./DataContext"; // Assuming you have a DataContext
+import { isEqual } from "lodash";
 
 const initialData = { allTemplates: [] }; // Initial data if localStorage is empty
 
@@ -31,7 +32,7 @@ const DataProvider = (props) => {
   };
 
   const modifyTemplateHandler = (index, regionData, fieldType) => {
-    console.log(index)
+    console.log(index);
     setDataState((item) => {
       const copiedData = [...item.allTemplates];
       const currentTemplate = copiedData[index];
@@ -206,8 +207,8 @@ const DataProvider = (props) => {
     fieldType,
     coordinateIndex
   ) => {
-    if(coordinateIndex===-1){
-      alert("cannot be -1")
+    if (coordinateIndex === -1) {
+      alert("cannot be -1");
     }
     setDataState((item) => {
       const copiedData = [...item.allTemplates];
@@ -240,6 +241,52 @@ const DataProvider = (props) => {
       };
     });
   };
+  const deleteFieldTemplateHandler = (templateIndex, selectedFieldData) => {
+    const fieldType = selectedFieldData.fieldType;
+    setDataState((item) => {
+      const copiedData = [...item.allTemplates];
+      const currentTemplate = copiedData[templateIndex][0];
+
+      switch (fieldType) {
+        case "skewMarkField":
+          const parameters = currentTemplate?.skewMarksWindowParameters;
+
+          const updatedSkew = parameters.filter(
+            (item) => !isEqual(item.Coordinate, selectedFieldData)
+          );
+
+          currentTemplate.skewMarksWindowParameters = updatedSkew;
+          break;
+        case "formField":
+          const formparameters = currentTemplate?.formFieldWindowParameters;
+
+          const updatedForm = formparameters.filter(
+            (item) => !isEqual(item.Coordinate, selectedFieldData)
+          );
+
+          currentTemplate.formFieldWindowParameters = updatedForm;
+          break;
+        case "questionField":
+          const questionparameters = currentTemplate?.questionsWindowParameters;
+
+          const questionForm = questionparameters.filter(
+            (item) => !isEqual(item.Coordinate, selectedFieldData)
+          );
+
+          currentTemplate.questionsWindowParameters = questionForm;
+          break;
+        default:
+          currentTemplate.layoutParameters = {
+            ...currentTemplate.layoutParameters,
+          };
+          break;
+      }
+      return {
+        ...item,
+        allTemplates: copiedData,
+      };
+    });
+  };
   const dataContext = {
     allTemplates: dataState.allTemplates,
     setAllTemplates: templateHandler,
@@ -248,6 +295,7 @@ const DataProvider = (props) => {
     addToAllTemplate: addToAllTemplateHandler,
     addFieldToTemplate: addFieldToTemplateHandler,
     modifyWithRegion: modifyWithRegionHandler,
+    deleteFieldTemplate: deleteFieldTemplateHandler,
   };
 
   return (
