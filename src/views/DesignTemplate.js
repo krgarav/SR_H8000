@@ -1119,6 +1119,7 @@ const DesignTemplate = () => {
                                 >
                                     {Array.from({ length: numRows }).map((_, rowIndex) => {
                                         const result = [...excelJsonFile.map(Object.values)];
+
                                         return (
                                             <div key={rowIndex} className="row">
                                                 <div className="left-num" sty>
@@ -1127,10 +1128,19 @@ const DesignTemplate = () => {
                                                 {Array.from({ length: numCols }).map((_, colIndex) => (
                                                     <div
                                                         key={colIndex}
+
                                                         style={{
                                                             backgroundColor:
-                                                                result[rowIndex][colIndex] != 0 ? "black" : "",
+                                                                (rowIndex < result.length && colIndex < result[rowIndex].length &&
+                                                                    result[rowIndex][colIndex] != 0 && result[rowIndex][colIndex] !== undefined)
+                                                                    ? "black"
+                                                                    : "",
                                                         }}
+
+                                                        // style={{
+                                                        //     backgroundColor:
+                                                        //         result[rowIndex][colIndex] != 0 ? "black" : "",
+                                                        // }}
                                                         className={`${bubbleType} ${selected[`${rowIndex},${colIndex}`]
                                                             ? "selected"
                                                             : ""

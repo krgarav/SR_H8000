@@ -95,7 +95,7 @@ const Template = () => {
     // Create a File from the Blob
     const csvfile = new File([blob], 'data.csv', { type: 'text/csv' });
     console.log(csvfile)
-
+// console.log(res2.data)
 
     navigate("/admin/design-template", {
       state: {
@@ -114,7 +114,6 @@ const Template = () => {
         imageTempFile: imgfile,
         excelFile: csvfile,
       }
-
     });
   };
 
