@@ -27,7 +27,20 @@ import { fetchAllTemplate } from "helper/TemplateHelper";
 import { deleteTemplate } from "helper/TemplateHelper";
 import CryptoJS from 'crypto-js';
 import { toast } from "react-toastify";
-
+import { getTemplateImage } from "helper/TemplateHelper";
+import { getTemplateCsv } from "helper/TemplateHelper";
+import { getLayoutDataById } from "helper/TemplateHelper";
+const base64ToFile = (base64, filename) => {
+  const byteString = atob(base64.split(',')[1]);
+  const mimeString = base64.split(',')[0].split(':')[1].split(';')[0];
+  const ab = new ArrayBuffer(byteString.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+  const blob = new Blob([ab], { type: mimeString });
+  return new File([blob], filename, { type: mimeString });
+};
 const Template = () => {
   const [modalShow, setModalShow] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false)
@@ -39,9 +52,9 @@ const Template = () => {
 
     const fetchData = async () => {
       const templates = await fetchAllTemplate();
-      if(templates===undefined){
-        toast.error('Error fetching templates'); 
-      
+      if (templates === undefined) {
+        toast.error('Error fetching templates');
+
       }
       const mpObj = templates?.map((item) => {
         return [{ layoutParameters: item }]
@@ -55,28 +68,38 @@ const Template = () => {
   const showHandler = (arr) => {
     setShowDetailModal(true);
     setTemplateDetail(arr)
-
   }
-  const editHandler = (arr, index) => {
+  const editHandler = async (arr, index) => {
     console.log(arr, index);
     const tempdata = arr[0].layoutParameters;
+    const templateId = tempdata.id;
+    console.log(templateId)
+    const res = await getLayoutDataById(templateId);
+    console.log(res.templateFiles)
+    const csvpath = res?.templateFiles?.csvPath
+    const imgpath = res?.templateFiles?.imagePath
+    console.log(imgpath)
+    const res1 = await getTemplateImage(imgpath);
+    const file = base64ToFile(res1.image, 'image.jpg');
+    // console.log(file)
+    const res2 = await getTemplateCsv(csvpath);
+    console.log(res2)
+    // navigate("/admin/design-template", {
+    //   state: {
+    //     templateIndex: index,
+    //     timingMarks: +tempdata.timingMarks,
+    //     totalColumns: +tempdata.totalColumns,
+    //     templateImagePath: res1.image,
+    //     bubbleType: tempdata.bubbleType,
+    //     iSensitivity: +tempdata.iSensitivity,
+    //     iDifference: +tempdata.iDifference,
+    //     iReject: tempdata.iReject,
+    //     iFace: +tempdata.iFace,
+    //     arr: arr,
+    //     templateId: tempdata.id
+    //   }
 
-    navigate("/admin/design-template", {
-      state: {
-        templateIndex: index,
-        timingMarks: +tempdata.timingMarks,
-        totalColumns: +tempdata.totalColumns,
-        templateImagePath: tempdata.templateImagePath,
-        bubbleType: tempdata.bubbleType,
-        iSensitivity: +tempdata.iSensitivity,
-        iDifference: +tempdata.iDifference,
-        iReject: tempdata.iReject,
-        iFace: +tempdata.iFace,
-        arr: arr,
-        templateId: tempdata.id
-      }
-
-    });
+    // });
   };
 
   const deleteImage = async (imageUrl) => {
@@ -130,8 +153,8 @@ const Template = () => {
     const result = window.confirm("Are you sure you want to delete template ?");
     if (result) {
       const id = arr[0].layoutParameters.id
-      const imageUrl = arr[0].layoutParameters.templateImagePath;
-      const result = await deleteImage(imageUrl);
+      // const imageUrl = arr[0].layoutParameters.templateImagePath;
+      // const result = await deleteImage(imageUrl);
       const res = await deleteTemplate(id)
       console.log(res)
       if (res.success) {

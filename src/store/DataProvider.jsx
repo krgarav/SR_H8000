@@ -18,7 +18,9 @@ const DataProvider = (props) => {
     let newIndex;
     setDataState((prevState) => {
       // Ensure prevState.allTemplates is always an array
-      const allTemplates = Array.isArray(prevState.allTemplates) ? prevState.allTemplates : [];
+      const allTemplates = Array.isArray(prevState.allTemplates)
+        ? prevState.allTemplates
+        : [];
       newIndex = allTemplates.length; // Calculate the new index
       return {
         ...prevState,
@@ -29,6 +31,7 @@ const DataProvider = (props) => {
   };
 
   const modifyTemplateHandler = (index, regionData, fieldType) => {
+    console.log(index)
     setDataState((item) => {
       const copiedData = [...item.allTemplates];
       const currentTemplate = copiedData[index];
@@ -197,6 +200,46 @@ const DataProvider = (props) => {
       };
     });
   };
+  const modifyWithRegionHandler = (
+    templateIndex,
+    regionData,
+    fieldType,
+    coordinateIndex
+  ) => {
+    if(coordinateIndex===-1){
+      alert("cannot be -1")
+    }
+    setDataState((item) => {
+      const copiedData = [...item.allTemplates];
+      const currentTemplate = copiedData[templateIndex];
+
+      switch (fieldType) {
+        case "skewMarkField":
+          currentTemplate[0].skewMarksWindowParameters[coordinateIndex] =
+            regionData;
+          break;
+        case "formField":
+          currentTemplate[0].formFieldWindowParameters[coordinateIndex] =
+            regionData;
+          break;
+        case "questionField":
+          currentTemplate[0].questionsWindowParameters[coordinateIndex] =
+            regionData;
+
+          break;
+        default:
+          currentTemplate[0].layoutParameters = {
+            ...currentTemplate[0].layoutParameters,
+            ...regionData,
+          };
+          break;
+      }
+      return {
+        ...item,
+        allTemplates: copiedData,
+      };
+    });
+  };
   const dataContext = {
     allTemplates: dataState.allTemplates,
     setAllTemplates: templateHandler,
@@ -204,6 +247,7 @@ const DataProvider = (props) => {
     deleteTemplate: deleteTemplateHandler,
     addToAllTemplate: addToAllTemplateHandler,
     addFieldToTemplate: addFieldToTemplateHandler,
+    modifyWithRegion: modifyWithRegionHandler,
   };
 
   return (

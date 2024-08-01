@@ -7,6 +7,14 @@ import AuthLayout from "layouts/Auth.js";
 const useTokenRedirect = () => {
     const navigate = useNavigate();
     const location = useLocation();
+
+
+    // useEffect(() => {
+    //     console.log(location.pathname)
+    //     if (location.pathname !== "/admin/design-template") {
+    //         sessionStorage.clear();
+    //     }
+    // }, [location])
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
@@ -37,7 +45,7 @@ const useTokenRedirect = () => {
     }, []);
 };
 const App = () => {
-    // useTokenRedirect();
+    useTokenRedirect();
     return (
         <Routes>
             <Route path="/admin/*" element={<AdminLayout />} />

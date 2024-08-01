@@ -190,3 +190,24 @@ export const imageDPIData = [
     { id: "400", name: "400" },
     { id: "450", name: "450" },
 ];
+
+export const printOptionData = [
+    { id: "1", name: "Enable" },
+    { id: "0", name: "Not Enable" },
+];
+
+export const printOrientationOption = [
+    { id: "1", name: "Normal" },
+    { id: "2", name: "180 degree rotation" },
+];
+export const printModeOption = [
+    { id: "1", name: "Print after feed" },
+    { id: "2", name: "Feed and print" },
+];
+
+export const printCustomOption = [
+    { id: "date", name: "Date" },
+    { id: "time", name: "Time " },
+    { id: "datetime", name: "Date and Time " },
+    { id: "custom", name: "Custom " },
+];

@@ -4,6 +4,7 @@ const DataContext = React.createContext({
   addToAllTemplate: () => {},
   setAllTemplates: () => {},
   modifyAllTemplate: () => {},
+  modifyWithRegion : ()=>{},
   deleteTemplate: () => {},
 });
 

@@ -10,4 +10,6 @@ export const deleteTemplate = (id) => del(`${url.DELETE_TEMPLATE}?Id=${id}`);
 export const getLayoutDataById = (id) => get(`${url.GET_LAYOUT_DATA}?Id=${id}`);
 
 export const sendFile = (data) => postWithFormData(url.SEND_FILE, data);
-export const getSampleData = () => get(url.GET_SCANNED_IMAGE)
+export const getSampleData = () => get(url.GET_SCANNED_IMAGE);
+export const getTemplateImage = (path) => get(`${url.GET_TEMPLATE_IMAGE}?filePath=${path}`);
+export const getTemplateCsv = (path) => get(`${url.GET_TEMPLATE_CSV}?csvPath=${path}`);

@@ -1,15 +1,13 @@
 // core components
 import Header from "components/Headers/Header.js";
 import NormalHeader from "components/Headers/NormalHeader";
-import { Modal } from "react-bootstrap";
 import { useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import { fetchProcessData } from "helper/Booklet32Page_helper";
 import { toast } from "react-toastify";
-import { Button, Card, CardHeader, Container, Row, Table } from "reactstrap";
+import { Button, Container, } from "reactstrap";
 import { refreshScanner } from "helper/Booklet32Page_helper";
 import { scanFiles } from "helper/Booklet32Page_helper";
-// import { GridComponent, ColumnsDirective, ColumnDirective, Sort, Inject, Toolbar, Page, Filter, Edit } from '@syncfusion/ej2-react-grids';
 import {
   GridComponent,
   ColumnsDirective,
@@ -18,11 +16,6 @@ import {
   Inject,
   Toolbar,
   ExcelExport,
-  PdfExport,
-  ToolbarItems,
-  Page,
-  FilterSettingsModel,
-  EditSettingsModel,
   Filter,
   Edit,
 } from "@syncfusion/ej2-react-grids";
@@ -38,7 +31,7 @@ const Booklet32Page = () => {
     { OrderID: 10249, CustomerID: "TOMSP" },
   ]);
   const [scanning, setScanning] = useState(false);
-  const [headData, setHeadData] = useState(Object.keys(jsonData[0]));
+  const [headData, setHeadData] = useState([]);
   const filterSettings = { type: "Excel" };
   // const toolbar = ['Add', 'Edit', 'Delete', 'Update', 'Cancel', 'ExcelExport', 'CsvExport'];
   const editSettings = {
@@ -73,27 +66,7 @@ const Booklet32Page = () => {
 
   //     return () => clearInterval(interval); // Cleanup on unmount
   // }, [data]);
-  //   useEffect(() => {
-  //     const dataContainer = document.getElementsByClassName("e-gridcontent")[0];
-  //     if (dataContainer) {
-  //       dataContainer.scrollTop = dataContainer.scrollHeight;
-  //     }
-  //   }, [processedData]);
-  //   useEffect(() => {
-  //     window.setInterval(function () {
-  //       var elem = document.getElementsByClassName("e-gridcontent")[0];
-  //       console.log(elem.scrollHeight);
-  //       elem.scrollTop = elem.scrollHeight;
-  //     }, 5000);
-  //   }, []);
-  //   useEffect(() => {
-  //     let num = processedData.length * 37.5;
-  //     console.log(num);
-  //     if (gridRef.current) {
-  //       //   console.log(gridRef.current.getContent().scrollHeight);
-  //       gridRef.current.scrollTop = num;
-  //     }
-  //   }, [processedData]);
+
   //   useEffect(() => {
   //     let num = processedData.length + 1;
   //     const updatedData = [
@@ -117,36 +90,36 @@ const Booklet32Page = () => {
   //     console.log(updatedData)
   //     setProcessedData(updatedData);
   //   }, []);
-  //   useEffect(() => {
-  //     const interval = setInterval(() => {
-  //       let num = processedData.length + 1;
-  //       const newJsonData = [...jsonDataRef.current /* new data item here */];
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     let num = processedData.length + 1;
+  //     const newJsonData = [...jsonDataRef.current /* new data item here */];
 
-  //       const updatedData = [
-  //         ...processedData,
-  //         ...newJsonData.map((item) => {
-  //           const newItem = {};
+  //     const updatedData = [
+  //       ...processedData,
+  //       ...newJsonData.map((item) => {
+  //         const newItem = {};
 
-  //           // Iterate over the keys of the item
-  //           for (const key in item) {
-  //             // Check if the key ends with a dot
-  //             const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
-  //             // Assign the value to the new key in newItem
-  //             newItem[newKey] = item[key];
-  //           }
+  //         // Iterate over the keys of the item
+  //         for (const key in item) {
+  //           // Check if the key ends with a dot
+  //           const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+  //           // Assign the value to the new key in newItem
+  //           newItem[newKey] = item[key];
+  //         }
 
-  //           // Add the Serial No property
-  //           newItem["Serial No"] = num++;
-  //           return newItem;
-  //         }),
-  //       ];
+  //         // Add the Serial No property
+  //         newItem["Serial No"] = num++;
+  //         return newItem;
+  //       }),
+  //     ];
 
-  //       jsonDataRef.current = newJsonData; // Update the ref with new data
-  //       setProcessedData(updatedData);
-  //     }, 2000); // Adjust the interval time as needed
+  //     jsonDataRef.current = newJsonData; // Update the ref with new data
+  //     setProcessedData(updatedData);
+  //   }, 2000); // Adjust the interval time as needed
 
-  //     return () => clearInterval(interval); // Clean up the interval on component unmount
-  //   }, [processedData]);
+  //   return () => clearInterval(interval); // Clean up the interval on component unmount
+  // }, [processedData]);
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -282,7 +255,6 @@ const Booklet32Page = () => {
       toast.error("Request Timeout");
     }
   };
-  
 
   const handleSave = (args) => {
     if (args.data) {
@@ -334,6 +306,40 @@ const Booklet32Page = () => {
     );
   });
 
+  // ****************function without scrolling behaviour will give u data in real time********* 
+
+  // const dataBound = () => {
+  //   if (gridRef.current) {
+  //     const grid = gridRef.current;
+  //     const lastIndex = grid.dataSource.length - 1;
+  //     const row = grid.getRowByIndex(lastIndex);
+  //     if (row) {
+  //       row.scrollIntoView();
+  //     }
+  //   }
+  // }
+  // *************************************************************************************************
+
+
+  const dataBound = () => {
+    if (gridRef.current) {
+      const grid = gridRef.current;
+      const lastIndex = grid.dataSource.length - 1;
+
+      // Ensure data source is not empty
+      if (lastIndex >= 0) {
+        setTimeout(() => {
+          const gridContent = grid.getContent().firstElementChild;
+          gridContent.scrollTo({
+            top: gridContent.scrollHeight,
+            behavior: 'smooth',
+          });
+        }, 500); // Delay to ensure the grid is fully rendered before scrolling
+      }
+    }
+  };
+
+
   return (
     <>
       <NormalHeader />
@@ -358,6 +364,7 @@ const Booklet32Page = () => {
 
         <GridComponent
           ref={gridRef}
+          dataBound={dataBound}
           actionComplete={handleSave}
           dataSource={processedData}
           height={450}
