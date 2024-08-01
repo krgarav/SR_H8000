@@ -201,6 +201,47 @@ const DataProvider = (props) => {
       };
     });
   };
+  // const modifyWithRegionHandler = (
+  //   templateIndex,
+  //   regionData,
+  //   fieldType,
+  //   coordinateIndex
+  // ) => {
+  //   if (coordinateIndex === -1) {
+  //     alert("cannot be -1");
+  //   }
+  //   setDataState((item) => {
+  //     const copiedData = [...item.allTemplates];
+  //     const currentTemplate = copiedData[templateIndex];
+
+  //     switch (fieldType) {
+  //       case "skewMarkField":
+  //         currentTemplate[0].skewMarksWindowParameters[coordinateIndex] =
+  //           regionData;
+  //         break;
+  //       case "formField":
+  //         currentTemplate[0].formFieldWindowParameters[coordinateIndex] =
+  //           regionData;
+  //         break;
+  //       case "questionField":
+  //         currentTemplate[0].questionsWindowParameters[coordinateIndex] =
+  //           regionData;
+
+  //         break;
+  //       default:
+  //         currentTemplate[0].layoutParameters = {
+  //           ...currentTemplate[0].layoutParameters,
+  //           ...regionData,
+  //         };
+  //         break;
+  //     }
+  //     return {
+  //       ...item,
+  //       allTemplates: copiedData,
+  //     };
+  //   });
+  // };
+
   const modifyWithRegionHandler = (
     templateIndex,
     regionData,
@@ -208,25 +249,40 @@ const DataProvider = (props) => {
     coordinateIndex
   ) => {
     if (coordinateIndex === -1) {
-      alert("cannot be -1");
+      alert("Coordinate index cannot be -1");
+      return;
     }
+
     setDataState((item) => {
       const copiedData = [...item.allTemplates];
       const currentTemplate = copiedData[templateIndex];
 
+      if (!currentTemplate || currentTemplate.length === 0) {
+        console.error("Invalid template index or empty template");
+        return item;
+      }
+
+      const updateField = (fieldArray) => {
+        if (
+          fieldArray &&
+          coordinateIndex >= 0 &&
+          coordinateIndex < fieldArray.length
+        ) {
+          fieldArray[coordinateIndex] = regionData;
+        } else {
+          console.error("Invalid coordinate index");
+        }
+      };
+
       switch (fieldType) {
         case "skewMarkField":
-          currentTemplate[0].skewMarksWindowParameters[coordinateIndex] =
-            regionData;
+          updateField(currentTemplate[0]?.skewMarksWindowParameters);
           break;
         case "formField":
-          currentTemplate[0].formFieldWindowParameters[coordinateIndex] =
-            regionData;
+          updateField(currentTemplate[0]?.formFieldWindowParameters);
           break;
         case "questionField":
-          currentTemplate[0].questionsWindowParameters[coordinateIndex] =
-            regionData;
-
+          updateField(currentTemplate[0]?.questionsWindowParameters);
           break;
         default:
           currentTemplate[0].layoutParameters = {
@@ -235,12 +291,14 @@ const DataProvider = (props) => {
           };
           break;
       }
+
       return {
         ...item,
         allTemplates: copiedData,
       };
     });
   };
+
   const deleteFieldTemplateHandler = (templateIndex, selectedFieldData) => {
     const fieldType = selectedFieldData.fieldType;
     setDataState((item) => {
