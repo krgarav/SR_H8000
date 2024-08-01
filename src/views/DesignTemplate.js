@@ -634,7 +634,7 @@ const DesignTemplate = () => {
           "Start Col": selection?.startCol,
           "End Row": selection?.endRow + 1,
           "End Col": selection?.endCol,
-          name: "Id Field",
+          name: name,
           fieldType: selectedFieldType,
         },
         imageStructureData: position,
@@ -727,20 +727,43 @@ const DesignTemplate = () => {
       setSelectedCoordinates((prev) => [...prev, newSelected]);
       setSelection(null);
     } else {
-      // setSelectedCoordinates((selection)=>{
-      //     const selectedField =[...selection];
-      //     selectedField[selectionIndex]=
-      //     return []
-      // })
-      // selectionIndex
+      // const updatedValue = {
+      //     startRow: selection?.startRow - 1,
+      //     startCol: selection?.startCol,
+      //     endRow: selection?.endRow - 1,
+      //     endCol: selection?.endCol,
+      //     name: name,
+      //     fieldType: selectedFieldType,
+      //   };
+      setSelectedCoordinates((item) => {
+        // Ensure item is defined and coordinateIndex is valid
+        if (!item || coordinateIndex < 0 || coordinateIndex >= item.length) {
+          console.error("Invalid coordinate index or item array");
+          return item; // Return the unchanged state if validation fails
+        }
+
+        const copiedSelectedField = [...item];
+        copiedSelectedField[coordinateIndex] = {
+          ...copiedSelectedField[coordinateIndex],
+          name: name,
+          fieldType: selectedFieldType,
+        };
+
+        return copiedSelectedField;
+      });
+
+      //   console.log(templateIndex,selectedFieldType,coordinateIndex);
+      //   if(templateIndex,selectedFieldType,coordinateIndex)
       dataCtx.modifyWithRegion(
         templateIndex,
         newData,
         selectedFieldType,
         coordinateIndex
       );
+      setSelection(null);
     }
   };
+  console.log(selectedCoordinates);
   const handleSkewMarkOptionChange = (event) => {
     setSkewOption(event.target.value);
   };
@@ -750,8 +773,15 @@ const DesignTemplate = () => {
   const handleRadioChange = (e) => {
     setSelectedFieldType(e.target.value);
   };
-
+  console.log(selection);
   const handleEyeClick = (selectedField, index) => {
+    console.log(selectedField);
+    setSelection(() => ({
+      startRow: selectedField.startRow,
+      startCol: selectedField.startCol,
+      endRow: selectedField.endRow,
+      endCol: selectedField.endCol,
+    }));
     // console.log(selectedField, index);
     const formattedSelectedFile = {
       "End Col": selectedField.endCol,
@@ -776,6 +806,7 @@ const DesignTemplate = () => {
       setEndRowInput(formattedSelectedFile["End Row"]);
       setStartColInput(formattedSelectedFile["Start Col"]);
       setEndColInput(formattedSelectedFile["End Col"]);
+      setCoordinateIndex(index);
       setModalUpdate(true);
       setModalShow(true);
     } else if (selectedField?.fieldType === "questionField") {
@@ -835,8 +866,8 @@ const DesignTemplate = () => {
       setMaximumMark(data?.iMinimumMarks);
       setNoInRow(data?.rowNumber);
       setNoInCol(data?.columnNumber);
-      setStartRowInput(formattedSelectedFile["Start Row"]);
-      setEndRowInput(formattedSelectedFile["End Row"]);
+      setStartRowInput(formattedSelectedFile["Start Row"] - 1);
+      setEndRowInput(formattedSelectedFile["End Row"] - 1);
       setStartColInput(formattedSelectedFile["Start Col"]);
       setEndColInput(formattedSelectedFile["End Col"]);
       setReadingDirectionOption(data?.iDirection);
@@ -863,7 +894,7 @@ const DesignTemplate = () => {
       setEndColInput(formattedSelectedFile["End Col"]);
     }
   };
-console.log(dataCtx.allTemplates[templateIndex]);
+  console.log(dataCtx.allTemplates[templateIndex]);
   const handleCrossClick = (selectedField, index) => {
     const response = window.confirm(
       "Are you sure you want to delete the selected field ?"
@@ -884,11 +915,7 @@ console.log(dataCtx.allTemplates[templateIndex]);
       copiedState.splice(index, 1); // Remove the item at the specified index
       return copiedState;
     });
-    dataCtx.deleteFieldTemplate(templateIndex,formattedSelectedFile)
-    console.log(formattedSelectedFile);
-
-    // console.log(response);
-    console.log(dataCtx.allTemplates[templateIndex]);
+    dataCtx.deleteFieldTemplate(templateIndex, formattedSelectedFile);
   };
   const handleIconMouseUp = (event) => {
     event.stopPropagation();
@@ -1583,6 +1610,7 @@ console.log(dataCtx.allTemplates[templateIndex]);
               <input
                 id="startRow"
                 type="number"
+                disabled={modalUpdate}
                 value={startRowInput}
                 onBlur={(e) => {
                   const newValue = e.target.valueAsNumber;
@@ -1613,6 +1641,7 @@ console.log(dataCtx.allTemplates[templateIndex]);
               <input
                 type="number"
                 value={endRowInput}
+                disabled={modalUpdate}
                 onBlur={(e) => {
                   const newValue = e.target.valueAsNumber;
                   if (newValue > 0) {
@@ -1679,6 +1708,7 @@ console.log(dataCtx.allTemplates[templateIndex]);
               <input
                 type="number"
                 value={startColInput}
+                disabled={modalUpdate}
                 onBlur={(e) => {
                   const newValue = e.target.valueAsNumber;
                   if (newValue > 0) {
@@ -1714,6 +1744,7 @@ console.log(dataCtx.allTemplates[templateIndex]);
               <input
                 type="number"
                 value={endColInput}
+                disabled={modalUpdate}
                 onBlur={(e) => {
                   const newValue = e.target.valueAsNumber;
                   if (newValue > 0) {
