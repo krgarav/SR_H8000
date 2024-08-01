@@ -26,3 +26,11 @@
 .card:active {
   transform: scale(0.95) rotateZ(1.7deg);
 }
+
+@media (max-width: 1224px) {
+  .card {
+    
+    width: 300px;
+    height: 350px
+  }
+}
