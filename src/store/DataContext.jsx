@@ -6,6 +6,7 @@ const DataContext = React.createContext({
   modifyAllTemplate: () => {},
   modifyWithRegion : ()=>{},
   deleteTemplate: () => {},
+  deleteFieldTemplate : ()=>{}
 });
 
 export default DataContext;
