@@ -30,6 +30,7 @@ import { toast } from "react-toastify";
 import { getTemplateImage } from "helper/TemplateHelper";
 import { getTemplateCsv } from "helper/TemplateHelper";
 import { getLayoutDataById } from "helper/TemplateHelper";
+import Papa from 'papaparse';
 const base64ToFile = (base64, filename) => {
   const byteString = atob(base64.split(',')[1]);
   const mimeString = base64.split(',')[0].split(':')[1].split(';')[0];
@@ -48,6 +49,9 @@ const Template = () => {
   const [toggle, setToggle] = useState(false)
   const navigate = useNavigate();
   const dataCtx = useContext(DataContext);
+  useEffect(() => {
+    sessionStorage.clear();
+  }, [])
   useEffect(() => {
 
     const fetchData = async () => {
@@ -78,28 +82,40 @@ const Template = () => {
     console.log(res.templateFiles)
     const csvpath = res?.templateFiles?.csvPath
     const imgpath = res?.templateFiles?.imagePath
-    console.log(imgpath)
     const res1 = await getTemplateImage(imgpath);
-    const file = base64ToFile(res1.image, 'image.jpg');
-    // console.log(file)
-    const res2 = await getTemplateCsv(csvpath);
-    console.log(res2)
-    // navigate("/admin/design-template", {
-    //   state: {
-    //     templateIndex: index,
-    //     timingMarks: +tempdata.timingMarks,
-    //     totalColumns: +tempdata.totalColumns,
-    //     templateImagePath: res1.image,
-    //     bubbleType: tempdata.bubbleType,
-    //     iSensitivity: +tempdata.iSensitivity,
-    //     iDifference: +tempdata.iDifference,
-    //     iReject: tempdata.iReject,
-    //     iFace: +tempdata.iFace,
-    //     arr: arr,
-    //     templateId: tempdata.id
-    //   }
+    const imgfile = base64ToFile(res1.image, 'image.jpg');
 
-    // });
+    const res2 = await getTemplateCsv(csvpath);
+
+    const csvContent = Papa.unparse(res2.data);
+
+    // Create a Blob from the CSV content
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+    // Create a File from the Blob
+    const csvfile = new File([blob], 'data.csv', { type: 'text/csv' });
+    console.log(csvfile)
+
+
+    navigate("/admin/design-template", {
+      state: {
+        templateIndex: index,
+        timingMarks: +tempdata.timingMarks,
+        totalColumns: +tempdata.totalColumns,
+        templateImagePath: res1.image,
+        bubbleType: tempdata.bubbleType,
+        iSensitivity: +tempdata.iSensitivity,
+        iDifference: +tempdata.iDifference,
+        iReject: tempdata.iReject,
+        iFace: +tempdata.iFace,
+        arr: arr,
+        templateId: tempdata.id,
+        excelJsonFile: res2.data,
+        imageTempFile: imgfile,
+        excelFile: csvfile,
+      }
+
+    });
   };
 
   const deleteImage = async (imageUrl) => {

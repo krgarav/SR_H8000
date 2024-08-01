@@ -3,15 +3,11 @@ import { Modal, Button, Col } from "react-bootstrap";
 import { Row } from "reactstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import classes from "./DesignTemplate.module.css";
-import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-import Draggable from "react-draggable";
 import { Rnd } from "react-rnd";
 import DataContext from "store/DataContext";
 import { MultiSelect } from "react-multi-select-component";
-import axios from "axios";
 import { createTemplate } from "helper/TemplateHelper";
 import { getLayoutDataById } from "helper/TemplateHelper";
-import jsonData from "data/csvjson";
 import {
     Badge,
     Card,
@@ -32,10 +28,29 @@ import {
 } from "reactstrap";
 import SmallHeader from "components/Headers/SmallHeader";
 import { toast } from "react-toastify";
-import { TbDualScreen } from "react-icons/tb";
 import isEqual from 'lodash/isEqual';
 import { sendFile } from "helper/TemplateHelper";
-const URL = process.env.REACT_APP_BACKEND_URL;
+
+
+// Function to get values from sessionStorage or provide default
+const getSessionStorageOrDefault = (key, defaultValue) => {
+    const stored = sessionStorage.getItem(key);
+
+    if (!stored) {
+        return defaultValue;
+    }
+    try {
+        const parsed = JSON.parse(stored);
+        // Check for 'undefined' string which is not a valid JSON
+        if (parsed === undefined) {
+            return defaultValue;
+        }
+        return parsed;
+    } catch (e) {
+        console.warn(`Error parsing sessionStorage item with key "${key}":`, e);
+        return defaultValue;
+    }
+};
 const DesignTemplate = () => {
     const [selected, setSelected] = useState({});
     const [selection, setSelection] = useState(null);
@@ -84,22 +99,22 @@ const DesignTemplate = () => {
     });
     const [loading, setLoading] = useState(false);
     const dataCtx = useContext(DataContext);
-    // const {
-    //     totalColumns,
-    //     timingMarks,
-    //     templateImagePath,
-    //     bubbleType,
-    //     templateIndex,
-    //     iSensitivity,
-    //     iDifference,
-    //     iReject,
-    //     iFace,
-    //     arr,
-    //     templateId,
-    //     excelJsonFile,
-    //     imageTempFile,
-    //     excelFile
-    // } = useLocation().state;
+    const {
+        totalColumns,
+        timingMarks,
+        templateImagePath,
+        bubbleType,
+        templateIndex,
+        iSensitivity,
+        iDifference,
+        iReject,
+        iFace,
+        arr,
+        templateId,
+        excelJsonFile,
+        imageTempFile,
+        excelFile
+    } = useLocation().state;
     const [selectedCol, setSelectedCol] = useState([]);
     const [options, setOptions] = useState([]);
     const [idNumber, setIdNumber] = useState("0000000000000000000000000000");
@@ -117,68 +132,49 @@ const DesignTemplate = () => {
     const [modalUpdate, setModalUpdate] = useState(false);
     const [coordinateIndex, setCoordinateIndex] = useState(-1)
     const [selectionIndex, setSelectionIndex] = useState();
-    // Function to get values from sessionStorage or provide default
-    const getSessionStorageOrDefault = (key, defaultValue) => {
-        const stored = sessionStorage.getItem(key);
 
-        if (!stored) {
-            return defaultValue;
-        }
-
-        try {
-            const parsed = JSON.parse(stored);
-            // Check for 'undefined' string which is not a valid JSON
-            if (parsed === undefined) {
-                return defaultValue;
-            }
-            return parsed;
-        } catch (e) {
-            console.warn(`Error parsing sessionStorage item with key "${key}":`, e);
-            return defaultValue;
-        }
-    };
     const location = useLocation();
     const state = location.state || {};
     // Initialize state with values from sessionStorage or location.state
-    const [data, setData] = useState(() => ({
-        totalColumns: getSessionStorageOrDefault(
-            "totalColumns",
-            state.totalColumns
-        ),
-        timingMarks: getSessionStorageOrDefault("timingMarks", state.timingMarks),
-        templateImagePath: getSessionStorageOrDefault(
-            "templateImagePath",
-            state.templateImagePath
-        ),
-        bubbleType: getSessionStorageOrDefault("bubbleType", state.bubbleType),
-        templateIndex: getSessionStorageOrDefault(
-            "templateIndex",
-            state.templateIndex
-        ),
-        iSensitivity: getSessionStorageOrDefault(
-            "iSensitivity",
-            state.iSensitivity
-        ),
-        iDifference: getSessionStorageOrDefault("iDifference", state.iDifference),
-        iReject: getSessionStorageOrDefault("iReject", state.iReject),
-        iFace: getSessionStorageOrDefault("iFace", state.iFace),
-        arr: getSessionStorageOrDefault("arr", state.arr),
-        templateId: getSessionStorageOrDefault("templateId", state.templateId),
-        excelJsonFile: getSessionStorageOrDefault(
-            "excelJsonFile",
-            state.excelJsonFile
-        ),
-        imageTempFile: getSessionStorageOrDefault(
-            "imageTempFile",
-            state.imageTempFile
-        ),
-        excelFile: getSessionStorageOrDefault("excelFile", state.excelFile),
-    }));
+    // const [data, setData] = useState(() => ({
+    //     totalColumns: getSessionStorageOrDefault(
+    //         "totalColumns",
+    //         state.totalColumns
+    //     ),
+    //     timingMarks: getSessionStorageOrDefault("timingMarks", state.timingMarks),
+    //     templateImagePath: getSessionStorageOrDefault(
+    //         "templateImagePath",
+    //         state.templateImagePath
+    //     ),
+    //     bubbleType: getSessionStorageOrDefault("bubbleType", state.bubbleType),
+    //     templateIndex: getSessionStorageOrDefault(
+    //         "templateIndex",
+    //         state.templateIndex
+    //     ),
+    //     iSensitivity: getSessionStorageOrDefault(
+    //         "iSensitivity",
+    //         state.iSensitivity
+    //     ),
+    //     iDifference: getSessionStorageOrDefault("iDifference", state.iDifference),
+    //     iReject: getSessionStorageOrDefault("iReject", state.iReject),
+    //     iFace: getSessionStorageOrDefault("iFace", state.iFace),
+    //     arr: getSessionStorageOrDefault("arr", state.arr),
+    //     templateId: getSessionStorageOrDefault("templateId", state.templateId),
+    //     excelJsonFile: getSessionStorageOrDefault(
+    //         "excelJsonFile",
+    //         state.excelJsonFile
+    //     ),
+    //     imageTempFile: getSessionStorageOrDefault(
+    //         "imageTempFile",
+    //         state.imageTempFile
+    //     ),
+    //     excelFile: getSessionStorageOrDefault("excelFile", state.excelFile),
+    // }));
 
     const rndRef = useRef();
     const navigate = useNavigate();
-    const numRows = data.timingMarks;
-    const numCols = data.totalColumns;
+    const numRows = state.timingMarks;
+    const numCols = state.totalColumns;
 
     const handleDragStop = (e, d) => {
         setPosition((prev) => ({ ...prev, x: d.x, y: d.y }));
@@ -201,51 +197,43 @@ const DesignTemplate = () => {
         });
     };
 
-    // Function to get the current position and dimensions
-    const getCurrentImageState = () => {
-        if (rndRef.current) {
-            const { x, y, width, height } =
-                rndRef.current.resizableElement.current.getBoundingClientRect();
-            return { x, y, width, height };
-        }
-        return null;
-    };
-    useEffect(() => {
-        if (location.state) {
-            sessionStorage.setItem(
-                "totalColumns",
-                JSON.stringify(state.totalColumns)
-            );
-            sessionStorage.setItem("timingMarks", JSON.stringify(state.timingMarks));
-            sessionStorage.setItem(
-                "templateImagePath",
-                JSON.stringify(state.templateImagePath)
-            );
-            sessionStorage.setItem("bubbleType", JSON.stringify(state.bubbleType));
-            sessionStorage.setItem(
-                "templateIndex",
-                JSON.stringify(state.templateIndex)
-            );
-            sessionStorage.setItem(
-                "iSensitivity",
-                JSON.stringify(state.iSensitivity)
-            );
-            sessionStorage.setItem("iDifference", JSON.stringify(state.iDifference));
-            sessionStorage.setItem("iReject", JSON.stringify(state.iReject));
-            sessionStorage.setItem("iFace", JSON.stringify(state.iFace));
-            sessionStorage.setItem("arr", JSON.stringify(state.arr));
-            sessionStorage.setItem("templateId", JSON.stringify(state.templateId));
-            sessionStorage.setItem(
-                "excelJsonFile",
-                JSON.stringify(state.excelJsonFile)
-            );
-            sessionStorage.setItem(
-                "imageTempFile",
-                JSON.stringify(state.imageTempFile)
-            );
-            sessionStorage.setItem("excelFile", JSON.stringify(state.excelFile));
-        }
-    }, [location.state]);
+
+    // useEffect(() => {
+    //     if (location.state) {
+    //         sessionStorage.setItem(
+    //             "totalColumns",
+    //             state.totalColumns
+    //         );
+    //         sessionStorage.setItem("timingMarks", JSON.stringify(state.timingMarks));
+    //         sessionStorage.setItem(
+    //             "templateImagePath",
+    //             JSON.stringify(state.templateImagePath)
+    //         );
+    //         sessionStorage.setItem("bubbleType", JSON.stringify(state.bubbleType));
+    //         sessionStorage.setItem(
+    //             "templateIndex",
+    //             state.templateIndex
+    //         );
+    //         sessionStorage.setItem(
+    //             "iSensitivity",
+    //             JSON.stringify(state.iSensitivity)
+    //         );
+    //         sessionStorage.setItem("iDifference", JSON.stringify(state.iDifference));
+    //         sessionStorage.setItem("iReject", JSON.stringify(state.iReject));
+    //         sessionStorage.setItem("iFace", JSON.stringify(state.iFace));
+    //         sessionStorage.setItem("arr", JSON.stringify(state.arr));
+    //         sessionStorage.setItem("templateId", JSON.stringify(state.templateId));
+    //         sessionStorage.setItem(
+    //             "excelJsonFile",
+    //             JSON.stringify(state.excelJsonFile)
+    //         );
+    //         sessionStorage.setItem(
+    //             "imageTempFile",
+    //             JSON.stringify(state.imageTempFile)
+    //         );
+    //         sessionStorage.setItem("excelFile", JSON.stringify(state.excelFile));
+    //     }
+    // }, [location.state]);
 
     useEffect(() => {
         const handleBeforeUnload = (event) => {
@@ -292,12 +280,12 @@ const DesignTemplate = () => {
         }
     }, []);
     useEffect(() => {
-        if (data.arr) {
+        if (arr) {
             // Extract parameters from the first element of the array (if it exists)
-            const formFieldData = data.arr[0]?.formFieldWindowParameters;
-            const questionField = data.arr[0]?.questionsWindowParameters;
-            const skewField = data.arr[0]?.skewMarksWindowParameters;
-            const idField = data.arr[0]?.layoutParameters;
+            const formFieldData = arr[0]?.formFieldWindowParameters;
+            const questionField = arr[0]?.questionsWindowParameters;
+            const skewField = arr[0]?.skewMarksWindowParameters;
+            const idField = arr[0]?.layoutParameters;
 
             // Map each set of parameters to their coordinates or default to an empty array
             const coordinateOfFormData =
@@ -333,12 +321,12 @@ const DesignTemplate = () => {
             setPosition(idField?.imageStructureData);
         }
     }, []); // Run only once on component mount
-    // *************************For Fetching th details and setting the coordinate******************
+    // *************************For Fetching the details and setting the coordinate******************
     useEffect(() => {
         const fetchDetails = async () => {
             try {
                 // Fetch layout data by template ID
-                const response = await getLayoutDataById(data.templateId);
+                const response = await getLayoutDataById(templateId);
                 console.log(response);
                 setLayoutFieldData(response);
                 if (response) {
@@ -397,16 +385,16 @@ const DesignTemplate = () => {
 
         // Call the fetch details function
         fetchDetails();
-    }, [data.templateId]);
+    }, [templateId]);
     // *****************************************************************************************
     useEffect(() => {
         if (layoutFieldData) {
-            dataCtx.addFieldToTemplate(layoutFieldData, data.templateIndex);
+            dataCtx.addFieldToTemplate(layoutFieldData, templateIndex);
             console.log("called");
         }
     }, [layoutFieldData]);
     useEffect(() => {
-        switch (data.bubbleType) {
+        switch (bubbleType) {
             case "rounded rectangle":
                 setSelectedClass("rounded-rectangle");
                 break;
@@ -429,19 +417,19 @@ const DesignTemplate = () => {
 
     useEffect(() => {
         // Create an array to hold the options
-        const options = Array.from({ length: +data.totalColumns }, (v, i) => ({
+        const options = Array.from({ length: +totalColumns }, (v, i) => ({
             label: `${idType} ${i + 1}`, // Set the label as 'Col X' where X is the column number
             value: i, // Set the value as the index
         }));
 
         // Update the state with the new options array
         setOptions(options);
-    }, [data.totalColumns, idType]);
+    }, [totalColumns, idType]);
 
     useEffect(() => {
         if (selectedCol.length > 0) {
             const value = selectedCol.map((item) => item.value);
-            const arr = Array(+data.totalColumns).fill(0);
+            const arr = Array(+totalColumns).fill(0);
             for (let j = 0; j < value.length; j++) {
                 arr[value[j]] = 1;
             }
@@ -660,17 +648,17 @@ const DesignTemplate = () => {
             };
         } else if (selectedFieldType === "skewMarkField") {
             newData = {
-                iFace: +data.iFace,
+                iFace: +iFace,
                 columnStart: +selection?.startCol,
                 columnNumber: +noInCol,
                 columnStep: +noOfStepInCol,
                 rowStart: +selection?.startRow + 1,
                 rowNumber: +noInRow,
                 rowStep: +noOfStepInRow,
-                iSensitivity: +data.iSensitivity,
-                iDifference: +data.iDifference,
+                iSensitivity: +iSensitivity,
+                iDifference: +iDifference,
                 iOption: +option,
-                iReject: +data.iReject,
+                iReject: +iReject,
                 iDirection: +readingDirectionOption,
                 windowName: name,
                 Coordinate: {
@@ -690,7 +678,7 @@ const DesignTemplate = () => {
             };
         } else {
             newData = {
-                iFace: +data.iFace,
+                iFace: +iFace,
                 windowName: name,
                 columnStart: +selection?.startCol,
                 columnNumber: +noInCol,
@@ -699,8 +687,8 @@ const DesignTemplate = () => {
                 rowNumber: +noInRow,
                 rowStep: +noOfStepInRow,
                 iDirection: +readingDirectionOption,
-                iSensitivity: +data.iSensitivity,
-                iDifference: +data.iDifference,
+                iSensitivity: +iSensitivity,
+                iDifference: +iDifference,
                 iOption: +option,
                 iMinimumMarks: +minimumMark,
                 iMaximumMarks: +maximumMark,
@@ -729,7 +717,7 @@ const DesignTemplate = () => {
         // setSelection(null);
         setModalShow(false);
         if (!modalUpdate) {
-            dataCtx.modifyAllTemplate(data.templateIndex, newData, selectedFieldType);
+            dataCtx.modifyAllTemplate(templateIndex, newData, selectedFieldType);
             const newSelected = {
                 ...selection,
                 name: selectedFieldType !== "idField" ? name : "Id Field",
@@ -744,7 +732,7 @@ const DesignTemplate = () => {
             //     return []
             // })
             // selectionIndex
-            dataCtx.modifyWithRegion(data.templateIndex, newData, selectedFieldType, coordinateIndex)
+            dataCtx.modifyWithRegion(templateIndex, newData, selectedFieldType, coordinateIndex)
         }
     };
     const handleSkewMarkOptionChange = (event) => {
@@ -769,7 +757,7 @@ const DesignTemplate = () => {
 
         }
         setSelectionIndex(index)
-        const template = dataCtx.allTemplates[data.templateIndex];
+        const template = dataCtx.allTemplates[templateIndex];
         // console.log(template);
         if (selectedField?.fieldType === "idField") {
             const data = template[0].layoutParameters;
@@ -883,7 +871,7 @@ const DesignTemplate = () => {
     const sendHandler = async () => {
         // Retrieve the selected template
 
-        const template = dataCtx.allTemplates[data.templateIndex];
+        const template = dataCtx.allTemplates[templateIndex];
         console.log(template);
 
         // Extract layout parameters and its coordinates
@@ -1007,6 +995,7 @@ const DesignTemplate = () => {
 
 
                 if (res2?.success) {
+                    sessionStorage.clear();
                     toast.success("Layout Saved");
                     navigate("/admin/template", { replace: true });
                 }
@@ -1087,7 +1076,7 @@ const DesignTemplate = () => {
                             }
                         >
                             <img
-                                src={data.templateImagePath}
+                                src={templateImagePath}
                                 className={`${classes["object-contain"]} ${classes["draggable-resizable-image"]} rounded`}
                                 alt="omr sheet"
                                 id="omr-style-sheet"
@@ -1129,7 +1118,7 @@ const DesignTemplate = () => {
                                     onMouseMove={handleMouseMove}
                                 >
                                     {Array.from({ length: numRows }).map((_, rowIndex) => {
-                                        const result = [...data.excelJsonFile.map(Object.values)];
+                                        const result = [...excelJsonFile.map(Object.values)];
                                         return (
                                             <div key={rowIndex} className="row">
                                                 <div className="left-num" sty>
@@ -1142,7 +1131,7 @@ const DesignTemplate = () => {
                                                             backgroundColor:
                                                                 result[rowIndex][colIndex] != 0 ? "black" : "",
                                                         }}
-                                                        className={`${data.bubbleType} ${selected[`${rowIndex},${colIndex}`]
+                                                        className={`${bubbleType} ${selected[`${rowIndex},${colIndex}`]
                                                             ? "selected"
                                                             : ""
                                                             }`}
@@ -1244,6 +1233,7 @@ const DesignTemplate = () => {
                     </div>
                 </div>
             </div>
+
             <Modal
                 show={modalShow}
                 size="lg"
