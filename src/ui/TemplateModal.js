@@ -485,6 +485,8 @@ const TemplateModal = (props) => {
       const base64ImageUrl = response?.image;
       console.log(jsonData);
       setExcelJsonFile(jsonData);
+      const csv = Papa.unparse(jsonData);
+      setExcelFile(csv);
       const file = base64ToFile(base64ImageUrl, "image.png");
       // Convert the File object to an image URL
       const imageUrl = URL.createObjectURL(file);
