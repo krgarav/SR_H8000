@@ -1263,7 +1263,7 @@ const EditDesignTemplate = () => {
                                             }}
                                             onClick={(e) => e.stopPropagation()}
                                         >
-                                            {/* <div
+                                            <div
                                                 className="d-flex justify-content-between align-items-center bg-dark text-white p-1"
                                                 style={{
                                                     opacity: 0.8,
@@ -1290,8 +1290,8 @@ const EditDesignTemplate = () => {
                                                         style={{ cursor: "pointer" }}
                                                     ></i>
                                                 </span>
-                                            </div> */}
-                                            <div
+                                            </div>
+                                            {/* <div
                                                 ref={divRef}
                                                 className="d-flex justify-content-between align-items-center bg-dark text-white p-1"
                                                 style={{
@@ -1326,7 +1326,7 @@ const EditDesignTemplate = () => {
                                                         </span>
                                                     </>
                                                 )}
-                                            </div>
+                                            </div> */}
                                         </div>
                                     ))}
                                     {selection && (
