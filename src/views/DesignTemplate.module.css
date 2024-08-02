@@ -21,6 +21,11 @@
   padding: 10px;
 }
 
+.eye:hover {
+
+  transform: scale(2);
+  transition: transform 0.3s ease; /* Add smooth transition */
+}
 /* .object-contain {
     max-width: 100%;
     max-height: 100%;

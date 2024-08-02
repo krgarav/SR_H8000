@@ -1253,10 +1253,11 @@ const DesignTemplate = () => {
                         }}
                       >
                         <span className="user-select-none">{data.name}</span>
-                        <span className="d-flex align-items-center user-select-none gap-10">
+                        <span className={`d-flex align-items-center user-select-none gap-10`}>
                           <i
-                            className="fas fa-eye me-2 mr-1"
+                            className={`fas fa-eye me-2 mr-1 ${classes.eye}`}
                             onMouseUp={handleIconMouseUp}
+                            
                             onClick={(e) => {
                               handleEyeClick(data, index);
                             }}

@@ -813,7 +813,7 @@ const EditDesignTemplate = () => {
             const parameters = template[0].questionsWindowParameters;
             // Find the index of the matched object
             const index = parameters.findIndex((item) =>
-                isEqual(item.questionWindowCoordinates, formattedSelectedFile)
+                isEqual(item.Coordinate, formattedSelectedFile)
             );
             console.log(index);
             // Get the matched object
@@ -849,7 +849,7 @@ const EditDesignTemplate = () => {
             // })[0];
             const parameters = template[0].formFieldWindowParameters;
             const index = parameters.findIndex((item) =>
-                isEqual(item.formFieldCoordinates, formattedSelectedFile)
+                isEqual(item.Coordinate, formattedSelectedFile)
             );
             console.log(formattedSelectedFile)
             console.log(parameters)
@@ -945,6 +945,8 @@ const EditDesignTemplate = () => {
                 end: Coordinate["End Row"],
                 left: Coordinate["Start Col"],
                 start: Coordinate["Start Row"],
+                fieldType: Coordinate["fieldType"],
+                name : Coordinate["name"]
             };
         }
 
@@ -984,6 +986,8 @@ const EditDesignTemplate = () => {
                         end: Coordinate["End Row"],
                         left: Coordinate["Start Col"],
                         start: Coordinate["Start Row"],
+                        fieldType: Coordinate["fieldType"],
+                        name : Coordinate["name"]
                     }
                     : {};
                 return { ...rest, questionWindowCoordinates };
@@ -999,6 +1003,8 @@ const EditDesignTemplate = () => {
                         end: Coordinate["End Row"],
                         left: Coordinate["Start Col"],
                         start: Coordinate["Start Row"],
+                        fieldType: Coordinate["fieldType"],
+                        name : Coordinate["name"]
                     }
                     : {};
                 return { ...rest, layoutWindowCoordinates };
@@ -1014,6 +1020,8 @@ const EditDesignTemplate = () => {
                         end: Coordinate["End Row"],
                         left: Coordinate["Start Col"],
                         start: Coordinate["Start Row"],
+                        fieldType: Coordinate["fieldType"],
+                        name : Coordinate["name"]
                     }
                     : {};
                 return { ...rest, formFieldCoordinates };
@@ -1106,7 +1114,7 @@ const EditDesignTemplate = () => {
                         cursor: "pointer", // Optional: Change cursor to pointer on hover
                     }}
                 >
-                    {!loading ? "Save" : "Saving"}
+                    {!loading ? "Update" : "Updating"}
                 </Button>
                 <div className="containers">
                     <div id="imagecontainer" className={classes.img}>
@@ -1245,7 +1253,7 @@ const EditDesignTemplate = () => {
                                                 <span className="user-select-none">{data.name}</span>
                                                 <span className="d-flex align-items-center user-select-none gap-10">
                                                     <i
-                                                        className="fas fa-eye me-2 mr-1"
+                                                        className={`fas fa-eye me-2 mr-1 ${classes.eye}`}
                                                         onMouseUp={handleIconMouseUp}
                                                         onClick={(e) => {
                                                             handleEyeClick(data, index);

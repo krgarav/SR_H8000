@@ -147,7 +147,7 @@ const DataProvider = (props) => {
             fieldType: formFieldCoordinates["fieldType"],
           }
         : {};
-      return { ...rest, formFieldCoordinates: questionWindowCoordinates };
+      return { ...rest, Coordinate: questionWindowCoordinates };
     });
     const updatedSkewField = skewMarksWindowParameters?.map((item) => {
       const { layoutWindowCoordinates, ...rest } = item;
@@ -161,7 +161,7 @@ const DataProvider = (props) => {
             fieldType: layoutWindowCoordinates["fieldType"],
           }
         : {};
-      return { ...rest, layoutWindowCoordinates: questionWindowCoordinates };
+      return { ...rest, Coordinate: questionWindowCoordinates };
     });
     const updatedQuestionField = questionsWindowParameters?.map((item) => {
       const { questionWindowCoordinates, ...rest } = item;
@@ -175,7 +175,7 @@ const DataProvider = (props) => {
             fieldType: questionWindowCoordinates["fieldType"],
           }
         : {};
-      return { ...rest, questionWindowCoordinates: questionWindowCoordinates1 };
+      return { ...rest, Coordinate: questionWindowCoordinates1 };
     });
     // const Coordinate = {
     //   "End Col": layoutCoordinates["right"],
