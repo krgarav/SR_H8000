@@ -1012,7 +1012,7 @@ const TemplateModal = (props) => {
                           >
                             Window NG
                           </label>
-                          <div className="col-md-5">
+                          <div className="col-md-10">
                             <Select
                               value={windowNgOption}
                               onChange={(selectedValue) => {
@@ -1046,7 +1046,7 @@ const TemplateModal = (props) => {
                               </span>
                             )}
                           </div>
-                          <label
+                          {/* <label
                             htmlFor="bubble-variant-input"
                             className="col-md-2 col-form-label  "
                             style={{ fontSize: ".9rem", textAlign: "right" }}
@@ -1086,7 +1086,7 @@ const TemplateModal = (props) => {
                                 This feild is required
                               </span>
                             )}
-                          </div>
+                          </div> */}
                         </Row>
                       )}
 
