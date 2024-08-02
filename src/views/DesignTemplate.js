@@ -841,6 +841,10 @@ const DesignTemplate = () => {
       setOption(data?.iOption);
       setNumberOfField(data?.totalNumberOfFields);
       setFieldType(data?.numericOrAlphabets);
+      setMultiple(data?.multipleAllow);
+      setMultipleValue(data?.multipleValue);
+      setBlank(data?.blankAllow);
+      setBlankValue(data?.blankValue)
     } else if (selectedField?.fieldType === "formField") {
       // const data = template[0].formFieldWindowParameters.filter((item) => {
 
@@ -875,6 +879,10 @@ const DesignTemplate = () => {
       setOption(data?.iOption);
       setNumberOfField(data?.totalNumberOfFields);
       setFieldType(data?.numericOrAlphabets);
+      setMultiple(data?.multipleAllow);
+      setMultipleValue(data?.multipleValue);
+      setBlank(data?.blankAllow);
+      setBlankValue(data?.blankValue)
     } else if (selectedField?.fieldType === "skewMarkField") {
       const parameters = template[0].skewMarksWindowParameters;
       const index = parameters.findIndex((item) =>
