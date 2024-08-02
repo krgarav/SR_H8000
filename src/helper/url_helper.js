@@ -29,6 +29,7 @@ export const SEND_FILE = url + "SaveLayoutFiles";
 export const DELETE_TEMPLATE = url + "DeleteLayout";
 export const GET_TEMPLATE_IMAGE = url +"GetTemplateImage";
 export const GET_TEMPLATE_CSV = url +"GetTemplateCSV";
+export const CANCEL_SCAN = url +"CancelScan";
 
 export const CREATE_JOB = url + "CreateJobs";
 export const GET_ALL_JOBS = url + "GetAllJobs";

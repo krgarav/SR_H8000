@@ -15,6 +15,7 @@ import { fetchAllTemplate } from "helper/TemplateHelper";
 // import Select, { components } from "react-select";
 import { jwtDecode } from 'jwt-decode';
 import { useLocation, useNavigate } from "react-router-dom";
+import { cancelScan } from "helper/TemplateHelper";
 
 
 const ScanJob = () => {
@@ -203,6 +204,14 @@ const ScanJob = () => {
             gridRef.current.csvExport();
         }
     };
+    const handleStop = async()=>{
+        try {
+            const cancelScan = await cancelScan();
+            
+        } catch (error) {
+            console.log(error)
+        }
+    }
     const columnsDirective = headData.map((item, index) => {
         return (
             <ColumnDirective field={item} key={index}
@@ -234,7 +243,8 @@ const ScanJob = () => {
                             <Button className="" color={scanning ? "warning" : "success"} type="button" onClick={handleStart}>
                                 {scanning ? "Stop" : "Start"}
                             </Button>
-                            <Button className="" color="danger" type="button" onClick={handleRefresh} >Refresh</Button>
+                            {/* <Button className="" color="danger" type="button" onClick={handleRefresh} >Refresh</Button> */}
+                            <Button className="" color="danger" type="button" onClick={handleStop} >Cancel Scanning</Button>
                         </div>
 
                     </div>

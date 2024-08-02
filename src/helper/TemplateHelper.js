@@ -13,3 +13,4 @@ export const sendFile = (data) => postWithFormData(url.SEND_FILE, data);
 export const getSampleData = () => get(url.GET_SCANNED_IMAGE);
 export const getTemplateImage = (path) => get(`${url.GET_TEMPLATE_IMAGE}?filePath=${path}`);
 export const getTemplateCsv = (path) => get(`${url.GET_TEMPLATE_CSV}?csvPath=${path}`);
+export const cancelScan = () => get(url.CANCEL_SCAN);

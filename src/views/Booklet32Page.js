@@ -23,6 +23,7 @@ import {
 import { fetchAllTemplate } from "helper/TemplateHelper";
 import jsonData from "data/jsonDataTest";
 import { jwtDecode } from "jwt-decode";
+import { cancelScan } from "helper/TemplateHelper";
 
 const Booklet32Page = () => {
   const [count, setCount] = useState(true);
@@ -141,8 +142,60 @@ const Booklet32Page = () => {
       }
     }
   }, []);
+  // const getScanData = async () => {
+  //   try {
+  //     // Fetch data based on selected value ID
+  //     const data = await fetchProcessData(selectedValue.id);
+  //     console.log(data);
+
+  //     // Check if the data fetch was successful
+  //     if (data?.result?.success) {
+  //       // Extract keys from the first item in the data array
+
+  //       const newDataKeys = Object.keys(data.result.data[0]).map((key) => {
+  //         return key.endsWith(".") ? key.slice(0, -1) : key;
+  //       });
+
+  //       console.log(processedData);
+  //       // Add a serial number to each entry
+  //       // if (processedData) {
+  //         let num = data.result.data.length + 1;
+  //         const updatedData =data.result.data.map((item) => {
+  //             const newItem = {};
+
+  //             // Iterate over the keys of the item
+  //             for (const key in item) {
+  //               // Check if the key ends with a dot
+  //               const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+  //               // Assign the value to the new key in newItem
+  //               newItem[newKey] = item[key];
+  //             }
+
+  //             // Add the Serial No property
+  //             newItem["Serial No"] = num++;
+  //             return newItem;
+  //           });
+          
+
+  //         // Set headData with the new keys, ensuring "Serial No" is included as a heading
+  //         setHeadData(["Serial No", ...newDataKeys]);
+
+  //         // Update the data state with the fetched data
+  //         setProcessedData(updatedData);
+  //       // }
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     toast.error("Something went wrong");
+
+  //     // Set scanning to false in case of error
+  //     setScanning(false);
+  //   }
+  // };
   const getScanData = async () => {
     try {
+      setScanning(true); // Start scanning process
+
       // Fetch data based on selected value ID
       const data = await fetchProcessData(selectedValue.id);
       console.log(data);
@@ -150,48 +203,38 @@ const Booklet32Page = () => {
       // Check if the data fetch was successful
       if (data?.result?.success) {
         // Extract keys from the first item in the data array
-
         const newDataKeys = Object.keys(data.result.data[0]).map((key) => {
           return key.endsWith(".") ? key.slice(0, -1) : key;
         });
 
-        console.log(processedData);
         // Add a serial number to each entry
-        if (processedData) {
-          let num = processedData.length + 1;
-          const updatedData = [
-            ...processedData,
-            ...data.result.data.map((item) => {
-              const newItem = {};
+        let num = 1;
+        const updatedData = data.result.data.map((item) => {
+          const newItem = {};
 
-              // Iterate over the keys of the item
-              for (const key in item) {
-                // Check if the key ends with a dot
-                const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
-                // Assign the value to the new key in newItem
-                newItem[newKey] = item[key];
-              }
+          // Iterate over the keys of the item
+          for (const key in item) {
+            // Check if the key ends with a dot
+            const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+            // Assign the value to the new key in newItem
+            newItem[newKey] = item[key];
+          }
 
-              // Add the Serial No property
-              newItem["Serial No"] = num++;
-              return newItem;
-            }),
-          ];
+          // Add the Serial No property
+          newItem["Serial No"] = num++;
+          return newItem;
+        });
 
-          // Set headData with the new keys, ensuring "Serial No" is included as a heading
-          setHeadData(["Serial No", ...newDataKeys]);
+        // Set headData with the new keys, ensuring "Serial No" is included as a heading
+        setHeadData(["Serial No", ...newDataKeys]);
 
-          // Update the data state with the fetched data
-          setProcessedData(updatedData);
-        }
+        // Update the data state with the fetched data
+        setProcessedData(updatedData);
       }
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
-
-      // Set scanning to false in case of error
-      setScanning(false);
-    }
+    } 
   };
 
   useEffect(() => {
@@ -243,10 +286,10 @@ const Booklet32Page = () => {
     }, 6000);
     const response = await scanFiles(selectedValue.id);
     console.log(response);
-    if (!response?.result.success) {
-      toast.error(response?.result.message);
+    if (!response?.result?.success) {
+      toast.error(response?.result?.message);
     } else {
-      toast.success(response?.result.message);
+      toast.success(response?.result?.message);
     }
     if (response) {
       setScanning(false);
@@ -338,7 +381,18 @@ const Booklet32Page = () => {
       }
     }
   };
-
+  const handleStop = async()=>{
+    try {
+        const cancel = await cancelScan();
+        console.log(cancel)
+        setTimeout(()=>{
+          setScanning(false);
+        },5000)
+        
+    } catch (error) {
+        console.log(error)
+    }
+}
 
   return (
     <>
@@ -390,14 +444,15 @@ const Booklet32Page = () => {
           >
             {scanning ? "Stop" : "Start"}
           </Button>
-          <Button
+          {/* <Button
             className=""
             color="danger"
             type="button"
             onClick={handleRefresh}
           >
             Refresh
-          </Button>
+          </Button> */}
+         {scanning&& <Button className="" color="danger" type="button" onClick={handleStop} >Cancel Scanning</Button>}
         </div>
       </Container>
     </>
