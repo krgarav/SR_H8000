@@ -155,6 +155,8 @@ const EditDesignTemplate = () => {
 
     const rndRef = useRef();
     const navigate = useNavigate();
+    const [isSmall, setIsSmall] = useState(false);
+    const divRef = useRef(null);
     const numRows = state.timingMarks;
     const numCols = state.totalColumns;
 
@@ -313,6 +315,25 @@ const EditDesignTemplate = () => {
     //         setPosition(idField?.imageStructureData);
     //     }
     // }, []); 
+
+
+    useEffect(() => {
+        console.log(divRef.current)
+        const checkSize = () => {
+            if (divRef.current) {
+                const { offsetWidth } = divRef.current;
+                console.log(offsetWidth)
+                setIsSmall(offsetWidth < 50); // Define your threshold for "small"
+            }
+        };
+
+        checkSize(); // Initial check
+        window.addEventListener('resize', checkSize); // Check on window resize
+
+        return () => {
+            window.removeEventListener('resize', checkSize);
+        };
+    }, [selection]);
     // *************************For Fetching the details and setting the coordinate******************
 
     useEffect(() => {
@@ -946,7 +967,7 @@ const EditDesignTemplate = () => {
                 left: Coordinate["Start Col"],
                 start: Coordinate["Start Row"],
                 fieldType: Coordinate["fieldType"],
-                name : Coordinate["name"]
+                name: Coordinate["name"]
             };
         }
 
@@ -987,7 +1008,7 @@ const EditDesignTemplate = () => {
                         left: Coordinate["Start Col"],
                         start: Coordinate["Start Row"],
                         fieldType: Coordinate["fieldType"],
-                        name : Coordinate["name"]
+                        name: Coordinate["name"]
                     }
                     : {};
                 return { ...rest, questionWindowCoordinates };
@@ -1004,7 +1025,7 @@ const EditDesignTemplate = () => {
                         left: Coordinate["Start Col"],
                         start: Coordinate["Start Row"],
                         fieldType: Coordinate["fieldType"],
-                        name : Coordinate["name"]
+                        name: Coordinate["name"]
                     }
                     : {};
                 return { ...rest, layoutWindowCoordinates };
@@ -1021,7 +1042,7 @@ const EditDesignTemplate = () => {
                         left: Coordinate["Start Col"],
                         start: Coordinate["Start Row"],
                         fieldType: Coordinate["fieldType"],
-                        name : Coordinate["name"]
+                        name: Coordinate["name"]
                     }
                     : {};
                 return { ...rest, formFieldCoordinates };
@@ -1242,7 +1263,7 @@ const EditDesignTemplate = () => {
                                             }}
                                             onClick={(e) => e.stopPropagation()}
                                         >
-                                            <div
+                                            {/* <div
                                                 className="d-flex justify-content-between align-items-center bg-dark text-white p-1"
                                                 style={{
                                                     opacity: 0.8,
@@ -1269,6 +1290,42 @@ const EditDesignTemplate = () => {
                                                         style={{ cursor: "pointer" }}
                                                     ></i>
                                                 </span>
+                                            </div> */}
+                                            <div
+                                                ref={divRef}
+                                                className="d-flex justify-content-between align-items-center bg-dark text-white p-1"
+                                                style={{
+                                                    opacity: 0.8,
+                                                    fontSize: "12px",
+                                                    position: "relative",
+                                                }}
+                                            >
+                                                {isSmall ? (
+                                                    <i
+                                                        className={`fas fa-eye me-2 mr-1 ${classes.eye}`}
+                                                        onMouseUp={handleIconMouseUp}
+                                                        onClick={(e) => handleEyeClick(data, index)}
+                                                        style={{ cursor: "pointer" }}
+                                                    ></i>
+                                                ) : (
+                                                    <>
+                                                        <span className="user-select-none">{data.name}</span>
+                                                        <span className="d-flex align-items-center user-select-none gap-10">
+                                                            <i
+                                                                className={`fas fa-eye me-2 mr-1 ${classes.eye}`}
+                                                                onMouseUp={handleIconMouseUp}
+                                                                onClick={(e) => handleEyeClick(data, index)}
+                                                                style={{ cursor: "pointer" }}
+                                                            ></i>
+                                                            <i
+                                                                className="fas fa-times text-danger cross-icon ml-1"
+                                                                onMouseUp={handleIconMouseUp}
+                                                                onClick={() => handleCrossClick(data, index)}
+                                                                style={{ cursor: "pointer" }}
+                                                            ></i>
+                                                        </span>
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
                                     ))}
