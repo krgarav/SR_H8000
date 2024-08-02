@@ -476,7 +476,7 @@ const TemplateModal = (props) => {
       console.error("Error uploading file: ", error);
     }
   };
-  console.log(printMode);
+ 
   const scannerHandler = async () => {
     try {
       const response = await getSampleData();
