@@ -148,7 +148,8 @@ const UserManagment = () => {
             try {
                 // const { data } = await axios.post("https://rb5xhrfq-5289.inc1.devtunnels.ms/UserRegistration", { name, email, phoneNumber, role, password, ConfirmPassword });
                 let userRole = selectecdRole.roleName
-                const data = await createUser({ name, email, phoneNumber, userRole, password, ConfirmPassword })
+                const userName = name
+                const data = await createUser({ userName, email, phoneNumber, userRole, password, ConfirmPassword })
                 if (data?.success) {
                     console.log(data.message);
                     toast.success(data?.message);
@@ -233,7 +234,7 @@ const UserManagment = () => {
                                         <>
                                             <tr key={i}>
                                                 <td>{i + 1}</td>
-                                                <td>{d.name}</td>
+                                                <td>{d.userName}</td>
                                                 <td>
                                                     {d.email}
                                                 </td>
