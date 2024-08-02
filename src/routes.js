@@ -15,6 +15,8 @@ import Booklet24Page from "views/Booklet24Page";
 import ImageGrid from "views/Imagegrid";
 import FolderStructure from "views/FolderStructure";
 import ReactFile from "views/ReactFile";
+import FolderPicker from "views/FolderPicker";
+import FolderPickerDirectory from "views/FolderPickerDirectory";
 
 var routes = [
   {
@@ -65,7 +67,7 @@ var routes = [
     path: "/setting",
     name: "Settings",
     icon: "ni ni-settings-gear-65 text-primary",
-    component: <Settings />,
+    component: <FolderPickerDirectory />,
     layout: "/admin",
   },
   {

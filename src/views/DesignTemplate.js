@@ -710,7 +710,7 @@ const DesignTemplate = () => {
         multipleValue: multipleValue ? multipleValue : "",
         blankAllow: blank,
         blankValue: blankValue ? blankValue : "",
-        customFieldValue:customValue?customValue:""
+        customFieldValue: customValue ? customValue : ""
         // imageStructureData: position,
       };
     }
@@ -947,6 +947,8 @@ const DesignTemplate = () => {
         end: Coordinate["End Row"],
         left: Coordinate["Start Col"],
         start: Coordinate["Start Row"],
+        name: Coordinate["name"],
+        fieldType: Coordinate["fieldType"]
       };
     }
 
@@ -986,6 +988,8 @@ const DesignTemplate = () => {
             end: Coordinate["End Row"],
             left: Coordinate["Start Col"],
             start: Coordinate["Start Row"],
+            name: Coordinate["name"],
+            fieldType: Coordinate["fieldType"]
           }
           : {};
         return { ...rest, questionWindowCoordinates };
@@ -1001,6 +1005,8 @@ const DesignTemplate = () => {
             end: Coordinate["End Row"],
             left: Coordinate["Start Col"],
             start: Coordinate["Start Row"],
+            name: Coordinate["name"],
+            fieldType: Coordinate["fieldType"]
           }
           : {};
         return { ...rest, layoutWindowCoordinates };
@@ -1016,6 +1022,8 @@ const DesignTemplate = () => {
             end: Coordinate["End Row"],
             left: Coordinate["Start Col"],
             start: Coordinate["Start Row"],
+            name: Coordinate["name"],
+            fieldType: Coordinate["fieldType"]
           }
           : {};
         return { ...rest, formFieldCoordinates };
@@ -1199,8 +1207,8 @@ const DesignTemplate = () => {
                             //         result[rowIndex][colIndex] != 0 ? "black" : "",
                             // }}
                             className={`${bubbleType} ${selected[`${rowIndex},${colIndex}`]
-                                ? "selected"
-                                : ""
+                              ? "selected"
+                              : ""
                               }`}
                           ></div>
                         ))}

@@ -62,7 +62,8 @@ const Template = () => {
       }
       const mpObj = templates?.map((item) => {
         return [{ layoutParameters: item }]
-      })
+      });
+      console.log(mpObj)
       dataCtx.addToAllTemplate(mpObj);
 
     }
@@ -74,19 +75,14 @@ const Template = () => {
     setTemplateDetail(arr)
   }
   const editHandler = async (arr, index) => {
-    console.log(arr, index);
     const tempdata = arr[0].layoutParameters;
     const templateId = tempdata.id;
-    console.log(templateId)
     const res = await getLayoutDataById(templateId);
-    console.log(res.templateFiles)
     const csvpath = res?.templateFiles?.csvPath
     const imgpath = res?.templateFiles?.imagePath
     const res1 = await getTemplateImage(imgpath);
     const imgfile = base64ToFile(res1.image, 'image.jpg');
-
     const res2 = await getTemplateCsv(csvpath);
-
     const csvContent = Papa.unparse(res2.data);
 
     // Create a Blob from the CSV content
@@ -94,10 +90,9 @@ const Template = () => {
 
     // Create a File from the Blob
     const csvfile = new File([blob], 'data.csv', { type: 'text/csv' });
-    console.log(csvfile)
-// console.log(res2.data)
 
-    navigate("/admin/design-template", {
+
+    navigate("/admin/edit-template", {
       state: {
         templateIndex: index,
         timingMarks: +tempdata.timingMarks,
@@ -108,7 +103,6 @@ const Template = () => {
         iDifference: +tempdata.iDifference,
         iReject: tempdata.iReject,
         iFace: +tempdata.iFace,
-        arr: arr,
         templateId: tempdata.id,
         excelJsonFile: res2.data,
         imageTempFile: imgfile,

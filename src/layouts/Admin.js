@@ -27,6 +27,7 @@ import Sidebar from "components/Sidebar/Sidebar.js";
 import routes from "routes.js";
 import DesignTemplate from "views/DesignTemplate";
 import FolderStructure from "views/FolderStructure";
+import EditDesignTemplate from "views/EditDesignTemplate";
 
 const Admin = (props) => {
   const mainContent = React.useRef(null);
@@ -83,7 +84,8 @@ const Admin = (props) => {
           <Route path="*" element={<Navigate to="/admin/index" replace />} />
           <Route path="/design-template" element={<DesignTemplate />} />
           <Route path="/server-folder" element={<FolderStructure />} />
-
+          <Route path="/edit-template" element={<EditDesignTemplate />} />
+          
         </Routes>
         {/* <Container fluid>
           <AdminFooter />

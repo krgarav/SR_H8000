@@ -121,6 +121,8 @@ const DataProvider = (props) => {
       "End Row": layoutCoordinates["end"],
       "Start Col": layoutCoordinates["left"],
       "Start Row": layoutCoordinates["start"],
+      name: layoutCoordinates["name"],
+      fieldType: layoutCoordinates["fieldType"],
     };
 
     const updatedLayoutParameter = {
@@ -141,33 +143,39 @@ const DataProvider = (props) => {
             "End Row": formFieldCoordinates["end"],
             "Start Col": formFieldCoordinates["left"],
             "Start Row": formFieldCoordinates["start"],
+            name: formFieldCoordinates["name"],
+            fieldType: formFieldCoordinates["fieldType"],
           }
         : {};
-      return { ...rest, questionWindowCoordinates };
+      return { ...rest, formFieldCoordinates: questionWindowCoordinates };
     });
     const updatedSkewField = skewMarksWindowParameters?.map((item) => {
-      const { formFieldCoordinates, ...rest } = item;
-      const questionWindowCoordinates = formFieldCoordinates
+      const { layoutWindowCoordinates, ...rest } = item;
+      const questionWindowCoordinates = layoutWindowCoordinates
         ? {
-            "End Col": formFieldCoordinates["right"],
-            "End Row": formFieldCoordinates["end"],
-            "Start Col": formFieldCoordinates["left"],
-            "Start Row": formFieldCoordinates["start"],
+            "End Col": layoutWindowCoordinates["right"],
+            "End Row": layoutWindowCoordinates["end"],
+            "Start Col": layoutWindowCoordinates["left"],
+            "Start Row": layoutWindowCoordinates["start"],
+            name: layoutWindowCoordinates["name"],
+            fieldType: layoutWindowCoordinates["fieldType"],
           }
         : {};
-      return { ...rest, questionWindowCoordinates };
+      return { ...rest, layoutWindowCoordinates: questionWindowCoordinates };
     });
     const updatedQuestionField = questionsWindowParameters?.map((item) => {
-      const { formFieldCoordinates, ...rest } = item;
-      const questionWindowCoordinates = formFieldCoordinates
+      const { questionWindowCoordinates, ...rest } = item;
+      const questionWindowCoordinates1 = questionWindowCoordinates
         ? {
-            "End Col": formFieldCoordinates["right"],
-            "End Row": formFieldCoordinates["end"],
-            "Start Col": formFieldCoordinates["left"],
-            "Start Row": formFieldCoordinates["start"],
+            "End Col": questionWindowCoordinates["right"],
+            "End Row": questionWindowCoordinates["end"],
+            "Start Col": questionWindowCoordinates["left"],
+            "Start Row": questionWindowCoordinates["start"],
+            name: questionWindowCoordinates["name"],
+            fieldType: questionWindowCoordinates["fieldType"],
           }
         : {};
-      return { ...rest, questionWindowCoordinates };
+      return { ...rest, questionWindowCoordinates: questionWindowCoordinates1 };
     });
     // const Coordinate = {
     //   "End Col": layoutCoordinates["right"],
