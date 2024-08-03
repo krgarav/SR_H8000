@@ -1067,36 +1067,36 @@ const EditDesignTemplate = () => {
         };
         console.log(fullRequestData)
         // Send the request and handle the response
-        // try {
-        //     setLoading(true);
-        //     const res = await createTemplate(fullRequestData);
-        //     console.log(res);
-        //     if (res.success === true) {
-        //         const layoutId = res?.layoutId;
-        //         const formdata = new FormData();
-        //         formdata.append("LayoutId", layoutId);
-        //         formdata.append("ImageFile", state.imageTempFile);
-        //         formdata.append("ExcelFile", state.excelFile);
-        //         // Iterate over the FormData entries and log them
-        //         for (let [key, value] of formdata.entries()) {
-        //             console.log(`${key}: ${value}`);
-        //         }
-        //         const res2 = await sendFile(formdata);
-        //         console.log(res2);
-        //         setLoading(false);
+        try {
+            setLoading(true);
+            const res = await createTemplate(fullRequestData);
+            console.log(res);
+            if (res.success === true) {
+                const layoutId = res?.layoutId;
+                const formdata = new FormData();
+                formdata.append("LayoutId", layoutId);
+                formdata.append("ImageFile", state.imageTempFile);
+                formdata.append("ExcelFile", state.excelFile);
+                // Iterate over the FormData entries and log them
+                for (let [key, value] of formdata.entries()) {
+                    console.log(`${key}: ${value}`);
+                }
+                const res2 = await sendFile(formdata);
+                console.log(res2);
+                setLoading(false);
 
-        //         alert(`Response : ${JSON.stringify(res2?.message)}`);
+                alert(`Response : ${JSON.stringify(res2?.message)}`);
 
-        //         if (res2?.success) {
-        //             sessionStorage.clear();
-        //             toast.success("Layout Saved");
-        //             navigate("/admin/template", { replace: true });
-        //         }
-        //     }
-        // } catch (error) {
-        //     alert(`Error creating template`);
-        //     console.error("Error sending POST request:", error);
-        // }
+                if (res2?.success) {
+                    sessionStorage.clear();
+                    toast.success("Layout Saved");
+                    navigate("/admin/template", { replace: true });
+                }
+            }
+        } catch (error) {
+            alert(`Error creating template`);
+            console.error("Error sending POST request:", error);
+        }
     };
 
     return (
