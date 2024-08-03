@@ -379,28 +379,6 @@ const TemplateModal = (props) => {
     }
 
     try {
-      // let img = "";
-      // if (imageFile) {
-      //   const formData = new FormData();
-      //   formData.append("file", imageFile);
-      //   formData.append("upload_preset", "Sekonic"); // Replace with your Cloudinary upload preset
-
-      //   const response = await axios.post(
-      //     "https://api.cloudinary.com/v1_1/dje269eh5/image/upload",
-      //     formData,
-      //     {
-      //       headers: {
-      //         "Content-Type": "multipart/form-data",
-      //         // Add authorization header if required (depending on your Cloudinary setup)
-      //         // 'Authorization': 'Bearer YOUR_CLOUDINARY_API_KEY_AND_SECRET'
-      //       },
-      //     }
-      //   );
-      //   console.log(response);
-      //   img = response?.data.secure_url;
-      //   // setImageUrl(response?.data.secure_url);
-      // }
-      console.log(printOrientation?.id === undefined ? 0 : printOrientation.id);
       const templateData = [
         {
           layoutParameters: {

@@ -30,6 +30,7 @@ import SmallHeader from "components/Headers/SmallHeader";
 import { toast } from "react-toastify";
 import isEqual from "lodash/isEqual";
 import { sendFile } from "helper/TemplateHelper";
+import ImageCropper from "ui/ImageCropper";
 
 // Function to get values from sessionStorage or provide default
 const getSessionStorageOrDefault = (key, defaultValue) => {
@@ -169,7 +170,7 @@ const DesignTemplate = () => {
   //     ),
   //     excelFile: getSessionStorageOrDefault("excelFile", state.excelFile),
   // }));
-  console.log(idSelectionCount)
+  console.log(idSelectionCount);
   const rndRef = useRef();
   const navigate = useNavigate();
   const numRows = state.timingMarks;
@@ -196,14 +197,14 @@ const DesignTemplate = () => {
     });
   };
 
-
   useEffect(() => {
-    const idFieldCount = selectedCoordinates.filter(item => item.fieldType === "idField").length;
+    const idFieldCount = selectedCoordinates.filter(
+      (item) => item.fieldType === "idField"
+    ).length;
     if (idFieldCount > 0) {
       setIdSelectionCount(1);
     }
-
-  }, [])
+  }, []);
   // useEffect(() => {
   //     if (location.state) {
   //         sessionStorage.setItem(
@@ -281,7 +282,7 @@ const DesignTemplate = () => {
     if (gridDiv && imgDiv) {
       const gridHeight = gridDiv.clientHeight;
       const gridWidth = gridDiv.clientWidth;
-      console.log(gridHeight)
+      console.log(gridHeight);
       imgDiv.style.height = `${gridHeight + 250}px`;
       imgDiv.style.width = `${gridWidth + 130}px`; // Adding 50 pixels to the width
       setPosition({
@@ -718,7 +719,7 @@ const DesignTemplate = () => {
         multipleValue: multipleValue ? multipleValue : "",
         blankAllow: blank,
         blankValue: blankValue ? blankValue : "",
-        customFieldValue: customValue ? customValue : ""
+        customFieldValue: customValue ? customValue : "",
         // imageStructureData: position,
       };
     }
@@ -855,7 +856,7 @@ const DesignTemplate = () => {
       setMultiple(data?.multipleAllow);
       setMultipleValue(data?.multipleValue);
       setBlank(data?.blankAllow);
-      setBlankValue(data?.blankValue)
+      setBlankValue(data?.blankValue);
     } else if (selectedField?.fieldType === "formField") {
       // const data = template[0].formFieldWindowParameters.filter((item) => {
 
@@ -893,7 +894,7 @@ const DesignTemplate = () => {
       setMultiple(data?.multipleAllow);
       setMultipleValue(data?.multipleValue);
       setBlank(data?.blankAllow);
-      setBlankValue(data?.blankValue)
+      setBlankValue(data?.blankValue);
     } else if (selectedField?.fieldType === "skewMarkField") {
       const parameters = template[0].skewMarksWindowParameters;
       const index = parameters.findIndex((item) =>
@@ -958,7 +959,7 @@ const DesignTemplate = () => {
         left: Coordinate["Start Col"],
         start: Coordinate["Start Row"],
         name: Coordinate["name"],
-        fieldType: Coordinate["fieldType"]
+        fieldType: Coordinate["fieldType"],
       };
     }
 
@@ -994,13 +995,13 @@ const DesignTemplate = () => {
         const { Coordinate, ...rest } = item;
         const questionWindowCoordinates = Coordinate
           ? {
-            right: Coordinate["End Col"],
-            end: Coordinate["End Row"],
-            left: Coordinate["Start Col"],
-            start: Coordinate["Start Row"],
-            name: Coordinate["name"],
-            fieldType: Coordinate["fieldType"]
-          }
+              right: Coordinate["End Col"],
+              end: Coordinate["End Row"],
+              left: Coordinate["Start Col"],
+              start: Coordinate["Start Row"],
+              name: Coordinate["name"],
+              fieldType: Coordinate["fieldType"],
+            }
           : {};
         return { ...rest, questionWindowCoordinates };
       });
@@ -1011,13 +1012,13 @@ const DesignTemplate = () => {
         const { Coordinate, ...rest } = item;
         const layoutWindowCoordinates = Coordinate
           ? {
-            right: Coordinate["End Col"],
-            end: Coordinate["End Row"],
-            left: Coordinate["Start Col"],
-            start: Coordinate["Start Row"],
-            name: Coordinate["name"],
-            fieldType: Coordinate["fieldType"]
-          }
+              right: Coordinate["End Col"],
+              end: Coordinate["End Row"],
+              left: Coordinate["Start Col"],
+              start: Coordinate["Start Row"],
+              name: Coordinate["name"],
+              fieldType: Coordinate["fieldType"],
+            }
           : {};
         return { ...rest, layoutWindowCoordinates };
       });
@@ -1028,13 +1029,13 @@ const DesignTemplate = () => {
         const { Coordinate, ...rest } = item;
         const formFieldCoordinates = Coordinate
           ? {
-            right: Coordinate["End Col"],
-            end: Coordinate["End Row"],
-            left: Coordinate["Start Col"],
-            start: Coordinate["Start Row"],
-            name: Coordinate["name"],
-            fieldType: Coordinate["fieldType"]
-          }
+              right: Coordinate["End Col"],
+              end: Coordinate["End Row"],
+              left: Coordinate["Start Col"],
+              start: Coordinate["Start Row"],
+              name: Coordinate["name"],
+              fieldType: Coordinate["fieldType"],
+            }
           : {};
         return { ...rest, formFieldCoordinates };
       });
@@ -1049,7 +1050,7 @@ const DesignTemplate = () => {
       skewMarksWindowParameters,
       formFieldWindowParameters,
     };
-    console.log(fullRequestData)
+    console.log(fullRequestData);
     // Send the request and handle the response
     try {
       setLoading(true);
@@ -1206,9 +1207,9 @@ const DesignTemplate = () => {
                             style={{
                               backgroundColor:
                                 rowIndex < result.length &&
-                                  colIndex < result[rowIndex].length &&
-                                  result[rowIndex][colIndex] != 0 &&
-                                  result[rowIndex][colIndex] !== undefined
+                                colIndex < result[rowIndex].length &&
+                                result[rowIndex][colIndex] != 0 &&
+                                result[rowIndex][colIndex] !== undefined
                                   ? "black"
                                   : "",
                             }}
@@ -1216,10 +1217,11 @@ const DesignTemplate = () => {
                             //     backgroundColor:
                             //         result[rowIndex][colIndex] != 0 ? "black" : "",
                             // }}
-                            className={`${bubbleType} ${selected[`${rowIndex},${colIndex}`]
-                              ? "selected"
-                              : ""
-                              }`}
+                            className={`${bubbleType} ${
+                              selected[`${rowIndex},${colIndex}`]
+                                ? "selected"
+                                : ""
+                            }`}
                           ></div>
                         ))}
                       </div>
@@ -1233,24 +1235,28 @@ const DesignTemplate = () => {
                       style={{
                         border: "3px solid #007bff",
                         position: "absolute",
-                        left: `${data.startCol *
-                          (imageRef.current.getBoundingClientRect().width /
-                            numCols) -
+                        left: `${
+                          data.startCol *
+                            (imageRef.current.getBoundingClientRect().width /
+                              numCols) -
                           4
-                          }px`,
-                        top: `${data.startRow *
-                          (imageRef.current.getBoundingClientRect().height /
-                            numRows) -
+                        }px`,
+                        top: `${
+                          data.startRow *
+                            (imageRef.current.getBoundingClientRect().height /
+                              numRows) -
                           3
-                          }px`,
-                        width: `${(data.endCol - data.startCol + 1) *
+                        }px`,
+                        width: `${
+                          (data.endCol - data.startCol + 1) *
                           (imageRef.current.getBoundingClientRect().width /
                             numCols)
-                          }px`,
-                        height: `${(data.endRow - data.startRow + 1) *
+                        }px`,
+                        height: `${
+                          (data.endRow - data.startRow + 1) *
                           (imageRef.current.getBoundingClientRect().height /
                             numRows)
-                          }px`,
+                        }px`,
                       }}
                       onClick={(e) => e.stopPropagation()}
                     >
@@ -1263,11 +1269,12 @@ const DesignTemplate = () => {
                         }}
                       >
                         <span className="user-select-none">{data.name}</span>
-                        <span className={`d-flex align-items-center user-select-none gap-10`}>
+                        <span
+                          className={`d-flex align-items-center user-select-none gap-10`}
+                        >
                           <i
                             className={`fas fa-eye me-2 mr-1 ${classes.eye}`}
                             onMouseUp={handleIconMouseUp}
-
                             onClick={(e) => {
                               handleEyeClick(data, index);
                             }}
@@ -1291,24 +1298,28 @@ const DesignTemplate = () => {
                       style={{
                         border: "2px solid green",
                         position: "absolute",
-                        left: `${selection.startCol *
-                          (imageRef.current.getBoundingClientRect().width /
-                            numCols) -
+                        left: `${
+                          selection.startCol *
+                            (imageRef.current.getBoundingClientRect().width /
+                              numCols) -
                           4
-                          }px`,
-                        top: `${selection.startRow *
-                          (imageRef.current.getBoundingClientRect().height /
-                            numRows) -
+                        }px`,
+                        top: `${
+                          selection.startRow *
+                            (imageRef.current.getBoundingClientRect().height /
+                              numRows) -
                           3
-                          }px`,
-                        width: `${(selection.endCol - selection.startCol + 1) *
+                        }px`,
+                        width: `${
+                          (selection.endCol - selection.startCol + 1) *
                           (imageRef.current.getBoundingClientRect().width /
                             numCols)
-                          }px`,
-                        height: `${(selection.endRow - selection.startRow + 1) *
+                        }px`,
+                        height: `${
+                          (selection.endRow - selection.startRow + 1) *
                           (imageRef.current.getBoundingClientRect().height /
                             numRows)
-                          }px`,
+                        }px`,
                         content: "question field",
                       }}
                     ></div>
@@ -1334,10 +1345,6 @@ const DesignTemplate = () => {
             <h2 className="text-center">Choose field type</h2>
             <br />
             <Row className="mb-2">
-              <label
-                htmlFor="example-text-input"
-                className="col-md-2 col-form-label"
-              ></label>
               <Col md={2} className="d-flex align-items-center">
                 <label htmlFor="formField" className="mr-2 mb-0 field-label">
                   Form :{" "}
@@ -1349,7 +1356,7 @@ const DesignTemplate = () => {
                   value="formField"
                   checked={selectedFieldType === "formField"}
                   onChange={handleRadioChange}
-                  className=" field-label"
+                  className=" field-label mt-1"
                 />
               </Col>
               <Col md={2} className="d-flex align-items-center">
@@ -1363,13 +1370,14 @@ const DesignTemplate = () => {
                   value="questionField"
                   checked={selectedFieldType === "questionField"}
                   onChange={handleRadioChange}
-                  className=" field-label"
+                  className=" field-label mt-1"
                 />
               </Col>
               <Col md={3} className="d-flex align-items-center">
                 <label
                   htmlFor="skewMarkField"
-                  className="mr-2 mb-0 field-label"
+                  className="mr-2 mb-0 col-form-label"
+                  style={{ marginRight: "8px" }} // Inline style to add a bit more space if needed
                 >
                   Skew Mark :
                 </label>
@@ -1380,7 +1388,7 @@ const DesignTemplate = () => {
                   value="skewMarkField"
                   checked={selectedFieldType === "skewMarkField"}
                   onChange={handleRadioChange}
-                  className=" field-label"
+                  className=" field-label mt-1" // Add margin-left to input for better spacing if necessary
                 />
               </Col>
               <Col md={2} className="d-flex align-items-center">
@@ -1396,580 +1404,621 @@ const DesignTemplate = () => {
                       value="idField"
                       checked={selectedFieldType === "idField"}
                       onChange={handleRadioChange}
-                      className="field-label"
+                      className="field-label mt-1"
                       disabled={idSelectionCount > 0}
                     />
                   </div>
                   {idSelectionCount > 0 && (
                     <div>
-                      <small style={{ color: "orangered" }}>already selected</small>
+                      <small style={{ color: "orangered" }}>
+                        already selected
+                      </small>
                     </div>
                   )}
                 </div>
               </Col>
-
+              <Col md={3} className="d-flex align-items-center">
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <div>
+                    <label
+                      htmlFor="imageArea"
+                      className="mr-2 mb-0 field-label"
+                    >
+                      Image Area :
+                    </label>
+                    <input
+                      id="imageArea"
+                      type="radio"
+                      name="fieldType"
+                      value="imageArea"
+                      checked={selectedFieldType === "imageArea"}
+                      onChange={handleRadioChange}
+                      className="field-label mt-1"
+                    />
+                  </div>
+                </div>
+              </Col>
             </Row>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ height: "55vh", overflowX: "auto" }}>
-          {selectedFieldType !== "idField" && (
-            <Row className="mb-2">
-              <label
-                htmlFor="example-text-input"
-                className="col-md-2 col-form-label "
-                style={{ fontSize: "0.8rem" }}
-              >
-                Window Name
-              </label>
-              <div className="col-md-10">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Enter Window Name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  style={{ color: "black" }}
-                />
-              </div>
-            </Row>
+          {selectedFieldType === "imageArea" && (
+            <>
+              <ImageCropper imageSrc={templateImagePath} />
+            </>
           )}
-          {(selectedFieldType === "questionField" ||
-            selectedFieldType === "formField") && (
-              <Row className="mb-2">
-                <label
-                  htmlFor="example-text-input"
-                  className="col-md-2 col-form-label"
-                >
-                  Multiple
-                </label>
-                <div className={multiple !== "allow" ? "col-md-4" : "col-md-10"}>
-                  <select
-                    className="form-control"
-                    value={multiple}
-                    onChange={(e) => {
-                      setMultiple(e.target.value);
-                    }}
-                    defaultValue={""}
+          {selectedFieldType !== "imageArea" && (
+            <>
+              {selectedFieldType !== "idField" && (
+                <Row className="mb-2">
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2 col-form-label "
+                    style={{ fontSize: "0.8rem" }}
                   >
-                    <option value="">Select an option</option>
-                    <option value="allow">Allow All</option>
-                    <option value="not allow">Allow None</option>
-                  </select>
-                </div>
-                {multiple !== "allow" && (
-                  <>
-                    <label htmlFor="example-text-input" className="col-md-2 ">
-                      Multiple Value
-                    </label>
-                    <div className="col-md-4">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Character of Multiple"
-                        value={multipleValue}
-                        onChange={(e) => setMultipleValue(e.target.value)}
-                        required
-                      />
-                    </div>
-                  </>
-                )}
-              </Row>
-            )}
-          {(selectedFieldType === "questionField" ||
-            selectedFieldType === "formField") && (
-              <Row className="mb-2">
-                <label
-                  htmlFor="example-text-input"
-                  className="col-md-2 col-form-label"
-                >
-                  Blanks
-                </label>
-                <div className={blank !== "allow" ? "col-md-4" : "col-md-10"}>
-                  <select
-                    className="form-control"
-                    value={blank}
-                    onChange={(e) => {
-                      setBlank(e.target.value);
-                    }}
-                    defaultValue={""}
+                    Window Name
+                  </label>
+                  <div className="col-md-10">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Enter Window Name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      style={{ color: "black" }}
+                    />
+                  </div>
+                </Row>
+              )}
+              {(selectedFieldType === "questionField" ||
+                selectedFieldType === "formField") && (
+                <Row className="mb-2">
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2 col-form-label"
                   >
-                    <option value="">Select an option</option>
-                    <option value="allow">Allow All</option>
-                    <option value="not allow">Allow None</option>
-                  </select>
-                </div>
-                {blank !== "allow" && (
-                  <>
-                    <label
-                      htmlFor="example-text-input"
-                      className="col-md-2 col-form-label"
+                    Multiple
+                  </label>
+                  <div
+                    className={multiple !== "allow" ? "col-md-4" : "col-md-10"}
+                  >
+                    <select
+                      className="form-control"
+                      value={multiple}
+                      onChange={(e) => {
+                        setMultiple(e.target.value);
+                      }}
+                      defaultValue={""}
                     >
-                      Blank Value
-                    </label>
-                    <div className="col-md-4">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Character of Blank"
-                        value={blankValue}
-                        onChange={(e) => setBlankValue(e.target.value)}
-                        required
-                      />
-                    </div>
-                  </>
-                )}
+                      <option value="">Select an option</option>
+                      <option value="allow">Allow All</option>
+                      <option value="not allow">Allow None</option>
+                    </select>
+                  </div>
+                  {multiple !== "allow" && (
+                    <>
+                      <label htmlFor="example-text-input" className="col-md-2 ">
+                        Multiple Value
+                      </label>
+                      <div className="col-md-4">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Character of Multiple"
+                          value={multipleValue}
+                          onChange={(e) => setMultipleValue(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </>
+                  )}
+                </Row>
+              )}
+              {(selectedFieldType === "questionField" ||
+                selectedFieldType === "formField") && (
+                <Row className="mb-2">
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2 col-form-label"
+                  >
+                    Blanks
+                  </label>
+                  <div className={blank !== "allow" ? "col-md-4" : "col-md-10"}>
+                    <select
+                      className="form-control"
+                      value={blank}
+                      onChange={(e) => {
+                        setBlank(e.target.value);
+                      }}
+                      defaultValue={""}
+                    >
+                      <option value="">Select an option</option>
+                      <option value="allow">Allow All</option>
+                      <option value="not allow">Allow None</option>
+                    </select>
+                  </div>
+                  {blank !== "allow" && (
+                    <>
+                      <label
+                        htmlFor="example-text-input"
+                        className="col-md-2 col-form-label"
+                      >
+                        Blank Value
+                      </label>
+                      <div className="col-md-4">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Character of Blank"
+                          value={blankValue}
+                          onChange={(e) => setBlankValue(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </>
+                  )}
+                </Row>
+              )}
+              {selectedFieldType !== "idField" && (
+                <Row className="mb-2">
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2 col-form-label"
+                  >
+                    Window NG
+                  </label>
+                  <div className="col-md-10">
+                    <select
+                      className="form-control"
+                      value={windowNgOption}
+                      onChange={handleWindowNgOptionChange}
+                      defaultValue={""}
+                    >
+                      <option value="">Select an option</option>
+                      <option value="0x00000001">
+                        Paper ejection to select stacker
+                      </option>
+                      <option value="0x00000002">Stop reading</option>
+                    </select>
+                  </div>
+                </Row>
+              )}
+              {selectedFieldType !== "idField" && (
+                <Row>
+                  <label htmlFor="example-select-input" className="col-md-2">
+                    Minimum Mark
+                  </label>
+                  <div className="col-md-4">
+                    <input
+                      type="number"
+                      className="form-control"
+                      placeholder="Enter the minimum mark"
+                      value={minimumMark}
+                      onChange={(e) => setMinimumMark(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <label htmlFor="example-select-input" className="col-md-2 ">
+                    Maximum Mark
+                  </label>
+                  <div className="col-md-4">
+                    <input
+                      type="number"
+                      className="form-control"
+                      placeholder="Enter the maximum mark"
+                      value={maximumMark}
+                      onChange={(e) => setMaximumMark(e.target.value)}
+                      required
+                    />
+                  </div>
+                </Row>
+              )}
+              {selectedFieldType === "idField" && (
+                <Row className="mb-2">
+                  <label className="col-md-2 " style={{}}>
+                    Set Id Pattern
+                  </label>
+
+                  <div className="col-md-2">
+                    <select
+                      value={idType}
+                      onChange={(e) => {
+                        setIdType(e.target.value);
+                      }}
+                      className=" form-control"
+                    >
+                      <option value="Row">Row</option>
+                      <option value="Col">Col</option>
+                    </select>
+                  </div>
+                  <label htmlFor="example-select-input" className="col-md-2 ">
+                    Id selection
+                  </label>
+                  <div className="col-md-6">
+                    <MultiSelect
+                      options={options}
+                      value={selectedCol}
+                      onChange={setSelectedCol}
+                      labelledBy="Select"
+                    />
+                  </div>
+                </Row>
+              )}
+              {selectedFieldType === "skewMarkField" && (
+                <Row className="mb-2">
+                  <label
+                    htmlFor="example-select-input"
+                    className="col-md-2 col-form-label"
+                  >
+                    Skew Mark
+                  </label>
+                  <div className="col-md-10">
+                    <select
+                      className="form-control"
+                      value={skewoption}
+                      onChange={handleSkewMarkOptionChange}
+                      defaultValue={"none"}
+                    >
+                      <option value="">Select an option</option>
+                      <option value="rear">Top Skew Mark</option>
+                      <option value="front">Bottom Skew Mark</option>
+                    </select>
+                  </div>
+                </Row>
+              )}
+
+              <Row className="mb-2">
+                <label
+                  htmlFor="example-select-input"
+                  className="col-2 col-form-label"
+                >
+                  Start Row
+                </label>
+                <div className="col-2 ">
+                  <input
+                    id="startRow"
+                    type="number"
+                    disabled={modalUpdate}
+                    value={startRowInput}
+                    onBlur={(e) => {
+                      const newValue = e.target.valueAsNumber;
+                      if (newValue > 0) {
+                        setSelection((item) => ({
+                          ...item,
+                          startRow: newValue - 1,
+                        }));
+                      } else {
+                        setStartRowInput(selection.startRow + 1); // Reset to previous valid value
+                      }
+                    }}
+                    onChange={(e) => {
+                      setStartRowInput(
+                        e.target.valueAsNumber >= 0 ? e.target.value : ""
+                      );
+                    }}
+                    className="form-control"
+                  />
+                </div>
+                <label
+                  htmlFor="example-select-input"
+                  className="col-2 col-form-label"
+                >
+                  End Row
+                </label>
+                <div className="col-2">
+                  <input
+                    type="number"
+                    value={endRowInput}
+                    disabled={modalUpdate}
+                    onBlur={(e) => {
+                      const newValue = e.target.valueAsNumber;
+                      if (newValue > 0) {
+                        setSelection((item) => ({
+                          ...item,
+                          endRow: newValue - 1,
+                        }));
+                      } else {
+                        setEndRowInput(selection?.endRow + 1); // Reset to previous valid value
+                      }
+                    }}
+                    onChange={(e) => {
+                      setEndRowInput(
+                        e.target.valueAsNumber >= 0 ? e.target.value : ""
+                      );
+                    }}
+                    className="form-control"
+                  />
+                </div>
+                <label
+                  htmlFor="example-select-input"
+                  className="col-2 col-form-label"
+                >
+                  Total Row
+                </label>
+                <div className="col-2">
+                  <input value={numRows} readOnly className="form-control" />
+                </div>
               </Row>
-            )}
-          {selectedFieldType !== "idField" && (
-            <Row className="mb-2">
-              <label
-                htmlFor="example-text-input"
-                className="col-md-2 col-form-label"
-              >
-                Window NG
-              </label>
-              <div className="col-md-10">
-                <select
-                  className="form-control"
-                  value={windowNgOption}
-                  onChange={handleWindowNgOptionChange}
-                  defaultValue={""}
+              <Row className="">
+                <label htmlFor="example-select-input" className="col-2 ">
+                  Total No In Row
+                </label>
+                <div className="col-4">
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={noInRow}
+                    onChange={(e) => setNoInRow(e.target.value)}
+                    required
+                  />
+                </div>
+                <label htmlFor="example-select-input" className="col-2 ">
+                  Total Step In A Row
+                </label>
+                <div className="col-4">
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={noOfStepInRow}
+                    onChange={(e) => setNoOfStepInRow(e.target.value)}
+                    required
+                  />
+                </div>
+              </Row>
+              <Row className="mb-2">
+                <label
+                  htmlFor="example-select-input"
+                  className="col-2  col-form-label"
                 >
-                  <option value="">Select an option</option>
-                  <option value="0x00000001">
-                    Paper ejection to select stacker
-                  </option>
-                  <option value="0x00000002">Stop reading</option>
-                </select>
-              </div>
-            </Row>
-          )}
-          {selectedFieldType !== "idField" && (
-            <Row>
-              <label htmlFor="example-select-input" className="col-md-2">
-                Minimum Mark
-              </label>
-              <div className="col-md-4">
-                <input
-                  type="number"
-                  className="form-control"
-                  placeholder="Enter the minimum mark"
-                  value={minimumMark}
-                  onChange={(e) => setMinimumMark(e.target.value)}
-                  required
-                />
-              </div>
-              <label htmlFor="example-select-input" className="col-md-2 ">
-                Maximum Mark
-              </label>
-              <div className="col-md-4">
-                <input
-                  type="number"
-                  className="form-control"
-                  placeholder="Enter the maximum mark"
-                  value={maximumMark}
-                  onChange={(e) => setMaximumMark(e.target.value)}
-                  required
-                />
-              </div>
-            </Row>
-          )}
-          {selectedFieldType === "idField" && (
-            <Row className="mb-2">
-              <label className="col-md-2 " style={{}}>
-                Set Id Pattern
-              </label>
-
-              <div className="col-md-2">
-                <select
-                  value={idType}
-                  onChange={(e) => {
-                    setIdType(e.target.value);
-                  }}
-                  className=" form-control"
-                >
-                  <option value="Row">Row</option>
-                  <option value="Col">Col</option>
-                </select>
-              </div>
-              <label htmlFor="example-select-input" className="col-md-2 ">
-                Id selection
-              </label>
-              <div className="col-md-6">
-                <MultiSelect
-                  options={options}
-                  value={selectedCol}
-                  onChange={setSelectedCol}
-                  labelledBy="Select"
-                />
-              </div>
-            </Row>
-          )}
-          {selectedFieldType === "skewMarkField" && (
-            <Row className="mb-2">
-              <label
-                htmlFor="example-select-input"
-                className="col-md-2 col-form-label"
-              >
-                Skew Mark
-              </label>
-              <div className="col-md-10">
-                <select
-                  className="form-control"
-                  value={skewoption}
-                  onChange={handleSkewMarkOptionChange}
-                  defaultValue={"none"}
-                >
-                  <option value="">Select an option</option>
-                  <option value="rear">Top Skew Mark</option>
-                  <option value="front">Bottom Skew Mark</option>
-                </select>
-              </div>
-            </Row>
-          )}
-
-          <Row className="mb-2">
-            <label
-              htmlFor="example-select-input"
-              className="col-2 col-form-label"
-            >
-              Start Row
-            </label>
-            <div className="col-2 ">
-              <input
-                id="startRow"
-                type="number"
-                disabled={modalUpdate}
-                value={startRowInput}
-                onBlur={(e) => {
-                  const newValue = e.target.valueAsNumber;
-                  if (newValue > 0) {
-                    setSelection((item) => ({
-                      ...item,
-                      startRow: newValue - 1,
-                    }));
-                  } else {
-                    setStartRowInput(selection.startRow + 1); // Reset to previous valid value
-                  }
-                }}
-                onChange={(e) => {
-                  setStartRowInput(
-                    e.target.valueAsNumber >= 0 ? e.target.value : ""
-                  );
-                }}
-                className="form-control"
-              />
-            </div>
-            <label
-              htmlFor="example-select-input"
-              className="col-2 col-form-label"
-            >
-              End Row
-            </label>
-            <div className="col-2">
-              <input
-                type="number"
-                value={endRowInput}
-                disabled={modalUpdate}
-                onBlur={(e) => {
-                  const newValue = e.target.valueAsNumber;
-                  if (newValue > 0) {
-                    setSelection((item) => ({
-                      ...item,
-                      endRow: newValue - 1,
-                    }));
-                  } else {
-                    setEndRowInput(selection?.endRow + 1); // Reset to previous valid value
-                  }
-                }}
-                onChange={(e) => {
-                  setEndRowInput(
-                    e.target.valueAsNumber >= 0 ? e.target.value : ""
-                  );
-                }}
-                className="form-control"
-              />
-            </div>
-            <label
-              htmlFor="example-select-input"
-              className="col-2 col-form-label"
-            >
-              Total Row
-            </label>
-            <div className="col-2">
-              <input value={numRows} readOnly className="form-control" />
-            </div>
-          </Row>
-          <Row className="">
-            <label htmlFor="example-select-input" className="col-2 ">
-              Total No In Row
-            </label>
-            <div className="col-4">
-              <input
-                type="number"
-                className="form-control"
-                value={noInRow}
-                onChange={(e) => setNoInRow(e.target.value)}
-                required
-              />
-            </div>
-            <label htmlFor="example-select-input" className="col-2 ">
-              Total Step In A Row
-            </label>
-            <div className="col-4">
-              <input
-                type="number"
-                className="form-control"
-                value={noOfStepInRow}
-                onChange={(e) => setNoOfStepInRow(e.target.value)}
-                required
-              />
-            </div>
-          </Row>
-          <Row className="mb-2">
-            <label
-              htmlFor="example-select-input"
-              className="col-2  col-form-label"
-            >
-              Start Col
-            </label>
-            <div className="col-2">
-              <input
-                type="number"
-                value={startColInput}
-                disabled={modalUpdate}
-                onBlur={(e) => {
-                  const newValue = e.target.valueAsNumber;
-                  if (newValue > 0) {
-                    setSelection((item) => ({
-                      ...item,
-                      startCol: newValue,
-                    }));
-                  } else {
-                    setStartColInput(selection?.startCol); // Reset to previous valid value
-                  }
-                }}
-                onChange={(e) => {
-                  setStartColInput(
-                    e.target.valueAsNumber >= 0 ? e.target.value : ""
-                  );
-                }}
-                className="form-control"
-              />
-              {/* <input
+                  Start Col
+                </label>
+                <div className="col-2">
+                  <input
+                    type="number"
+                    value={startColInput}
+                    disabled={modalUpdate}
+                    onBlur={(e) => {
+                      const newValue = e.target.valueAsNumber;
+                      if (newValue > 0) {
+                        setSelection((item) => ({
+                          ...item,
+                          startCol: newValue,
+                        }));
+                      } else {
+                        setStartColInput(selection?.startCol); // Reset to previous valid value
+                      }
+                    }}
+                    onChange={(e) => {
+                      setStartColInput(
+                        e.target.valueAsNumber >= 0 ? e.target.value : ""
+                      );
+                    }}
+                    className="form-control"
+                  />
+                  {/* <input
                 value={selection?.startCol}
                 readOnly
                 className="form-control"
               /> */}
-            </div>
+                </div>
 
-            <label
-              htmlFor="example-select-input"
-              className="col-2 col-form-label"
-            >
-              End Col
-            </label>
-            <div className="col-2">
-              <input
-                type="number"
-                value={endColInput}
-                disabled={modalUpdate}
-                onBlur={(e) => {
-                  const newValue = e.target.valueAsNumber;
-                  if (newValue > 0) {
-                    setSelection((item) => ({
-                      ...item,
-                      endCol: newValue,
-                    }));
-                  } else {
-                    setEndColInput(selection?.endCol); // Reset to previous valid value
-                  }
-                }}
-                onChange={(e) => {
-                  setEndColInput(
-                    e.target.valueAsNumber >= 0 ? e.target.value : ""
-                  );
-                }}
-                className="form-control"
-              />
-              {/* <input
+                <label
+                  htmlFor="example-select-input"
+                  className="col-2 col-form-label"
+                >
+                  End Col
+                </label>
+                <div className="col-2">
+                  <input
+                    type="number"
+                    value={endColInput}
+                    disabled={modalUpdate}
+                    onBlur={(e) => {
+                      const newValue = e.target.valueAsNumber;
+                      if (newValue > 0) {
+                        setSelection((item) => ({
+                          ...item,
+                          endCol: newValue,
+                        }));
+                      } else {
+                        setEndColInput(selection?.endCol); // Reset to previous valid value
+                      }
+                    }}
+                    onChange={(e) => {
+                      setEndColInput(
+                        e.target.valueAsNumber >= 0 ? e.target.value : ""
+                      );
+                    }}
+                    className="form-control"
+                  />
+                  {/* <input
                 value={selection?.endCol}
                 readOnly
                 className="form-control"
               /> */}
-            </div>
-            <label
-              htmlFor="example-select-input"
-              className="col-2 col-form-label"
-            >
-              Total Col
-            </label>
-            <div className="col-2">
-              <input value={numCols} readOnly className="form-control" />
-            </div>
-          </Row>
-          <Row className="mb-2">
-            <label htmlFor="example-select-input" className="col-2 ">
-              Total No In Col
-            </label>
-            <div className="col-4">
-              <input
-                type="number"
-                className="form-control"
-                value={noInCol}
-                onChange={(e) => setNoInCol(e.target.value)}
-                required
-              />
-            </div>
-            <label htmlFor="example-select-input" className="col-2 ">
-              Total Step In A Col
-            </label>
-            <div className="col-4">
-              <input
-                type="number"
-                className="form-control"
-                value={noOfStepInCol}
-                onChange={(e) => setNoOfStepInCol(e.target.value)}
-                required
-              />
-            </div>
-          </Row>
-
-          <Row className="mb-2">
-            <label htmlFor="example-text-input" className="col-md-2 ">
-              Reading Direction :
-            </label>
-            <div className="col-md-10">
-              <select
-                className="form-control"
-                value={readingDirectionOption}
-                onChange={(e) => {
-                  setReadingDirectionOption(e.target.value);
-                }}
-                defaultValue={""}
-              >
-                <option value="">Select reading direction... </option>
-                <option value="0">From the upper left to the bottom</option>
-                <option value="1">From the upper right to the bottom </option>
-                <option value="2">From the lower left to a top</option>
-                <option value="3">From the lower right to a top</option>
-                <option value="4">From the upper left to right</option>
-                <option value="5">From the upper right to the left</option>
-                <option value="6">From the lower left to right</option>
-                <option value="7">From the lower right to the left </option>
-              </select>
-            </div>
-          </Row>
-
-          {selectedFieldType !== "idField" && (
-            <Row className="mb-2">
-              <label
-                htmlFor="example-text-input"
-                className="col-md-2  col-form-label"
-              >
-                Type :
-              </label>
-              <div className="col-md-5">
-                <select
-                  className="form-control"
-                  value={type}
-                  onChange={(e) => {
-                    setType(e.target.value);
-                  }}
-                  defaultValue={""}
-                >
-                  <option value="">Select reading direction... </option>
-                  <option value="1">
-                    Mask (at the time set window) about a mark{" "}
-                  </option>
-                  <option value="2">Fixed mark </option>
-                  <option value="3">Checkdigits </option>
-                  <option value="4">Range checking (ascending order)</option>
-                  <option value="5">Range checking (descending order)</option>
-                  <option value="6">Range checking (not order) </option>
-                  <option value="7">Mask setting(common to partition)</option>
-                </select>
-              </div>
-              <label
-                htmlFor="example-text-input"
-                className="col-md-2 col-form-label "
-              >
-                Option :
-              </label>
-              <div className="col-3 ">
-                <input
-                  type="number"
-                  className="form-control"
-                  value={option}
-                  onChange={(e) => setOption(e.target.value)}
-                  required
-                />
-              </div>
-            </Row>
-          )}
-          {(selectedFieldType === "questionField" ||
-            selectedFieldType === "formField") && (
-              <Row className="mb-2">
+                </div>
                 <label
-                  htmlFor="example-text-input"
-                  className="col-md-2 col-form-label "
+                  htmlFor="example-select-input"
+                  className="col-2 col-form-label"
                 >
-                  Total Fields :
+                  Total Col
                 </label>
-                <div className="col-4 ">
+                <div className="col-2">
+                  <input value={numCols} readOnly className="form-control" />
+                </div>
+              </Row>
+              <Row className="mb-2">
+                <label htmlFor="example-select-input" className="col-2 ">
+                  Total No In Col
+                </label>
+                <div className="col-4">
                   <input
                     type="number"
                     className="form-control"
-                    value={numberOfField}
-                    onChange={(e) => setNumberOfField(e.target.value)}
+                    value={noInCol}
+                    onChange={(e) => setNoInCol(e.target.value)}
                     required
                   />
                 </div>
-                <label
-                  htmlFor="example-text-input"
-                  className="col-md-2 col-form-label "
-                >
-                  Field Type :
+                <label htmlFor="example-select-input" className="col-2 ">
+                  Total Step In A Col
                 </label>
-                <div className="col-4 ">
+                <div className="col-4">
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={noOfStepInCol}
+                    onChange={(e) => setNoOfStepInCol(e.target.value)}
+                    required
+                  />
+                </div>
+              </Row>
+
+              <Row className="mb-2">
+                <label htmlFor="example-text-input" className="col-md-2 ">
+                  Reading Direction :
+                </label>
+                <div className="col-md-10">
                   <select
                     className="form-control"
-                    value={fieldType}
+                    value={readingDirectionOption}
                     onChange={(e) => {
-                      setFieldType(e.target.value);
+                      setReadingDirectionOption(e.target.value);
                     }}
                     defaultValue={""}
                   >
-                    <option value="">Select field type... </option>
-                    <option value="numeric">Numeric </option>
-                    <option value="alphabet">Alphabet </option>
-                    <option value="custom">Custom </option>
+                    <option value="">Select reading direction... </option>
+                    <option value="0">From the upper left to the bottom</option>
+                    <option value="1">
+                      From the upper right to the bottom{" "}
+                    </option>
+                    <option value="2">From the lower left to a top</option>
+                    <option value="3">From the lower right to a top</option>
+                    <option value="4">From the upper left to right</option>
+                    <option value="5">From the upper right to the left</option>
+                    <option value="6">From the lower left to right</option>
+                    <option value="7">From the lower right to the left </option>
                   </select>
                 </div>
               </Row>
-            )}
-          {(selectedFieldType === "questionField" ||
-            selectedFieldType === "formField") &&
-            fieldType === "custom" && (
-              <Row>
-                <label htmlFor="example-text-input" className="col-md-2 ">
-                  Custom Value :
-                </label>
-                <div className="col-10 ">
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={customValue}
-                    onChange={(e) => setCustomValue(e.target.value)}
-                    placeholder="Enter value separated by value, For Eg (2,3,4,Feild1, Feild2)"
-                  />
-                  <small style={{ color: "red" }}>
-                    *Custom value should be in the reading direction
-                  </small>
-                </div>
-              </Row>
-            )}
+
+              {selectedFieldType !== "idField" && (
+                <Row className="mb-2">
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2  col-form-label"
+                  >
+                    Type :
+                  </label>
+                  <div className="col-md-5">
+                    <select
+                      className="form-control"
+                      value={type}
+                      onChange={(e) => {
+                        setType(e.target.value);
+                      }}
+                      defaultValue={""}
+                    >
+                      <option value="">Select reading direction... </option>
+                      <option value="1">
+                        Mask (at the time set window) about a mark{" "}
+                      </option>
+                      <option value="2">Fixed mark </option>
+                      <option value="3">Checkdigits </option>
+                      <option value="4">
+                        Range checking (ascending order)
+                      </option>
+                      <option value="5">
+                        Range checking (descending order)
+                      </option>
+                      <option value="6">Range checking (not order) </option>
+                      <option value="7">
+                        Mask setting(common to partition)
+                      </option>
+                    </select>
+                  </div>
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2 col-form-label "
+                  >
+                    Option :
+                  </label>
+                  <div className="col-3 ">
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={option}
+                      onChange={(e) => setOption(e.target.value)}
+                      required
+                    />
+                  </div>
+                </Row>
+              )}
+              {(selectedFieldType === "questionField" ||
+                selectedFieldType === "formField") && (
+                <Row className="mb-2">
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2 col-form-label "
+                  >
+                    Total Fields :
+                  </label>
+                  <div className="col-4 ">
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={numberOfField}
+                      onChange={(e) => setNumberOfField(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2 col-form-label "
+                  >
+                    Field Type :
+                  </label>
+                  <div className="col-4 ">
+                    <select
+                      className="form-control"
+                      value={fieldType}
+                      onChange={(e) => {
+                        setFieldType(e.target.value);
+                      }}
+                      defaultValue={""}
+                    >
+                      <option value="">Select field type... </option>
+                      <option value="numeric">Numeric </option>
+                      <option value="alphabet">Alphabet </option>
+                      <option value="custom">Custom </option>
+                    </select>
+                  </div>
+                </Row>
+              )}
+              {(selectedFieldType === "questionField" ||
+                selectedFieldType === "formField") &&
+                fieldType === "custom" && (
+                  <Row>
+                    <label htmlFor="example-text-input" className="col-md-2 ">
+                      Custom Value :
+                    </label>
+                    <div className="col-10 ">
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={customValue}
+                        onChange={(e) => setCustomValue(e.target.value)}
+                        placeholder="Enter value separated by value, For Eg (2,3,4,Feild1, Feild2)"
+                      />
+                      <small style={{ color: "red" }}>
+                        *Custom value should be in the reading direction
+                      </small>
+                    </div>
+                  </Row>
+                )}
+            </>
+          )}
         </Modal.Body>
         <Modal.Footer
           style={{ display: "flex", justifyContent: "space-between" }}
