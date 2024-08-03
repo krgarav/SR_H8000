@@ -191,7 +191,7 @@ const DataProvider = (props) => {
     // };
     // delete updatedLayoutParameter.imageCoordinates;
     // delete updatedLayoutParameter.layoutCoordinates;
-
+console.log(updatedQuestionField)
     setDataState((prevState) => {
       const copiedData = [...prevState.allTemplates];
       const currentTemplate = copiedData[index];
