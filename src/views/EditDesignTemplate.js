@@ -446,16 +446,16 @@ const EditDesignTemplate = () => {
                 }
 
 
-                const templates = await fetchAllTemplate();
-                if (templates === undefined) {
-                    toast.error('Error fetching templates');
+                // const templates = await fetchAllTemplate();
+                // if (templates === undefined) {
+                //     toast.error('Error fetching templates');
 
-                }
-                const mpObj = templates?.map((item) => {
-                    return [{ layoutParameters: item }]
-                });
-                console.log(mpObj)
-                dataCtx.addToAllTemplate(mpObj);
+                // }
+                // const mpObj = templates?.map((item) => {
+                //     return [{ layoutParameters: item }]
+                // });
+                // console.log(mpObj)
+                // dataCtx.addToAllTemplate(mpObj);
             } catch (error) {
                 console.error("Error fetching layout data:", error);
             }
@@ -464,16 +464,13 @@ const EditDesignTemplate = () => {
         // Call the fetch details function
         fetchDetails();
     }, [data.templateId]);
-
+    console.log(dataCtx.allTemplates)
     // *****************************************************************************************
     useEffect(() => {
         if (layoutFieldData) {
-            console.log(layoutFieldData, data.templateIndex)
-            if (dataCtx.length > 0) {
+            if (dataCtx.allTemplates.length > 0) {
                 dataCtx.addFieldToTemplate(layoutFieldData, data.templateIndex);
             }
-
-            console.log("called");
         }
     }, [layoutFieldData]);
     useEffect(() => {
@@ -857,7 +854,7 @@ const EditDesignTemplate = () => {
         setSelectedFieldType(e.target.value);
     };
 
-
+    console.log(dataCtx.allTemplates)
     const handleEyeClick = (selectedField, index) => {
 
         setSelection(() => ({
@@ -937,7 +934,9 @@ const EditDesignTemplate = () => {
 
             //     return isEqual(item.Coordinate, formattedSelectedFile);
             // })[0];
+            console.log(template)
             const parameters = template[0].formFieldWindowParameters;
+            console.log(parameters)
             const index = parameters.findIndex((item) =>
                 isEqual(item.Coordinate, formattedSelectedFile)
             );

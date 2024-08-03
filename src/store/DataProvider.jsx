@@ -95,7 +95,124 @@ const DataProvider = (props) => {
       };
     });
   };
+  //   const addFieldToTemplateHandler = (regionData, index) => {
+  //     console.log("called")
+  //     const {
+  //       formFieldWindowParameters,
+  //       imageData,
+  //       printingData,
+  //       questionsWindowParameters,
+  //       skewMarksWindowParameters,
+  //       barcodeData,
+  //       layoutParameters,
+  //     } = regionData;
+
+  //     const imageCoordinates = layoutParameters.imageCoordinates;
+  //     const imageStructureData = {
+  //       height: imageCoordinates?.height,
+  //       x: imageCoordinates?.x,
+  //       y: imageCoordinates?.y,
+  //       width: imageCoordinates?.width,
+  //     };
+
+  //     const layoutCoordinates = layoutParameters.layoutCoordinates;
+  //     console.log(layoutCoordinates);
+  //     const Coordinate = {
+  //       "End Col": layoutCoordinates["right"],
+  //       "End Row": layoutCoordinates["end"],
+  //       "Start Col": layoutCoordinates["left"],
+  //       "Start Row": layoutCoordinates["start"],
+  //       name: layoutCoordinates["name"],
+  //       fieldType: layoutCoordinates["fieldType"],
+  //     };
+
+  //     const updatedLayoutParameter = {
+  //       ...layoutParameters,
+  //       Coordinate,
+  //       imageStructureData,
+  //     };
+  //     delete updatedLayoutParameter.imageCoordinates;
+  //     delete updatedLayoutParameter.layoutCoordinates;
+
+  //     //   console.log(formFieldWindowParameters);
+
+  //     const updatedFormField = formFieldWindowParameters?.map((item) => {
+  //       const { formFieldCoordinates, ...rest } = item;
+  //       const questionWindowCoordinates = formFieldCoordinates
+  //         ? {
+  //             "End Col": formFieldCoordinates["right"],
+  //             "End Row": formFieldCoordinates["end"],
+  //             "Start Col": formFieldCoordinates["left"],
+  //             "Start Row": formFieldCoordinates["start"],
+  //             name: formFieldCoordinates["name"],
+  //             fieldType: formFieldCoordinates["fieldType"],
+  //           }
+  //         : {};
+  //       return { ...rest, Coordinate: questionWindowCoordinates };
+  //     });
+  //     const updatedSkewField = skewMarksWindowParameters?.map((item) => {
+  //       const { layoutWindowCoordinates, ...rest } = item;
+  //       const questionWindowCoordinates = layoutWindowCoordinates
+  //         ? {
+  //             "End Col": layoutWindowCoordinates["right"],
+  //             "End Row": layoutWindowCoordinates["end"],
+  //             "Start Col": layoutWindowCoordinates["left"],
+  //             "Start Row": layoutWindowCoordinates["start"],
+  //             name: layoutWindowCoordinates["name"],
+  //             fieldType: layoutWindowCoordinates["fieldType"],
+  //           }
+  //         : {};
+  //       return { ...rest, Coordinate: questionWindowCoordinates };
+  //     });
+  //     const updatedQuestionField = questionsWindowParameters?.map((item) => {
+  //       const { questionWindowCoordinates, ...rest } = item;
+  //       const questionWindowCoordinates1 = questionWindowCoordinates
+  //         ? {
+  //             "End Col": questionWindowCoordinates["right"],
+  //             "End Row": questionWindowCoordinates["end"],
+  //             "Start Col": questionWindowCoordinates["left"],
+  //             "Start Row": questionWindowCoordinates["start"],
+  //             name: questionWindowCoordinates["name"],
+  //             fieldType: questionWindowCoordinates["fieldType"],
+  //           }
+  //         : {};
+  //       return { ...rest, Coordinate: questionWindowCoordinates1 };
+  //     });
+  //     // const Coordinate = {
+  //     //   "End Col": layoutCoordinates["right"],
+  //     //   "End Row": layoutCoordinates["end"],
+  //     //   "Start Col": layoutCoordinates["left"],
+  //     //   "Start Row": layoutCoordinates["start"],
+  //     // };
+
+  //     // const updatedLayoutParameter = {
+  //     //   ...layoutParameters,
+  //     //   Coordinate,
+  //     //   imageStructureData,
+  //     // };
+  //     // delete updatedLayoutParameter.imageCoordinates;
+  //     // delete updatedLayoutParameter.layoutCoordinates;
+  //     console.log(updatedQuestionField);
+  //     setDataState((prevState) => {
+  //       const copiedData = [...prevState.allTemplates];
+  //       const currentTemplate = copiedData[index];
+  //       currentTemplate[0].skewMarksWindowParameters = updatedSkewField;
+  //       currentTemplate[0].formFieldWindowParameters = updatedFormField;
+  //       currentTemplate[0].questionsWindowParameters = updatedQuestionField;
+  //       currentTemplate[0].imageData = imageData;
+  //       currentTemplate[0].printingData = printingData;
+  //       currentTemplate[0].barcodeData = barcodeData;
+  //       currentTemplate[0].layoutParameters = updatedLayoutParameter;
+  // console.log(copiedData)
+  //       return {
+  //         ...prevState,
+  //         allTemplates: copiedData,
+  //       };
+  //     });
+  //   };
+
   const addFieldToTemplateHandler = (regionData, index) => {
+    console.log("called");
     const {
       formFieldWindowParameters,
       imageData,
@@ -133,82 +250,63 @@ const DataProvider = (props) => {
     delete updatedLayoutParameter.imageCoordinates;
     delete updatedLayoutParameter.layoutCoordinates;
 
-    //   console.log(formFieldWindowParameters);
+    const updateCoordinates = (items, coordKey) =>
+      items?.map((item) => {
+        const coordinates = item[coordKey];
+        const newCoordinates = coordinates
+          ? {
+              "End Col": coordinates["right"],
+              "End Row": coordinates["end"],
+              "Start Col": coordinates["left"],
+              "Start Row": coordinates["start"],
+              name: coordinates["name"],
+              fieldType: coordinates["fieldType"],
+            }
+          : {};
+        return { ...item, Coordinate: newCoordinates };
+      });
 
-    const updatedFormField = formFieldWindowParameters?.map((item) => {
-      const { formFieldCoordinates, ...rest } = item;
-      const questionWindowCoordinates = formFieldCoordinates
-        ? {
-            "End Col": formFieldCoordinates["right"],
-            "End Row": formFieldCoordinates["end"],
-            "Start Col": formFieldCoordinates["left"],
-            "Start Row": formFieldCoordinates["start"],
-            name: formFieldCoordinates["name"],
-            fieldType: formFieldCoordinates["fieldType"],
-          }
-        : {};
-      return { ...rest, Coordinate: questionWindowCoordinates };
-    });
-    const updatedSkewField = skewMarksWindowParameters?.map((item) => {
-      const { layoutWindowCoordinates, ...rest } = item;
-      const questionWindowCoordinates = layoutWindowCoordinates
-        ? {
-            "End Col": layoutWindowCoordinates["right"],
-            "End Row": layoutWindowCoordinates["end"],
-            "Start Col": layoutWindowCoordinates["left"],
-            "Start Row": layoutWindowCoordinates["start"],
-            name: layoutWindowCoordinates["name"],
-            fieldType: layoutWindowCoordinates["fieldType"],
-          }
-        : {};
-      return { ...rest, Coordinate: questionWindowCoordinates };
-    });
-    const updatedQuestionField = questionsWindowParameters?.map((item) => {
-      const { questionWindowCoordinates, ...rest } = item;
-      const questionWindowCoordinates1 = questionWindowCoordinates
-        ? {
-            "End Col": questionWindowCoordinates["right"],
-            "End Row": questionWindowCoordinates["end"],
-            "Start Col": questionWindowCoordinates["left"],
-            "Start Row": questionWindowCoordinates["start"],
-            name: questionWindowCoordinates["name"],
-            fieldType: questionWindowCoordinates["fieldType"],
-          }
-        : {};
-      return { ...rest, Coordinate: questionWindowCoordinates1 };
-    });
-    // const Coordinate = {
-    //   "End Col": layoutCoordinates["right"],
-    //   "End Row": layoutCoordinates["end"],
-    //   "Start Col": layoutCoordinates["left"],
-    //   "Start Row": layoutCoordinates["start"],
-    // };
+    const updatedFormField = updateCoordinates(
+      formFieldWindowParameters,
+      "formFieldCoordinates"
+    );
+    const updatedSkewField = updateCoordinates(
+      skewMarksWindowParameters,
+      "layoutWindowCoordinates"
+    );
+    const updatedQuestionField = updateCoordinates(
+      questionsWindowParameters,
+      "questionWindowCoordinates"
+    );
 
-    // const updatedLayoutParameter = {
-    //   ...layoutParameters,
-    //   Coordinate,
-    //   imageStructureData,
-    // };
-    // delete updatedLayoutParameter.imageCoordinates;
-    // delete updatedLayoutParameter.layoutCoordinates;
-    console.log(updatedQuestionField);
     setDataState((prevState) => {
-      const copiedData = [...prevState.allTemplates];
-      const currentTemplate = copiedData[index];
-      currentTemplate[0].skewMarksWindowParameters = updatedSkewField;
-      currentTemplate[0].formFieldWindowParameters = updatedFormField;
-      currentTemplate[0].questionsWindowParameters = updatedQuestionField;
-      currentTemplate[0].imageData = imageData;
-      currentTemplate[0].printingData = printingData;
-      currentTemplate[0].barcodeData = barcodeData;
-      currentTemplate[0].layoutParameters = updatedLayoutParameter;
+      const copiedData = JSON.parse(JSON.stringify(prevState.allTemplates)); // Deep copy to avoid mutation
+      if (!copiedData[index]) {
+        console.error(`Invalid index: ${index}`);
+        return prevState;
+      }
 
+      const currentTemplate = copiedData[index];
+      currentTemplate[0] = {
+        ...currentTemplate[0],
+        skewMarksWindowParameters: updatedSkewField,
+        formFieldWindowParameters: updatedFormField,
+        questionsWindowParameters: updatedQuestionField,
+        imageData: imageData,
+        printingData: printingData,
+        barcodeData: barcodeData,
+        layoutParameters: updatedLayoutParameter,
+      };
+
+      console.log(copiedData);
       return {
         ...prevState,
         allTemplates: copiedData,
       };
     });
   };
+
+  console.log(dataState);
   // const modifyWithRegionHandler = (
   //   templateIndex,
   //   regionData,
