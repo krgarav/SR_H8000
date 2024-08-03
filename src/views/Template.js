@@ -81,8 +81,16 @@ const Template = () => {
     const csvpath = res?.templateFiles?.csvPath
     const imgpath = res?.templateFiles?.imagePath
     const res1 = await getTemplateImage(imgpath);
+    if (res1 === undefined) {
+      alert("No image found in this template.Cannot Open the template. ")
+      return;
+    }
     const imgfile = base64ToFile(res1.image, 'image.jpg');
     const res2 = await getTemplateCsv(csvpath);
+    if (res2 === undefined) {
+      alert("No CSV found in this template.Cannot Open the template. ")
+      return;
+    }
     const csvContent = Papa.unparse(res2.data);
 
     // Create a Blob from the CSV content

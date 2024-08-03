@@ -131,7 +131,7 @@ const DesignTemplate = () => {
   const [modalUpdate, setModalUpdate] = useState(false);
   const [coordinateIndex, setCoordinateIndex] = useState(-1);
   const [selectionIndex, setSelectionIndex] = useState();
-
+  const [idSelectionCount, setIdSelectionCount] = useState(0);
   const location = useLocation();
   const state = location.state || {};
   // Initialize state with values from sessionStorage or location.state
@@ -169,7 +169,7 @@ const DesignTemplate = () => {
   //     ),
   //     excelFile: getSessionStorageOrDefault("excelFile", state.excelFile),
   // }));
-
+  console.log(idSelectionCount)
   const rndRef = useRef();
   const navigate = useNavigate();
   const numRows = state.timingMarks;
@@ -196,6 +196,14 @@ const DesignTemplate = () => {
     });
   };
 
+
+  useEffect(() => {
+    const idFieldCount = selectedCoordinates.filter(item => item.fieldType === "idField").length;
+    if (idFieldCount > 0) {
+      setIdSelectionCount(1);
+    }
+
+  }, [])
   // useEffect(() => {
   //     if (location.state) {
   //         sessionStorage.setItem(
@@ -801,8 +809,10 @@ const DesignTemplate = () => {
       setWindowNgOption(data?.ngAction);
       setMinimumMark(data?.minimumMark);
       setMaximumMark(data?.maximumMark);
-      setNoInRow(data?.totalNoInRow);
-      setNoInCol(data?.totalNoInColumn);
+      // setNoInRow(data?.totalNoInRow);
+      // setNoInCol(data?.totalNoInColumn);
+      setNoInRow(data?.rowNumber);
+      setNoInCol(data?.columnNumber);
       setStartRowInput(formattedSelectedFile["Start Row"]);
       setEndRowInput(formattedSelectedFile["End Row"]);
       setStartColInput(formattedSelectedFile["Start Col"]);
@@ -1257,7 +1267,7 @@ const DesignTemplate = () => {
                           <i
                             className={`fas fa-eye me-2 mr-1 ${classes.eye}`}
                             onMouseUp={handleIconMouseUp}
-                            
+
                             onClick={(e) => {
                               handleEyeClick(data, index);
                             }}
@@ -1361,7 +1371,7 @@ const DesignTemplate = () => {
                   htmlFor="skewMarkField"
                   className="mr-2 mb-0 field-label"
                 >
-                  Skew Mark:
+                  Skew Mark :
                 </label>
                 <input
                   id="skewMarkField"
@@ -1373,20 +1383,31 @@ const DesignTemplate = () => {
                   className=" field-label"
                 />
               </Col>
-              <Col md={2} className="d-flex align-items-center  ">
-                <label htmlFor="idField" className="mr-2 mb-0 field-label">
-                  ID Mark :
-                </label>
-                <input
-                  id="idField"
-                  type="radio"
-                  name="fieldType"
-                  value="idField"
-                  checked={selectedFieldType === "idField"}
-                  onChange={handleRadioChange}
-                  className=" field-label"
-                />
+              <Col md={2} className="d-flex align-items-center">
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <div>
+                    <label htmlFor="idField" className="mr-2 mb-0 field-label">
+                      ID Mark :
+                    </label>
+                    <input
+                      id="idField"
+                      type="radio"
+                      name="fieldType"
+                      value="idField"
+                      checked={selectedFieldType === "idField"}
+                      onChange={handleRadioChange}
+                      className="field-label"
+                      disabled={idSelectionCount > 0}
+                    />
+                  </div>
+                  {idSelectionCount > 0 && (
+                    <div>
+                      <small style={{ color: "orangered" }}>already selected</small>
+                    </div>
+                  )}
+                </div>
               </Col>
+
             </Row>
           </Modal.Title>
         </Modal.Header>

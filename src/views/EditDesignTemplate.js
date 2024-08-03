@@ -114,7 +114,7 @@ const EditDesignTemplate = () => {
     const [modalUpdate, setModalUpdate] = useState(false);
     const [coordinateIndex, setCoordinateIndex] = useState(-1);
     const [selectionIndex, setSelectionIndex] = useState();
-
+    const [idSelectionCount, setIdSelectionCount] = useState(0);
     const location = useLocation();
     const state = location.state || {};
     // Initialize state with values from sessionStorage or location.state
@@ -181,6 +181,13 @@ const EditDesignTemplate = () => {
         });
     };
 
+    useEffect(() => {
+        const idFieldCount = selectedCoordinates.filter(item => item.fieldType === "idField").length;
+        if (idFieldCount > 0) {
+            setIdSelectionCount(1);
+        }
+
+    }, [selectedCoordinates])
     // useEffect(() => {
     //     if (location.state) {
     //         sessionStorage.setItem(
@@ -648,7 +655,7 @@ const EditDesignTemplate = () => {
                     "Start Col": selection?.startCol,
                     "End Row": selection?.endRow + 1,
                     "End Col": selection?.endCol,
-                    name: name,
+                    name: "Id Field",
                     fieldType: selectedFieldType,
                 },
                 imageStructureData: position,
@@ -790,9 +797,7 @@ const EditDesignTemplate = () => {
     console.log(selectedCoordinates);
 
     const handleEyeClick = (selectedField, index) => {
-        console.log(selectedField)
 
-        console.log(selectedField);
         setSelection(() => ({
             startRow: selectedField.startRow,
             startCol: selectedField.startCol,
@@ -818,8 +823,9 @@ const EditDesignTemplate = () => {
             setWindowNgOption(data?.ngAction);
             setMinimumMark(data?.minimumMark);
             setMaximumMark(data?.maximumMark);
-            setNoInRow(data?.totalNoInRow);
-            setNoInCol(data?.totalNoInColumn);
+            setNoInRow(data?.rowNumber);
+            setNoInCol(data?.columnNumber);
+            setNoOfStepInRow()
             setStartRowInput(formattedSelectedFile["Start Row"]);
             setEndRowInput(formattedSelectedFile["End Row"]);
             setStartColInput(formattedSelectedFile["Start Col"]);
@@ -862,7 +868,8 @@ const EditDesignTemplate = () => {
             setMultiple(data?.multipleAllow);
             setMultipleValue(data?.multipleValue);
             setBlank(data?.blankAllow);
-            setBlankValue(data?.blankValue)
+            setBlankValue(data?.blankValue);
+            setNoOfStepInRow()
         } else if (selectedField?.fieldType === "formField") {
             // const data = template[0].formFieldWindowParameters.filter((item) => {
 
@@ -1060,36 +1067,36 @@ const EditDesignTemplate = () => {
         };
         console.log(fullRequestData)
         // Send the request and handle the response
-        try {
-            setLoading(true);
-            const res = await createTemplate(fullRequestData);
-            console.log(res);
-            if (res.success === true) {
-                const layoutId = res?.layoutId;
-                const formdata = new FormData();
-                formdata.append("LayoutId", layoutId);
-                formdata.append("ImageFile", state.imageTempFile);
-                formdata.append("ExcelFile", state.excelFile);
-                // Iterate over the FormData entries and log them
-                for (let [key, value] of formdata.entries()) {
-                    console.log(`${key}: ${value}`);
-                }
-                const res2 = await sendFile(formdata);
-                console.log(res2);
-                setLoading(false);
+        // try {
+        //     setLoading(true);
+        //     const res = await createTemplate(fullRequestData);
+        //     console.log(res);
+        //     if (res.success === true) {
+        //         const layoutId = res?.layoutId;
+        //         const formdata = new FormData();
+        //         formdata.append("LayoutId", layoutId);
+        //         formdata.append("ImageFile", state.imageTempFile);
+        //         formdata.append("ExcelFile", state.excelFile);
+        //         // Iterate over the FormData entries and log them
+        //         for (let [key, value] of formdata.entries()) {
+        //             console.log(`${key}: ${value}`);
+        //         }
+        //         const res2 = await sendFile(formdata);
+        //         console.log(res2);
+        //         setLoading(false);
 
-                alert(`Response : ${JSON.stringify(res2?.message)}`);
+        //         alert(`Response : ${JSON.stringify(res2?.message)}`);
 
-                if (res2?.success) {
-                    sessionStorage.clear();
-                    toast.success("Layout Saved");
-                    navigate("/admin/template", { replace: true });
-                }
-            }
-        } catch (error) {
-            alert(`Error creating template`);
-            console.error("Error sending POST request:", error);
-        }
+        //         if (res2?.success) {
+        //             sessionStorage.clear();
+        //             toast.success("Layout Saved");
+        //             navigate("/admin/template", { replace: true });
+        //         }
+        //     }
+        // } catch (error) {
+        //     alert(`Error creating template`);
+        //     console.error("Error sending POST request:", error);
+        // }
     };
 
     return (
@@ -1427,19 +1434,29 @@ const EditDesignTemplate = () => {
                                     className=" field-label"
                                 />
                             </Col>
-                            <Col md={2} className="d-flex align-items-center  ">
-                                <label htmlFor="idField" className="mr-2 mb-0 field-label">
-                                    ID Mark :
-                                </label>
-                                <input
-                                    id="idField"
-                                    type="radio"
-                                    name="fieldType"
-                                    value="idField"
-                                    checked={selectedFieldType === "idField"}
-                                    onChange={handleRadioChange}
-                                    className=" field-label"
-                                />
+                            <Col md={2} className="d-flex align-items-center">
+                                <div style={{ display: "flex", flexDirection: "column" }}>
+                                    <div>
+                                        <label htmlFor="idField" className="mr-2 mb-0 field-label">
+                                            ID Mark :
+                                        </label>
+                                        <input
+                                            id="idField"
+                                            type="radio"
+                                            name="fieldType"
+                                            value="idField"
+                                            checked={selectedFieldType === "idField"}
+                                            onChange={handleRadioChange}
+                                            className="field-label"
+                                            disabled={idSelectionCount > 0}
+                                        />
+                                    </div>
+                                    {idSelectionCount > 0 && (
+                                        <div>
+                                            <small style={{ color: "orangered" }}>already selected</small>
+                                        </div>
+                                    )}
+                                </div>
                             </Col>
                         </Row>
                     </Modal.Title>

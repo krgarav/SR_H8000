@@ -191,7 +191,7 @@ const DataProvider = (props) => {
     // };
     // delete updatedLayoutParameter.imageCoordinates;
     // delete updatedLayoutParameter.layoutCoordinates;
-console.log(updatedQuestionField)
+    console.log(updatedQuestionField);
     setDataState((prevState) => {
       const copiedData = [...prevState.allTemplates];
       const currentTemplate = copiedData[index];
@@ -312,7 +312,6 @@ console.log(updatedQuestionField)
     setDataState((item) => {
       const copiedData = [...item.allTemplates];
       const currentTemplate = copiedData[templateIndex][0];
-
       switch (fieldType) {
         case "skewMarkField":
           const parameters = currentTemplate?.skewMarksWindowParameters;
@@ -342,9 +341,16 @@ console.log(updatedQuestionField)
           currentTemplate.questionsWindowParameters = questionForm;
           break;
         default:
-          currentTemplate.layoutParameters = {
-            ...currentTemplate.layoutParameters,
-          };
+          const copiedLayout = { ...currentTemplate.layoutParameters };
+          delete copiedLayout.Coordinate;
+          copiedLayout.idMarksPattern = "000000000000000000000000000";
+          copiedLayout.columnNumber = 0;
+          copiedLayout.columnStart = 0;
+          copiedLayout.columnStep = 0;
+          copiedLayout.rowNumber = 0;
+          copiedLayout.rowStart = 0;
+          copiedLayout.rowStep = 0;
+          currentTemplate.layoutParameters = copiedLayout;
           break;
       }
       return {
