@@ -1344,8 +1344,8 @@ const DesignTemplate = () => {
           >
             <h2 className="text-center">Choose field type</h2>
             <br />
-            <Row className="mb-2">
-              <Col md={2} className="d-flex align-items-center">
+            {/* <Row className="mb-2">
+              <Col sm={2} md={2} className="d-flex align-items-center">
                 <label htmlFor="formField" className="mr-2 mb-0 field-label">
                   Form :{" "}
                 </label>
@@ -1359,7 +1359,7 @@ const DesignTemplate = () => {
                   className=" field-label mt-1"
                 />
               </Col>
-              <Col md={2} className="d-flex align-items-center">
+              <Col sm={2} md={2} className="d-flex align-items-center">
                 <label htmlFor="fieldType" className="mr-2 mb-0 field-label">
                   Question :{" "}
                 </label>
@@ -1425,6 +1425,100 @@ const DesignTemplate = () => {
                       className="mr-2 mb-0 field-label"
                     >
                       Image Area :
+                    </label>
+                    <input
+                      id="imageArea"
+                      type="radio"
+                      name="fieldType"
+                      value="imageArea"
+                      checked={selectedFieldType === "imageArea"}
+                      onChange={handleRadioChange}
+                      className="field-label mt-1"
+                    />
+                  </div>
+                </div>
+              </Col>
+            </Row> */}
+            <Row className="mb-2">
+              <Col xs={12} sm={4} md={2} className="d-flex align-items-center">
+                <label htmlFor="formField" className="mr-2 mb-0 field-label">
+                  Form:
+                </label>
+                <input
+                  id="formField"
+                  type="radio"
+                  name="fieldType"
+                  value="formField"
+                  checked={selectedFieldType === "formField"}
+                  onChange={handleRadioChange}
+                  className="field-label mt-1"
+                />
+              </Col>
+              <Col xs={12} sm={4} md={2} className="d-flex align-items-center">
+                <label htmlFor="fieldType" className="mr-2 mb-0 field-label">
+                  Question:
+                </label>
+                <input
+                  id="fieldType"
+                  type="radio"
+                  name="fieldType"
+                  value="questionField"
+                  checked={selectedFieldType === "questionField"}
+                  onChange={handleRadioChange}
+                  className="field-label mt-1"
+                />
+              </Col>
+              <Col xs={12} sm={4} md={3} className="d-flex align-items-center">
+                <label
+                  htmlFor="skewMarkField"
+                  className="mr-2 mb-0 col-form-label"
+                >
+                  Skew Mark:
+                </label>
+                <input
+                  id="skewMarkField"
+                  type="radio"
+                  name="fieldType"
+                  value="skewMarkField"
+                  checked={selectedFieldType === "skewMarkField"}
+                  onChange={handleRadioChange}
+                  className="field-label mt-1"
+                />
+              </Col>
+              <Col xs={12} sm={6} md={2} className="d-flex align-items-center">
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <div>
+                    <label htmlFor="idField" className="mr-2 mb-0 field-label">
+                      ID Mark:
+                    </label>
+                    <input
+                      id="idField"
+                      type="radio"
+                      name="fieldType"
+                      value="idField"
+                      checked={selectedFieldType === "idField"}
+                      onChange={handleRadioChange}
+                      className="field-label mt-1"
+                      disabled={idSelectionCount > 0}
+                    />
+                  </div>
+                  {idSelectionCount > 0 && (
+                    <div>
+                      <small style={{ color: "orangered" }}>
+                        already selected
+                      </small>
+                    </div>
+                  )}
+                </div>
+              </Col>
+              <Col xs={12} sm={6} md={3} className="d-flex align-items-center">
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <div>
+                    <label
+                      htmlFor="imageArea"
+                      className="mr-2 mb-0 field-label"
+                    >
+                      Image Area:
                     </label>
                     <input
                       id="imageArea"
