@@ -817,7 +817,10 @@ const DesignTemplate = () => {
       name: selectedField.name,
     };
     setSelectionIndex(index);
-    const template = dataCtx.allTemplates[templateIndex];
+    const template = dataCtx.allTemplates.find((item) => {
+      console.log(item);
+      return item[0].layoutParameters?.key ?? "" === templateIndex;
+    });
     // console.log(template);
     if (selectedField?.fieldType === "idField") {
       const data = template[0].layoutParameters;
