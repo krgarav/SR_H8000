@@ -33,8 +33,8 @@ import { sendFile } from "helper/TemplateHelper";
 import ImageCropper from "ui/ImageCropper";
 
 // Function to get values from sessionStorage or provide default
-const getSessionStorageOrDefault = (key, defaultValue) => {
-  const stored = sessionStorage.getItem(key);
+const getLocalStorageOrDefault = (key, defaultValue) => {
+  const stored = localStorage.getItem(key);
 
   if (!stored) {
     return defaultValue;
@@ -47,7 +47,7 @@ const getSessionStorageOrDefault = (key, defaultValue) => {
     }
     return parsed;
   } catch (e) {
-    console.warn(`Error parsing sessionStorage item with key "${key}":`, e);
+    console.warn(`Error parsing localStorage item with key "${key}":`, e);
     return defaultValue;
   }
 };
@@ -99,22 +99,25 @@ const DesignTemplate = () => {
   });
   const [loading, setLoading] = useState(false);
   const dataCtx = useContext(DataContext);
-  const {
-    totalColumns,
-    timingMarks,
-    templateImagePath,
-    bubbleType,
-    templateIndex,
-    iSensitivity,
-    iDifference,
-    iReject,
-    iFace,
-    arr,
-    templateId,
-    excelJsonFile,
-    imageTempFile,
-    excelFile,
-  } = useLocation().state;
+  // const {
+  //   totalColumns,
+  //   timingMarks,
+  //   templateImagePath,
+  //   bubbleType,
+  //   templateIndex,
+  //   iSensitivity,
+  //   iDifference,
+  //   iReject,
+  //   iFace,
+  //   arr,
+  //   templateId,
+  //   excelJsonFile,
+  //   imageTempFile,
+  //   excelFile,
+  // } = useLocation().state;
+  const [localData, setLocalData] = useState(
+    JSON.parse(localStorage.getItem("Template"))
+  );
   const [selectedCol, setSelectedCol] = useState([]);
   const [options, setOptions] = useState([]);
   const [idNumber, setIdNumber] = useState("0000000000000000000000000000");
@@ -170,11 +173,27 @@ const DesignTemplate = () => {
   //     ),
   //     excelFile: getSessionStorageOrDefault("excelFile", state.excelFile),
   // }));
-  console.log(idSelectionCount);
+  const {
+    totalColumns,
+    timingMarks,
+    templateImagePath,
+    bubbleType,
+    key : templateIndex,
+    iSensitivity,
+    iDifference,
+    iReject,
+    iFace,
+    arr,
+    templateId,
+    excelJsonFile,
+    imageTempFile,
+    excelFile,
+  } = localData[0].layoutParameters;
+
   const rndRef = useRef();
   const navigate = useNavigate();
-  const numRows = state.timingMarks;
-  const numCols = state.totalColumns;
+  const numRows = timingMarks;
+  const numCols = totalColumns;
 
   const handleDragStop = (e, d) => {
     setPosition((prev) => ({ ...prev, x: d.x, y: d.y }));
@@ -241,7 +260,11 @@ const DesignTemplate = () => {
   //         sessionStorage.setItem("excelFile", JSON.stringify(state.excelFile));
   //     }
   // }, [location.state]);
-
+  useEffect(() => {
+    const templateData = JSON.parse(localStorage.getItem("Template"));
+    dataCtx.setAllTemplates(templateData);
+  }, []);
+  console.log(dataCtx.allTemplates)
   useEffect(() => {
     const handleBeforeUnload = (event) => {
       const confirmationMessage =
@@ -737,14 +760,6 @@ const DesignTemplate = () => {
       setSelectedCoordinates((prev) => [...prev, newSelected]);
       setSelection(null);
     } else {
-      // const updatedValue = {
-      //     startRow: selection?.startRow - 1,
-      //     startCol: selection?.startCol,
-      //     endRow: selection?.endRow - 1,
-      //     endCol: selection?.endCol,
-      //     name: name,
-      //     fieldType: selectedFieldType,
-      //   };
       setSelectedCoordinates((item) => {
         // Ensure item is defined and coordinateIndex is valid
         if (!item || coordinateIndex < 0 || coordinateIndex >= item.length) {
@@ -914,7 +929,7 @@ const DesignTemplate = () => {
       setEndColInput(formattedSelectedFile["End Col"]);
     }
   };
-  console.log(dataCtx.allTemplates[templateIndex]);
+  console.log(dataCtx.allTemplates)
   const handleCrossClick = (selectedField, index) => {
     const response = window.confirm(
       "Are you sure you want to delete the selected field ?"

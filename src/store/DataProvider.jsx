@@ -31,45 +31,54 @@ const DataProvider = (props) => {
     return newIndex; // Return the new index
   };
 
-  const modifyTemplateHandler = (index, regionData, fieldType) => {
-    console.log(index);
-    setDataState((item) => {
-      const copiedData = [...item.allTemplates];
-      const currentTemplate = copiedData[index];
+  const modifyTemplateHandler = (uuid, regionData, fieldType) => {
+    setDataState((prevState) => {
+      const copiedData = [...prevState.allTemplates];
+      console.log(copiedData);
 
-      switch (fieldType) {
-        case "skewMarkField":
-          currentTemplate[0].skewMarksWindowParameters = currentTemplate[0]
-            .skewMarksWindowParameters
-            ? [...currentTemplate[0]?.skewMarksWindowParameters, regionData]
-            : [regionData];
-          break;
-        case "formField":
-          currentTemplate[0].formFieldWindowParameters = currentTemplate[0]
-            .formFieldWindowParameters
-            ? [...currentTemplate[0].formFieldWindowParameters, regionData]
-            : [regionData];
-          break;
-        case "questionField":
-          currentTemplate[0].questionsWindowParameters = currentTemplate[0]
-            .questionsWindowParameters
-            ? [...currentTemplate[0].questionsWindowParameters, regionData]
-            : [regionData];
-          break;
-        default:
-          currentTemplate[0].layoutParameters = {
-            ...currentTemplate[0].layoutParameters,
-            ...regionData,
-          };
-          break;
+      // Find the current template instead of filtering
+      const currentTemplate = copiedData.find((item) => {
+        console.log(item);
+        return item[0].layoutParameters?.key ?? "" === uuid;
+      });
+
+      // Ensure currentTemplate is found
+      if (currentTemplate) {
+        switch (fieldType) {
+          case "skewMarkField":
+            currentTemplate[0].skewMarksWindowParameters = currentTemplate[0]
+              .skewMarksWindowParameters
+              ? [...currentTemplate[0].skewMarksWindowParameters, regionData]
+              : [regionData];
+            break;
+          case "formField":
+            currentTemplate[0].formFieldWindowParameters = currentTemplate[0]
+              .formFieldWindowParameters
+              ? [...currentTemplate[0].formFieldWindowParameters, regionData]
+              : [regionData];
+            break;
+          case "questionField":
+            currentTemplate[0].questionsWindowParameters = currentTemplate[0]
+              .questionsWindowParameters
+              ? [...currentTemplate[0].questionsWindowParameters, regionData]
+              : [regionData];
+            break;
+          default:
+            currentTemplate[0].layoutParameters = {
+              ...currentTemplate[0].layoutParameters,
+              ...regionData,
+            };
+            break;
+        }
       }
 
       return {
-        ...item,
+        ...prevState,
         allTemplates: copiedData,
       };
     });
   };
+
   const deleteTemplateHandler = (index) => {
     const isConfirmed = window.confirm(
       "Are you sure you want to delete this item?"
@@ -347,7 +356,7 @@ const DataProvider = (props) => {
   //     };
   //   });
   // };
-
+  const modifyRegionWithUUIDHandler = (uuid, regionData, fieldType) => {};
   const modifyWithRegionHandler = (
     templateIndex,
     regionData,
@@ -457,6 +466,44 @@ const DataProvider = (props) => {
       };
     });
   };
+  const addRegionDataHandler = (index, regionData, fieldType) => {
+    setDataState((item) => {
+      const copiedData = [...item.allTemplates];
+      const currentTemplate = copiedData[index];
+
+      switch (fieldType) {
+        case "skewMarkField":
+          currentTemplate[0].skewMarksWindowParameters = currentTemplate[0]
+            .skewMarksWindowParameters
+            ? [...currentTemplate[0]?.skewMarksWindowParameters, regionData]
+            : [regionData];
+          break;
+        case "formField":
+          currentTemplate[0].formFieldWindowParameters = currentTemplate[0]
+            .formFieldWindowParameters
+            ? [...currentTemplate[0].formFieldWindowParameters, regionData]
+            : [regionData];
+          break;
+        case "questionField":
+          currentTemplate[0].questionsWindowParameters = currentTemplate[0]
+            .questionsWindowParameters
+            ? [...currentTemplate[0].questionsWindowParameters, regionData]
+            : [regionData];
+          break;
+        default:
+          currentTemplate[0].layoutParameters = {
+            ...currentTemplate[0].layoutParameters,
+            ...regionData,
+          };
+          break;
+      }
+
+      return {
+        ...item,
+        allTemplates: copiedData,
+      };
+    });
+  };
   const dataContext = {
     allTemplates: dataState.allTemplates,
     setAllTemplates: templateHandler,
@@ -466,6 +513,8 @@ const DataProvider = (props) => {
     addFieldToTemplate: addFieldToTemplateHandler,
     modifyWithRegion: modifyWithRegionHandler,
     deleteFieldTemplate: deleteFieldTemplateHandler,
+    modifyRegionWithUUID: modifyRegionWithUUIDHandler,
+    addRegionData: addRegionDataHandler,
   };
 
   return (
