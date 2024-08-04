@@ -41,28 +41,30 @@ import DuplexJob from "./DuplexJob";
 import Papa from "papaparse";
 import { getSampleData } from "helper/TemplateHelper";
 import { v4 as uuidv4 } from "uuid";
-function base64ToFile(base64Url, filename) {
-  // Extract base64 data and content type from URL
-  const [header, base64Data] = base64Url.split(",");
-  const mime = header.match(/:(.*?);/)[1];
+import base64ToFile from "services/Base64toFile";
 
-  // Decode base64 data to binary
-  const binaryString = window.atob(base64Data);
+// function base64ToFile(base64Url, filename) {
+//   // Extract base64 data and content type from URL
+//   const [header, base64Data] = base64Url.split(",");
+//   const mime = header.match(/:(.*?);/)[1];
 
-  // Create a Uint8Array to hold the binary data
-  const len = binaryString.length;
-  const bytes = new Uint8Array(len);
+//   // Decode base64 data to binary
+//   const binaryString = window.atob(base64Data);
 
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
+//   // Create a Uint8Array to hold the binary data
+//   const len = binaryString.length;
+//   const bytes = new Uint8Array(len);
 
-  // Create a Blob from the binary data
-  const blob = new Blob([bytes], { type: mime });
+//   for (let i = 0; i < len; i++) {
+//     bytes[i] = binaryString.charCodeAt(i);
+//   }
 
-  // Create a File from the Blob
-  return new File([blob], filename, { type: mime });
-}
+//   // Create a Blob from the binary data
+//   const blob = new Blob([bytes], { type: mime });
+
+//   // Create a File from the Blob
+//   return new File([blob], filename, { type: mime });
+// }
 const TemplateModal = (props) => {
   const [modalShow, setModalShow] = useState(false);
   const [name, setName] = useState("");

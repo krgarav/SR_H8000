@@ -8,6 +8,7 @@ import DataContext from "store/DataContext";
 import { MultiSelect } from "react-multi-select-component";
 import { createTemplate } from "helper/TemplateHelper";
 import { getLayoutDataById } from "helper/TemplateHelper";
+import Papa from "papaparse";
 import {
   Badge,
   Card,
@@ -31,6 +32,7 @@ import { toast } from "react-toastify";
 import isEqual from "lodash/isEqual";
 import { sendFile } from "helper/TemplateHelper";
 import ImageCropper from "ui/ImageCropper";
+import base64ToFile from "services/Base64toFile";
 
 // Function to get values from sessionStorage or provide default
 const getLocalStorageOrDefault = (key, defaultValue) => {
@@ -1082,6 +1084,13 @@ const DesignTemplate = () => {
       formFieldWindowParameters,
     };
     console.log(fullRequestData);
+    const csv = Papa.unparse(excelJsonFile);
+    // Create a Blob from the CSV string
+    const blob = new Blob([csv], { type: "text/csv" });
+
+    // Create a File object from the Blob
+    const csvfile = new File([blob], "data.csv", { type: "text/csv" });
+    const imageFile = base64ToFile(templateImagePath, "image.png");
     // Send the request and handle the response
     // try {
     //   setLoading(true);
@@ -1091,8 +1100,8 @@ const DesignTemplate = () => {
     //     const layoutId = res?.layoutId;
     //     const formdata = new FormData();
     //     formdata.append("LayoutId", layoutId);
-    //     formdata.append("ImageFile", state.imageTempFile);
-    //     formdata.append("ExcelFile", state.excelFile);
+    //     formdata.append("ImageFile", imageFile);
+    //     formdata.append("ExcelFile", csvfile);
     //     // Iterate over the FormData entries and log them
     //     for (let [key, value] of formdata.entries()) {
     //       console.log(`${key}: ${value}`);
