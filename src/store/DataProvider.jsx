@@ -31,7 +31,47 @@ const DataProvider = (props) => {
     return newIndex; // Return the new index
   };
 
-  const modifyTemplateHandler = (uuid, regionData, fieldType) => {
+  const modifyTemplateHandler = (index, regionData, fieldType) => {
+    console.log(index);
+    setDataState((item) => {
+      const copiedData = [...item.allTemplates];
+      const currentTemplate = copiedData[index];
+
+      switch (fieldType) {
+        case "skewMarkField":
+          currentTemplate[0].skewMarksWindowParameters = currentTemplate[0]
+            .skewMarksWindowParameters
+            ? [...currentTemplate[0]?.skewMarksWindowParameters, regionData]
+            : [regionData];
+          break;
+        case "formField":
+          currentTemplate[0].formFieldWindowParameters = currentTemplate[0]
+            .formFieldWindowParameters
+            ? [...currentTemplate[0].formFieldWindowParameters, regionData]
+            : [regionData];
+          break;
+        case "questionField":
+          currentTemplate[0].questionsWindowParameters = currentTemplate[0]
+            .questionsWindowParameters
+            ? [...currentTemplate[0].questionsWindowParameters, regionData]
+            : [regionData];
+          break;
+        default:
+          currentTemplate[0].layoutParameters = {
+            ...currentTemplate[0].layoutParameters,
+            ...regionData,
+          };
+          break;
+      }
+
+      return {
+        ...item,
+        allTemplates: copiedData,
+      };
+    });
+  };
+
+  const modifyTemplateWithUUIDHandler = (uuid, regionData, fieldType) => {
     setDataState((prevState) => {
       const copiedData = [...prevState.allTemplates];
       console.log(copiedData);
@@ -315,7 +355,6 @@ const DataProvider = (props) => {
     });
   };
 
-  console.log(dataState);
   // const modifyWithRegionHandler = (
   //   templateIndex,
   //   regionData,
@@ -356,7 +395,61 @@ const DataProvider = (props) => {
   //     };
   //   });
   // };
-  const modifyRegionWithUUIDHandler = (uuid, regionData, fieldType) => {};
+  const modifyRegionWithUUIDHandler = (
+    uuid,
+    regionData,
+    fieldType,
+    coordinateIndex
+  ) => {
+    setDataState((item) => {
+      const copiedData = [...item.allTemplates];
+
+      // Find the current template instead of filtering
+      const currentTemplate = copiedData.find((item) => {
+        console.log(item);
+        return item[0].layoutParameters?.key ?? "" === uuid;
+      });
+      if (!currentTemplate || currentTemplate.length === 0) {
+        console.error("Invalid template index or empty template");
+        return item;
+      }
+
+      const updateField = (fieldArray) => {
+        if (
+          fieldArray &&
+          coordinateIndex >= 0 &&
+          coordinateIndex < fieldArray.length
+        ) {
+          fieldArray[coordinateIndex] = regionData;
+        } else {
+          console.error("Invalid coordinate index");
+        }
+      };
+
+      switch (fieldType) {
+        case "skewMarkField":
+          updateField(currentTemplate[0]?.skewMarksWindowParameters);
+          break;
+        case "formField":
+          updateField(currentTemplate[0]?.formFieldWindowParameters);
+          break;
+        case "questionField":
+          updateField(currentTemplate[0]?.questionsWindowParameters);
+          break;
+        default:
+          currentTemplate[0].layoutParameters = {
+            ...currentTemplate[0].layoutParameters,
+            ...regionData,
+          };
+          break;
+      }
+
+      return {
+        ...item,
+        allTemplates: copiedData,
+      };
+    });
+  };
   const modifyWithRegionHandler = (
     templateIndex,
     regionData,
@@ -466,6 +559,68 @@ const DataProvider = (props) => {
       };
     });
   };
+  
+
+  const deleteFieldTemplateWithUUIDHandler = (uuid, selectedFieldData) => {
+    const fieldType = selectedFieldData.fieldType;
+    setDataState((item) => {
+      const copiedData = [...item.allTemplates];
+      
+     
+       // Find the current template instead of filtering
+       const currentTemplate = copiedData.find((item) => {
+        console.log(item);
+        return item[0].layoutParameters?.key ?? "" === uuid;
+      })[0];
+     
+      switch (fieldType) {
+        case "skewMarkField":
+          const parameters = currentTemplate?.skewMarksWindowParameters;
+
+          const updatedSkew = parameters.filter(
+            (item) => !isEqual(item.Coordinate, selectedFieldData)
+          );
+
+          currentTemplate.skewMarksWindowParameters = updatedSkew;
+          break;
+        case "formField":
+          const formparameters = currentTemplate?.formFieldWindowParameters;
+
+          const updatedForm = formparameters.filter(
+            (item) => !isEqual(item.Coordinate, selectedFieldData)
+          );
+
+          currentTemplate.formFieldWindowParameters = updatedForm;
+          break;
+        case "questionField":
+          const questionparameters = currentTemplate?.questionsWindowParameters;
+
+          const questionForm = questionparameters.filter(
+            (item) => !isEqual(item.Coordinate, selectedFieldData)
+          );
+
+          currentTemplate.questionsWindowParameters = questionForm;
+          break;
+        default:
+          const copiedLayout = { ...currentTemplate.layoutParameters };
+          delete copiedLayout.Coordinate;
+          copiedLayout.idMarksPattern = "000000000000000000000000000";
+          copiedLayout.columnNumber = 0;
+          copiedLayout.columnStart = 0;
+          copiedLayout.columnStep = 0;
+          copiedLayout.rowNumber = 0;
+          copiedLayout.rowStart = 0;
+          copiedLayout.rowStep = 0;
+          currentTemplate.layoutParameters = copiedLayout;
+          break;
+      }
+      return {
+        ...item,
+        allTemplates: copiedData,
+      };
+    });
+  };
+  
   const addRegionDataHandler = (index, regionData, fieldType) => {
     setDataState((item) => {
       const copiedData = [...item.allTemplates];
@@ -515,6 +670,8 @@ const DataProvider = (props) => {
     deleteFieldTemplate: deleteFieldTemplateHandler,
     modifyRegionWithUUID: modifyRegionWithUUIDHandler,
     addRegionData: addRegionDataHandler,
+    modifyTemplateWithUUID: modifyTemplateWithUUIDHandler,
+    deleteFieldTemplateWithUUID:deleteFieldTemplateWithUUIDHandler
   };
 
   return (

@@ -178,7 +178,7 @@ const DesignTemplate = () => {
     timingMarks,
     templateImagePath,
     bubbleType,
-    key : templateIndex,
+    key: templateIndex,
     iSensitivity,
     iDifference,
     iReject,
@@ -222,8 +222,10 @@ const DesignTemplate = () => {
     ).length;
     if (idFieldCount > 0) {
       setIdSelectionCount(1);
+    }else{
+      setIdSelectionCount(0);
     }
-  }, []);
+  }, [selectedCoordinates,selection]);
   // useEffect(() => {
   //     if (location.state) {
   //         sessionStorage.setItem(
@@ -262,9 +264,17 @@ const DesignTemplate = () => {
   // }, [location.state]);
   useEffect(() => {
     const templateData = JSON.parse(localStorage.getItem("Template"));
-    dataCtx.setAllTemplates(templateData);
+    // Find the current template instead of filtering
+    // const currentTemplate = dataCtx.allTemplates.find((item) => {
+    //   console.log(item);
+    //   return item[0].layoutParameters?.key ?? "" === templateIndex;
+    // })?[0];
+    console.log(templateData)
+    // if (!currentTemplate) {
+      dataCtx.setAllTemplates(templateData);
+    // }
   }, []);
-  console.log(dataCtx.allTemplates)
+  console.log(dataCtx.allTemplates);
   useEffect(() => {
     const handleBeforeUnload = (event) => {
       const confirmationMessage =
@@ -751,7 +761,7 @@ const DesignTemplate = () => {
     // setSelection(null);
     setModalShow(false);
     if (!modalUpdate) {
-      dataCtx.modifyAllTemplate(templateIndex, newData, selectedFieldType);
+      dataCtx.modifyTemplateWithUUID(templateIndex, newData, selectedFieldType);
       const newSelected = {
         ...selection,
         name: selectedFieldType !== "idField" ? name : "Id Field",
@@ -779,7 +789,7 @@ const DesignTemplate = () => {
 
       //   console.log(templateIndex,selectedFieldType,coordinateIndex);
       //   if(templateIndex,selectedFieldType,coordinateIndex)
-      dataCtx.modifyWithRegion(
+      dataCtx.modifyRegionWithUUID(
         templateIndex,
         newData,
         selectedFieldType,
@@ -932,7 +942,7 @@ const DesignTemplate = () => {
       setEndColInput(formattedSelectedFile["End Col"]);
     }
   };
-  console.log(dataCtx.allTemplates)
+  console.log(dataCtx.allTemplates);
   const handleCrossClick = (selectedField, index) => {
     const response = window.confirm(
       "Are you sure you want to delete the selected field ?"
@@ -953,7 +963,7 @@ const DesignTemplate = () => {
       copiedState.splice(index, 1); // Remove the item at the specified index
       return copiedState;
     });
-    dataCtx.deleteFieldTemplate(templateIndex, formattedSelectedFile);
+    dataCtx.deleteFieldTemplateWithUUID(templateIndex, formattedSelectedFile);
   };
   const handleIconMouseUp = (event) => {
     event.stopPropagation();
@@ -961,8 +971,11 @@ const DesignTemplate = () => {
 
   const sendHandler = async () => {
     // Retrieve the selected template
-
-    const template = dataCtx.allTemplates[templateIndex];
+    const template = dataCtx.allTemplates.find((item) => {
+      console.log(item);
+      return item[0].layoutParameters?.key ?? "" === templateIndex;
+    });
+    // const template = dataCtx.allTemplates[templateIndex];
     console.log(template);
 
     // Extract layout parameters and its coordinates
@@ -1070,36 +1083,36 @@ const DesignTemplate = () => {
     };
     console.log(fullRequestData);
     // Send the request and handle the response
-    try {
-      setLoading(true);
-      const res = await createTemplate(fullRequestData);
-      console.log(res);
-      if (res.success === true) {
-        const layoutId = res?.layoutId;
-        const formdata = new FormData();
-        formdata.append("LayoutId", layoutId);
-        formdata.append("ImageFile", state.imageTempFile);
-        formdata.append("ExcelFile", state.excelFile);
-        // Iterate over the FormData entries and log them
-        for (let [key, value] of formdata.entries()) {
-          console.log(`${key}: ${value}`);
-        }
-        const res2 = await sendFile(formdata);
-        console.log(res2);
-        setLoading(false);
+    // try {
+    //   setLoading(true);
+    //   const res = await createTemplate(fullRequestData);
+    //   console.log(res);
+    //   if (res.success === true) {
+    //     const layoutId = res?.layoutId;
+    //     const formdata = new FormData();
+    //     formdata.append("LayoutId", layoutId);
+    //     formdata.append("ImageFile", state.imageTempFile);
+    //     formdata.append("ExcelFile", state.excelFile);
+    //     // Iterate over the FormData entries and log them
+    //     for (let [key, value] of formdata.entries()) {
+    //       console.log(`${key}: ${value}`);
+    //     }
+    //     const res2 = await sendFile(formdata);
+    //     console.log(res2);
+    //     setLoading(false);
 
-        alert(`Response : ${JSON.stringify(res2?.message)}`);
+    //     alert(`Response : ${JSON.stringify(res2?.message)}`);
 
-        if (res2?.success) {
-          sessionStorage.clear();
-          toast.success("Layout Saved");
-          navigate("/admin/template", { replace: true });
-        }
-      }
-    } catch (error) {
-      alert(`Error creating template`);
-      console.error("Error sending POST request:", error);
-    }
+    //     if (res2?.success) {
+    //       sessionStorage.clear();
+    //       toast.success("Layout Saved");
+    //       navigate("/admin/template", { replace: true });
+    //     }
+    //   }
+    // } catch (error) {
+    //   alert(`Error creating template`);
+    //   console.error("Error sending POST request:", error);
+    // }
   };
 
   return (
@@ -1148,7 +1161,7 @@ const DesignTemplate = () => {
           {!loading ? "Save" : "Saving"}
         </Button>
         <div className="containers">
-          <div id="imagecontainer" className={classes.img}>
+          {/* <div id="imagecontainer" className={classes.img}>
             <Rnd
               default={{
                 x: 0,
@@ -1176,7 +1189,7 @@ const DesignTemplate = () => {
                 id="omr-style-sheet"
               />
             </Rnd>
-          </div>
+          </div> */}
           <div className="d-flex">
             <div style={{ marginRight: "1rem" }}>
               <div className="top"></div>
