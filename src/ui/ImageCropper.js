@@ -1,6 +1,6 @@
-import React, { useRef, useState } from "react";
-import Cropper from "react-cropper";
-import "cropperjs/dist/cropper.css";
+import React, { useRef, useState } from 'react';
+import Cropper from 'react-cropper';
+import 'cropperjs/dist/cropper.css';
 
 const ImageCropper = ({ imageSrc }) => {
   const cropperRef = useRef(null);
@@ -10,18 +10,33 @@ const ImageCropper = ({ imageSrc }) => {
     const cropper = cropperRef.current.cropper;
     const cropBoxData = cropper.getCropBoxData();
     const imageData = cropper.getImageData();
-    const croppedCanvas = cropper.getCroppedCanvas();
+    const canvasData = cropper.getCanvasData();
+    console.log(cropper)
+    console.log(cropBoxData)
+    console.log(imageData);
+    console.log(cropper.getCroppedCanvas())
+    // Calculate coordinates relative to the original image
+    const scaleX = imageData.naturalWidth / imageData.width;
+    const scaleY = imageData.naturalHeight / imageData.height;
 
     const coordinates = {
-      x: cropBoxData.left - imageData.left,
-      y: cropBoxData.top - imageData.top,
-      width: cropBoxData.width,
-      height: cropBoxData.height,
+      startX: (cropBoxData.left - canvasData.left) * scaleX,
+      startY: (cropBoxData.top - canvasData.top) * scaleY,
+      endX: (cropBoxData.left - canvasData.left + cropBoxData.width) * scaleX,
+      endY: (cropBoxData.top - canvasData.top + cropBoxData.height) * scaleY,
+    };
+
+    const relativeCoordinates = {
+      TopLeftX: cropBoxData.left - canvasData.left,
+      TopLeftY: cropBoxData.top - canvasData.top,
+      BottomRightX: cropBoxData.left - canvasData.left + cropBoxData.width,
+      BottomRightY: cropBoxData.top - canvasData.top + cropBoxData.height,
     };
 
     setCropData({
       coordinates,
-      croppedImage: croppedCanvas.toDataURL(),
+      relativeCoordinates,
+      croppedImage: cropper.getCroppedCanvas().toDataURL(),
     });
   };
 
@@ -29,10 +44,20 @@ const ImageCropper = ({ imageSrc }) => {
     <div>
       <Cropper
         src={imageSrc}
-        style={{ height: 300, width: "100%" }}
+        style={{ height: 300, width: '100%' }}
         initialAspectRatio={1}
-        guides={false}
+        guides={true}
         ref={cropperRef}
+        // cropend={() => getCropData()}
+        viewMode={1}
+        minCropBoxHeight={10}
+        minCropBoxWidth={10}
+        background={true}
+        responsive={true}
+        autoCropArea={0}
+        checkOrientation={false}
+        rotatable={true}
+        autoCrop={false}
       />
       <button onClick={getCropData}>Get Crop Data</button>
       {cropData && (

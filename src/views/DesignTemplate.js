@@ -33,6 +33,9 @@ import isEqual from "lodash/isEqual";
 import { sendFile } from "helper/TemplateHelper";
 import ImageCropper from "ui/ImageCropper";
 import base64ToFile from "services/Base64toFile";
+import RegionSelector from "ui/RangeSelector";
+import ImageRegionSelector from "ui/RangeSelector";
+import Cropper from "ui/RangeSelector";
 
 // Function to get values from sessionStorage or provide default
 const getLocalStorageOrDefault = (key, defaultValue) => {
@@ -224,10 +227,10 @@ const DesignTemplate = () => {
     ).length;
     if (idFieldCount > 0) {
       setIdSelectionCount(1);
-    }else{
+    } else {
       setIdSelectionCount(0);
     }
-  }, [selectedCoordinates,selection]);
+  }, [selectedCoordinates, selection]);
   // useEffect(() => {
   //     if (location.state) {
   //         sessionStorage.setItem(
@@ -273,7 +276,7 @@ const DesignTemplate = () => {
     // })?[0];
     console.log(templateData)
     // if (!currentTemplate) {
-      dataCtx.setAllTemplates(templateData);
+    dataCtx.setAllTemplates(templateData);
     // }
   }, []);
   console.log(dataCtx.allTemplates);
@@ -1028,13 +1031,13 @@ const DesignTemplate = () => {
         const { Coordinate, ...rest } = item;
         const questionWindowCoordinates = Coordinate
           ? {
-              right: Coordinate["End Col"],
-              end: Coordinate["End Row"],
-              left: Coordinate["Start Col"],
-              start: Coordinate["Start Row"],
-              name: Coordinate["name"],
-              fieldType: Coordinate["fieldType"],
-            }
+            right: Coordinate["End Col"],
+            end: Coordinate["End Row"],
+            left: Coordinate["Start Col"],
+            start: Coordinate["Start Row"],
+            name: Coordinate["name"],
+            fieldType: Coordinate["fieldType"],
+          }
           : {};
         return { ...rest, questionWindowCoordinates };
       });
@@ -1045,13 +1048,13 @@ const DesignTemplate = () => {
         const { Coordinate, ...rest } = item;
         const layoutWindowCoordinates = Coordinate
           ? {
-              right: Coordinate["End Col"],
-              end: Coordinate["End Row"],
-              left: Coordinate["Start Col"],
-              start: Coordinate["Start Row"],
-              name: Coordinate["name"],
-              fieldType: Coordinate["fieldType"],
-            }
+            right: Coordinate["End Col"],
+            end: Coordinate["End Row"],
+            left: Coordinate["Start Col"],
+            start: Coordinate["Start Row"],
+            name: Coordinate["name"],
+            fieldType: Coordinate["fieldType"],
+          }
           : {};
         return { ...rest, layoutWindowCoordinates };
       });
@@ -1062,13 +1065,13 @@ const DesignTemplate = () => {
         const { Coordinate, ...rest } = item;
         const formFieldCoordinates = Coordinate
           ? {
-              right: Coordinate["End Col"],
-              end: Coordinate["End Row"],
-              left: Coordinate["Start Col"],
-              start: Coordinate["Start Row"],
-              name: Coordinate["name"],
-              fieldType: Coordinate["fieldType"],
-            }
+            right: Coordinate["End Col"],
+            end: Coordinate["End Row"],
+            left: Coordinate["Start Col"],
+            start: Coordinate["Start Row"],
+            name: Coordinate["name"],
+            fieldType: Coordinate["fieldType"],
+          }
           : {};
         return { ...rest, formFieldCoordinates };
       });
@@ -1092,36 +1095,36 @@ const DesignTemplate = () => {
     const csvfile = new File([blob], "data.csv", { type: "text/csv" });
     const imageFile = base64ToFile(templateImagePath, "image.png");
     // Send the request and handle the response
-    // try {
-    //   setLoading(true);
-    //   const res = await createTemplate(fullRequestData);
-    //   console.log(res);
-    //   if (res.success === true) {
-    //     const layoutId = res?.layoutId;
-    //     const formdata = new FormData();
-    //     formdata.append("LayoutId", layoutId);
-    //     formdata.append("ImageFile", imageFile);
-    //     formdata.append("ExcelFile", csvfile);
-    //     // Iterate over the FormData entries and log them
-    //     for (let [key, value] of formdata.entries()) {
-    //       console.log(`${key}: ${value}`);
-    //     }
-    //     const res2 = await sendFile(formdata);
-    //     console.log(res2);
-    //     setLoading(false);
+    try {
+      setLoading(true);
+      const res = await createTemplate(fullRequestData);
+      console.log(res);
+      if (res.success === true) {
+        const layoutId = res?.layoutId;
+        const formdata = new FormData();
+        formdata.append("LayoutId", layoutId);
+        formdata.append("ImageFile", imageFile);
+        formdata.append("ExcelFile", csvfile);
+        // Iterate over the FormData entries and log them
+        for (let [key, value] of formdata.entries()) {
+          console.log(`${key}: ${value}`);
+        }
+        const res2 = await sendFile(formdata);
+        console.log(res2);
+        setLoading(false);
 
-    //     alert(`Response : ${JSON.stringify(res2?.message)}`);
+        alert(`Response : ${JSON.stringify(res2?.message)}`);
 
-    //     if (res2?.success) {
-    //       sessionStorage.clear();
-    //       toast.success("Layout Saved");
-    //       navigate("/admin/template", { replace: true });
-    //     }
-    //   }
-    // } catch (error) {
-    //   alert(`Error creating template`);
-    //   console.error("Error sending POST request:", error);
-    // }
+        if (res2?.success) {
+          sessionStorage.clear();
+          toast.success("Layout Saved");
+          navigate("/admin/template", { replace: true });
+        }
+      }
+    } catch (error) {
+      alert(`Error creating template`);
+      console.error("Error sending POST request:", error);
+    }
   };
 
   return (
@@ -1247,9 +1250,9 @@ const DesignTemplate = () => {
                             style={{
                               backgroundColor:
                                 rowIndex < result.length &&
-                                colIndex < result[rowIndex].length &&
-                                result[rowIndex][colIndex] != 0 &&
-                                result[rowIndex][colIndex] !== undefined
+                                  colIndex < result[rowIndex].length &&
+                                  result[rowIndex][colIndex] != 0 &&
+                                  result[rowIndex][colIndex] !== undefined
                                   ? "black"
                                   : "",
                             }}
@@ -1257,11 +1260,10 @@ const DesignTemplate = () => {
                             //     backgroundColor:
                             //         result[rowIndex][colIndex] != 0 ? "black" : "",
                             // }}
-                            className={`${bubbleType} ${
-                              selected[`${rowIndex},${colIndex}`]
-                                ? "selected"
-                                : ""
-                            }`}
+                            className={`${bubbleType} ${selected[`${rowIndex},${colIndex}`]
+                              ? "selected"
+                              : ""
+                              }`}
                           ></div>
                         ))}
                       </div>
@@ -1275,28 +1277,24 @@ const DesignTemplate = () => {
                       style={{
                         border: "3px solid #007bff",
                         position: "absolute",
-                        left: `${
-                          data.startCol *
-                            (imageRef.current.getBoundingClientRect().width /
-                              numCols) -
+                        left: `${data.startCol *
+                          (imageRef.current.getBoundingClientRect().width /
+                            numCols) -
                           4
-                        }px`,
-                        top: `${
-                          data.startRow *
-                            (imageRef.current.getBoundingClientRect().height /
-                              numRows) -
+                          }px`,
+                        top: `${data.startRow *
+                          (imageRef.current.getBoundingClientRect().height /
+                            numRows) -
                           3
-                        }px`,
-                        width: `${
-                          (data.endCol - data.startCol + 1) *
+                          }px`,
+                        width: `${(data.endCol - data.startCol + 1) *
                           (imageRef.current.getBoundingClientRect().width /
                             numCols)
-                        }px`,
-                        height: `${
-                          (data.endRow - data.startRow + 1) *
+                          }px`,
+                        height: `${(data.endRow - data.startRow + 1) *
                           (imageRef.current.getBoundingClientRect().height /
                             numRows)
-                        }px`,
+                          }px`,
                       }}
                       onClick={(e) => e.stopPropagation()}
                     >
@@ -1338,28 +1336,24 @@ const DesignTemplate = () => {
                       style={{
                         border: "2px solid green",
                         position: "absolute",
-                        left: `${
-                          selection.startCol *
-                            (imageRef.current.getBoundingClientRect().width /
-                              numCols) -
+                        left: `${selection.startCol *
+                          (imageRef.current.getBoundingClientRect().width /
+                            numCols) -
                           4
-                        }px`,
-                        top: `${
-                          selection.startRow *
-                            (imageRef.current.getBoundingClientRect().height /
-                              numRows) -
+                          }px`,
+                        top: `${selection.startRow *
+                          (imageRef.current.getBoundingClientRect().height /
+                            numRows) -
                           3
-                        }px`,
-                        width: `${
-                          (selection.endCol - selection.startCol + 1) *
+                          }px`,
+                        width: `${(selection.endCol - selection.startCol + 1) *
                           (imageRef.current.getBoundingClientRect().width /
                             numCols)
-                        }px`,
-                        height: `${
-                          (selection.endRow - selection.startRow + 1) *
+                          }px`,
+                        height: `${(selection.endRow - selection.startRow + 1) *
                           (imageRef.current.getBoundingClientRect().height /
                             numRows)
-                        }px`,
+                          }px`,
                         content: "question field",
                       }}
                     ></div>
@@ -1382,13 +1376,13 @@ const DesignTemplate = () => {
             id="contained-modal-title-vcenter"
             style={{ width: "100vw" }}
           >
-            <h2 className="text-center">Choose field type</h2>
+            <h2 className="text-center">{!modalUpdate ? "Choose field type" : selectedFieldType}</h2>
             <br />
             {/* <Row className="mb-2">
               <Col sm={2} md={2} className="d-flex align-items-center">
                 <label htmlFor="formField" className="mr-2 mb-0 field-label">
                   Form :{" "}
-                </label>
+                </label>  
                 <input
                   id="formField"
                   type="radio"
@@ -1479,7 +1473,7 @@ const DesignTemplate = () => {
                 </div>
               </Col>
             </Row> */}
-            <Row className="mb-2">
+            {!modalUpdate && <Row className="mb-2">
               <Col xs={12} sm={4} md={2} className="d-flex align-items-center">
                 <label htmlFor="formField" className="mr-2 mb-0 field-label">
                   Form:
@@ -1572,13 +1566,48 @@ const DesignTemplate = () => {
                   </div>
                 </div>
               </Col>
-            </Row>
+            </Row>}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ height: "55vh", overflowX: "auto" }}>
           {selectedFieldType === "imageArea" && (
             <>
-              <ImageCropper imageSrc={templateImagePath} />
+              {/* <ImageCropper imageSrc={templateImagePath} /> */}
+              <Row>
+                <label
+                  htmlFor="example-text-input"
+                  className="col-md-2  col-form-label"
+                >
+                  Image Name:
+                </label>
+                <div className="col-md-5">
+                  <input
+                    id="imageArea"
+                    type="text"
+                    placeholder="Enter Image Name"
+                    className="form-control"
+                  />
+                </div>
+
+                {/* <Col xs={12} sm={6} md={3}>
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    <label
+                      htmlFor="imageArea"
+                      className="mr-2 mb-0 field-label"
+                    >
+                      Image Name:
+                    </label>
+                  </div>
+                </Col>
+                <Col>
+
+                </Col> */}
+              </Row>
+              {/* <ImageRegionSelector imageSrc={templateImagePath} /> */}
+              {/* <RegionSelector imageSrc={templateImagePath} /> */}
+              {/* <ImageRegionSelector imageSrc={templateImagePath} /> */}
+              {/* <Cropper src={templateImagePath} /> */}
+
             </>
           )}
           {selectedFieldType !== "imageArea" && (
@@ -1607,93 +1636,93 @@ const DesignTemplate = () => {
               )}
               {(selectedFieldType === "questionField" ||
                 selectedFieldType === "formField") && (
-                <Row className="mb-2">
-                  <label
-                    htmlFor="example-text-input"
-                    className="col-md-2 col-form-label"
-                  >
-                    Multiple
-                  </label>
-                  <div
-                    className={multiple !== "allow" ? "col-md-4" : "col-md-10"}
-                  >
-                    <select
-                      className="form-control"
-                      value={multiple}
-                      onChange={(e) => {
-                        setMultiple(e.target.value);
-                      }}
-                      defaultValue={""}
+                  <Row className="mb-2">
+                    <label
+                      htmlFor="example-text-input"
+                      className="col-md-2 col-form-label"
                     >
-                      <option value="">Select an option</option>
-                      <option value="allow">Allow All</option>
-                      <option value="not allow">Allow None</option>
-                    </select>
-                  </div>
-                  {multiple !== "allow" && (
-                    <>
-                      <label htmlFor="example-text-input" className="col-md-2 ">
-                        Multiple Value
-                      </label>
-                      <div className="col-md-4">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Character of Multiple"
-                          value={multipleValue}
-                          onChange={(e) => setMultipleValue(e.target.value)}
-                          required
-                        />
-                      </div>
-                    </>
-                  )}
-                </Row>
-              )}
+                      Multiple
+                    </label>
+                    <div
+                      className={multiple !== "allow" ? "col-md-4" : "col-md-10"}
+                    >
+                      <select
+                        className="form-control"
+                        value={multiple}
+                        onChange={(e) => {
+                          setMultiple(e.target.value);
+                        }}
+                        defaultValue={""}
+                      >
+                        <option value="">Select an option</option>
+                        <option value="allow">Allow All</option>
+                        <option value="not allow">Allow None</option>
+                      </select>
+                    </div>
+                    {multiple !== "allow" && (
+                      <>
+                        <label htmlFor="example-text-input" className="col-md-2 ">
+                          Multiple Value
+                        </label>
+                        <div className="col-md-4">
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Character of Multiple"
+                            value={multipleValue}
+                            onChange={(e) => setMultipleValue(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </>
+                    )}
+                  </Row>
+                )}
               {(selectedFieldType === "questionField" ||
                 selectedFieldType === "formField") && (
-                <Row className="mb-2">
-                  <label
-                    htmlFor="example-text-input"
-                    className="col-md-2 col-form-label"
-                  >
-                    Blanks
-                  </label>
-                  <div className={blank !== "allow" ? "col-md-4" : "col-md-10"}>
-                    <select
-                      className="form-control"
-                      value={blank}
-                      onChange={(e) => {
-                        setBlank(e.target.value);
-                      }}
-                      defaultValue={""}
+                  <Row className="mb-2">
+                    <label
+                      htmlFor="example-text-input"
+                      className="col-md-2 col-form-label"
                     >
-                      <option value="">Select an option</option>
-                      <option value="allow">Allow All</option>
-                      <option value="not allow">Allow None</option>
-                    </select>
-                  </div>
-                  {blank !== "allow" && (
-                    <>
-                      <label
-                        htmlFor="example-text-input"
-                        className="col-md-2 col-form-label"
+                      Blanks
+                    </label>
+                    <div className={blank !== "allow" ? "col-md-4" : "col-md-10"}>
+                      <select
+                        className="form-control"
+                        value={blank}
+                        onChange={(e) => {
+                          setBlank(e.target.value);
+                        }}
+                        defaultValue={""}
                       >
-                        Blank Value
-                      </label>
-                      <div className="col-md-4">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Character of Blank"
-                          value={blankValue}
-                          onChange={(e) => setBlankValue(e.target.value)}
-                          required
-                        />
-                      </div>
-                    </>
-                  )}
-                </Row>
-              )}
+                        <option value="">Select an option</option>
+                        <option value="allow">Allow All</option>
+                        <option value="not allow">Allow None</option>
+                      </select>
+                    </div>
+                    {blank !== "allow" && (
+                      <>
+                        <label
+                          htmlFor="example-text-input"
+                          className="col-md-2 col-form-label"
+                        >
+                          Blank Value
+                        </label>
+                        <div className="col-md-4">
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Character of Blank"
+                            value={blankValue}
+                            onChange={(e) => setBlankValue(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </>
+                    )}
+                  </Row>
+                )}
               {selectedFieldType !== "idField" && (
                 <Row className="mb-2">
                   <label
@@ -2091,45 +2120,45 @@ const DesignTemplate = () => {
               )}
               {(selectedFieldType === "questionField" ||
                 selectedFieldType === "formField") && (
-                <Row className="mb-2">
-                  <label
-                    htmlFor="example-text-input"
-                    className="col-md-2 col-form-label "
-                  >
-                    Total Fields :
-                  </label>
-                  <div className="col-4 ">
-                    <input
-                      type="number"
-                      className="form-control"
-                      value={numberOfField}
-                      onChange={(e) => setNumberOfField(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <label
-                    htmlFor="example-text-input"
-                    className="col-md-2 col-form-label "
-                  >
-                    Field Type :
-                  </label>
-                  <div className="col-4 ">
-                    <select
-                      className="form-control"
-                      value={fieldType}
-                      onChange={(e) => {
-                        setFieldType(e.target.value);
-                      }}
-                      defaultValue={""}
+                  <Row className="mb-2">
+                    <label
+                      htmlFor="example-text-input"
+                      className="col-md-2 col-form-label "
                     >
-                      <option value="">Select field type... </option>
-                      <option value="numeric">Numeric </option>
-                      <option value="alphabet">Alphabet </option>
-                      <option value="custom">Custom </option>
-                    </select>
-                  </div>
-                </Row>
-              )}
+                      Total Fields :
+                    </label>
+                    <div className="col-4 ">
+                      <input
+                        type="number"
+                        className="form-control"
+                        value={numberOfField}
+                        onChange={(e) => setNumberOfField(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <label
+                      htmlFor="example-text-input"
+                      className="col-md-2 col-form-label "
+                    >
+                      Field Type :
+                    </label>
+                    <div className="col-4 ">
+                      <select
+                        className="form-control"
+                        value={fieldType}
+                        onChange={(e) => {
+                          setFieldType(e.target.value);
+                        }}
+                        defaultValue={""}
+                      >
+                        <option value="">Select field type... </option>
+                        <option value="numeric">Numeric </option>
+                        <option value="alphabet">Alphabet </option>
+                        <option value="custom">Custom </option>
+                      </select>
+                    </div>
+                  </Row>
+                )}
               {(selectedFieldType === "questionField" ||
                 selectedFieldType === "formField") &&
                 fieldType === "custom" && (
