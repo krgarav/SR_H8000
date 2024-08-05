@@ -1,10 +1,12 @@
 import React, { useRef, useState } from 'react';
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
-
+import { Row } from 'reactstrap';
+import { Modal, Button, Col } from "react-bootstrap";
 const ImageCropper = ({ imageSrc }) => {
   const cropperRef = useRef(null);
   const [cropData, setCropData] = useState(null);
+  const [modalShow, setModalShow] = useState(true);
 
   const getCropData = () => {
     const cropper = cropperRef.current.cropper;
@@ -38,6 +40,7 @@ const ImageCropper = ({ imageSrc }) => {
       relativeCoordinates,
       croppedImage: cropper.getCroppedCanvas().toDataURL(),
     });
+    setModalShow(true)
   };
 
   return (
@@ -59,16 +62,122 @@ const ImageCropper = ({ imageSrc }) => {
         rotatable={true}
         autoCrop={false}
       />
-      <button onClick={getCropData}>Get Crop Data</button>
-      {cropData && (
+      <Button onClick={getCropData}>Select region area</Button>
+
+      <Modal
+        show={modalShow}
+        size="sm"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Image Detail
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Row>
+            <label
+              htmlFor="imageName"
+              className="col-md-4 "
+            >
+              Image Name:
+            </label>
+            <div className="col-md-8">
+              <input
+                id="imageName"
+                type="text"
+                placeholder="Enter Image Name"
+                className="form-control"
+              />
+            </div>
+          </Row>
+          <Row>
+            <label
+              htmlFor="croppingSide"
+              className="col-md-4"
+            >
+              Cropping Side:
+            </label>
+            <div className="col-md-8">
+              <input
+                id="croppingSide"
+                type="text"
+                placeholder="Enter Cropping Side"
+                className="form-control"
+              />
+            </div>
+          </Row>
+          <Row className=''>
+            <img src={cropData.croppedImage} alt="Cropped" />
+          </Row>
+
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            type="button"
+            variant="danger"
+            onClick={() => setModalShow(false)}
+            className="waves-effect waves-light"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            variant="success"
+            onClick={() => setModalShow(false)}
+            className="waves-effect waves-light"
+          >
+            Save
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* {cropData &&
+        <Row>
+          <label
+            htmlFor="example-text-input"
+            className="col-md-2  col-form-label"
+          >
+            Image Name:
+          </label>
+          <div className="col-md-2">
+            <input
+              id="imageArea"
+              type="text"
+              placeholder="Enter Image Name"
+              className="form-control"
+            />
+          </div>
+          <label
+            htmlFor="example-text-input"
+            className="col-md-2 "
+          >
+            Cropping Side:
+          </label>
+          <div className="col-md-2">
+            <input
+              id="imageArea"
+              type="text"
+              placeholder="Enter Image Name"
+              className="form-control"
+            />
+          </div>
+          <div className="col-md-4">
+            <Button>Select Coordinate</Button>
+          </div>
+
+
+        </Row>} */}
+      {/* {cropData && (
         <div>
           <h3>Cropped Image</h3>
           <img src={cropData.croppedImage} alt="Cropped" />
           <h3>Coordinates</h3>
           <pre>{JSON.stringify(cropData.coordinates, null, 2)}</pre>
         </div>
-      )}
-    </div>
+      )} */}
+    </div >
   );
 };
 

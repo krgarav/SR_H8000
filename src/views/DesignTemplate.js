@@ -25,6 +25,10 @@ import {
   Progress,
   Table,
   Container,
+  CardSubtitle,
+  CardBody,
+  CardTitle,
+  CardText,
   UncontrolledTooltip,
 } from "reactstrap";
 import SmallHeader from "components/Headers/SmallHeader";
@@ -1572,15 +1576,46 @@ const DesignTemplate = () => {
         <Modal.Body style={{ height: "55vh", overflowX: "auto" }}>
           {selectedFieldType === "imageArea" && (
             <>
-              {/* <ImageCropper imageSrc={templateImagePath} /> */}
-              <Row>
+              <ImageCropper imageSrc={templateImagePath} />
+
+              {/* <Card
+                style={{
+                  width: '18rem'
+                }}
+              >
+                <img
+                  alt="Sample"
+                  src="https://picsum.photos/300/200"
+                />
+                <CardBody>
+                  <CardTitle tag="h5">
+                    Card title
+                  </CardTitle>
+                  <CardSubtitle
+                    className="mb-2 text-muted"
+                    tag="h6"
+                  >
+                    Card subtitle
+                  </CardSubtitle>
+                  <CardText>
+                    Some quick example text to build on the card title and make up the bulk of the card‘s content.
+                  </CardText>
+                  <Button>
+                    Button
+                  </Button>
+                </CardBody>
+              </Card> */}
+
+
+
+              {/* <Row>
                 <label
                   htmlFor="example-text-input"
                   className="col-md-2  col-form-label"
                 >
                   Image Name:
                 </label>
-                <div className="col-md-5">
+                <div className="col-md-2">
                   <input
                     id="imageArea"
                     type="text"
@@ -1588,21 +1623,26 @@ const DesignTemplate = () => {
                     className="form-control"
                   />
                 </div>
+                <label
+                  htmlFor="example-text-input"
+                  className="col-md-2 "
+                >
+                  Cropping Side:
+                </label>
+                <div className="col-md-2">
+                  <input
+                    id="imageArea"
+                    type="text"
+                    placeholder="Enter Image Name"
+                    className="form-control"
+                  />
+                </div>
+                <div className="col-md-4">
+                  <Button>Select Coordinate</Button>
+                </div>
 
-                {/* <Col xs={12} sm={6} md={3}>
-                  <div style={{ display: "flex", flexDirection: "column" }}>
-                    <label
-                      htmlFor="imageArea"
-                      className="mr-2 mb-0 field-label"
-                    >
-                      Image Name:
-                    </label>
-                  </div>
-                </Col>
-                <Col>
 
-                </Col> */}
-              </Row>
+              </Row> */}
               {/* <ImageRegionSelector imageSrc={templateImagePath} /> */}
               {/* <RegionSelector imageSrc={templateImagePath} /> */}
               {/* <ImageRegionSelector imageSrc={templateImagePath} /> */}
