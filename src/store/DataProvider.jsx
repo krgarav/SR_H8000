@@ -559,20 +559,18 @@ const DataProvider = (props) => {
       };
     });
   };
-  
 
   const deleteFieldTemplateWithUUIDHandler = (uuid, selectedFieldData) => {
     const fieldType = selectedFieldData.fieldType;
     setDataState((item) => {
       const copiedData = [...item.allTemplates];
-      
-     
-       // Find the current template instead of filtering
-       const currentTemplate = copiedData.find((item) => {
+
+      // Find the current template instead of filtering
+      const currentTemplate = copiedData.find((item) => {
         console.log(item);
         return item[0].layoutParameters?.key ?? "" === uuid;
       })[0];
-     
+
       switch (fieldType) {
         case "skewMarkField":
           const parameters = currentTemplate?.skewMarksWindowParameters;
@@ -620,7 +618,7 @@ const DataProvider = (props) => {
       };
     });
   };
-  
+
   const addRegionDataHandler = (index, regionData, fieldType) => {
     setDataState((item) => {
       const copiedData = [...item.allTemplates];
@@ -659,6 +657,30 @@ const DataProvider = (props) => {
       };
     });
   };
+  const addImageCoordinateHandler = (uuid, imageCoordinates) => {
+    setDataState((prevState) => {
+      // Create a deep copy of the current state to avoid direct mutation
+      const copiedData = [...prevState.allTemplates];
+
+      // Find the index of the current template
+      const templateIndex = copiedData.findIndex((template) => {
+        return template[0].layoutParameters?.key ?? "" === uuid;
+      });
+      console.log(templateIndex);
+      // If a matching template is found, update its imageCroppingCoordinates
+      if (templateIndex !== -1) {
+        copiedData[templateIndex][0].imageCroppingCoordinates =
+          imageCoordinates;
+      }
+
+      // Return the new state
+      return {
+        ...prevState,
+        allTemplates: copiedData,
+      };
+    });
+  };
+
   const dataContext = {
     allTemplates: dataState.allTemplates,
     setAllTemplates: templateHandler,
@@ -671,7 +693,8 @@ const DataProvider = (props) => {
     modifyRegionWithUUID: modifyRegionWithUUIDHandler,
     addRegionData: addRegionDataHandler,
     modifyTemplateWithUUID: modifyTemplateWithUUIDHandler,
-    deleteFieldTemplateWithUUID:deleteFieldTemplateWithUUIDHandler
+    deleteFieldTemplateWithUUID: deleteFieldTemplateWithUUIDHandler,
+    addImageCoordinate: addImageCoordinateHandler,
   };
 
   return (

@@ -1,5 +1,5 @@
-const url = "https://28mdpn6d-5289.inc1.devtunnels.ms/"
-
+// const url = "https://28mdpn6d-5289.inc1.devtunnels.ms/"
+const url = "https://rb5xhrfq-5289.inc1.devtunnels.ms/"
 // https://28mdpn6d-5289.inc1.devtunnels.ms/swagger/index.html
 
 
@@ -27,9 +27,9 @@ export const GET_LAYOUT_DATA = url + "GetLayoutDataById"
 export const CREATE_TEMPLATE = url + "LayoutSetting";
 export const SEND_FILE = url + "SaveLayoutFiles";
 export const DELETE_TEMPLATE = url + "DeleteLayout";
-export const GET_TEMPLATE_IMAGE = url +"GetTemplateImage";
-export const GET_TEMPLATE_CSV = url +"GetTemplateCSV";
-export const CANCEL_SCAN = url +"CancelScan";
+export const GET_TEMPLATE_IMAGE = url + "GetTemplateImage";
+export const GET_TEMPLATE_CSV = url + "GetTemplateCSV";
+export const CANCEL_SCAN = url + "CancelScan";
 
 export const CREATE_JOB = url + "CreateJobs";
 export const GET_ALL_JOBS = url + "GetAllJobs";
@@ -38,3 +38,5 @@ export const DELETE_JOB = url + "DeleteJob";
 export const ASSIGN_JOB = url + "AssignJob";
 export const GET_ASSIGNED_JOB = url + "GetJobQueueList";
 export const GET_SCANNED_IMAGE = url + "GetSampleData"
+
+export const MAIN_URL = url;

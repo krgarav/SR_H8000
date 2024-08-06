@@ -7,7 +7,8 @@ const DataContext = React.createContext({
   modifyWithRegion : ()=>{},
   deleteTemplate: () => {},
   deleteFieldTemplate : ()=>{},
-  modifyRegionWithUUID : ()=>{}
+  modifyRegionWithUUID : ()=>{},
+  addImageCoordinate : ()=>{}
 });
 
 export default DataContext;

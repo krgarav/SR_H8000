@@ -65,7 +65,7 @@ const UserManagment = () => {
     const [spanDisplay, setSpanDisplay] = useState("none");
     const [allUsers, setAllUsers] = useState([]);
     const [id, setId] = useState("");
-
+    const [toggle, setToggle] = useState(false)
 
 
     const fetchRoles = async () => {
@@ -99,7 +99,7 @@ const UserManagment = () => {
         fetchRoles();
         fetchUsers();
 
-    }, []);
+    }, [toggle]);
     const handleSelectRole = selectedValue => {
         // console.log(selectedValue);
         setSelectedRole(selectedValue);
@@ -124,6 +124,7 @@ const UserManagment = () => {
                     setSelectedRole("")
                     setCreateModalShow(false)
                     fetchAllUsers();
+                    setToggle(prev => !prev)
                 }
                 else {
                     toast.error(data?.message);
@@ -159,7 +160,8 @@ const UserManagment = () => {
                     setSelectedRole("")
                     setPassword("")
                     setConfirmPassword("")
-                    setCreateModalShow(false)
+                    setCreateModalShow(false);
+                    setToggle(prev => !prev)
                 }
                 else {
                     console.log()
@@ -176,8 +178,9 @@ const UserManagment = () => {
 
             const data = await removeUser(d.id)
             if (data?.success) {
+                setToggle(prev => !prev)
                 toast.success(data.message);
-                fetchUsers();
+                // fetchUsers();
 
             }
             else {
@@ -193,7 +196,7 @@ const UserManagment = () => {
     const handleRowClick = d => {
         // e.preventDefault();
         console.log(d)
-        setName(d.name);
+        setName(d.userName);
         setEmail(d.email);
         setPhoneNumber(d.phoneNumber);
         setSelectedRole(d?.userRoleList[0]);

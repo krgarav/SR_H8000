@@ -13,9 +13,9 @@ import '@syncfusion/ej2-react-filemanager/styles/bootstrap5.css';
 import SmallHeader from 'components/Headers/SmallHeader';
 import { Container } from "reactstrap";
 import "../App.css"
-
+import { MAIN_URL } from 'helper/url_helper';
 const Overview = () => {
-    const hostUrl = "https://28mdpn6d-5289.inc1.devtunnels.ms/";
+    const hostUrl = MAIN_URL;
 
     return (
         <div className="full-height-container">
@@ -23,7 +23,7 @@ const Overview = () => {
             <div style={{ height: "200px" }}>
                 <FileManagerComponent
                     id="overview_file"
-                    height={500} 
+                    height={500}
                     ajaxSettings={{
                         url: hostUrl + "api/FileManager/FileOperations",
                         getImageUrl: hostUrl + "api/FileManager/GetImage",

@@ -4,11 +4,10 @@ import { jwtDecode } from 'jwt-decode';
 import AdminLayout from "layouts/Admin.js";
 import Operator from "layouts/Operator";
 import AuthLayout from "layouts/Auth.js";
+import Moderator from "layouts/Moderator"
 const useTokenRedirect = () => {
     const navigate = useNavigate();
     const location = useLocation();
-
-
     // useEffect(() => {
     //     console.log(location.pathname)
     //     if (location.pathname !== "/admin/design-template") {
@@ -34,6 +33,13 @@ const useTokenRedirect = () => {
                         navigate('/admin/index', { replace: true });
                     }
 
+                } else if (decoded.Role === 'Moderator') {
+                    if (location.pathname.includes("moderator")) {
+                        navigate(location.pathname);
+                    } else {
+                        navigate('/moderator/index', { replace: true });
+                    }
+
                 }
             } catch (error) {
                 console.error('Invalid token:', error);
@@ -45,11 +51,12 @@ const useTokenRedirect = () => {
     }, []);
 };
 const App = () => {
-    // useTokenRedirect(); 
+    useTokenRedirect();
     return (
         <Routes>
             <Route path="/admin/*" element={<AdminLayout />} />
             <Route path="/operator/*" element={<Operator />} />
+            <Route path="/moderator/*" element={<Moderator />} />
             <Route path="/auth/*" element={<AuthLayout />} />
             <Route path="*" element={<Navigate to="/auth/login" replace />} />
         </Routes>

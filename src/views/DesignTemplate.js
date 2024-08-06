@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Modal, Button, Col } from "react-bootstrap";
+import { Modal, Button, Col, Badge } from "react-bootstrap";
 import { Row } from "reactstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import classes from "./DesignTemplate.module.css";
@@ -10,7 +10,7 @@ import { createTemplate } from "helper/TemplateHelper";
 import { getLayoutDataById } from "helper/TemplateHelper";
 import Papa from "papaparse";
 import {
-  Badge,
+  // Badge,
   Card,
   CardHeader,
   CardFooter,
@@ -145,6 +145,8 @@ const DesignTemplate = () => {
   const [coordinateIndex, setCoordinateIndex] = useState(-1);
   const [selectionIndex, setSelectionIndex] = useState();
   const [idSelectionCount, setIdSelectionCount] = useState(0);
+  const [imageModalShow, setImageModalShow] = useState(false);
+  const [imagesSelectedCount, setImagesSelectedCount] = useState(0)
   const location = useLocation();
   const state = location.state || {};
   // Initialize state with values from sessionStorage or location.state
@@ -493,23 +495,23 @@ const DesignTemplate = () => {
     }
   }, [options, selectedCol]);
 
-  useEffect(() => {
-    const handleKeyPress = (event) => {
-      if (modalShow) return; // Ignore keyboard events when modal is shown
-      if (event.altKey && event.shiftKey) {
-        // Toggle z-index when Alt + Enter is pressed
-        const imgDiv = document.getElementById("imagecontainer");
-        imgDiv.style.zIndex = imgDiv.style.zIndex === "999" ? "-1" : "999";
-      }
-    };
+  // useEffect(() => {
+  //   const handleKeyPress = (event) => {
+  //     if (modalShow) return; // Ignore keyboard events when modal is shown
+  //     if (event.altKey && event.shiftKey) {
+  //       // Toggle z-index when Alt + Enter is pressed
+  //       const imgDiv = document.getElementById("imagecontainer");
+  //       imgDiv.style.zIndex = imgDiv.style.zIndex === "999" ? "-1" : "999";
+  //     }
+  //   };
 
-    window.addEventListener("keydown", handleKeyPress);
+  //   window.addEventListener("keydown", handleKeyPress);
 
-    // Cleanup event listener on component unmount
-    return () => {
-      window.removeEventListener("keydown", handleKeyPress);
-    };
-  }, [modalShow]);
+  //   // Cleanup event listener on component unmount
+  //   return () => {
+  //     window.removeEventListener("keydown", handleKeyPress);
+  //   };
+  // }, [modalShow]);
 
   const handleMouseDown = (e) => {
     const boundingRect = imageRef.current.getBoundingClientRect();
@@ -1079,7 +1081,7 @@ const DesignTemplate = () => {
           : {};
         return { ...rest, formFieldCoordinates };
       });
-
+    const { imageCroppingCoordinates } = template[0]
     // Assemble the full request data
     const fullRequestData = {
       layoutParameters: updatedLayout,
@@ -1089,6 +1091,7 @@ const DesignTemplate = () => {
       questionsWindowParameters,
       skewMarksWindowParameters,
       formFieldWindowParameters,
+      imageCroppingCoordinates
     };
     console.log(fullRequestData);
     const csv = Papa.unparse(excelJsonFile);
@@ -1130,11 +1133,32 @@ const DesignTemplate = () => {
       console.error("Error sending POST request:", error);
     }
   };
-
+  const handleImage = (images) => {
+    console.log("updated");
+    console.log(images)
+    setImagesSelectedCount(images.length)
+    if (images.length > 0) {
+      dataCtx.addImageCoordinate(templateIndex, images)
+    }
+  }
   return (
     <>
       <div>
         <SmallHeader />
+      </div>
+      <div style={{ position: "fixed", top: "20px", zIndex: "999" }}>
+        <Button variant="primary" onClick={() => { setImageModalShow(true) }} style={{ position: "relative" }}>
+          Image Area
+          <Badge pill variant="light" style={{
+            position: "absolute",
+            top: "-10px", // Adjust this value to position the badge correctly
+            right: "-10px", // Adjust this value to position the badge correctly
+            transform: "translate(50%, -50%)",
+            zIndex: "1000"
+          }}>
+            {imagesSelectedCount} {/* Replace this with your dynamic number */}
+          </Badge>
+        </Button>
       </div>
       {!modalShow && selection && (
         <Button
@@ -2253,6 +2277,43 @@ const DesignTemplate = () => {
               {!modalUpdate ? "Save" : "Update"}
             </Button>
           </div>
+        </Modal.Footer>
+      </Modal>
+
+
+
+      <Modal
+        show={imageModalShow}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Image Detail
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{ height: "70vh" }}>
+          <ImageCropper handleImage={handleImage} imageSrc={templateImagePath} />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            type="button"
+            variant="danger"
+            onClick={() => setImageModalShow(false)}
+            className="waves-effect waves-light"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            variant="success"
+            // onClick={saveHandler}
+            onClick={() => setImageModalShow(false)}
+            className="waves-effect waves-light"
+          >
+            Save
+          </Button>
         </Modal.Footer>
       </Modal>
     </>

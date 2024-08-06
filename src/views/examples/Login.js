@@ -37,6 +37,7 @@ import {
 } from "reactstrap";
 import Spinner from 'react-bootstrap/Spinner';
 import { jwtDecode } from 'jwt-decode';
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -63,6 +64,9 @@ const Login = () => {
       setIsLoading(true)
       const res = await login(obj);
       console.log(res)
+      if (res === undefined) {
+        toast.error("Can't Connect to network");
+      }
       if (!res.success) {
         alert(res.message);
         setIsLoading(false)
@@ -72,6 +76,8 @@ const Login = () => {
       const decoded = jwtDecode(res.token);
       if (decoded.Role === "Operator") {
         navigate("/operator/index", { replace: true });
+      } else if (decoded.Role === "Moderator") {
+        navigate("/moderator/index", { replace: true });
       } else {
         navigate("/admin/index", { replace: true });
       }

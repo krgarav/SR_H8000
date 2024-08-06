@@ -372,7 +372,7 @@ const Booklet32Page = () => {
       // Ensure data source is not empty
       if (lastIndex >= 0) {
         setTimeout(() => {
-          const gridContent = grid.getContent().firstElementChild;
+          const gridContent = grid?.getContent()?.firstElementChild;
           gridContent.scrollTo({
             top: gridContent.scrollHeight,
             behavior: 'smooth',

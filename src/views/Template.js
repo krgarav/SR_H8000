@@ -212,54 +212,54 @@ const Template = () => {
                 </div>
               </CardHeader>
               <div style={{ height: "70vh", overflow: "auto" }}>
-      <Table className="align-items-center table-flush mb-5 table-hover" responsive>
-        <thead className="thead-light">
-          <tr>
-            <th scope="col">Sno.</th>
-            <th scope="col">Template Name</th>
-            <th scope="col">Row</th>
-            <th scope="col">Col</th>
-            <th scope="col">Bubble Type</th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {dataCtx.allTemplates?.map((d, i) => (
-            <tr
-              key={i}
-              onClick={() => handleRowClick(d, i)}
-              style={{ cursor: 'pointer' }} // Adds a pointer cursor on hover
-            >
-              <td>{i + 1}</td>
-              <td>{d[0].layoutParameters.layoutName}</td>
-              <td>{d[0].layoutParameters.timingMarks}</td>
-              <td>{d[0].layoutParameters.totalColumns}</td>
-              <td>{d[0].layoutParameters["bubbleType"]}</td>
-              <td className="text-right">
-                <UncontrolledDropdown>
-                  <DropdownToggle
-                    className="btn-icon-only text-light"
-                    href="#pablo"
-                    role="button"
-                    size="sm"
-                    color=""
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    <i className="fas fa-ellipsis-v" />
-                  </DropdownToggle>
-                  <DropdownMenu className="dropdown-menu-arrow" right>
-                    <DropdownItem onClick={() => showHandler(d)}>Show</DropdownItem>
-                    <DropdownItem onClick={() => editHandler(d, i)}>Edit</DropdownItem>
-                    {/* <DropdownItem onClick={() => sendToBackendHandler(d, i)}>Send Data</DropdownItem> */}
-                    <DropdownItem style={{ color: "red" }} onClick={() => deleteHandler(d, i)}>Delete</DropdownItem>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-    </div>
+                <Table className="align-items-center table-flush mb-5 table-hover" responsive>
+                  <thead className="thead-light">
+                    <tr>
+                      <th scope="col">Sno.</th>
+                      <th scope="col">Template Name</th>
+                      <th scope="col">Row</th>
+                      <th scope="col">Col</th>
+                      <th scope="col">Bubble Type</th>
+                      <th scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dataCtx.allTemplates?.map((d, i) => (
+                      <tr
+                        key={i}
+                        onClick={() => handleRowClick(d, i)}
+                        style={{ cursor: 'pointer' }} // Adds a pointer cursor on hover
+                      >
+                        <td>{i + 1}</td>
+                        <td>{d[0].layoutParameters.layoutName}</td>
+                        <td>{d[0].layoutParameters.timingMarks}</td>
+                        <td>{d[0].layoutParameters.totalColumns}</td>
+                        <td>{d[0].layoutParameters["bubbleType"]}</td>
+                        <td className="text-right">
+                          <UncontrolledDropdown>
+                            <DropdownToggle
+                              className="btn-icon-only text-light"
+                              href="#pablo"
+                              role="button"
+                              size="sm"
+                              color=""
+                              onClick={(e) => e.preventDefault()}
+                            >
+                              <i className="fas fa-ellipsis-v" />
+                            </DropdownToggle>
+                            <DropdownMenu className="dropdown-menu-arrow" right>
+                              <DropdownItem onClick={() => showHandler(d)}>Show</DropdownItem>
+                              <DropdownItem onClick={() => editHandler(d, i)}>Edit</DropdownItem>
+                              {/* <DropdownItem onClick={() => sendToBackendHandler(d, i)}>Send Data</DropdownItem> */}
+                              <DropdownItem style={{ color: "red" }} onClick={() => deleteHandler(d, i)}>Delete</DropdownItem>
+                            </DropdownMenu>
+                          </UncontrolledDropdown>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
 
             </Card>
           </div>
