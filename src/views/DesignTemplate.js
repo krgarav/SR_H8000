@@ -146,7 +146,7 @@ const DesignTemplate = () => {
   const [selectionIndex, setSelectionIndex] = useState();
   const [idSelectionCount, setIdSelectionCount] = useState(0);
   const [imageModalShow, setImageModalShow] = useState(false);
-  const [imagesSelectedCount, setImagesSelectedCount] = useState(0)
+  const [imagesSelectedCount, setImagesSelectedCount] = useState(0);
   const location = useLocation();
   const state = location.state || {};
   // Initialize state with values from sessionStorage or location.state
@@ -280,7 +280,7 @@ const DesignTemplate = () => {
     //   console.log(item);
     //   return item[0].layoutParameters?.key ?? "" === templateIndex;
     // })?[0];
-    console.log(templateData)
+    console.log(templateData);
     // if (!currentTemplate) {
     dataCtx.setAllTemplates(templateData);
     // }
@@ -1037,13 +1037,13 @@ const DesignTemplate = () => {
         const { Coordinate, ...rest } = item;
         const questionWindowCoordinates = Coordinate
           ? {
-            right: Coordinate["End Col"],
-            end: Coordinate["End Row"],
-            left: Coordinate["Start Col"],
-            start: Coordinate["Start Row"],
-            name: Coordinate["name"],
-            fieldType: Coordinate["fieldType"],
-          }
+              right: Coordinate["End Col"],
+              end: Coordinate["End Row"],
+              left: Coordinate["Start Col"],
+              start: Coordinate["Start Row"],
+              name: Coordinate["name"],
+              fieldType: Coordinate["fieldType"],
+            }
           : {};
         return { ...rest, questionWindowCoordinates };
       });
@@ -1054,13 +1054,13 @@ const DesignTemplate = () => {
         const { Coordinate, ...rest } = item;
         const layoutWindowCoordinates = Coordinate
           ? {
-            right: Coordinate["End Col"],
-            end: Coordinate["End Row"],
-            left: Coordinate["Start Col"],
-            start: Coordinate["Start Row"],
-            name: Coordinate["name"],
-            fieldType: Coordinate["fieldType"],
-          }
+              right: Coordinate["End Col"],
+              end: Coordinate["End Row"],
+              left: Coordinate["Start Col"],
+              start: Coordinate["Start Row"],
+              name: Coordinate["name"],
+              fieldType: Coordinate["fieldType"],
+            }
           : {};
         return { ...rest, layoutWindowCoordinates };
       });
@@ -1071,17 +1071,17 @@ const DesignTemplate = () => {
         const { Coordinate, ...rest } = item;
         const formFieldCoordinates = Coordinate
           ? {
-            right: Coordinate["End Col"],
-            end: Coordinate["End Row"],
-            left: Coordinate["Start Col"],
-            start: Coordinate["Start Row"],
-            name: Coordinate["name"],
-            fieldType: Coordinate["fieldType"],
-          }
+              right: Coordinate["End Col"],
+              end: Coordinate["End Row"],
+              left: Coordinate["Start Col"],
+              start: Coordinate["Start Row"],
+              name: Coordinate["name"],
+              fieldType: Coordinate["fieldType"],
+            }
           : {};
         return { ...rest, formFieldCoordinates };
       });
-    const { imageCroppingCoordinates } = template[0]
+    const { imageCroppingCoordinates } = template[0];
     // Assemble the full request data
     const fullRequestData = {
       layoutParameters: updatedLayout,
@@ -1091,7 +1091,7 @@ const DesignTemplate = () => {
       questionsWindowParameters,
       skewMarksWindowParameters,
       formFieldWindowParameters,
-      imageCroppingCoordinates
+      imageCroppingCoordinates,
     };
     console.log(fullRequestData);
     const csv = Papa.unparse(excelJsonFile);
@@ -1135,27 +1135,37 @@ const DesignTemplate = () => {
   };
   const handleImage = (images) => {
     console.log("updated");
-    console.log(images)
-    setImagesSelectedCount(images.length)
-    if (images.length > 0) {
-      dataCtx.addImageCoordinate(templateIndex, images)
-    }
-  }
+    console.log(images);
+    setImagesSelectedCount(images.length);
+    // if (images.length > 0) {
+    //   dataCtx.addImageCoordinate(templateIndex, images)
+    // }
+  };
   return (
     <>
       <div>
         <SmallHeader />
       </div>
       <div style={{ position: "fixed", top: "20px", zIndex: "999" }}>
-        <Button variant="primary" onClick={() => { setImageModalShow(true) }} style={{ position: "relative" }}>
+        <Button
+          variant="primary"
+          onClick={() => {
+            setImageModalShow(true);
+          }}
+          style={{ position: "relative" }}
+        >
           Image Area
-          <Badge pill variant="light" style={{
-            position: "absolute",
-            top: "-10px", // Adjust this value to position the badge correctly
-            right: "-10px", // Adjust this value to position the badge correctly
-            transform: "translate(50%, -50%)",
-            zIndex: "1000"
-          }}>
+          <Badge
+            pill
+            variant="light"
+            style={{
+              position: "absolute",
+              top: "-10px", // Adjust this value to position the badge correctly
+              right: "-10px", // Adjust this value to position the badge correctly
+              transform: "translate(50%, -50%)",
+              zIndex: "1000",
+            }}
+          >
             {imagesSelectedCount} {/* Replace this with your dynamic number */}
           </Badge>
         </Button>
@@ -1278,9 +1288,9 @@ const DesignTemplate = () => {
                             style={{
                               backgroundColor:
                                 rowIndex < result.length &&
-                                  colIndex < result[rowIndex].length &&
-                                  result[rowIndex][colIndex] != 0 &&
-                                  result[rowIndex][colIndex] !== undefined
+                                colIndex < result[rowIndex].length &&
+                                result[rowIndex][colIndex] != 0 &&
+                                result[rowIndex][colIndex] !== undefined
                                   ? "black"
                                   : "",
                             }}
@@ -1288,10 +1298,11 @@ const DesignTemplate = () => {
                             //     backgroundColor:
                             //         result[rowIndex][colIndex] != 0 ? "black" : "",
                             // }}
-                            className={`${bubbleType} ${selected[`${rowIndex},${colIndex}`]
-                              ? "selected"
-                              : ""
-                              }`}
+                            className={`${bubbleType} ${
+                              selected[`${rowIndex},${colIndex}`]
+                                ? "selected"
+                                : ""
+                            }`}
                           ></div>
                         ))}
                       </div>
@@ -1305,24 +1316,28 @@ const DesignTemplate = () => {
                       style={{
                         border: "3px solid #007bff",
                         position: "absolute",
-                        left: `${data.startCol *
-                          (imageRef.current.getBoundingClientRect().width /
-                            numCols) -
+                        left: `${
+                          data.startCol *
+                            (imageRef.current.getBoundingClientRect().width /
+                              numCols) -
                           4
-                          }px`,
-                        top: `${data.startRow *
-                          (imageRef.current.getBoundingClientRect().height /
-                            numRows) -
+                        }px`,
+                        top: `${
+                          data.startRow *
+                            (imageRef.current.getBoundingClientRect().height /
+                              numRows) -
                           3
-                          }px`,
-                        width: `${(data.endCol - data.startCol + 1) *
+                        }px`,
+                        width: `${
+                          (data.endCol - data.startCol + 1) *
                           (imageRef.current.getBoundingClientRect().width /
                             numCols)
-                          }px`,
-                        height: `${(data.endRow - data.startRow + 1) *
+                        }px`,
+                        height: `${
+                          (data.endRow - data.startRow + 1) *
                           (imageRef.current.getBoundingClientRect().height /
                             numRows)
-                          }px`,
+                        }px`,
                       }}
                       onClick={(e) => e.stopPropagation()}
                     >
@@ -1364,24 +1379,28 @@ const DesignTemplate = () => {
                       style={{
                         border: "2px solid green",
                         position: "absolute",
-                        left: `${selection.startCol *
-                          (imageRef.current.getBoundingClientRect().width /
-                            numCols) -
+                        left: `${
+                          selection.startCol *
+                            (imageRef.current.getBoundingClientRect().width /
+                              numCols) -
                           4
-                          }px`,
-                        top: `${selection.startRow *
-                          (imageRef.current.getBoundingClientRect().height /
-                            numRows) -
+                        }px`,
+                        top: `${
+                          selection.startRow *
+                            (imageRef.current.getBoundingClientRect().height /
+                              numRows) -
                           3
-                          }px`,
-                        width: `${(selection.endCol - selection.startCol + 1) *
+                        }px`,
+                        width: `${
+                          (selection.endCol - selection.startCol + 1) *
                           (imageRef.current.getBoundingClientRect().width /
                             numCols)
-                          }px`,
-                        height: `${(selection.endRow - selection.startRow + 1) *
+                        }px`,
+                        height: `${
+                          (selection.endRow - selection.startRow + 1) *
                           (imageRef.current.getBoundingClientRect().height /
                             numRows)
-                          }px`,
+                        }px`,
                         content: "question field",
                       }}
                     ></div>
@@ -1404,7 +1423,9 @@ const DesignTemplate = () => {
             id="contained-modal-title-vcenter"
             style={{ width: "100vw" }}
           >
-            <h2 className="text-center">{!modalUpdate ? "Choose field type" : selectedFieldType}</h2>
+            <h2 className="text-center">
+              {!modalUpdate ? "Choose field type" : selectedFieldType}
+            </h2>
             <br />
             {/* <Row className="mb-2">
               <Col sm={2} md={2} className="d-flex align-items-center">
@@ -1501,79 +1522,104 @@ const DesignTemplate = () => {
                 </div>
               </Col>
             </Row> */}
-            {!modalUpdate && <Row className="mb-2">
-              <Col xs={12} sm={4} md={2} className="d-flex align-items-center">
-                <label htmlFor="formField" className="mr-2 mb-0 field-label">
-                  Form:
-                </label>
-                <input
-                  id="formField"
-                  type="radio"
-                  name="fieldType"
-                  value="formField"
-                  checked={selectedFieldType === "formField"}
-                  onChange={handleRadioChange}
-                  className="field-label mt-1"
-                />
-              </Col>
-              <Col xs={12} sm={4} md={2} className="d-flex align-items-center">
-                <label htmlFor="fieldType" className="mr-2 mb-0 field-label">
-                  Question:
-                </label>
-                <input
-                  id="fieldType"
-                  type="radio"
-                  name="fieldType"
-                  value="questionField"
-                  checked={selectedFieldType === "questionField"}
-                  onChange={handleRadioChange}
-                  className="field-label mt-1"
-                />
-              </Col>
-              <Col xs={12} sm={4} md={3} className="d-flex align-items-center">
-                <label
-                  htmlFor="skewMarkField"
-                  className="mr-2 mb-0 col-form-label"
+            {!modalUpdate && (
+              <Row className="mb-2 d-flex align-items-center">
+                <Col
+                  xs={12}
+                  sm={4}
+                  md={3}
+                  // className="d-flex align-items-center"
+                  style={{ display: "flex", justifyContent: "center" }}
                 >
-                  Skew Mark:
-                </label>
-                <input
-                  id="skewMarkField"
-                  type="radio"
-                  name="fieldType"
-                  value="skewMarkField"
-                  checked={selectedFieldType === "skewMarkField"}
-                  onChange={handleRadioChange}
-                  className="field-label mt-1"
-                />
-              </Col>
-              <Col xs={12} sm={6} md={2} className="d-flex align-items-center">
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                  <div>
-                    <label htmlFor="idField" className="mr-2 mb-0 field-label">
-                      ID Mark:
-                    </label>
-                    <input
-                      id="idField"
-                      type="radio"
-                      name="fieldType"
-                      value="idField"
-                      checked={selectedFieldType === "idField"}
-                      onChange={handleRadioChange}
-                      className="field-label mt-1"
-                      disabled={idSelectionCount > 0}
-                    />
-                  </div>
-                  {idSelectionCount > 0 && (
+                  <label htmlFor="formField" className="mr-2 mb-0 field-label">
+                    Form:
+                  </label>
+                  <input
+                    id="formField"
+                    type="radio"
+                    name="fieldType"
+                    value="formField"
+                    checked={selectedFieldType === "formField"}
+                    onChange={handleRadioChange}
+                    className="field-label mt-1"
+                  />
+                </Col>
+                <Col
+                  xs={12}
+                  sm={4}
+                  md={3}
+                  className="d-flex align-items-center"
+                >
+                  <label htmlFor="fieldType" className="mr-2 mb-0 field-label">
+                    Question:
+                  </label>
+                  <input
+                    id="fieldType"
+                    type="radio"
+                    name="fieldType"
+                    value="questionField"
+                    checked={selectedFieldType === "questionField"}
+                    onChange={handleRadioChange}
+                    className="field-label mt-1"
+                  />
+                </Col>
+                <Col
+                  xs={12}
+                  sm={4}
+                  md={3}
+                  className="d-flex align-items-center"
+                >
+                  <label
+                    htmlFor="skewMarkField"
+                    className="mr-2 mb-0 col-form-label"
+                  >
+                    Skew Mark:
+                  </label>
+                  <input
+                    id="skewMarkField"
+                    type="radio"
+                    name="fieldType"
+                    value="skewMarkField"
+                    checked={selectedFieldType === "skewMarkField"}
+                    onChange={handleRadioChange}
+                    className="field-label mt-1"
+                  />
+                </Col>
+                <Col
+                  xs={12}
+                  sm={6}
+                  md={3}
+                  className="d-flex align-items-center"
+                >
+                  <div style={{ display: "flex", flexDirection: "column" }}>
                     <div>
-                      <small style={{ color: "orangered" }}>
-                        already selected
-                      </small>
+                      <label
+                        htmlFor="idField"
+                        className="mr-2 mb-0 field-label"
+                      >
+                        ID Mark:
+                      </label>
+                      <input
+                        id="idField"
+                        type="radio"
+                        name="fieldType"
+                        value="idField"
+                        checked={selectedFieldType === "idField"}
+                        onChange={handleRadioChange}
+                        className="field-label mt-1"
+                        disabled={idSelectionCount > 0}
+                      />
                     </div>
-                  )}
-                </div>
-              </Col>
-              <Col xs={12} sm={6} md={3} className="d-flex align-items-center">
+                    {idSelectionCount > 0 && (
+                      <div>
+                        <small style={{ color: "orangered" }}>
+                          already selected
+                        </small>
+                      </div>
+                    )}
+                  </div>
+                </Col>
+                {/* <Col xs={12} sm={6} md={3} className="d-flex align-items-center">
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   <div>
                     <label
@@ -1593,8 +1639,9 @@ const DesignTemplate = () => {
                     />
                   </div>
                 </div>
-              </Col>
-            </Row>}
+              </Col> */}
+              </Row>
+            )}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ height: "55vh", overflowX: "auto" }}>
@@ -1629,8 +1676,6 @@ const DesignTemplate = () => {
                   </Button>
                 </CardBody>
               </Card> */}
-
-
 
               {/* <Row>
                 <label
@@ -1671,7 +1716,6 @@ const DesignTemplate = () => {
               {/* <RegionSelector imageSrc={templateImagePath} /> */}
               {/* <ImageRegionSelector imageSrc={templateImagePath} /> */}
               {/* <Cropper src={templateImagePath} /> */}
-
             </>
           )}
           {selectedFieldType !== "imageArea" && (
@@ -1700,93 +1744,93 @@ const DesignTemplate = () => {
               )}
               {(selectedFieldType === "questionField" ||
                 selectedFieldType === "formField") && (
-                  <Row className="mb-2">
-                    <label
-                      htmlFor="example-text-input"
-                      className="col-md-2 col-form-label"
+                <Row className="mb-2">
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2 col-form-label"
+                  >
+                    Multiple
+                  </label>
+                  <div
+                    className={multiple !== "allow" ? "col-md-4" : "col-md-10"}
+                  >
+                    <select
+                      className="form-control"
+                      value={multiple}
+                      onChange={(e) => {
+                        setMultiple(e.target.value);
+                      }}
+                      defaultValue={""}
                     >
-                      Multiple
-                    </label>
-                    <div
-                      className={multiple !== "allow" ? "col-md-4" : "col-md-10"}
-                    >
-                      <select
-                        className="form-control"
-                        value={multiple}
-                        onChange={(e) => {
-                          setMultiple(e.target.value);
-                        }}
-                        defaultValue={""}
-                      >
-                        <option value="">Select an option</option>
-                        <option value="allow">Allow All</option>
-                        <option value="not allow">Allow None</option>
-                      </select>
-                    </div>
-                    {multiple !== "allow" && (
-                      <>
-                        <label htmlFor="example-text-input" className="col-md-2 ">
-                          Multiple Value
-                        </label>
-                        <div className="col-md-4">
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Character of Multiple"
-                            value={multipleValue}
-                            onChange={(e) => setMultipleValue(e.target.value)}
-                            required
-                          />
-                        </div>
-                      </>
-                    )}
-                  </Row>
-                )}
+                      <option value="">Select an option</option>
+                      <option value="allow">Allow All</option>
+                      <option value="not allow">Allow None</option>
+                    </select>
+                  </div>
+                  {multiple !== "allow" && (
+                    <>
+                      <label htmlFor="example-text-input" className="col-md-2 ">
+                        Multiple Value
+                      </label>
+                      <div className="col-md-4">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Character of Multiple"
+                          value={multipleValue}
+                          onChange={(e) => setMultipleValue(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </>
+                  )}
+                </Row>
+              )}
               {(selectedFieldType === "questionField" ||
                 selectedFieldType === "formField") && (
-                  <Row className="mb-2">
-                    <label
-                      htmlFor="example-text-input"
-                      className="col-md-2 col-form-label"
+                <Row className="mb-2">
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2 col-form-label"
+                  >
+                    Blanks
+                  </label>
+                  <div className={blank !== "allow" ? "col-md-4" : "col-md-10"}>
+                    <select
+                      className="form-control"
+                      value={blank}
+                      onChange={(e) => {
+                        setBlank(e.target.value);
+                      }}
+                      defaultValue={""}
                     >
-                      Blanks
-                    </label>
-                    <div className={blank !== "allow" ? "col-md-4" : "col-md-10"}>
-                      <select
-                        className="form-control"
-                        value={blank}
-                        onChange={(e) => {
-                          setBlank(e.target.value);
-                        }}
-                        defaultValue={""}
+                      <option value="">Select an option</option>
+                      <option value="allow">Allow All</option>
+                      <option value="not allow">Allow None</option>
+                    </select>
+                  </div>
+                  {blank !== "allow" && (
+                    <>
+                      <label
+                        htmlFor="example-text-input"
+                        className="col-md-2 col-form-label"
                       >
-                        <option value="">Select an option</option>
-                        <option value="allow">Allow All</option>
-                        <option value="not allow">Allow None</option>
-                      </select>
-                    </div>
-                    {blank !== "allow" && (
-                      <>
-                        <label
-                          htmlFor="example-text-input"
-                          className="col-md-2 col-form-label"
-                        >
-                          Blank Value
-                        </label>
-                        <div className="col-md-4">
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Character of Blank"
-                            value={blankValue}
-                            onChange={(e) => setBlankValue(e.target.value)}
-                            required
-                          />
-                        </div>
-                      </>
-                    )}
-                  </Row>
-                )}
+                        Blank Value
+                      </label>
+                      <div className="col-md-4">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Character of Blank"
+                          value={blankValue}
+                          onChange={(e) => setBlankValue(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </>
+                  )}
+                </Row>
+              )}
               {selectedFieldType !== "idField" && (
                 <Row className="mb-2">
                   <label
@@ -2184,45 +2228,45 @@ const DesignTemplate = () => {
               )}
               {(selectedFieldType === "questionField" ||
                 selectedFieldType === "formField") && (
-                  <Row className="mb-2">
-                    <label
-                      htmlFor="example-text-input"
-                      className="col-md-2 col-form-label "
+                <Row className="mb-2">
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2 col-form-label "
+                  >
+                    Total Fields :
+                  </label>
+                  <div className="col-4 ">
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={numberOfField}
+                      onChange={(e) => setNumberOfField(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2 col-form-label "
+                  >
+                    Field Type :
+                  </label>
+                  <div className="col-4 ">
+                    <select
+                      className="form-control"
+                      value={fieldType}
+                      onChange={(e) => {
+                        setFieldType(e.target.value);
+                      }}
+                      defaultValue={""}
                     >
-                      Total Fields :
-                    </label>
-                    <div className="col-4 ">
-                      <input
-                        type="number"
-                        className="form-control"
-                        value={numberOfField}
-                        onChange={(e) => setNumberOfField(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <label
-                      htmlFor="example-text-input"
-                      className="col-md-2 col-form-label "
-                    >
-                      Field Type :
-                    </label>
-                    <div className="col-4 ">
-                      <select
-                        className="form-control"
-                        value={fieldType}
-                        onChange={(e) => {
-                          setFieldType(e.target.value);
-                        }}
-                        defaultValue={""}
-                      >
-                        <option value="">Select field type... </option>
-                        <option value="numeric">Numeric </option>
-                        <option value="alphabet">Alphabet </option>
-                        <option value="custom">Custom </option>
-                      </select>
-                    </div>
-                  </Row>
-                )}
+                      <option value="">Select field type... </option>
+                      <option value="numeric">Numeric </option>
+                      <option value="alphabet">Alphabet </option>
+                      <option value="custom">Custom </option>
+                    </select>
+                  </div>
+                </Row>
+              )}
               {(selectedFieldType === "questionField" ||
                 selectedFieldType === "formField") &&
                 fieldType === "custom" && (
@@ -2280,8 +2324,6 @@ const DesignTemplate = () => {
         </Modal.Footer>
       </Modal>
 
-
-
       <Modal
         show={imageModalShow}
         size="lg"
@@ -2294,7 +2336,10 @@ const DesignTemplate = () => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ height: "70vh" }}>
-          <ImageCropper handleImage={handleImage} imageSrc={templateImagePath} />
+          <ImageCropper
+            handleImage={handleImage}
+            imageSrc={templateImagePath}
+          />
         </Modal.Body>
         <Modal.Footer>
           <Button

@@ -18,6 +18,7 @@ import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 import DataContext from "store/DataContext";
 const ImageCropper = ({ imageSrc, handleImage }) => {
+  const dataCtx = useContext(DataContext);
   const cropperRef = useRef(null);
   const [cropData, setCropData] = useState(null);
   const [modalShow, setModalShow] = useState(false);
@@ -25,7 +26,27 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
   const [imageName, setImageName] = useState("");
   const [croppingSide, setCroppingSide] = useState("");
   const [show, setShow] = useState(false);
-  const dataCtx = useContext(DataContext);
+
+  useEffect(() => {
+    const templateIndex = JSON.parse(localStorage.getItem("Template"))[0]
+      .layoutParameters.key;
+
+    const currentTemplate = dataCtx.allTemplates.find((item) => {
+      return item[0].layoutParameters?.key ?? "" === templateIndex;
+    });
+
+    const imageCoordinate = currentTemplate[0].imageCroppingCoordinates ?? [];
+
+    setAllImages(imageCoordinate);
+  }, [dataCtx.allTemplates]);
+
+  useEffect(() => {
+    const templateIndex = JSON.parse(localStorage.getItem("Template"))[0]
+      .layoutParameters.key;
+    if (allImages.length > 0) {
+      dataCtx.addImageCoordinate(templateIndex, allImages);
+    }
+  }, [allImages]);
   useEffect(() => {
     if (!modalShow) {
       document.body.classList.add(classes["blur-background"]);
@@ -39,8 +60,8 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
     };
   }, [modalShow]);
   useEffect(() => {
-    handleImage(allImages)
-  }, [allImages])
+    handleImage(allImages);
+  }, [allImages]);
 
   const getCropData = () => {
     const cropper = cropperRef.current.cropper;
@@ -70,14 +91,12 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
       relativeCoordinates,
       croppedImage: cropper.getCroppedCanvas().toDataURL(),
     });
-
   };
   const saveHandler2 = () => {
     const template = localStorage.getItem("Template");
-    console.log(template)
+    console.log(template);
     // dataCtx.addImageCoordinate()
-
-  }
+  };
   const saveHandler = () => {
     const cropCoordinate = cropData.coordinates;
 
@@ -85,7 +104,7 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
       startX: rawTopLeftX,
       startY: rawTopLeftY,
       endX: rawBottomRightX,
-      endY: rawBottomRightY
+      endY: rawBottomRightY,
     } = cropCoordinate;
 
     const topLeftX = Math.floor(rawTopLeftX);
@@ -96,18 +115,19 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
       // key: uuidv4(),
       imageName: imageName,
       croppingSide: croppingSide,
-      topLeftX, topLeftY, bottomRightX, bottomRightY
-    }
-    console.log(obj)
+      topLeftX,
+      topLeftY,
+      bottomRightX,
+      bottomRightY,
+    };
+    console.log(obj);
     setAllImages((prevData) => {
       const updatedData = [...prevData, obj];
       return updatedData;
-    })
+    });
     // setModalShow(false)
-  }
-  const editHandler = () => {
-
-  }
+  };
+  const editHandler = () => {};
 
   const deleteHandler = (index) => {
     console.log(index);
@@ -127,48 +147,58 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
       return;
     }
     saveHandler();
-    setShow(false)
+    setShow(false);
     setImageName("");
-    setCroppingSide("")
-  }
+    setCroppingSide("");
+  };
   const allData = allImages.map((item, index) => {
-    return <>
-      <tr
-        key={index}
-        // onClick={() => handleRowClick(d, i)}
-        style={{ cursor: 'pointer' }} // Adds a pointer cursor on hover
-      >
-        <td>{index + 1}</td>
-        <td>{item.imageName}</td>
-        <td>{item.croppingSide}</td>
-        <td> TopLeftX={Math.floor(item.topLeftX)}&nbsp;
-          TopLeftY={Math.floor(item.topLeftX)}<br />
-          BottomRightX={Math.floor(item.topLeftX)}&nbsp;
-          BottomRightY={Math.floor(item.topLeftX)}
-        </td>
-        <td className="text-right">
-          <UncontrolledDropdown>
-            <DropdownToggle
-              className="btn-icon-only text-light"
-              href="#pablo"
-              role="button"
-              size="sm"
-              color=""
-              onClick={(e) => e.preventDefault()}
-            >
-              <i className="fas fa-ellipsis-v" />
-            </DropdownToggle>
-            <DropdownMenu className="dropdown-menu-arrow" right>
-              <DropdownItem onClick={() => editHandler(index)}>Edit</DropdownItem>
-              <DropdownItem style={{ color: "red" }} onClick={() => deleteHandler(index)}>Delete</DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
-        </td>
-      </tr>
-    </>
-  })
-
-
+    return (
+      <>
+        <tr
+          key={index}
+          // onClick={() => handleRowClick(d, i)}
+          style={{ cursor: "pointer" }} // Adds a pointer cursor on hover
+        >
+          <td>{index + 1}</td>
+          <td>{item.imageName}</td>
+          <td>{item.croppingSide}</td>
+          <td>
+            {" "}
+            TopLeftX={Math.floor(item.topLeftX)}&nbsp; TopLeftY=
+            {Math.floor(item.topLeftX)}
+            <br />
+            BottomRightX={Math.floor(item.topLeftX)}&nbsp; BottomRightY=
+            {Math.floor(item.topLeftX)}
+          </td>
+          <td className="text-right">
+            <UncontrolledDropdown>
+              <DropdownToggle
+                className="btn-icon-only text-light"
+                href="#pablo"
+                role="button"
+                size="sm"
+                color=""
+                onClick={(e) => e.preventDefault()}
+              >
+                <i className="fas fa-ellipsis-v" />
+              </DropdownToggle>
+              <DropdownMenu className="dropdown-menu-arrow" right>
+                <DropdownItem onClick={() => editHandler(index)}>
+                  Edit
+                </DropdownItem>
+                <DropdownItem
+                  style={{ color: "red" }}
+                  onClick={() => deleteHandler(index)}
+                >
+                  Delete
+                </DropdownItem>
+              </DropdownMenu>
+            </UncontrolledDropdown>
+          </td>
+        </tr>
+      </>
+    );
+  });
 
   return (
     <>
@@ -310,8 +340,6 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
       )} */}
       </div>
 
-
-
       <Card className="shadow">
         <CardHeader className="border-0">
           <div className="d-flex justify-content-between">
@@ -349,12 +377,15 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
               )}
             </tbody>
           </Table>
-
         </div>
-
       </Card>
 
-      <Modal show={show} fullscreen={true} size="xl" onHide={() => setShow(false)}>
+      <Modal
+        show={show}
+        fullscreen={true}
+        size="xl"
+        onHide={() => setShow(false)}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Modal</Modal.Title>
         </Modal.Header>
@@ -374,7 +405,7 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
             // autoCropArea={0}
             checkOrientation={false}
             rotatable={true}
-          // autoCrop={false}
+            // autoCrop={false}
           />
           {/* <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
             <Button className="d-flex justify-content-center" onClick={getCropData}>
@@ -411,16 +442,25 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
             </div>
           </Row>
           <br />
-          {cropData && <Row className="">
-            <div className="col-12" style={{ width: "100%", justifyContent: "center", display: "flex" }}>
-              <img
-                src={cropData.croppedImage}
-                alt="Cropped"
-                className="img-fluid"
-                style={{ width: 500, height: 200 }}
-              />
-            </div>
-          </Row>}
+          {cropData && (
+            <Row className="">
+              <div
+                className="col-12"
+                style={{
+                  width: "100%",
+                  justifyContent: "center",
+                  display: "flex",
+                }}
+              >
+                <img
+                  src={cropData.croppedImage}
+                  alt="Cropped"
+                  className="img-fluid"
+                  style={{ width: 500, height: 200 }}
+                />
+              </div>
+            </Row>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button
@@ -442,7 +482,6 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
           </Button>
         </Modal.Footer>
       </Modal>
-
     </>
   );
 };
