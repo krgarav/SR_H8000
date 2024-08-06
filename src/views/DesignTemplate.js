@@ -679,95 +679,185 @@ const DesignTemplate = () => {
         return;
       }
     }
-
     let newData = {};
-    if (selectedFieldType === "idField") {
-      newData = {
-        Coordinate: {
-          "Start Row": selection?.startRow + 1,
-          "Start Col": selection?.startCol,
-          "End Row": selection?.endRow + 1,
-          "End Col": selection?.endCol,
-          name: name,
-          fieldType: selectedFieldType,
-        },
-        imageStructureData: position,
-        columnStart: +selection?.startCol,
-        columnNumber: +noInCol,
-        columnStep: +noOfStepInCol,
-        rowStart: +selection?.startRow + 1,
-        rowNumber: +noInRow,
-        rowStep: +noOfStepInRow,
-        iDirection: +readingDirectionOption,
-        idMarksPattern: idNumber.toString(),
-      };
-    } else if (selectedFieldType === "skewMarkField") {
-      newData = {
-        iFace: +iFace,
-        columnStart: +selection?.startCol,
-        columnNumber: +noInCol,
-        columnStep: +noOfStepInCol,
-        rowStart: +selection?.startRow + 1,
-        rowNumber: +noInRow,
-        rowStep: +noOfStepInRow,
-        iSensitivity: +iSensitivity,
-        iDifference: +iDifference,
-        iOption: +option,
-        iReject: +iReject,
-        iDirection: +readingDirectionOption,
-        windowName: name,
-        Coordinate: {
-          "Start Row": selection?.startRow + 1,
-          "Start Col": selection?.startCol,
-          "End Row": selection?.endRow + 1,
-          "End Col": selection?.endCol,
-          name: name,
-          fieldType: selectedFieldType,
-        },
-        ngAction: windowNgOption,
-        iMinimumMarks: +minimumMark,
-        iMaximumMarks: +maximumMark,
-        skewMark: +skewoption,
-        iType: type,
-        // imageStructureData: position,
-      };
-    } else {
-      newData = {
-        iFace: +iFace,
-        windowName: name,
-        columnStart: +selection?.startCol,
-        columnNumber: +noInCol,
-        columnStep: +noOfStepInCol,
-        rowStart: +selection?.startRow + 1,
-        rowNumber: +noInRow,
-        rowStep: +noOfStepInRow,
-        iDirection: +readingDirectionOption,
-        iSensitivity: +iSensitivity,
-        iDifference: +iDifference,
-        iOption: +option,
-        iMinimumMarks: +minimumMark,
-        iMaximumMarks: +maximumMark,
-        iType: type,
-        ngAction: windowNgOption,
-        Coordinate: {
-          "Start Row": selection?.startRow + 1,
-          "Start Col": selection?.startCol,
-          "End Row": selection?.endRow + 1,
-          "End Col": selection?.endCol,
-          name: name,
-          fieldType: selectedFieldType,
-        },
-        totalNumberOfFields: numberOfField,
-        numericOrAlphabets: fieldType,
-        multipleAllow: multiple,
-        multipleValue: multipleValue ? multipleValue : "",
-        blankAllow: blank,
-        blankValue: blankValue ? blankValue : "",
-        customFieldValue: customValue ? customValue : "",
-        // imageStructureData: position,
-      };
-    }
-
+    // if (!modalUpdate) {
+      if (selectedFieldType === "idField") {
+        newData = {
+          Coordinate: {
+            "Start Row": selection?.startRow + 1,
+            "Start Col": selection?.startCol,
+            "End Row": selection?.endRow + 1,
+            "End Col": selection?.endCol,
+            name: "Id Field",
+            fieldType: selectedFieldType,
+          },
+          imageStructureData: position,
+          columnStart: +selection?.startCol,
+          columnNumber: +noInCol,
+          columnStep: +noOfStepInCol,
+          rowStart: +selection?.startRow + 1,
+          rowNumber: +noInRow,
+          rowStep: +noOfStepInRow,
+          iDirection: +readingDirectionOption,
+          idMarksPattern: idNumber.toString(),
+        };
+      } else if (selectedFieldType === "skewMarkField") {
+        newData = {
+          iFace: +iFace,
+          columnStart: +selection?.startCol,
+          columnNumber: +noInCol,
+          columnStep: +noOfStepInCol,
+          rowStart: +selection?.startRow + 1,
+          rowNumber: +noInRow,
+          rowStep: +noOfStepInRow,
+          iSensitivity: +iSensitivity,
+          iDifference: +iDifference,
+          iOption: +option,
+          iReject: +iReject,
+          iDirection: +readingDirectionOption,
+          windowName: name,
+          Coordinate: {
+            "Start Row": selection?.startRow + 1,
+            "Start Col": selection?.startCol,
+            "End Row": selection?.endRow + 1,
+            "End Col": selection?.endCol,
+            name: name,
+            fieldType: selectedFieldType,
+          },
+          ngAction: windowNgOption,
+          iMinimumMarks: +minimumMark,
+          iMaximumMarks: +maximumMark,
+          skewMark: +skewoption,
+          iType: type,
+          // imageStructureData: position,
+        };
+      } else {
+        newData = {
+          iFace: +iFace,
+          windowName: name,
+          columnStart: +selection?.startCol,
+          columnNumber: +noInCol,
+          columnStep: +noOfStepInCol,
+          rowStart: +selection?.startRow + 1,
+          rowNumber: +noInRow,
+          rowStep: +noOfStepInRow,
+          iDirection: +readingDirectionOption,
+          iSensitivity: +iSensitivity,
+          iDifference: +iDifference,
+          iOption: +option,
+          iMinimumMarks: +minimumMark,
+          iMaximumMarks: +maximumMark,
+          iType: type,
+          ngAction: windowNgOption,
+          Coordinate: {
+            "Start Row": selection?.startRow + 1,
+            "Start Col": selection?.startCol,
+            "End Row": selection?.endRow + 1,
+            "End Col": selection?.endCol,
+            name: name,
+            fieldType: selectedFieldType,
+          },
+          totalNumberOfFields: numberOfField,
+          numericOrAlphabets: fieldType,
+          multipleAllow: multiple,
+          multipleValue: multipleValue ? multipleValue : "",
+          blankAllow: blank,
+          blankValue: blankValue ? blankValue : "",
+          customFieldValue: customValue ? customValue : "",
+          // imageStructureData: position,
+        };
+      }
+    // }
+    
+    
+    // else {
+    //   if (selectedFieldType === "idField") {
+    //     newData = {
+    //       Coordinate: {
+    //         "Start Row": selection?.startRow,
+    //         "Start Col": selection?.startCol,
+    //         "End Row": selection?.endRow,
+    //         "End Col": selection?.endCol,
+    //         name: "Id Field",
+    //         fieldType: selectedFieldType,
+    //       },
+    //       imageStructureData: position,
+    //       columnStart: +selection?.startCol,
+    //       columnNumber: +noInCol,
+    //       columnStep: +noOfStepInCol,
+    //       rowStart: +selection?.startRow,
+    //       rowNumber: +noInRow,
+    //       rowStep: +noOfStepInRow,
+    //       iDirection: +readingDirectionOption,
+    //       idMarksPattern: idNumber.toString(),
+    //     };
+    //   } else if (selectedFieldType === "skewMarkField") {
+    //     newData = {
+    //       iFace: +iFace,
+    //       columnStart: +selection?.startCol,
+    //       columnNumber: +noInCol,
+    //       columnStep: +noOfStepInCol,
+    //       rowStart: +selection?.startRow,
+    //       rowNumber: +noInRow,
+    //       rowStep: +noOfStepInRow,
+    //       iSensitivity: +iSensitivity,
+    //       iDifference: +iDifference,
+    //       iOption: +option,
+    //       iReject: +iReject,
+    //       iDirection: +readingDirectionOption,
+    //       windowName: name,
+    //       Coordinate: {
+    //         "Start Row": selection?.startRow,
+    //         "Start Col": selection?.startCol,
+    //         "End Row": selection?.endRow,
+    //         "End Col": selection?.endCol,
+    //         name: name,
+    //         fieldType: selectedFieldType,
+    //       },
+    //       ngAction: windowNgOption,
+    //       iMinimumMarks: +minimumMark,
+    //       iMaximumMarks: +maximumMark,
+    //       skewMark: +skewoption,
+    //       iType: type,
+    //       // imageStructureData: position,
+    //     };
+    //   } else {
+    //     newData = {
+    //       iFace: +iFace,
+    //       windowName: name,
+    //       columnStart: +selection?.startCol,
+    //       columnNumber: +noInCol,
+    //       columnStep: +noOfStepInCol,
+    //       rowStart: +selection?.startRow,
+    //       rowNumber: +noInRow,
+    //       rowStep: +noOfStepInRow,
+    //       iDirection: +readingDirectionOption,
+    //       iSensitivity: +iSensitivity,
+    //       iDifference: +iDifference,
+    //       iOption: +option,
+    //       iMinimumMarks: +minimumMark,
+    //       iMaximumMarks: +maximumMark,
+    //       iType: type,
+    //       ngAction: windowNgOption,
+    //       Coordinate: {
+    //         "Start Row": selection?.startRow,
+    //         "Start Col": selection?.startCol,
+    //         "End Row": selection?.endRow,
+    //         "End Col": selection?.endCol,
+    //         name: name,
+    //         fieldType: selectedFieldType,
+    //       },
+    //       totalNumberOfFields: numberOfField,
+    //       numericOrAlphabets: fieldType,
+    //       multipleAllow: multiple,
+    //       multipleValue: multipleValue ? multipleValue : "",
+    //       blankAllow: blank,
+    //       blankValue: blankValue ? blankValue : "",
+    //       customFieldValue: customValue ? customValue : "",
+    //       // imageStructureData: position,
+    //     };
+    //   }
+    // }
     // setSelectedCoordinates((prev) => [...prev, newSelected]);//chamnge here
     // setSelection(null);
     setModalShow(false);
@@ -787,17 +877,63 @@ const DesignTemplate = () => {
           console.error("Invalid coordinate index or item array");
           return item; // Return the unchanged state if validation fails
         }
+        const arr = dataCtx.allTemplates.find((item) => {
+          console.log(item);
+          return item[0].layoutParameters?.key ?? "" === templateIndex;
+        });
+        const formFieldData = arr[0]?.formFieldWindowParameters;
+        const questionField = arr[0]?.questionsWindowParameters;
+        const skewField = arr[0]?.skewMarksWindowParameters;
+        const idField = arr[0]?.layoutParameters;
 
-        const copiedSelectedField = [...item];
-        copiedSelectedField[coordinateIndex] = {
-          ...copiedSelectedField[coordinateIndex],
-          name: name,
-          fieldType: selectedFieldType,
-        };
+        // Map each set of parameters to their coordinates or default to an empty array
+        const coordinateOfFormData =
+          formFieldData?.map((item) => item.Coordinate) ?? [];
+        const coordinateOfQuestionField =
+          questionField?.map((item) => item.Coordinate) ?? [];
+        const coordinateOfSkewField =
+          skewField?.map((item) => item.Coordinate) ?? [];
+        const coordinateOfIdField = idField?.Coordinate ?? [];
 
-        return copiedSelectedField;
+        // Combine all coordinates into a single array
+        const allCoordinates = [
+          ...coordinateOfFormData,
+          ...coordinateOfQuestionField,
+          ...coordinateOfSkewField,
+          ...coordinateOfIdField,
+        ];
+console.log(allCoordinates)
+        // Map each coordinate to a new format
+        const newSelectedFields = allCoordinates?.map((item) => {
+          const {
+            "Start Row": startRow,
+            "Start Col": startCol,
+            "End Row": endRow,
+            "End Col": endCol,
+            name,
+            fieldType,
+          } = item;
+
+          return {
+            startRow: startRow - 1,
+            startCol,
+            endRow: endRow - 1,
+            endCol,
+            name,
+            fieldType,
+          };
+        });
+
+        // const copiedSelectedField = [...item];
+        // copiedSelectedField[coordinateIndex] = {
+        //   ...copiedSelectedField[coordinateIndex],
+        //   name: name,
+        //   fieldType: selectedFieldType,
+        // };
+
+        return newSelectedFields;
       });
-
+      console.log(selectedCoordinates);
       //   console.log(templateIndex,selectedFieldType,coordinateIndex);
       //   if(templateIndex,selectedFieldType,coordinateIndex)
       dataCtx.modifyRegionWithUUID(
@@ -820,6 +956,7 @@ const DesignTemplate = () => {
     setSelectedFieldType(e.target.value);
   };
   console.log(selection);
+
   const handleEyeClick = (selectedField, index) => {
     console.log(selectedField);
     setSelection(() => ({
@@ -828,7 +965,6 @@ const DesignTemplate = () => {
       endRow: selectedField.endRow,
       endCol: selectedField.endCol,
     }));
-    // console.log(selectedField, index);
     const formattedSelectedFile = {
       "End Col": selectedField.endCol,
       "End Row": selectedField.endRow + 1,
@@ -865,6 +1001,8 @@ const DesignTemplate = () => {
       //     return isEqual(item.Coordinate, formattedSelectedFile);
       // })[0];
       const parameters = template[0].questionsWindowParameters;
+      console.log(parameters);
+      console.log(formattedSelectedFile);
       // Find the index of the matched object
       const index = parameters.findIndex((item) =>
         isEqual(item.Coordinate, formattedSelectedFile)
@@ -905,12 +1043,14 @@ const DesignTemplate = () => {
       const index = parameters.findIndex((item) =>
         isEqual(item.Coordinate, formattedSelectedFile)
       );
+      console.log(parameters);
+      console.log(formattedSelectedFile);
       console.log(index);
       // Get the matched object
       const data = index !== -1 ? parameters[index] : null;
-      console.log(data);
+
       setCoordinateIndex(index);
-      console.log(formattedSelectedFile);
+
       setModalUpdate(true);
       setModalShow(true);
       setSelectedFieldType("formField");
@@ -939,10 +1079,10 @@ const DesignTemplate = () => {
       const index = parameters.findIndex((item) =>
         isEqual(item.Coordinate, formattedSelectedFile)
       );
-      console.log(index);
+
       // Get the matched object
       const data = index !== -1 ? parameters[index] : null;
-      console.log(data);
+
       setCoordinateIndex(index);
       setModalUpdate(true);
       setModalShow(true);
@@ -953,7 +1093,6 @@ const DesignTemplate = () => {
       setEndColInput(formattedSelectedFile["End Col"]);
     }
   };
-  console.log(dataCtx.allTemplates);
   const handleCrossClick = (selectedField, index) => {
     const response = window.confirm(
       "Are you sure you want to delete the selected field ?"
@@ -983,11 +1122,9 @@ const DesignTemplate = () => {
   const sendHandler = async () => {
     // Retrieve the selected template
     const template = dataCtx.allTemplates.find((item) => {
-      console.log(item);
       return item[0].layoutParameters?.key ?? "" === templateIndex;
     });
     // const template = dataCtx.allTemplates[templateIndex];
-    console.log(template);
 
     // Extract layout parameters and its coordinates
     const layoutParameters = template[0].layoutParameters;
@@ -1105,7 +1242,7 @@ const DesignTemplate = () => {
     try {
       setLoading(true);
       const res = await createTemplate(fullRequestData);
-      console.log(res);
+
       if (res.success === true) {
         const layoutId = res?.layoutId;
         const formdata = new FormData();
@@ -1117,7 +1254,7 @@ const DesignTemplate = () => {
           console.log(`${key}: ${value}`);
         }
         const res2 = await sendFile(formdata);
-        console.log(res2);
+
         setLoading(false);
 
         alert(`Response : ${JSON.stringify(res2?.message)}`);
@@ -1134,8 +1271,6 @@ const DesignTemplate = () => {
     }
   };
   const handleImage = (images) => {
-    console.log("updated");
-    console.log(images);
     setImagesSelectedCount(images.length);
     // if (images.length > 0) {
     //   dataCtx.addImageCoordinate(templateIndex, images)

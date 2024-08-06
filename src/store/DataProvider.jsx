@@ -443,7 +443,7 @@ const DataProvider = (props) => {
           };
           break;
       }
-
+      console.log(copiedData);
       return {
         ...item,
         allTemplates: copiedData,
