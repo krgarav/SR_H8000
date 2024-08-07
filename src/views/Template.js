@@ -178,7 +178,7 @@ const Template = () => {
       // const result = await deleteImage(imageUrl);
       const res = await deleteTemplate(id)
       console.log(res)
-      if (res.success) {
+      if (res?.success) {
         setToggle(prev => !prev);
         toast.success("Successfully deleted template")
       }
