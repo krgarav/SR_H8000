@@ -42,30 +42,7 @@ import Papa from "papaparse";
 import { getSampleData } from "helper/TemplateHelper";
 import { v4 as uuidv4 } from "uuid";
 import base64ToFile from "services/Base64toFile";
-import { getLayoutDataById } from "helper/TemplateHelper";
 
-// function base64ToFile(base64Url, filename) {
-//   // Extract base64 data and content type from URL
-//   const [header, base64Data] = base64Url.split(",");
-//   const mime = header.match(/:(.*?);/)[1];
-
-//   // Decode base64 data to binary
-//   const binaryString = window.atob(base64Data);
-
-//   // Create a Uint8Array to hold the binary data
-//   const len = binaryString.length;
-//   const bytes = new Uint8Array(len);
-
-//   for (let i = 0; i < len; i++) {
-//     bytes[i] = binaryString.charCodeAt(i);
-//   }
-
-//   // Create a Blob from the binary data
-//   const blob = new Blob([bytes], { type: mime });
-
-//   // Create a File from the Blob
-//   return new File([blob], filename, { type: mime });
-// }
 const EditTemplateModal = (props) => {
   const [modalShow, setModalShow] = useState(false);
   const [name, setName] = useState("");
@@ -132,7 +109,6 @@ const EditTemplateModal = (props) => {
   const [printDigit, setPrintDigit] = useState(null);
   const [printStartNumber, setPrintStartNumber] = useState(null);
   const [printCustomValue, setPrintCustomValue] = useState(null);
-  const navigate = useNavigate();
 
   const jobHandler = (e) => {
     setSelectedUI(e);
@@ -204,29 +180,25 @@ const EditTemplateModal = (props) => {
     }
   }, [props.show]);
   // *****************************************************************************************
-  // useEffect(() => {
-  //     const runandupdate = async () => {
-  //         const res = await fetchDetails();
-  //         console.log(res);
-
-  //         if (res.success) {
-  //             const layout = res.layoutParameters
-  //             setName(layout.layoutName);
-  //             setNumberOfLines(layout.timingMarks)
-  //             setNumberOfFrontSideColumn(layout.totalColumns);
-  //         }
-  //         // dataCtx.addFieldToTemplate(res, data.templateIndex);
-  //     }
-  //     runandupdate();
-
-  // }, []);
+  const comparewithId = (optiondata, optionvalue) => {
+    console.log(optiondata);
+    const filter = optiondata.find((item) => item.id === optionvalue);
+    console.log(filter);
+    return filter;
+  };
+  const comparewithName = (optiondata, optionvalue) => {
+    console.log(optiondata);
+    const filter = optiondata.find((item) => item.name === optionvalue);
+    console.log(filter);
+    return filter;
+  };
   useEffect(() => {
     const runandupdate = async () => {
       console.log(props.layoutData);
       const layoutData = props.layoutData;
 
-      if (props.layoutData) {
-        const layout = props.layoutData?.layoutParameters;
+      if (layoutData) {
+        const layout = layoutData?.layoutParameters;
         if (layout) {
           setName(layout.layoutName);
           setNumberOfLines(layout.timingMarks);
@@ -235,6 +207,10 @@ const EditTemplateModal = (props) => {
             const filter = IdOptionData[1];
             setIdPresent(filter);
           }
+
+          setSelectedBubble(comparewithName(bubbleData, layout.bubbleType));
+          setSensitivity(layout.iSensitivity);
+          setDifference(layout.iDifference)
         }
       }
       // dataCtx.addFieldToTemplate(res, data.templateIndex);
@@ -420,12 +396,10 @@ const EditTemplateModal = (props) => {
       }
       return;
     }
-    const key = uuidv4();
     try {
       const templateData = [
         {
           layoutParameters: {
-            key: key,
             layoutName: name,
             timingMarks: +numberOfLines,
             barcodeCount: +barCount,
@@ -475,10 +449,8 @@ const EditTemplateModal = (props) => {
         },
       ];
       console.log(templateData);
-      localStorage.setItem("Template", JSON.stringify(templateData));
       const index = dataCtx.setAllTemplates(templateData);
       setModalShow(false);
-      navigate("/admin/design-template", {});
     } catch (error) {
       console.error("Error uploading file: ", error);
     }
