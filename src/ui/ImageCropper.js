@@ -17,7 +17,7 @@ import classes from "./ImageCropper.module.css";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 import DataContext from "store/DataContext";
-const ImageCropper = ({ imageSrc, handleImage }) => {
+const ImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
   const dataCtx = useContext(DataContext);
   const cropperRef = useRef(null);
   const [cropData, setCropData] = useState(null);
@@ -25,6 +25,7 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
   const [allImages, setAllImages] = useState([]);
   const [imageName, setImageName] = useState("");
   const [croppingSide, setCroppingSide] = useState("");
+  const [currentImage, setCurrentImage] = useState(imageSrc);
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -288,7 +289,7 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
                 // onClick={() => setModalShow(false)}
                 className="waves-effect waves-light"
               >
-                Savefdsfds
+                Save
               </Button>
             </Modal.Footer>
           </Modal>
@@ -391,7 +392,7 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
         </Modal.Header>
         <Modal.Body style={{ width: "100%", height: "80vh", overflow: "auto" }}>
           <Cropper
-            src={imageSrc}
+            src={currentImage}
             style={{ height: 500, width: "100%" }}
             initialAspectRatio={1}
             guides={true}
@@ -407,11 +408,28 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
             rotatable={true}
             // autoCrop={false}
           />
-          {/* <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-            <Button className="d-flex justify-content-center" onClick={getCropData}>
-              Select region area
-            </Button>
-          </div> */}
+          <div
+            style={{ width: "100%", display: "flex", justifyContent: "center" }}
+          >
+            <div>
+              <Button
+                active={currentImage === imageSrc}
+                onClick={() => {
+                  setCurrentImage(imageSrc);
+                }}
+              >
+                Front
+              </Button>
+              <Button
+                active={currentImage === backImageSrc}
+                onClick={() => {
+                  setCurrentImage(backImageSrc);
+                }}
+              >
+                Back
+              </Button>
+            </div>
+          </div>
           <br />
           <Row className="mb-2">
             <label htmlFor="imageName" className="col-md-4 ">
