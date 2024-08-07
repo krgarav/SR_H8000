@@ -362,117 +362,213 @@ const EditDesignTemplate = () => {
         };
     }, [selection]);
     // *************************For Fetching the details and setting the coordinate******************
-    useEffect(() => {
+    // useEffect(() => {
 
-        const fetchData = async () => {
-            const templates = await fetchAllTemplate();
-            if (templates === undefined) {
-                toast.error('Error fetching templates');
+    //     const fetchData = async () => {
+    //         const templates = await fetchAllTemplate();
+    //         if (templates === undefined) {
+    //             toast.error('Error fetching templates');
 
+    //         }
+    //         const mpObj = templates?.map((item) => {
+    //             return [{ layoutParameters: item }]
+    //         });
+    //         console.log(mpObj)
+    //         dataCtx.addToAllTemplate(mpObj);
+
+    //     }
+    //     fetchData()
+
+    // }, []);
+    // useEffect(() => {
+    //     console.log("called rdf")
+    //     const fetchDetails = async () => {
+    //         try {
+    //             // Fetch layout data by template ID
+    //             const response = await getLayoutDataById(data.templateId);
+    //             console.log(response);
+    //             if (response) {
+    //                 // const layoutParameter = response.layoutParameter;
+    //                 // set
+    //             }
+    //             setLayoutFieldData(response);
+    //             if (response) {
+    //                 // Extract data from the response
+    //                 const formFieldData = response?.formFieldWindowParameters ?? [];
+    //                 const questionField = response?.questionsWindowParameters ?? [];
+    //                 const skewField = response?.skewMarksWindowParameters ?? [];
+    //                 const idField = response?.layoutParameters ?? {};
+
+    //                 // Map and restructure data for coordinates
+    //                 const coordinateOfFormData = formFieldData.map((item) => ({
+    //                     ...item.formFieldCoordinates,
+    //                     name: item.windowName,
+    //                 }));
+
+    //                 const coordinateOfQuestionField = questionField.map((item) => ({
+    //                     ...item.questionWindowCoordinates,
+    //                     name: item.windowName,
+    //                 }));
+
+    //                 const coordinateOfSkewField = skewField.map((item) => ({
+    //                     ...item.layoutWindowCoordinates,
+    //                     name: item.windowName,
+    //                 }));
+
+    //                 const coordinateOfIdField = idField.layoutCoordinates ?? [];
+
+    //                 // Check if the start value of the ID field's coordinates is not 0
+    //                 const shouldIncludeIdField = coordinateOfIdField.start !== 0;
+
+    //                 // Combine all coordinates into a single array, conditionally including the ID field's coordinates
+    //                 const allCoordinates = [
+    //                     ...coordinateOfFormData,
+    //                     ...coordinateOfQuestionField,
+    //                     ...coordinateOfSkewField,
+    //                     ...(shouldIncludeIdField ? [coordinateOfIdField] : []), // Conditionally include the ID field's coordinates
+    //                 ];
+
+    //                 // Format the coordinates for the state update
+    //                 const newSelectedFields = allCoordinates.map((item) => {
+    //                     const {
+    //                         start: startRow,
+    //                         left: startCol,
+    //                         end: endRow,
+    //                         right: endCol,
+    //                         name,
+    //                         fieldType
+    //                     } = item;
+    //                     return { startRow, startCol, endRow, endCol, name, fieldType };
+    //                 });
+    //                 console.log(newSelectedFields)
+    //                 // Update state with the formatted coordinates and image data
+    //                 setSelectedCoordinates(newSelectedFields);
+    //                 setPosition(idField?.imageCoordinates);
+    //             }
+
+
+    //             // const templates = await fetchAllTemplate();
+    //             // if (templates === undefined) {
+    //             //     toast.error('Error fetching templates');
+
+    //             // }
+    //             // const mpObj = templates?.map((item) => {
+    //             //     return [{ layoutParameters: item }]
+    //             // });
+    //             // console.log(mpObj)
+    //             // dataCtx.addToAllTemplate(mpObj);
+    //         } catch (error) {
+    //             console.error("Error fetching layout data:", error);
+    //         }
+    //     };
+
+    //     // Call the fetch details function
+    //     fetchDetails();
+    // }, []);
+    const fetchDetails = async () => {
+        try {
+            // Fetch layout data by template ID
+            const response = await getLayoutDataById(data.templateId);
+            console.log(response);
+            if (response) {
+                // const layoutParameter = response.layoutParameter;
+                // set
             }
-            const mpObj = templates?.map((item) => {
-                return [{ layoutParameters: item }]
-            });
-            console.log(mpObj)
-            dataCtx.addToAllTemplate(mpObj);
 
+            setLayoutFieldData(response);
+            if (response) {
+                // Extract data from the response
+                const formFieldData = response?.formFieldWindowParameters ?? [];
+                const questionField = response?.questionsWindowParameters ?? [];
+                const skewField = response?.skewMarksWindowParameters ?? [];
+                const idField = response?.layoutParameters ?? {};
+
+                // Map and restructure data for coordinates
+                const coordinateOfFormData = formFieldData.map((item) => ({
+                    ...item.formFieldCoordinates,
+                    name: item.windowName,
+                }));
+
+                const coordinateOfQuestionField = questionField.map((item) => ({
+                    ...item.questionWindowCoordinates,
+                    name: item.windowName,
+                }));
+
+                const coordinateOfSkewField = skewField.map((item) => ({
+                    ...item.layoutWindowCoordinates,
+                    name: item.windowName,
+                }));
+
+                const coordinateOfIdField = idField.layoutCoordinates ?? [];
+
+                // Check if the start value of the ID field's coordinates is not 0
+                const shouldIncludeIdField = coordinateOfIdField.start !== 0;
+
+                // Combine all coordinates into a single array, conditionally including the ID field's coordinates
+                const allCoordinates = [
+                    ...coordinateOfFormData,
+                    ...coordinateOfQuestionField,
+                    ...coordinateOfSkewField,
+                    ...(shouldIncludeIdField ? [coordinateOfIdField] : []), // Conditionally include the ID field's coordinates
+                ];
+
+                // Format the coordinates for the state update
+                const newSelectedFields = allCoordinates.map((item) => {
+                    const {
+                        start: startRow,
+                        left: startCol,
+                        end: endRow,
+                        right: endCol,
+                        name,
+                        fieldType
+                    } = item;
+                    return {
+                        startRow: startRow - 1,
+                        startCol: startCol,
+                        endRow: endRow - 1,
+                        endCol: endCol,
+                        name: name,
+                        fieldType: fieldType
+                    };
+                });
+
+                console.log(newSelectedFields)
+                // Update state with the formatted coordinates and image data
+                setSelectedCoordinates(newSelectedFields);
+                setPosition(idField?.imageCoordinates);
+                return response
+            }
+
+
+            // const templates = await fetchAllTemplate();
+            // if (templates === undefined) {
+            //     toast.error('Error fetching templates');
+
+            // }
+            // const mpObj = templates?.map((item) => {
+            //     return [{ layoutParameters: item }]
+            // });
+            // console.log(mpObj)
+            // dataCtx.addToAllTemplate(mpObj);
+        } catch (error) {
+            console.error("Error fetching layout data:", error);
         }
-        fetchData()
-
-    }, []);
-    useEffect(() => {
-        const fetchDetails = async () => {
-            try {
-                // Fetch layout data by template ID
-                const response = await getLayoutDataById(data.templateId);
-                console.log(response);
-                if (response) {
-                    // const layoutParameter = response.layoutParameter;
-                    // set
-                }
-                setLayoutFieldData(response);
-                if (response) {
-                    // Extract data from the response
-                    const formFieldData = response?.formFieldWindowParameters ?? [];
-                    const questionField = response?.questionsWindowParameters ?? [];
-                    const skewField = response?.skewMarksWindowParameters ?? [];
-                    const idField = response?.layoutParameters ?? {};
-
-                    // Map and restructure data for coordinates
-                    const coordinateOfFormData = formFieldData.map((item) => ({
-                        ...item.formFieldCoordinates,
-                        name: item.windowName,
-                    }));
-
-                    const coordinateOfQuestionField = questionField.map((item) => ({
-                        ...item.questionWindowCoordinates,
-                        name: item.windowName,
-                    }));
-
-                    const coordinateOfSkewField = skewField.map((item) => ({
-                        ...item.layoutWindowCoordinates,
-                        name: item.windowName,
-                    }));
-
-                    const coordinateOfIdField = idField.layoutCoordinates ?? [];
-
-                    // Check if the start value of the ID field's coordinates is not 0
-                    const shouldIncludeIdField = coordinateOfIdField.start !== 0;
-
-                    // Combine all coordinates into a single array, conditionally including the ID field's coordinates
-                    const allCoordinates = [
-                        ...coordinateOfFormData,
-                        ...coordinateOfQuestionField,
-                        ...coordinateOfSkewField,
-                        ...(shouldIncludeIdField ? [coordinateOfIdField] : []), // Conditionally include the ID field's coordinates
-                    ];
-
-                    // Format the coordinates for the state update
-                    const newSelectedFields = allCoordinates.map((item) => {
-                        const {
-                            start: startRow,
-                            left: startCol,
-                            end: endRow,
-                            right: endCol,
-                            name,
-                            fieldType
-                        } = item;
-                        return { startRow, startCol, endRow, endCol, name, fieldType };
-                    });
-                    console.log(newSelectedFields)
-                    // Update state with the formatted coordinates and image data
-                    setSelectedCoordinates(newSelectedFields);
-                    setPosition(idField?.imageCoordinates);
-                }
-
-
-                // const templates = await fetchAllTemplate();
-                // if (templates === undefined) {
-                //     toast.error('Error fetching templates');
-
-                // }
-                // const mpObj = templates?.map((item) => {
-                //     return [{ layoutParameters: item }]
-                // });
-                // console.log(mpObj)
-                // dataCtx.addToAllTemplate(mpObj);
-            } catch (error) {
-                console.error("Error fetching layout data:", error);
-            }
-        };
-
-        // Call the fetch details function
-        fetchDetails();
-    }, [data.templateId]);
-    console.log(dataCtx.allTemplates)
+    };
     // *****************************************************************************************
     useEffect(() => {
-        if (layoutFieldData) {
-            if (dataCtx.allTemplates.length > 0) {
-                dataCtx.addFieldToTemplate(layoutFieldData, data.templateIndex);
-            }
+        console.log(layoutFieldData)
+        const runandupdate = async () => {
+            const res = await fetchDetails();
+            console.log(res);
+            dataCtx.addFieldToTemplate(res, data.templateIndex);
         }
-    }, [layoutFieldData]);
+        runandupdate();
+        // if (layoutFieldData) {
+        //     if (dataCtx.allTemplates.length > 0) {
+        //         dataCtx.addFieldToTemplate(layoutFieldData, data.templateIndex);
+        //     }
+        // }
+    }, []);
     useEffect(() => {
         switch (data.bubbleType) {
             case "rounded rectangle":
@@ -517,23 +613,23 @@ const EditDesignTemplate = () => {
         }
     }, [options, selectedCol]);
 
-    useEffect(() => {
-        const handleKeyPress = (event) => {
-            if (modalShow) return; // Ignore keyboard events when modal is shown
-            if (event.altKey && event.shiftKey) {
-                // Toggle z-index when Alt + Enter is pressed
-                const imgDiv = document.getElementById("imagecontainer");
-                imgDiv.style.zIndex = imgDiv.style.zIndex === "999" ? "-1" : "999";
-            }
-        };
+    // useEffect(() => {
+    //     const handleKeyPress = (event) => {
+    //         if (modalShow) return; // Ignore keyboard events when modal is shown
+    //         if (event.altKey && event.shiftKey) {
+    //             // Toggle z-index when Alt + Enter is pressed
+    //             const imgDiv = document.getElementById("imagecontainer");
+    //             imgDiv.style.zIndex = imgDiv.style.zIndex === "999" ? "-1" : "999";
+    //         }
+    //     };
 
-        window.addEventListener("keydown", handleKeyPress);
+    //     window.addEventListener("keydown", handleKeyPress);
 
-        // Cleanup event listener on component unmount
-        return () => {
-            window.removeEventListener("keydown", handleKeyPress);
-        };
-    }, [modalShow]);
+    //     // Cleanup event listener on component unmount
+    //     return () => {
+    //         window.removeEventListener("keydown", handleKeyPress);
+    //     };
+    // }, [modalShow]);
 
     const handleMouseDown = (e) => {
         const boundingRect = imageRef.current.getBoundingClientRect();
@@ -704,6 +800,7 @@ const EditDesignTemplate = () => {
 
         let newData = {};
         let selectedWindowName = "";
+
         if (selectedFieldType === "idField") {
             selectedWindowName = "Id Field"
             newData = {
@@ -790,9 +887,103 @@ const EditDesignTemplate = () => {
                 blankAllow: blank,
                 blankValue: blankValue ? blankValue : "",
                 customFieldValue: customValue ? customValue : ""
-                // imageStructureData: position,
             };
         }
+
+
+
+        // else {
+        //     if (selectedFieldType === "idField") {
+        //         selectedWindowName = "Id Field"
+        //         newData = {
+        //             Coordinate: {
+        //                 "Start Row": selection?.startRow,
+        //                 "Start Col": selection?.startCol,
+        //                 "End Row": selection?.endRow,
+        //                 "End Col": selection?.endCol,
+        //                 name: "Id Field",
+        //                 fieldType: selectedFieldType,
+        //             },
+        //             imageStructureData: position,
+        //             columnStart: +selection?.startCol,
+        //             columnNumber: +noInCol,
+        //             columnStep: +noOfStepInCol,
+        //             rowStart: +selection?.startRow + 1,
+        //             rowNumber: +noInRow,
+        //             rowStep: +noOfStepInRow,
+        //             iDirection: +readingDirectionOption,
+        //             idMarksPattern: idNumber.toString(),
+        //         };
+        //     } else if (selectedFieldType === "skewMarkField") {
+        //         selectedWindowName = name
+        //         newData = {
+        //             iFace: +data.iFace,
+        //             columnStart: +selection?.startCol,
+        //             columnNumber: +noInCol,
+        //             columnStep: +noOfStepInCol,
+        //             rowStart: +selection?.startRow + 1,
+        //             rowNumber: +noInRow,
+        //             rowStep: +noOfStepInRow,
+        //             iSensitivity: +data.iSensitivity,
+        //             iDifference: +data.iDifference,
+        //             iOption: +option,
+        //             iReject: +data.iReject,
+        //             iDirection: +readingDirectionOption,
+        //             windowName: name,
+        //             Coordinate: {
+        //                 "Start Row": selection?.startRow,
+        //                 "Start Col": selection?.startCol,
+        //                 "End Row": selection?.endRow,
+        //                 "End Col": selection?.endCol,
+        //                 name: name,
+        //                 fieldType: selectedFieldType,
+        //             },
+        //             ngAction: windowNgOption,
+        //             iMinimumMarks: +minimumMark,
+        //             iMaximumMarks: +maximumMark,
+        //             skewMark: +skewoption,
+        //             iType: type,
+        //             // imageStructureData: position,
+        //         };
+        //     } else {
+        //         console.log("update form")
+        //         selectedWindowName = name
+        //         newData = {
+        //             iFace: +data.iFace,
+        //             windowName: name,
+        //             columnStart: +selection?.startCol,
+        //             columnNumber: +noInCol,
+        //             columnStep: +noOfStepInCol,
+        //             rowStart: +selection?.startRow + 1,
+        //             rowNumber: +noInRow,
+        //             rowStep: +noOfStepInRow,
+        //             iDirection: +readingDirectionOption,
+        //             iSensitivity: +data.iSensitivity,
+        //             iDifference: +data.iDifference,
+        //             iOption: +option,
+        //             iMinimumMarks: +minimumMark,
+        //             iMaximumMarks: +maximumMark,
+        //             iType: type,
+        //             ngAction: windowNgOption,
+        //             Coordinate: {
+        //                 "Start Row": selection?.startRow+1,
+        //                 "Start Col": selection?.startCol,
+        //                 "End Row": selection?.endRow+1,
+        //                 "End Col": selection?.endCol,
+        //                 name: name,
+        //                 fieldType: selectedFieldType,
+        //             },
+        //             totalNumberOfFields: numberOfField,
+        //             numericOrAlphabets: fieldType,
+        //             multipleAllow: multiple,
+        //             multipleValue: multipleValue ? multipleValue : "",
+        //             blankAllow: blank,
+        //             blankValue: blankValue ? blankValue : "",
+        //             customFieldValue: customValue ? customValue : ""
+        //         };
+        //     }
+        // }
+
 
         // setSelectedCoordinates((prev) => [...prev, newSelected]);//chamnge here
         // setSelection(null);
@@ -836,14 +1027,14 @@ const EditDesignTemplate = () => {
             //   if(templateIndex,selectedFieldType,coordinateIndex)
             dataCtx.modifyWithRegion(
                 data.templateIndex,
-                data.newData,
+                newData,
                 selectedFieldType,
                 coordinateIndex
             );
             setSelection(null);
         }
     };
-
+    console.log(dataCtx.allTemplates)
     const handleSkewMarkOptionChange = (event) => {
         setSkewOption(event.target.value);
     };
@@ -853,8 +1044,6 @@ const EditDesignTemplate = () => {
     const handleRadioChange = (e) => {
         setSelectedFieldType(e.target.value);
     };
-
-    console.log(dataCtx.allTemplates)
     const handleEyeClick = (selectedField, index) => {
 
         setSelection(() => ({
@@ -866,14 +1055,15 @@ const EditDesignTemplate = () => {
         console.log(selectedField, index);
         const formattedSelectedFile = {
             "End Col": selectedField.endCol,
-            "End Row": selectedField.endRow,
+            "End Row": selectedField.endRow + 1,
             "Start Col": selectedField.startCol,
-            "Start Row": selectedField.startRow,
+            "Start Row": selectedField.startRow + 1,
             fieldType: selectedField.fieldType,
             name: selectedField.name,
         };
 
         setSelectionIndex(index);
+        console.log(data.templateIndex)
         const template = dataCtx.allTemplates[data.templateIndex];
         console.log(template);
         if (selectedField?.fieldType === "idField") {
@@ -938,7 +1128,7 @@ const EditDesignTemplate = () => {
             const parameters = template[0].formFieldWindowParameters;
             console.log(parameters)
             const index = parameters.findIndex((item) =>
-                isEqual(item.Coordinate, formattedSelectedFile)
+                isEqual(item?.Coordinate, formattedSelectedFile)
             );
             console.log(formattedSelectedFile)
             console.log(parameters)
@@ -958,8 +1148,8 @@ const EditDesignTemplate = () => {
             setMaximumMark(data?.iMinimumMarks);
             setNoInRow(data?.rowNumber);
             setNoInCol(data?.columnNumber);
-            setStartRowInput(formattedSelectedFile["Start Row"] - 1);
-            setEndRowInput(formattedSelectedFile["End Row"] - 1);
+            setStartRowInput(formattedSelectedFile["Start Row"] - 2);
+            setEndRowInput(formattedSelectedFile["End Row"] - 2);
             setStartColInput(formattedSelectedFile["Start Col"]);
             setEndColInput(formattedSelectedFile["End Col"]);
             setReadingDirectionOption(data?.iDirection);
@@ -974,7 +1164,7 @@ const EditDesignTemplate = () => {
         } else if (selectedField?.fieldType === "skewMarkField") {
             const parameters = template[0].skewMarksWindowParameters;
             const index = parameters.findIndex((item) =>
-                isEqual(item.Coordinate, formattedSelectedFile)
+                isEqual(item?.Coordinate, formattedSelectedFile)
             );
             console.log(index);
             // Get the matched object
@@ -1205,7 +1395,7 @@ const EditDesignTemplate = () => {
                     {!loading ? "Update" : "Updating"}
                 </Button>
                 <div className="containers">
-                    <div id="imagecontainer" className={classes.img}>
+                    {/* <div id="imagecontainer" className={classes.img}>
                         <Rnd
                             default={{
                                 x: 0,
@@ -1229,7 +1419,7 @@ const EditDesignTemplate = () => {
                                 id="omr-style-sheet"
                             />
                         </Rnd>
-                    </div>
+                    </div> */}
                     <div className="d-flex">
                         <div style={{ marginRight: "1rem" }}>
                             <div className="top"></div>

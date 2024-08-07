@@ -63,7 +63,6 @@ const Template = () => {
       const mpObj = templates?.map((item) => {
         return [{ layoutParameters: item }]
       });
-      console.log(mpObj)
       dataCtx.addToAllTemplate(mpObj);
 
     }
