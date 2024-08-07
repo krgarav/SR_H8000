@@ -238,8 +238,8 @@ const TemplateModal = (props) => {
 
           setExcelFile(file);
           console.log(json)
-          const Row = json.length;
-          const Column = Object.keys(json[1]).length;
+          const Row = json.length-1;
+          const Column = Object.keys(json[1]).length-1;
           console.log(Object.values(json[1]))
           setNumberOfLines(Row);
           setNumberOfFrontSideColumn(Column)
@@ -472,6 +472,11 @@ const TemplateModal = (props) => {
       const jsonData = response?.data;
       const base64ImageUrl = response?.image;
       console.log(jsonData);
+      const Row = jsonData.length-1;
+      const Column = Object.keys(jsonData[1]).length-1;
+      console.log(Object.values(jsonData[1]))
+      setNumberOfLines(Row);
+      setNumberOfFrontSideColumn(Column)
       setExcelJsonFile(jsonData);
       const csv = Papa.unparse(jsonData);
       // Create a Blob from the CSV string

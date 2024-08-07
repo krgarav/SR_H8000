@@ -280,7 +280,6 @@ const DesignTemplate = () => {
     //   console.log(item);
     //   return item[0].layoutParameters?.key ?? "" === templateIndex;
     // })?[0];
-    console.log(templateData);
     // if (!currentTemplate) {
     dataCtx.setAllTemplates(templateData);
     // }
@@ -326,7 +325,6 @@ const DesignTemplate = () => {
     if (gridDiv && imgDiv) {
       const gridHeight = gridDiv.clientHeight;
       const gridWidth = gridDiv.clientWidth;
-      console.log(gridHeight);
       imgDiv.style.height = `${gridHeight + 250}px`;
       imgDiv.style.width = `${gridWidth + 130}px`; // Adding 50 pixels to the width
       setPosition({
