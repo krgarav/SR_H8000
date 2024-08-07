@@ -384,7 +384,6 @@ const Booklet32Page = () => {
   const handleStop = async()=>{
     try {
         const cancel = await cancelScan();
-        console.log(cancel)
         setTimeout(()=>{
           setScanning(false);
         },5000)

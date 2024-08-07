@@ -85,15 +85,30 @@ const ScanJob = () => {
             // Check if the data fetch was successful
             if (data?.result?.success) {
                 // Extract keys from the first item in the data array
-                const newDataKeys = Object.keys(data.result.data[0]);
+                const newDataKeys = Object.keys(data.result.data[0]).map((key) => {
+                    return key.endsWith(".") ? key.slice(0, -1) : key;
+                });
 
                 // Add a serial number to each entry
-                let num = processedData.length + 1;
-                const updatedData = [...processedData, ...data.result.data.map(item => ({ "Serial No": num++, ...item }))];
+                let num = 1;
+                const updatedData = data.result.data.map((item) => {
+                    const newItem = {};
+
+                    // Iterate over the keys of the item
+                    for (const key in item) {
+                        // Check if the key ends with a dot
+                        const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+                        // Assign the value to the new key in newItem
+                        newItem[newKey] = item[key];
+                    }
+
+                    // Add the Serial No property
+                    newItem["Serial No"] = num++;
+                    return newItem;
+                });
 
                 // Set headData with the new keys, ensuring "Serial No" is included as a heading
                 setHeadData(["Serial No", ...newDataKeys]);
-                console.log(updatedData);
 
                 // Update the data state with the fetched data
                 setProcessedData(updatedData);
@@ -148,34 +163,43 @@ const ScanJob = () => {
     }
 
     const handleStart = async () => {
-
         if (!selectedValue) {
             alert("Choose Template");
-            return
+            return;
         }
         if (scanning) {
             setScanning(false);
             return;
-        } else {
-            setScanning(true)
         }
-
-        const response = await scanFiles(selectedValue);
+        setProcessedData([]);
+        setTimeout(async () => {
+            setScanning(true);
+        }, 6000);
+        const response = await scanFiles(selectedValue.id);
+        console.log(response);
+        if (!response?.result?.success) {
+            toast.error(response?.result?.message);
+        } else {
+            toast.success(response?.result?.message);
+        }
         if (response) {
-            setScanning(false)
+            setScanning(false);
+        }
+        if (response === undefined) {
+            toast.error("Request Timeout");
         }
     };
 
-
     const handleSave = (args) => {
-
         if (args.data) {
             const updatedData = [...processedData];
-            console.log(updatedData)
-            const index = updatedData.findIndex(item => item["Serial No"] == args.data["Serial No"]);
+            console.log(updatedData);
+            const index = updatedData.findIndex(
+                (item) => item["Serial No"] == args.data["Serial No"]
+            );
             if (index > -1) {
                 updatedData[index] = args.data;
-                console.log(updatedData)
+                console.log(updatedData);
                 setProcessedData(updatedData);
             }
         }
@@ -190,6 +214,23 @@ const ScanJob = () => {
         }
     }
 
+    const dataBound = () => {
+        if (gridRef.current) {
+            const grid = gridRef.current;
+            const lastIndex = grid.dataSource.length - 1;
+
+            // Ensure data source is not empty
+            if (lastIndex >= 0) {
+                setTimeout(() => {
+                    const gridContent = grid?.getContent()?.firstElementChild;
+                    gridContent.scrollTo({
+                        top: gridContent.scrollHeight,
+                        behavior: 'smooth',
+                    });
+                }, 500); // Delay to ensure the grid is fully rendered before scrolling
+            }
+        }
+    };
     const handleToolbarClick = (args) => {
         if (args.item.id.includes('excelexport')) {
             gridRef.current.refresh();  // Ensure the grid data is refreshed
@@ -204,10 +245,13 @@ const ScanJob = () => {
             gridRef.current.csvExport();
         }
     };
-    const handleStop = async()=>{
+    const handleStop = async () => {
         try {
-            const cancelScan = await cancelScan();
-            
+            const cancel = await cancelScan();
+
+            setTimeout(() => {
+                setScanning(false);
+            }, 5000)
         } catch (error) {
             console.log(error)
         }
@@ -230,6 +274,7 @@ const ScanJob = () => {
                     <div className='control-section'>
                         <GridComponent
                             ref={gridRef}
+                            dataBound={dataBound}
                             actionComplete={handleSave} dataSource={processedData} height='350' allowSorting={false} editSettings={editSettings} allowFiltering={false} filterSettings={filterSettings} toolbar={toolbar}
                             toolbarClick={handleToolbarClick} allowExcelExport={true} allowPdfExport={true}
                             allowEditing={false} >
@@ -244,7 +289,7 @@ const ScanJob = () => {
                                 {scanning ? "Stop" : "Start"}
                             </Button>
                             {/* <Button className="" color="danger" type="button" onClick={handleRefresh} >Refresh</Button> */}
-                            <Button className="" color="danger" type="button" onClick={handleStop} >Cancel Scanning</Button>
+                            {scanning && <Button className="" color="danger" type="button" onClick={handleStop} >Cancel Scanning</Button>}
                         </div>
 
                     </div>
