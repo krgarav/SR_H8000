@@ -1967,7 +1967,7 @@ const DesignTemplate = () => {
                     )}
                   </Row>
                 )}
-              {selectedFieldType !== "idField" && (
+              {(selectedFieldType !== "idField" || selectedFieldType !== "skewMarkField") && (
                 <Row className="mb-2">
                   <label
                     htmlFor="example-text-input"

@@ -1718,31 +1718,32 @@ const EditDesignTemplate = () => {
                                 )}
                             </Row>
                         )}
-                    {(selectedFieldType !== "idField" || selectedFieldType !== "skewMarkField") && (
-                        <Row className="mb-2">
-                            <label
-                                htmlFor="example-text-input"
-                                className="col-md-2 col-form-label"
-                            >
-                                Window NG
-                            </label>
-                            <div className="col-md-10">
-                                <select
-                                    className="form-control"
-                                    value={windowNgOption}
-                                    onChange={handleWindowNgOptionChange}
-                                    defaultValue={""}
+                    {(selectedFieldType === "questionField" ||
+                        selectedFieldType === "formField") && (
+                            <Row className="mb-2">
+                                <label
+                                    htmlFor="example-text-input"
+                                    className="col-md-2 col-form-label"
                                 >
-                                    <option value="">Select an option</option>
-                                    <option value="0x00000001">
-                                        Paper ejection to select stacker
-                                    </option>
-                                    <option value="0x00000002">Stop reading</option>
-                                    <option value="0">No Action</option>
-                                </select>
-                            </div>
-                        </Row>
-                    )}
+                                    Window NG
+                                </label>
+                                <div className="col-md-10">
+                                    <select
+                                        className="form-control"
+                                        value={windowNgOption}
+                                        onChange={handleWindowNgOptionChange}
+                                        defaultValue={""}
+                                    >
+                                        <option value="">Select an option</option>
+                                        <option value="0x00000001">
+                                            Paper ejection to select stacker
+                                        </option>
+                                        <option value="0x00000002">Stop reading</option>
+                                        <option value="0">No Action</option>
+                                    </select>
+                                </div>
+                            </Row>
+                        )}
                     {selectedFieldType !== "idField" && (
                         <Row>
                             <label htmlFor="example-select-input" className="col-md-2">
