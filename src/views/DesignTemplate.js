@@ -679,95 +679,94 @@ const DesignTemplate = () => {
     }
     let newData = {};
     // if (!modalUpdate) {
-      if (selectedFieldType === "idField") {
-        newData = {
-          Coordinate: {
-            "Start Row": selection?.startRow + 1,
-            "Start Col": selection?.startCol,
-            "End Row": selection?.endRow + 1,
-            "End Col": selection?.endCol,
-            name: "Id Field",
-            fieldType: selectedFieldType,
-          },
-          imageStructureData: position,
-          columnStart: +selection?.startCol,
-          columnNumber: +noInCol,
-          columnStep: +noOfStepInCol,
-          rowStart: +selection?.startRow + 1,
-          rowNumber: +noInRow,
-          rowStep: +noOfStepInRow,
-          iDirection: +readingDirectionOption,
-          idMarksPattern: idNumber.toString(),
-        };
-      } else if (selectedFieldType === "skewMarkField") {
-        newData = {
-          iFace: +iFace,
-          columnStart: +selection?.startCol,
-          columnNumber: +noInCol,
-          columnStep: +noOfStepInCol,
-          rowStart: +selection?.startRow + 1,
-          rowNumber: +noInRow,
-          rowStep: +noOfStepInRow,
-          iSensitivity: +iSensitivity,
-          iDifference: +iDifference,
-          iOption: +option,
-          iReject: +iReject,
-          iDirection: +readingDirectionOption,
-          windowName: name,
-          Coordinate: {
-            "Start Row": selection?.startRow + 1,
-            "Start Col": selection?.startCol,
-            "End Row": selection?.endRow + 1,
-            "End Col": selection?.endCol,
-            name: name,
-            fieldType: selectedFieldType,
-          },
-          ngAction: windowNgOption,
-          iMinimumMarks: +minimumMark,
-          iMaximumMarks: +maximumMark,
-          skewMark: +skewoption,
-          iType: type,
-          // imageStructureData: position,
-        };
-      } else {
-        newData = {
-          iFace: +iFace,
-          windowName: name,
-          columnStart: +selection?.startCol,
-          columnNumber: +noInCol,
-          columnStep: +noOfStepInCol,
-          rowStart: +selection?.startRow + 1,
-          rowNumber: +noInRow,
-          rowStep: +noOfStepInRow,
-          iDirection: +readingDirectionOption,
-          iSensitivity: +iSensitivity,
-          iDifference: +iDifference,
-          iOption: +option,
-          iMinimumMarks: +minimumMark,
-          iMaximumMarks: +maximumMark,
-          iType: type,
-          ngAction: windowNgOption,
-          Coordinate: {
-            "Start Row": selection?.startRow + 1,
-            "Start Col": selection?.startCol,
-            "End Row": selection?.endRow + 1,
-            "End Col": selection?.endCol,
-            name: name,
-            fieldType: selectedFieldType,
-          },
-          totalNumberOfFields: numberOfField,
-          numericOrAlphabets: fieldType,
-          multipleAllow: multiple,
-          multipleValue: multipleValue ? multipleValue : "",
-          blankAllow: blank,
-          blankValue: blankValue ? blankValue : "",
-          customFieldValue: customValue ? customValue : "",
-          // imageStructureData: position,
-        };
-      }
+    if (selectedFieldType === "idField") {
+      newData = {
+        Coordinate: {
+          "Start Row": selection?.startRow + 1,
+          "Start Col": selection?.startCol,
+          "End Row": selection?.endRow + 1,
+          "End Col": selection?.endCol,
+          name: "Id Field",
+          fieldType: selectedFieldType,
+        },
+        imageStructureData: position,
+        columnStart: +selection?.startCol,
+        columnNumber: +noInCol,
+        columnStep: +noOfStepInCol,
+        rowStart: +selection?.startRow + 1,
+        rowNumber: +noInRow,
+        rowStep: +noOfStepInRow,
+        iDirection: +readingDirectionOption,
+        idMarksPattern: idNumber.toString(),
+      };
+    } else if (selectedFieldType === "skewMarkField") {
+      newData = {
+        iFace: +iFace,
+        columnStart: +selection?.startCol,
+        columnNumber: +noInCol,
+        columnStep: +noOfStepInCol,
+        rowStart: +selection?.startRow + 1,
+        rowNumber: +noInRow,
+        rowStep: +noOfStepInRow,
+        iSensitivity: +iSensitivity,
+        iDifference: +iDifference,
+        iOption: +option,
+        iReject: +iReject,
+        iDirection: +readingDirectionOption,
+        windowName: name,
+        Coordinate: {
+          "Start Row": selection?.startRow + 1,
+          "Start Col": selection?.startCol,
+          "End Row": selection?.endRow + 1,
+          "End Col": selection?.endCol,
+          name: name,
+          fieldType: selectedFieldType,
+        },
+        ngAction: windowNgOption,
+        iMinimumMarks: +minimumMark,
+        iMaximumMarks: +maximumMark,
+        skewMark: +skewoption,
+        iType: type,
+        // imageStructureData: position,
+      };
+    } else {
+      newData = {
+        iFace: +iFace,
+        windowName: name,
+        columnStart: +selection?.startCol,
+        columnNumber: +noInCol,
+        columnStep: +noOfStepInCol,
+        rowStart: +selection?.startRow + 1,
+        rowNumber: +noInRow,
+        rowStep: +noOfStepInRow,
+        iDirection: +readingDirectionOption,
+        iSensitivity: +iSensitivity,
+        iDifference: +iDifference,
+        iOption: +option,
+        iMinimumMarks: +minimumMark,
+        iMaximumMarks: +maximumMark,
+        iType: type,
+        ngAction: windowNgOption,
+        Coordinate: {
+          "Start Row": selection?.startRow + 1,
+          "Start Col": selection?.startCol,
+          "End Row": selection?.endRow + 1,
+          "End Col": selection?.endCol,
+          name: name,
+          fieldType: selectedFieldType,
+        },
+        totalNumberOfFields: numberOfField,
+        numericOrAlphabets: fieldType,
+        multipleAllow: multiple,
+        multipleValue: multipleValue ? multipleValue : "",
+        blankAllow: blank,
+        blankValue: blankValue ? blankValue : "",
+        customFieldValue: customValue ? customValue : "",
+        // imageStructureData: position,
+      };
+    }
     // }
-    
-    
+
     // else {
     //   if (selectedFieldType === "idField") {
     //     newData = {
@@ -891,16 +890,16 @@ const DesignTemplate = () => {
           questionField?.map((item) => item.Coordinate) ?? [];
         const coordinateOfSkewField =
           skewField?.map((item) => item.Coordinate) ?? [];
-        const coordinateOfIdField = idField?.Coordinate ?? [];
+        const coordinateOfIdField = idField?.Coordinate ?? {};
 
         // Combine all coordinates into a single array
         const allCoordinates = [
           ...coordinateOfFormData,
           ...coordinateOfQuestionField,
           ...coordinateOfSkewField,
-          ...coordinateOfIdField,
+          ...[coordinateOfIdField],
         ];
-console.log(allCoordinates)
+        console.log(allCoordinates);
         // Map each coordinate to a new format
         const newSelectedFields = allCoordinates?.map((item) => {
           const {
@@ -985,6 +984,7 @@ console.log(allCoordinates)
       setMaximumMark(data?.maximumMark);
       // setNoInRow(data?.totalNoInRow);
       // setNoInCol(data?.totalNoInColumn);
+      setReadingDirectionOption(data?.iDirection)
       setNoInRow(data?.rowNumber);
       setNoInCol(data?.columnNumber);
       setStartRowInput(formattedSelectedFile["Start Row"]);
@@ -1046,7 +1046,7 @@ console.log(allCoordinates)
       console.log(index);
       // Get the matched object
       const data = index !== -1 ? parameters[index] : null;
-
+      console.log(">>>>>",data);
       setCoordinateIndex(index);
 
       setModalUpdate(true);
