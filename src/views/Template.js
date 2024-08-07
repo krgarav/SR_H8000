@@ -168,7 +168,7 @@ const Template = () => {
       console.error('Error deleting image:', error); // Debugging: Log any error
       throw error;
     }
-  };
+  };  
 
   const deleteHandler = async (arr, index) => {
     const result = window.confirm("Are you sure you want to delete template ?");

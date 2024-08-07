@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import classes from "./Imageswitch.module.css";
 
 const Imageswitch = (props) => {
     const [checked, setChecked] = useState(false);
     // console.log(checked);
     props.onChange(checked)
+   
     return (
         <label className={classes.switch}>
             <input type="checkbox" onChange={() => { setChecked(prev => !prev) }} />

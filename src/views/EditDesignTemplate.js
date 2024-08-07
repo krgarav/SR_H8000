@@ -31,6 +31,7 @@ import { toast } from "react-toastify";
 import isEqual from "lodash/isEqual";
 import { sendFile } from "helper/TemplateHelper";
 import { fetchAllTemplate } from "helper/TemplateHelper";
+import EditTemplateModal from "ui/EditTemplateModal";
 
 // Function to get values from sessionStorage or provide default
 const getSessionStorageOrDefault = (key, defaultValue) => {
@@ -82,23 +83,6 @@ const EditDesignTemplate = () => {
     });
     const [loading, setLoading] = useState(false);
     const dataCtx = useContext(DataContext);
-    // const {
-    //     totalColumns,
-    //     timingMarks,
-    //     templateImagePath,
-    //     bubbleType,
-    //     templateIndex,
-    //     iSensitivity,
-    //     iDifference,
-    //     iReject,
-    //     iFace,
-    //     arr,
-    //     templateId,
-    //     excelJsonFile,
-    //     imageTempFile,
-    //     excelFile,
-    // } = useLocation().state;
-    // const [timingMarks, setTimingMarks] =useState(1);
     const [selectedCol, setSelectedCol] = useState([]);
     const [options, setOptions] = useState([]);
     const [idNumber, setIdNumber] = useState("0000000000000000000000000000");
@@ -118,44 +102,10 @@ const EditDesignTemplate = () => {
     const [selectionIndex, setSelectionIndex] = useState();
     const [idSelectionCount, setIdSelectionCount] = useState(0);
     const [dataLoaded, setDataLoaded] = useState(false);
-
+    const [detailPage, setDetailPage] = useState(false);
     const location = useLocation();
     const state = location.state || {};
-    // Initialize state with values from sessionStorage or location.state
-    // const [data, setData] = useState(() => ({
-    //     totalColumns: getSessionStorageOrDefault(
-    //         "totalColumns",
-    //         state.totalColumns
-    //     ),
-    //     timingMarks: getSessionStorageOrDefault("timingMarks", state.timingMarks),
-    //     templateImagePath: getSessionStorageOrDefault(
-    //         "templateImagePath",
-    //         state.templateImagePath
-    //     ),
-    //     bubbleType: getSessionStorageOrDefault("bubbleType", state.bubbleType),
-    //     templateIndex: getSessionStorageOrDefault(
-    //         "templateIndex",
-    //         state.templateIndex
-    //     ),
-    //     iSensitivity: getSessionStorageOrDefault(
-    //         "iSensitivity",
-    //         state.iSensitivity
-    //     ),
-    //     iDifference: getSessionStorageOrDefault("iDifference", state.iDifference),
-    //     iReject: getSessionStorageOrDefault("iReject", state.iReject),
-    //     iFace: getSessionStorageOrDefault("iFace", state.iFace),
-    //     arr: getSessionStorageOrDefault("arr", state.arr),
-    //     templateId: getSessionStorageOrDefault("templateId", state.templateId),
-    //     excelJsonFile: getSessionStorageOrDefault(
-    //         "excelJsonFile",
-    //         state.excelJsonFile
-    //     ),
-    //     imageTempFile: getSessionStorageOrDefault(
-    //         "imageTempFile",
-    //         state.imageTempFile
-    //     ),
-    //     excelFile: getSessionStorageOrDefault("excelFile", state.excelFile),
-    // }));
+
 
     const rndRef = useRef();
     const navigate = useNavigate();
@@ -282,70 +232,11 @@ const EditDesignTemplate = () => {
         setStartColInput(selection?.startCol);
         setEndColInput(selection?.endCol);
     }, [selection]);
-    useEffect(() => {
-        const gridDiv = document.getElementById("grid-div");
-        const imgDiv = document.getElementById("imagecontainer");
 
-        if (gridDiv && imgDiv) {
-            const gridHeight = gridDiv.clientHeight;
-            const gridWidth = gridDiv.clientWidth;
 
-            imgDiv.style.height = `${gridHeight + 250}px`;
-            imgDiv.style.width = `${gridWidth + 130}px`; // Adding 50 pixels to the width
-            setPosition({
-                x: 0,
-                y: 0,
-                width: `${gridWidth}px`,
-                height: `${gridHeight}px`,
-            });
-        }
-    }, []);
-    // useEffect(() => {
-    //     if (arr) {
-    //         // Extract parameters from the first element of the array (if it exists)
-    //         const formFieldData = arr[0]?.formFieldWindowParameters;
-    //         const questionField = arr[0]?.questionsWindowParameters;
-    //         const skewField = arr[0]?.skewMarksWindowParameters;
-    //         const idField = arr[0]?.layoutParameters;
-
-    //         // Map each set of parameters to their coordinates or default to an empty array
-    //         const coordinateOfFormData =
-    //             formFieldData?.map((item) => item.Coordinate) ?? [];
-    //         const coordinateOfQuestionField =
-    //             questionField?.map((item) => item.Coordinate) ?? [];
-    //         const coordinateOfSkewField =
-    //             skewField?.map((item) => item.Coordinate) ?? [];
-    //         const coordinateOfIdField = idField?.Coordinate ?? [];
-
-    //         // Combine all coordinates into a single array
-    //         const allCoordinates = [
-    //             ...coordinateOfFormData,
-    //             ...coordinateOfQuestionField,
-    //             ...coordinateOfSkewField,
-    //             coordinateOfIdField,
-    //         ];
-    //         console.log(allCoordinates)
-    //         // Map each coordinate to a new format
-    //         const newSelectedFields = allCoordinates?.map((item) => {
-    //             const {
-    //                 "Start Row": startRow,
-    //                 "Start Col": startCol,
-    //                 "End Row": endRow,
-    //                 "End Col": endCol,
-    //                 name,
-    //             } = item;
-    //             return { startRow, startCol, endRow, endCol, name };
-    //         });
-
-    //         // Update the state with the new coordinates and image structure data
-    //         setSelectedCoordinates(newSelectedFields);
-    //         setPosition(idField?.imageStructureData);
-    //     }
-    // }, []); 
 
 
     useEffect(() => {
-        console.log(divRef.current)
         const checkSize = () => {
             if (divRef.current) {
                 const { offsetWidth } = divRef.current;
@@ -1354,6 +1245,16 @@ const EditDesignTemplate = () => {
             <div>
                 <SmallHeader />
             </div>
+
+            <div style={{
+                position: "fixed",
+                top: "50%", // Center vertically
+                transform: "translateY(-50%) rotate(90deg)", // Center vertically and rotate
+                zIndex: "999",
+            }}>
+                <Button onClick={() => { setDetailPage(true) }} >open</Button>
+            </div>
+
             {!modalShow && selection && (
                 <Button
                     onClick={() => {
@@ -2299,6 +2200,7 @@ const EditDesignTemplate = () => {
                     </div>
                 </Modal.Footer>
             </Modal>
+            <EditTemplateModal show={detailPage} templateId={data.templateId} layoutData={layoutFieldData} onHide={() => setDetailPage(false)} />
         </>
     );
 };

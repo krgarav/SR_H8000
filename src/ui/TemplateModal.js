@@ -238,8 +238,8 @@ const TemplateModal = (props) => {
 
           setExcelFile(file);
           console.log(json)
-          const Row = json.length-1;
-          const Column = Object.keys(json[1]).length-1;
+          const Row = json.length - 1;
+          const Column = Object.keys(json[1]).length - 1;
           console.log(Object.values(json[1]))
           setNumberOfLines(Row);
           setNumberOfFrontSideColumn(Column)
@@ -402,7 +402,7 @@ const TemplateModal = (props) => {
             iDifference: +difference,
             ngAction: windowNgOption?.id,
             dataReadDirection: direction?.id,
-            iReject: +reject?.name,
+            iReject: 1,
             idMarksPattern: "000000000000000000000000",
             excelJsonFile: excelJsonFile,
           },
@@ -423,8 +423,8 @@ const TemplateModal = (props) => {
             imageType: encoding ? +encoding?.id : 0,
             imageParam: 0,
             imageRotation: rotation ? +rotation?.id : 0,
-            imageResoMode: 0,
-            imageResolution: resolution ? +resolution?.id : 0,
+            imageResoMode: 1,
+            imageResolution: resolution ? +resolution?.id : 1,
           },
           printingData: {
             printEnable: +printEnable?.id ?? 0,
@@ -441,24 +441,10 @@ const TemplateModal = (props) => {
       ];
       console.log(templateData);
       localStorage.setItem("Template", JSON.stringify(templateData));
-      // const index = dataCtx.setAllTemplates(templateData);
+      const index = dataCtx.setAllTemplates(templateData);
       setModalShow(false);
       navigate("/admin/design-template", {
-        // state: {
-        //   templateIndex: index,
-        //   timingMarks: numberOfLines,
-        //   totalColumns: numberOfFrontSideColumn,
-        //   templateImagePath: imageSrc,
-        //   bubbleType: selectedBubble.name,
-        //   iSensitivity: sensitivity,
-        //   iDifference: difference,
-        //   barcodeCount: barCount,
-        //   iReject: reject.id,
-        //   iFace: face.id,
-        //   excelJsonFile: excelJsonFile,
-        //   imageTempFile: imageTempFile,
-        //   excelFile: excelFile,
-        // },
+
       });
     } catch (error) {
       console.error("Error uploading file: ", error);
@@ -472,8 +458,8 @@ const TemplateModal = (props) => {
       const jsonData = response?.data;
       const base64ImageUrl = response?.image;
       console.log(jsonData);
-      const Row = jsonData.length-1;
-      const Column = Object.keys(jsonData[1]).length-1;
+      const Row = jsonData.length - 1;
+      const Column = Object.keys(jsonData[1]).length - 1;
       console.log(Object.values(jsonData[1]))
       setNumberOfLines(Row);
       setNumberOfFrontSideColumn(Column)

@@ -51,6 +51,12 @@ const JobModal = (props) => {
         return uuidv4();
     };
     const changeHandler = (val) => {
+        console.log(val)
+        if (!selectedDataDirectory && val === true) {
+            toast.error("Please select data directory first");
+            setImageEnable(false)
+            return;
+        }
         setImageEnable(val)
     }
     useEffect(() => {
@@ -283,7 +289,7 @@ const JobModal = (props) => {
                             IMAGE
                         </label>
                         <div className="col-md-9">
-                            <Imageswitch onChange={(val) => changeHandler(val)} />
+                            <Imageswitch value={imageEnable} onChange={(val) => changeHandler(val)} />
                             {/* <Select
                                 value={colorType}
                                 onChange={(selectedValue) =>
