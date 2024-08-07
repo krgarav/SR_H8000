@@ -40,6 +40,7 @@ import base64ToFile from "services/Base64toFile";
 import RegionSelector from "ui/RangeSelector";
 import ImageRegionSelector from "ui/RangeSelector";
 import Cropper from "ui/RangeSelector";
+import EditTemplateModal from "ui/EditTemplateModal";
 
 // Function to get values from sessionStorage or provide default
 const getLocalStorageOrDefault = (key, defaultValue) => {
@@ -107,6 +108,7 @@ const DesignTemplate = () => {
     height: 400,
   });
   const [loading, setLoading] = useState(false);
+  const [detailPage, setDetailPage] = useState(false);
   const dataCtx = useContext(DataContext);
   // const {
   //   totalColumns,
@@ -200,7 +202,7 @@ const DesignTemplate = () => {
     excelJsonFile,
     imageTempFile,
     excelFile,
-    templateBackImagePath
+    templateBackImagePath,
   } = localData[0].layoutParameters;
 
   const rndRef = useRef();
@@ -380,77 +382,85 @@ const DesignTemplate = () => {
     }
   }, []); // Run only once on component mount
   // *************************For Fetching the details and setting the coordinate******************
-  useEffect(() => {
-    const fetchDetails = async () => {
-      try {
-        // Fetch layout data by template ID
-        const response = await getLayoutDataById(templateId);
-        console.log(response);
-        setLayoutFieldData(response);
-        if (response) {
-          // Extract data from the response
-          const formFieldData = response?.formFieldWindowParameters ?? [];
-          const questionField = response?.questionsWindowParameters ?? [];
-          const skewField = response?.skewMarksWindowParameters ?? [];
-          const idField = response?.layoutParameters ?? {};
+  // useEffect(() => {
+  //   const fetchDetails = async () => {
+  //     try {
+  //       // Fetch layout data by template ID
+  //       const response = await getLayoutDataById(templateId);
+  //       console.log(response);
+  //       setLayoutFieldData(response);
+  //       if (response) {
+  //         // Extract data from the response
+  //         const formFieldData = response?.formFieldWindowParameters ?? [];
+  //         const questionField = response?.questionsWindowParameters ?? [];
+  //         const skewField = response?.skewMarksWindowParameters ?? [];
+  //         const idField = response?.layoutParameters ?? {};
 
-          // Map and restructure data for coordinates
-          const coordinateOfFormData = formFieldData.map((item) => ({
-            ...item.formFieldCoordinates,
-            name: item.windowName,
-          }));
+  //         // Map and restructure data for coordinates
+  //         const coordinateOfFormData = formFieldData.map((item) => ({
+  //           ...item.formFieldCoordinates,
+  //           name: item.windowName,
+  //         }));
 
-          const coordinateOfQuestionField = questionField.map((item) => ({
-            ...item.questionWindowCoordinates,
-            name: item.windowName,
-          }));
+  //         const coordinateOfQuestionField = questionField.map((item) => ({
+  //           ...item.questionWindowCoordinates,
+  //           name: item.windowName,
+  //         }));
 
-          const coordinateOfSkewField = skewField.map((item) => ({
-            ...item.layoutWindowCoordinates,
-            name: item.windowName,
-          }));
+  //         const coordinateOfSkewField = skewField.map((item) => ({
+  //           ...item.layoutWindowCoordinates,
+  //           name: item.windowName,
+  //         }));
 
-          const coordinateOfIdField = idField.layoutCoordinates ?? [];
+  //         const coordinateOfIdField = idField.layoutCoordinates ?? [];
 
-          // Combine all coordinates into a single array
-          const allCoordinates = [
-            ...coordinateOfFormData,
-            ...coordinateOfQuestionField,
-            ...coordinateOfSkewField,
-            coordinateOfIdField,
-          ];
+  //         // Combine all coordinates into a single array
+  //         const allCoordinates = [
+  //           ...coordinateOfFormData,
+  //           ...coordinateOfQuestionField,
+  //           ...coordinateOfSkewField,
+  //           coordinateOfIdField,
+  //         ];
 
-          // Format the coordinates for the state update
-          const newSelectedFields = allCoordinates.map((item) => {
-            const {
-              start: startRow,
-              left: startCol,
-              end: endRow,
-              right: endCol,
-              name,
-            } = item;
-            return { startRow, startCol, endRow, endCol, name };
-          });
+  //         // Format the coordinates for the state update
+  //         const newSelectedFields = allCoordinates.map((item) => {
+  //           const {
+  //             start: startRow,
+  //             left: startCol,
+  //             end: endRow,
+  //             right: endCol,
+  //             name,
+  //           } = item;
+  //           return { startRow, startCol, endRow, endCol, name };
+  //         });
 
-          // Update state with the formatted coordinates and image data
-          setSelectedCoordinates(newSelectedFields);
-          setPosition(idField?.imageCoordinates);
-        }
-      } catch (error) {
-        console.error("Error fetching layout data:", error);
-      }
-    };
+  //         // Update state with the formatted coordinates and image data
+  //         setSelectedCoordinates(newSelectedFields);
+  //         setPosition(idField?.imageCoordinates);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching layout data:", error);
+  //     }
+  //   };
 
-    // Call the fetch details function
-    fetchDetails();
-  }, [templateId]);
+  //   // Call the fetch details function
+  //   fetchDetails();
+  // }, [templateId]);
   // *****************************************************************************************
+  // useEffect(() => {
+  //   if (layoutFieldData) {
+  //     dataCtx.addFieldToTemplate(layoutFieldData, templateIndex);
+  //     console.log("called");
+  //   }
+  // }, [layoutFieldData]);
   useEffect(() => {
-    if (layoutFieldData) {
-      dataCtx.addFieldToTemplate(layoutFieldData, templateIndex);
-      console.log("called");
-    }
-  }, [layoutFieldData]);
+    const template = dataCtx.allTemplates.find((item) => {
+      console.log(item);
+      return item[0].layoutParameters?.key ?? "" === templateIndex;
+    });
+    console.log(template);
+    setLayoutFieldData(template[0]);
+  }, [dataCtx.allTemplates]);
   useEffect(() => {
     switch (bubbleType) {
       case "rounded rectangle":
@@ -1278,6 +1288,7 @@ const DesignTemplate = () => {
     } catch (error) {
       alert(`Error creating template`);
       console.error("Error sending POST request:", error);
+      setLoading(false);
     }
   };
   const handleImage = (images) => {
@@ -1356,36 +1367,24 @@ const DesignTemplate = () => {
         >
           {!loading ? "Save" : "Saving"}
         </Button>
+
+        <div
+          style={{
+            position: "fixed",
+            top: "50%", // Center vertically
+            transform: "translateY(-50%) rotate(90deg)", // Center vertically and rotate
+            zIndex: "999",
+          }}
+        >
+          <Button
+            onClick={() => {
+              setDetailPage(true);
+            }}
+          >
+            open
+          </Button>
+        </div>
         <div className="containers">
-          {/* <div id="imagecontainer" className={classes.img}>
-            <Rnd
-              default={{
-                x: 0,
-                y: 0,
-                width: 400,
-                height: 400,
-              }}
-              minWidth={100}
-              minHeight={100}
-              position={{ x: position?.x, y: position?.y }}
-              size={{ width: position?.width, height: position?.height }}
-              onDragStop={handleDragStop}
-              onResizeStop={handleResizeStop}
-              //   bounds={null}
-              style={
-                {
-                  // border: "1px solid #ddd",
-                }
-              }
-            >
-              <img
-                src={templateImagePath}
-                className={`${classes["object-contain"]} ${classes["draggable-resizable-image"]} rounded`}
-                alt="omr sheet"
-                id="omr-style-sheet"
-              />
-            </Rnd>
-          </div> */}
           <div className="d-flex">
             <div style={{ marginRight: "1rem" }}>
               <div className="top"></div>
@@ -2510,6 +2509,11 @@ const DesignTemplate = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+      <EditTemplateModal
+        show={detailPage}
+        layoutData={layoutFieldData}
+        onHide={() => setDetailPage(false)}
+      />
     </>
   );
 };
