@@ -7,9 +7,10 @@ import {
 } from "@syncfusion/ej2-react-filemanager";
 import { FileOpenEventArgs } from "@syncfusion/ej2-filemanager";
 import SmallHeader from "components/Headers/SmallHeader";
-
+import { MAIN_URL } from 'helper/url_helper';
 const FolderPickerDirectory = () => {
-  const hostUrl = "https://ej2-aspcore-service.azurewebsites.net/";
+  const hostUrl = MAIN_URL;
+
   const [selectedDirectory, setSelectedDirectory] = useState("");
 
   const handleFileSelect = (args: FileOpenEventArgs) => {

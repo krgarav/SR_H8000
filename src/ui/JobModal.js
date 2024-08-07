@@ -28,6 +28,7 @@ import { fileType, imageTypeData, imageColorTypeData, imageDPIData } from "data/
 import { jwtDecode } from 'jwt-decode';
 import { v4 as uuidv4 } from 'uuid';
 import { createJob } from 'helper/job_helper';
+import DirectoryPicker from 'views/DirectoryPicker';
 
 const JobModal = (props) => {
     const [modalShow, setModalShow] = useState(false);
@@ -43,6 +44,9 @@ const JobModal = (props) => {
     const [imageType, setImageType] = useState("");
     const [imageDpi, setImageDpi] = useState("");
     const [imageColor, setImageColor] = useState("");
+    const [selectedDataDirectory, setSelectedDataDirectory] = useState("");
+    const [selectedImageDirectory, setSelectedImageDirectory] = useState("");
+    const [directoryPickerModal, setDirectoryPickerModal] = useState(false);
     const generateUUID = () => {
         return uuidv4();
     };
@@ -88,18 +92,49 @@ const JobModal = (props) => {
     }, []);
 
     const createTemplateHandler = async () => {
+        if (!selectedTemplate) {
+            toast.error("Please select template");
+            return
+        }
+        if (!selectedDataDirectory) {
+            toast.error("Please select data directory");
+            return
+        }
+        if (!dataType) {
+            toast.error("Please select data type");
+            return
+        }
+        if (imageEnable) {
+            if (!selectedImageDirectory) {
+                toast.error("Please select image directory");
+                return
+            }
+            if (!imageType) {
+                toast.error("Please select image type");
+                return
+            }
+            if (!imageDpi) {
+                toast.error("Please select dpi");
+                return
+            }
+            if (!imageColor) {
+                toast.error("Please select image color");
+                return
+            }
+        }
+
         const jobObj = {
             "assignUser": "",
-            "templateId": selectedTemplate.id,
-            "dataPath": dataPath,
+            "templateId": selectedTemplate?.id,
+            "dataPath": selectedDataDirectory,
             "dataType": dataType.id,
-            "imagePath": imagePath,
+            "imagePath": selectedImageDirectory,
             "imageType": imageType.id,
-            "imageColor": imageColor,
+            "imageColor": imageColor.id,
             "jobStatus": "pending",
             "entryAt": new Date().toISOString(),
         }
-
+        console.log(jobObj)
         const response = await createJob(jobObj);
         if (response?.success) {
             // alert(response.message)
@@ -118,6 +153,19 @@ const JobModal = (props) => {
         // For demonstration, log file names
         files.forEach(file => console.log('Selected File:', file.name));
     };
+
+    const directoryChangeHandler = (directory) => {
+        // console.log(directory)
+        // let directory = "/data/music";
+        directory = directory.substring(1);
+        console.log(directory)
+        if (imageEnable) {
+            setSelectedImageDirectory(directory);
+            return;
+        }
+        setSelectedDataDirectory(directory)
+
+    }
 
     return (
         <>
@@ -139,12 +187,12 @@ const JobModal = (props) => {
                     <Row className="mb-3">
                         <label
                             htmlFor="example-text-input"
-                            className="col-md-3 "
+                            className="col-md-2 "
                             style={{ fontSize: ".9rem" }}
                         >
                             Select Template:
                         </label>
-                        <div className="col-md-9">
+                        <div className="col-md-10">
                             <Select
                                 value={selectedTemplate}
                                 onChange={(selectedValue) =>
@@ -188,15 +236,22 @@ const JobModal = (props) => {
                     <Row className="mb-3">
                         <label
                             htmlFor="example-text-input"
-                            className="col-md-3  col-form-label"
+                            className="col-md-2  col-form-label"
                             style={{ fontSize: ".9rem" }}
                         >
                             Data Path:
                         </label>
-                        <div className="col-md-3">
-                            <input type='text' value={dataPath} className="form-control" placeholder='Enter the data path' onChange={(e) => setDataPath(e.target.value)} />
+                        {selectedDataDirectory &&
+                            <div className="col-md-7">
+                                <input type='text' disabled value={selectedDataDirectory} className="form-control" placeholder='Enter the data path' onChange={(e) => setDataPath(e.target.value)} />
 
+                            </div>}
+                        <div className={selectedDataDirectory ? "col-md-3" : "col-md-4"}>
+                            <Button variant='info' onClick={() => { setDirectoryPickerModal(true) }}>Select Directory</Button>
                         </div>
+
+                    </Row>
+                    <Row className='mb-2'>
                         <label
                             htmlFor="example-text-input"
                             className="col-md-2  col-form-label"
@@ -204,7 +259,7 @@ const JobModal = (props) => {
                         >
                             Data Type:
                         </label>
-                        <div className="col-md-4">
+                        <div className="col-md-10">
                             <Select
                                 value={dataType}
                                 onChange={(selectedValue) =>
@@ -245,85 +300,145 @@ const JobModal = (props) => {
                         </div>
                     </Row>
 
-                    {imageEnable && <Row className="mb-3">
-                        <label
-                            htmlFor="example-text-input"
-                            className="col-md-3  col-form-label"
-                            style={{ fontSize: ".9rem" }}
-                        >
-                            Image Path:
-                        </label>
+                    {imageEnable && <>
 
-                        <div className="col-md-3">
-                            <input type='text' className="form-control" value={imagePath} placeholder='Enter the data path' onChange={(e) => { setImagePath(e.target.value) }} />
-                        </div>
-                        <label
-                            htmlFor="example-text-input"
-                            className="col-md-2  col-form-label"
-                            style={{ fontSize: ".9rem" }}
-                        >
-                            Image Type:
-                        </label>
-                        <div className="col-md-4">
-                            <Select
-                                value={imageType}
-                                onChange={(selectedValue) =>
-                                    setImageType(selectedValue)
-                                }
-                                options={imageTypeData}
-                                getOptionLabel={(option) => option?.name || ""}
-                                getOptionValue={(option) =>
-                                    option?.id?.toString() || ""
-                                }
-                                placeholder="Select image type..."
-                            />
-                        </div>
-                    </Row>}
-                    {imageEnable && <Row className="mb-3">
-                        <label
-                            htmlFor="example-text-input"
-                            className="col-md-3  col-form-label"
-                            style={{ fontSize: ".9rem" }}
-                        >
-                            Image DPI:
-                        </label>
 
-                        <div className="col-md-3">
-                            <Select
-                                value={imageDpi}
-                                onChange={(selectedValue) =>
-                                    setImageDpi(selectedValue)
-                                }
-                                options={imageDPIData}
-                                getOptionLabel={(option) => option?.name || ""}
-                                getOptionValue={(option) =>
-                                    option?.id?.toString() || ""
-                                }
-                                placeholder="Select dpi..."
-                            />
-                        </div>
-                        <label
-                            htmlFor="example-text-input"
-                            className="col-md-2  col-form-label"
-                            style={{ fontSize: ".9rem" }}
-                        >
-                            Image Color:
-                        </label>
-                        <div className="col-md-4">
-                            <Select
-                                value={selectedOperator}
-                                onChange={(selectedValue) =>
-                                    setSelectedOperator(selectedValue)
-                                }
-                                options={imageColorTypeData}
-                                getOptionLabel={(option) => option?.name || ""}
-                                getOptionValue={(option) =>
-                                    option?.id?.toString() || ""
-                                }
-                                placeholder="Select file type..."
-                            />
-                        </div>
-                    </Row>}
+                        <Row className="mb-3">
+                            <label
+                                htmlFor="example-text-input"
+                                className="col-md-2  col-form-label"
+                                style={{ fontSize: ".9rem" }}
+                            >
+                                Image Path:
+                            </label>
+                            {selectedImageDirectory &&
+                                <div className="col-md-7">
+                                    <input type='text' disabled value={selectedImageDirectory} className="form-control" placeholder='Enter the data path' onChange={(e) => setDataPath(e.target.value)} />
+
+                                </div>}
+                            <div className={selectedImageDirectory ? "col-md-3" : "col-md-4"}>
+                                <Button variant='info' onClick={() => { setDirectoryPickerModal(true) }}>Select Directory</Button>
+                            </div>
+
+                        </Row>
+
+
+
+                        <Row className="mb-3">
+                            <label
+                                htmlFor="example-text-input"
+                                className="col-md-2  col-form-label"
+                                style={{ fontSize: ".9rem" }}
+                            >
+                                Image Type:
+                            </label>
+                            <div className="col-md-3">
+                                <Select
+                                    value={imageType}
+                                    onChange={(selectedValue) =>
+                                        setImageType(selectedValue)
+                                    }
+                                    options={imageTypeData}
+                                    getOptionLabel={(option) => option?.name || ""}
+                                    getOptionValue={(option) =>
+                                        option?.id?.toString() || ""
+                                    }
+                                    placeholder="image type.."
+                                />
+                            </div>
+
+                            <label
+                                htmlFor="example-text-input"
+                                className="col-md-1  col-form-label"
+                                style={{ fontSize: ".9rem" }}
+                            >
+                                DPI:
+                            </label>
+
+                            <div className="col-md-2">
+                                <Select
+                                    value={imageDpi}
+                                    onChange={(selectedValue) =>
+                                        setImageDpi(selectedValue)
+                                    }
+                                    options={imageDPIData}
+                                    getOptionLabel={(option) => option?.name || ""}
+                                    getOptionValue={(option) =>
+                                        option?.id?.toString() || ""
+                                    }
+                                    placeholder="Dpi..."
+                                />
+                            </div>
+                            <label
+                                htmlFor="example-text-input"
+                                className="col-md-1  col-form-label"
+                                style={{ fontSize: ".9rem" }}
+                            >
+                                Color:
+                            </label>
+                            <div className="col-md-3">
+                                <Select
+                                    value={imageColor}
+                                    onChange={(selectedValue) =>
+                                        setImageColor(selectedValue)
+                                    }
+                                    options={imageColorTypeData}
+                                    getOptionLabel={(option) => option?.name || ""}
+                                    getOptionValue={(option) =>
+                                        option?.id?.toString() || ""
+                                    }
+                                    placeholder="Color type..."
+                                />
+                            </div>
+
+                        </Row>
+                    </>
+                    }
+                    {/* {imageEnable && <Row className="mb-3">
+                            <label
+                                htmlFor="example-text-input"
+                                className="col-md-3  col-form-label"
+                                style={{ fontSize: ".9rem" }}
+                            >
+                                Image DPI:
+                            </label>
+
+                            <div className="col-md-3">
+                                <Select
+                                    value={imageDpi}
+                                    onChange={(selectedValue) =>
+                                        setImageDpi(selectedValue)
+                                    }
+                                    options={imageDPIData}
+                                    getOptionLabel={(option) => option?.name || ""}
+                                    getOptionValue={(option) =>
+                                        option?.id?.toString() || ""
+                                    }
+                                    placeholder="Select dpi..."
+                                />
+                            </div>
+                            <label
+                                htmlFor="example-text-input"
+                                className="col-md-2  col-form-label"
+                                style={{ fontSize: ".9rem" }}
+                            >
+                                Image Color:
+                            </label>
+                            <div className="col-md-4">
+                                <Select
+                                    value={selectedOperator}
+                                    onChange={(selectedValue) =>
+                                        setSelectedOperator(selectedValue)
+                                    }
+                                    options={imageColorTypeData}
+                                    getOptionLabel={(option) => option?.name || ""}
+                                    getOptionValue={(option) =>
+                                        option?.id?.toString() || ""
+                                    }
+                                    placeholder="Select file type..."
+                                />
+                            </div>
+                        </Row>} */}
 
                 </Modal.Body>
                 <Modal.Footer>
@@ -348,6 +463,41 @@ const JobModal = (props) => {
 
                         Add Job
                     </Button>
+                </Modal.Footer>
+            </Modal >
+
+            <Modal
+                show={directoryPickerModal}
+                // onHide={props.onHide}
+                size="lg"
+                aria-labelledby="modal-custom-navbar"
+                centered
+                dialogClassName="modal-90w"
+                backdrop="static"
+                keyboard={false}
+            >
+                <Modal.Header>
+                    <Modal.Title id="modal-custom-navbar">Select Directory</Modal.Title>
+                </Modal.Header>
+
+                <Modal.Body style={{ height: '65dvh' }}>
+
+                    <DirectoryPicker handleChange={directoryChangeHandler} />
+
+                </Modal.Body>
+                <Modal.Footer>
+
+                    <Button variant="secondary" onClick={() => { setDirectoryPickerModal(false) }}>
+                        Close
+                    </Button>
+                    {selectedDataDirectory &&
+                        <Button
+                            variant="success"
+                            onClick={() => { setDirectoryPickerModal(false) }}
+                        >
+
+                            Save Selected Directory
+                        </Button>}
                 </Modal.Footer>
             </Modal >
 

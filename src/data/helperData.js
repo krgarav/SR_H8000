@@ -166,7 +166,7 @@ export const fileType = [
     { id: "TXT", name: "TXT" },
     { id: "SQL", name: "SQL" },
     { id: "MOB", name: "MOB" },
-    { id: "MOB", name: "ODBC" },
+    { id: "ODBC", name: "ODBC" },
 ];
 export const imageTypeData = [
     { id: "JPG", name: "JPG" },
