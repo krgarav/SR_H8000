@@ -40,6 +40,7 @@ import base64ToFile from "services/Base64toFile";
 import RegionSelector from "ui/RangeSelector";
 import ImageRegionSelector from "ui/RangeSelector";
 import Cropper from "ui/RangeSelector";
+import EditTemplateModal from "ui/EditTemplateModal";
 
 // Function to get values from sessionStorage or provide default
 const getLocalStorageOrDefault = (key, defaultValue) => {
@@ -107,6 +108,7 @@ const DesignTemplate = () => {
     height: 400,
   });
   const [loading, setLoading] = useState(false);
+  const [detailPage, setDetailPage] = useState(false);
   const dataCtx = useContext(DataContext);
   // const {
   //   totalColumns,
@@ -200,6 +202,7 @@ const DesignTemplate = () => {
     excelJsonFile,
     imageTempFile,
     excelFile,
+    templateBackImagePath,
   } = localData[0].layoutParameters;
 
   const rndRef = useRef();
@@ -379,77 +382,85 @@ const DesignTemplate = () => {
     }
   }, []); // Run only once on component mount
   // *************************For Fetching the details and setting the coordinate******************
-  useEffect(() => {
-    const fetchDetails = async () => {
-      try {
-        // Fetch layout data by template ID
-        const response = await getLayoutDataById(templateId);
-        console.log(response);
-        setLayoutFieldData(response);
-        if (response) {
-          // Extract data from the response
-          const formFieldData = response?.formFieldWindowParameters ?? [];
-          const questionField = response?.questionsWindowParameters ?? [];
-          const skewField = response?.skewMarksWindowParameters ?? [];
-          const idField = response?.layoutParameters ?? {};
+  // useEffect(() => {
+  //   const fetchDetails = async () => {
+  //     try {
+  //       // Fetch layout data by template ID
+  //       const response = await getLayoutDataById(templateId);
+  //       console.log(response);
+  //       setLayoutFieldData(response);
+  //       if (response) {
+  //         // Extract data from the response
+  //         const formFieldData = response?.formFieldWindowParameters ?? [];
+  //         const questionField = response?.questionsWindowParameters ?? [];
+  //         const skewField = response?.skewMarksWindowParameters ?? [];
+  //         const idField = response?.layoutParameters ?? {};
 
-          // Map and restructure data for coordinates
-          const coordinateOfFormData = formFieldData.map((item) => ({
-            ...item.formFieldCoordinates,
-            name: item.windowName,
-          }));
+  //         // Map and restructure data for coordinates
+  //         const coordinateOfFormData = formFieldData.map((item) => ({
+  //           ...item.formFieldCoordinates,
+  //           name: item.windowName,
+  //         }));
 
-          const coordinateOfQuestionField = questionField.map((item) => ({
-            ...item.questionWindowCoordinates,
-            name: item.windowName,
-          }));
+  //         const coordinateOfQuestionField = questionField.map((item) => ({
+  //           ...item.questionWindowCoordinates,
+  //           name: item.windowName,
+  //         }));
 
-          const coordinateOfSkewField = skewField.map((item) => ({
-            ...item.layoutWindowCoordinates,
-            name: item.windowName,
-          }));
+  //         const coordinateOfSkewField = skewField.map((item) => ({
+  //           ...item.layoutWindowCoordinates,
+  //           name: item.windowName,
+  //         }));
 
-          const coordinateOfIdField = idField.layoutCoordinates ?? [];
+  //         const coordinateOfIdField = idField.layoutCoordinates ?? [];
 
-          // Combine all coordinates into a single array
-          const allCoordinates = [
-            ...coordinateOfFormData,
-            ...coordinateOfQuestionField,
-            ...coordinateOfSkewField,
-            coordinateOfIdField,
-          ];
+  //         // Combine all coordinates into a single array
+  //         const allCoordinates = [
+  //           ...coordinateOfFormData,
+  //           ...coordinateOfQuestionField,
+  //           ...coordinateOfSkewField,
+  //           coordinateOfIdField,
+  //         ];
 
-          // Format the coordinates for the state update
-          const newSelectedFields = allCoordinates.map((item) => {
-            const {
-              start: startRow,
-              left: startCol,
-              end: endRow,
-              right: endCol,
-              name,
-            } = item;
-            return { startRow, startCol, endRow, endCol, name };
-          });
+  //         // Format the coordinates for the state update
+  //         const newSelectedFields = allCoordinates.map((item) => {
+  //           const {
+  //             start: startRow,
+  //             left: startCol,
+  //             end: endRow,
+  //             right: endCol,
+  //             name,
+  //           } = item;
+  //           return { startRow, startCol, endRow, endCol, name };
+  //         });
 
-          // Update state with the formatted coordinates and image data
-          setSelectedCoordinates(newSelectedFields);
-          setPosition(idField?.imageCoordinates);
-        }
-      } catch (error) {
-        console.error("Error fetching layout data:", error);
-      }
-    };
+  //         // Update state with the formatted coordinates and image data
+  //         setSelectedCoordinates(newSelectedFields);
+  //         setPosition(idField?.imageCoordinates);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching layout data:", error);
+  //     }
+  //   };
 
-    // Call the fetch details function
-    fetchDetails();
-  }, [templateId]);
+  //   // Call the fetch details function
+  //   fetchDetails();
+  // }, [templateId]);
   // *****************************************************************************************
+  // useEffect(() => {
+  //   if (layoutFieldData) {
+  //     dataCtx.addFieldToTemplate(layoutFieldData, templateIndex);
+  //     console.log("called");
+  //   }
+  // }, [layoutFieldData]);
   useEffect(() => {
-    if (layoutFieldData) {
-      dataCtx.addFieldToTemplate(layoutFieldData, templateIndex);
-      console.log("called");
-    }
-  }, [layoutFieldData]);
+    const template = dataCtx.allTemplates.find((item) => {
+      console.log(item);
+      return item[0].layoutParameters?.key ?? "" === templateIndex;
+    });
+    console.log(template);
+    setLayoutFieldData(template[0]);
+  }, [dataCtx.allTemplates]);
   useEffect(() => {
     switch (bubbleType) {
       case "rounded rectangle":
@@ -985,7 +996,7 @@ const DesignTemplate = () => {
       setMaximumMark(data?.maximumMark);
       // setNoInRow(data?.totalNoInRow);
       // setNoInCol(data?.totalNoInColumn);
-      setReadingDirectionOption(data?.iDirection)
+      setReadingDirectionOption(data?.iDirection);
       setNoInRow(data?.rowNumber);
       setNoInCol(data?.columnNumber);
       setStartRowInput(formattedSelectedFile["Start Row"]);
@@ -1129,12 +1140,12 @@ const DesignTemplate = () => {
     const layoutParameters = template[0].layoutParameters;
     const idpatttern = "000000000000000000000000";
     if (layoutParameters.idMarksPattern === idpatttern) {
-      layoutParameters.columnNumber = 1
-      layoutParameters.columnStart = 1
-      layoutParameters.columnStep = 1
-      layoutParameters.rowNumber = 1
-      layoutParameters.rowStart = 1
-      layoutParameters.rowStep = 1
+      layoutParameters.columnNumber = 1;
+      layoutParameters.columnStart = 1;
+      layoutParameters.columnStep = 1;
+      layoutParameters.rowNumber = 1;
+      layoutParameters.rowStart = 1;
+      layoutParameters.rowStep = 1;
     }
 
     const Coordinate = layoutParameters.Coordinate;
@@ -1183,13 +1194,13 @@ const DesignTemplate = () => {
         const { Coordinate, ...rest } = item;
         const questionWindowCoordinates = Coordinate
           ? {
-            right: Coordinate["End Col"],
-            end: Coordinate["End Row"],
-            left: Coordinate["Start Col"],
-            start: Coordinate["Start Row"],
-            name: Coordinate["name"],
-            fieldType: Coordinate["fieldType"],
-          }
+              right: Coordinate["End Col"],
+              end: Coordinate["End Row"],
+              left: Coordinate["Start Col"],
+              start: Coordinate["Start Row"],
+              name: Coordinate["name"],
+              fieldType: Coordinate["fieldType"],
+            }
           : {};
         return { ...rest, questionWindowCoordinates };
       });
@@ -1200,13 +1211,13 @@ const DesignTemplate = () => {
         const { Coordinate, ...rest } = item;
         const layoutWindowCoordinates = Coordinate
           ? {
-            right: Coordinate["End Col"],
-            end: Coordinate["End Row"],
-            left: Coordinate["Start Col"],
-            start: Coordinate["Start Row"],
-            name: Coordinate["name"],
-            fieldType: Coordinate["fieldType"],
-          }
+              right: Coordinate["End Col"],
+              end: Coordinate["End Row"],
+              left: Coordinate["Start Col"],
+              start: Coordinate["Start Row"],
+              name: Coordinate["name"],
+              fieldType: Coordinate["fieldType"],
+            }
           : {};
         return { ...rest, layoutWindowCoordinates };
       });
@@ -1217,13 +1228,13 @@ const DesignTemplate = () => {
         const { Coordinate, ...rest } = item;
         const formFieldCoordinates = Coordinate
           ? {
-            right: Coordinate["End Col"],
-            end: Coordinate["End Row"],
-            left: Coordinate["Start Col"],
-            start: Coordinate["Start Row"],
-            name: Coordinate["name"],
-            fieldType: Coordinate["fieldType"],
-          }
+              right: Coordinate["End Col"],
+              end: Coordinate["End Row"],
+              left: Coordinate["Start Col"],
+              start: Coordinate["Start Row"],
+              name: Coordinate["name"],
+              fieldType: Coordinate["fieldType"],
+            }
           : {};
         return { ...rest, formFieldCoordinates };
       });
@@ -1277,6 +1288,7 @@ const DesignTemplate = () => {
     } catch (error) {
       alert(`Error creating template`);
       console.error("Error sending POST request:", error);
+      setLoading(false);
     }
   };
   const handleImage = (images) => {
@@ -1355,36 +1367,24 @@ const DesignTemplate = () => {
         >
           {!loading ? "Save" : "Saving"}
         </Button>
+
+        <div
+          style={{
+            position: "fixed",
+            top: "50%", // Center vertically
+            transform: "translateY(-50%) rotate(90deg)", // Center vertically and rotate
+            zIndex: "999",
+          }}
+        >
+          <Button
+            onClick={() => {
+              setDetailPage(true);
+            }}
+          >
+            open
+          </Button>
+        </div>
         <div className="containers">
-          {/* <div id="imagecontainer" className={classes.img}>
-            <Rnd
-              default={{
-                x: 0,
-                y: 0,
-                width: 400,
-                height: 400,
-              }}
-              minWidth={100}
-              minHeight={100}
-              position={{ x: position?.x, y: position?.y }}
-              size={{ width: position?.width, height: position?.height }}
-              onDragStop={handleDragStop}
-              onResizeStop={handleResizeStop}
-              //   bounds={null}
-              style={
-                {
-                  // border: "1px solid #ddd",
-                }
-              }
-            >
-              <img
-                src={templateImagePath}
-                className={`${classes["object-contain"]} ${classes["draggable-resizable-image"]} rounded`}
-                alt="omr sheet"
-                id="omr-style-sheet"
-              />
-            </Rnd>
-          </div> */}
           <div className="d-flex">
             <div style={{ marginRight: "1rem" }}>
               <div className="top"></div>
@@ -1433,9 +1433,9 @@ const DesignTemplate = () => {
                             style={{
                               backgroundColor:
                                 rowIndex < result.length &&
-                                  colIndex < result[rowIndex].length &&
-                                  result[rowIndex][colIndex] != 0 &&
-                                  result[rowIndex][colIndex] !== undefined
+                                colIndex < result[rowIndex].length &&
+                                result[rowIndex][colIndex] != 0 &&
+                                result[rowIndex][colIndex] !== undefined
                                   ? "black"
                                   : "",
                             }}
@@ -1443,10 +1443,11 @@ const DesignTemplate = () => {
                             //     backgroundColor:
                             //         result[rowIndex][colIndex] != 0 ? "black" : "",
                             // }}
-                            className={`${bubbleType} ${selected[`${rowIndex},${colIndex}`]
-                              ? "selected"
-                              : ""
-                              }`}
+                            className={`${bubbleType} ${
+                              selected[`${rowIndex},${colIndex}`]
+                                ? "selected"
+                                : ""
+                            }`}
                           ></div>
                         ))}
                       </div>
@@ -1460,24 +1461,28 @@ const DesignTemplate = () => {
                       style={{
                         border: "3px solid #007bff",
                         position: "absolute",
-                        left: `${data.startCol *
-                          (imageRef.current.getBoundingClientRect().width /
-                            numCols) -
+                        left: `${
+                          data.startCol *
+                            (imageRef.current.getBoundingClientRect().width /
+                              numCols) -
                           4
-                          }px`,
-                        top: `${data.startRow *
-                          (imageRef.current.getBoundingClientRect().height /
-                            numRows) -
+                        }px`,
+                        top: `${
+                          data.startRow *
+                            (imageRef.current.getBoundingClientRect().height /
+                              numRows) -
                           3
-                          }px`,
-                        width: `${(data.endCol - data.startCol + 1) *
+                        }px`,
+                        width: `${
+                          (data.endCol - data.startCol + 1) *
                           (imageRef.current.getBoundingClientRect().width /
                             numCols)
-                          }px`,
-                        height: `${(data.endRow - data.startRow + 1) *
+                        }px`,
+                        height: `${
+                          (data.endRow - data.startRow + 1) *
                           (imageRef.current.getBoundingClientRect().height /
                             numRows)
-                          }px`,
+                        }px`,
                       }}
                       onClick={(e) => e.stopPropagation()}
                     >
@@ -1519,24 +1524,28 @@ const DesignTemplate = () => {
                       style={{
                         border: "2px solid green",
                         position: "absolute",
-                        left: `${selection.startCol *
-                          (imageRef.current.getBoundingClientRect().width /
-                            numCols) -
+                        left: `${
+                          selection.startCol *
+                            (imageRef.current.getBoundingClientRect().width /
+                              numCols) -
                           4
-                          }px`,
-                        top: `${selection.startRow *
-                          (imageRef.current.getBoundingClientRect().height /
-                            numRows) -
+                        }px`,
+                        top: `${
+                          selection.startRow *
+                            (imageRef.current.getBoundingClientRect().height /
+                              numRows) -
                           3
-                          }px`,
-                        width: `${(selection.endCol - selection.startCol + 1) *
+                        }px`,
+                        width: `${
+                          (selection.endCol - selection.startCol + 1) *
                           (imageRef.current.getBoundingClientRect().width /
                             numCols)
-                          }px`,
-                        height: `${(selection.endRow - selection.startRow + 1) *
+                        }px`,
+                        height: `${
+                          (selection.endRow - selection.startRow + 1) *
                           (imageRef.current.getBoundingClientRect().height /
                             numRows)
-                          }px`,
+                        }px`,
                         content: "question field",
                       }}
                     ></div>
@@ -1880,94 +1889,95 @@ const DesignTemplate = () => {
               )}
               {(selectedFieldType === "questionField" ||
                 selectedFieldType === "formField") && (
-                  <Row className="mb-2">
-                    <label
-                      htmlFor="example-text-input"
-                      className="col-md-2 col-form-label"
+                <Row className="mb-2">
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2 col-form-label"
+                  >
+                    Multiple
+                  </label>
+                  <div
+                    className={multiple !== "allow" ? "col-md-4" : "col-md-10"}
+                  >
+                    <select
+                      className="form-control"
+                      value={multiple}
+                      onChange={(e) => {
+                        setMultiple(e.target.value);
+                      }}
+                      defaultValue={""}
                     >
-                      Multiple
-                    </label>
-                    <div
-                      className={multiple !== "allow" ? "col-md-4" : "col-md-10"}
-                    >
-                      <select
-                        className="form-control"
-                        value={multiple}
-                        onChange={(e) => {
-                          setMultiple(e.target.value);
-                        }}
-                        defaultValue={""}
-                      >
-                        <option value="">Select an option</option>
-                        <option value="allow">Allow All</option>
-                        <option value="not allow">Allow None</option>
-                      </select>
-                    </div>
-                    {multiple !== "allow" && (
-                      <>
-                        <label htmlFor="example-text-input" className="col-md-2 ">
-                          Multiple Value
-                        </label>
-                        <div className="col-md-4">
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Character of Multiple"
-                            value={multipleValue}
-                            onChange={(e) => setMultipleValue(e.target.value)}
-                            required
-                          />
-                        </div>
-                      </>
-                    )}
-                  </Row>
-                )}
+                      <option value="">Select an option</option>
+                      <option value="allow">Allow All</option>
+                      <option value="not allow">Allow None</option>
+                    </select>
+                  </div>
+                  {multiple !== "allow" && (
+                    <>
+                      <label htmlFor="example-text-input" className="col-md-2 ">
+                        Multiple Value
+                      </label>
+                      <div className="col-md-4">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Character of Multiple"
+                          value={multipleValue}
+                          onChange={(e) => setMultipleValue(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </>
+                  )}
+                </Row>
+              )}
               {(selectedFieldType === "questionField" ||
                 selectedFieldType === "formField") && (
-                  <Row className="mb-2">
-                    <label
-                      htmlFor="example-text-input"
-                      className="col-md-2 col-form-label"
+                <Row className="mb-2">
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2 col-form-label"
+                  >
+                    Blanks
+                  </label>
+                  <div className={blank !== "allow" ? "col-md-4" : "col-md-10"}>
+                    <select
+                      className="form-control"
+                      value={blank}
+                      onChange={(e) => {
+                        setBlank(e.target.value);
+                      }}
+                      defaultValue={""}
                     >
-                      Blanks
-                    </label>
-                    <div className={blank !== "allow" ? "col-md-4" : "col-md-10"}>
-                      <select
-                        className="form-control"
-                        value={blank}
-                        onChange={(e) => {
-                          setBlank(e.target.value);
-                        }}
-                        defaultValue={""}
+                      <option value="">Select an option</option>
+                      <option value="allow">Allow All</option>
+                      <option value="not allow">Allow None</option>
+                    </select>
+                  </div>
+                  {blank !== "allow" && (
+                    <>
+                      <label
+                        htmlFor="example-text-input"
+                        className="col-md-2 col-form-label"
                       >
-                        <option value="">Select an option</option>
-                        <option value="allow">Allow All</option>
-                        <option value="not allow">Allow None</option>
-                      </select>
-                    </div>
-                    {blank !== "allow" && (
-                      <>
-                        <label
-                          htmlFor="example-text-input"
-                          className="col-md-2 col-form-label"
-                        >
-                          Blank Value
-                        </label>
-                        <div className="col-md-4">
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Character of Blank"
-                            value={blankValue}
-                            onChange={(e) => setBlankValue(e.target.value)}
-                            required
-                          />
-                        </div>
-                      </>
-                    )}
-                  </Row>
-                )}
-              {(selectedFieldType !== "idField" || selectedFieldType !== "skewMarkField") && (
+                        Blank Value
+                      </label>
+                      <div className="col-md-4">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Character of Blank"
+                          value={blankValue}
+                          onChange={(e) => setBlankValue(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </>
+                  )}
+                </Row>
+              )}
+              {(selectedFieldType !== "idField" ||
+                selectedFieldType !== "skewMarkField") && (
                 <Row className="mb-2">
                   <label
                     htmlFor="example-text-input"
@@ -2365,45 +2375,45 @@ const DesignTemplate = () => {
               )}
               {(selectedFieldType === "questionField" ||
                 selectedFieldType === "formField") && (
-                  <Row className="mb-2">
-                    <label
-                      htmlFor="example-text-input"
-                      className="col-md-2 col-form-label "
+                <Row className="mb-2">
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2 col-form-label "
+                  >
+                    Total Fields :
+                  </label>
+                  <div className="col-4 ">
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={numberOfField}
+                      onChange={(e) => setNumberOfField(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2 col-form-label "
+                  >
+                    Field Type :
+                  </label>
+                  <div className="col-4 ">
+                    <select
+                      className="form-control"
+                      value={fieldType}
+                      onChange={(e) => {
+                        setFieldType(e.target.value);
+                      }}
+                      defaultValue={""}
                     >
-                      Total Fields :
-                    </label>
-                    <div className="col-4 ">
-                      <input
-                        type="number"
-                        className="form-control"
-                        value={numberOfField}
-                        onChange={(e) => setNumberOfField(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <label
-                      htmlFor="example-text-input"
-                      className="col-md-2 col-form-label "
-                    >
-                      Field Type :
-                    </label>
-                    <div className="col-4 ">
-                      <select
-                        className="form-control"
-                        value={fieldType}
-                        onChange={(e) => {
-                          setFieldType(e.target.value);
-                        }}
-                        defaultValue={""}
-                      >
-                        <option value="">Select field type... </option>
-                        <option value="numeric">Numeric </option>
-                        <option value="alphabet">Alphabet </option>
-                        <option value="custom">Custom </option>
-                      </select>
-                    </div>
-                  </Row>
-                )}
+                      <option value="">Select field type... </option>
+                      <option value="numeric">Numeric </option>
+                      <option value="alphabet">Alphabet </option>
+                      <option value="custom">Custom </option>
+                    </select>
+                  </div>
+                </Row>
+              )}
               {(selectedFieldType === "questionField" ||
                 selectedFieldType === "formField") &&
                 fieldType === "custom" && (
@@ -2476,6 +2486,7 @@ const DesignTemplate = () => {
           <ImageCropper
             handleImage={handleImage}
             imageSrc={templateImagePath}
+            backImageSrc={templateBackImagePath}
           />
         </Modal.Body>
         <Modal.Footer>
@@ -2498,6 +2509,11 @@ const DesignTemplate = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+      <EditTemplateModal
+        show={detailPage}
+        layoutData={layoutFieldData}
+        onHide={() => setDetailPage(false)}
+      />
     </>
   );
 };

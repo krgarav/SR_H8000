@@ -17,14 +17,15 @@ import classes from "./ImageCropper.module.css";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 import DataContext from "store/DataContext";
-const ImageCropper = ({ imageSrc, handleImage }) => {
+const ImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
   const dataCtx = useContext(DataContext);
   const cropperRef = useRef(null);
   const [cropData, setCropData] = useState(null);
   const [modalShow, setModalShow] = useState(false);
   const [allImages, setAllImages] = useState([]);
   const [imageName, setImageName] = useState("");
-  const [croppingSide, setCroppingSide] = useState("");
+  const [croppingSide, setCroppingSide] = useState("frontSide");
+  const [currentImage, setCurrentImage] = useState(imageSrc);
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -102,22 +103,22 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
 
     const {
       startX: rawTopLeftX,
-      startY: rawTopLeftY,
-      endX: rawBottomRightX,
+      startY: rawTopRightY,
+      endX: rawBottomLeftX,
       endY: rawBottomRightY,
     } = cropCoordinate;
 
     const topLeftX = Math.floor(rawTopLeftX);
-    const topLeftY = Math.floor(rawTopLeftY);
-    const bottomRightX = Math.floor(rawBottomRightX);
+    const topRightY = Math.floor(rawTopRightY);
+    const bottomLeftX = Math.floor(rawBottomLeftX);
     const bottomRightY = Math.floor(rawBottomRightY);
     const obj = {
       // key: uuidv4(),
       imageName: imageName,
       croppingSide: croppingSide,
       topLeftX,
-      topLeftY,
-      bottomRightX,
+      topRightY,
+      bottomLeftX,
       bottomRightY,
     };
     console.log(obj);
@@ -152,6 +153,7 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
     setCroppingSide("");
   };
   const allData = allImages.map((item, index) => {
+    console.log(item);
     return (
       <>
         <tr
@@ -164,11 +166,11 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
           <td>{item.croppingSide}</td>
           <td>
             {" "}
-            TopLeftX={Math.floor(item.topLeftX)}&nbsp; TopLeftY=
-            {Math.floor(item.topLeftX)}
+            TopLeftX={Math.floor(item.topLeftX)}&nbsp; TopRightY=
+            {Math.floor(item.topRightY)}
             <br />
-            BottomRightX={Math.floor(item.topLeftX)}&nbsp; BottomRightY=
-            {Math.floor(item.topLeftX)}
+            BottomLeftX={Math.floor(item.bottomLeftX)}&nbsp; BottomRightY=
+            {Math.floor(item.bottomRightY)}
           </td>
           <td className="text-right">
             <UncontrolledDropdown>
@@ -288,7 +290,7 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
                 // onClick={() => setModalShow(false)}
                 className="waves-effect waves-light"
               >
-                Savefdsfds
+                Save
               </Button>
             </Modal.Footer>
           </Modal>
@@ -387,12 +389,55 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
         onHide={() => setShow(false)}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Modal</Modal.Title>
+          <Modal.Title>
+            <Row>
+              <label htmlFor="imageName" className="col-md-4 ">
+                Image Name:
+              </label>
+              <div className="col-md-8">
+                <input
+                  id="imageName"
+                  type="text"
+                  placeholder="Enter Image Name"
+                  className="form-control"
+                  onChange={(e) => setImageName(e.target.value)}
+                  autoComplete="false"
+                />
+              </div>
+            </Row>
+          </Modal.Title>
         </Modal.Header>
-        <Modal.Body style={{ width: "100%", height: "80vh", overflow: "auto" }}>
+        <Modal.Body
+          style={{ width: "100%", height: "60dvh", overflow: "auto" }}
+        >
+          <div
+            style={{ width: "100%", display: "flex", justifyContent: "center" }}
+          >
+            <div>
+              <Button
+                active={currentImage === imageSrc}
+                onClick={() => {
+                  setCurrentImage(imageSrc);
+                  setCroppingSide("frontSide");
+                }}
+              >
+                Front
+              </Button>
+              <Button
+                active={currentImage === backImageSrc}
+                onClick={() => {
+                  setCurrentImage(backImageSrc);
+                  setCroppingSide("backSide");
+                }}
+              >
+                Back
+              </Button>
+            </div>
+          </div>
+
           <Cropper
-            src={imageSrc}
-            style={{ height: 500, width: "100%" }}
+            src={currentImage}
+            style={{ height: "50dvh", width: "100%" }}
             initialAspectRatio={1}
             guides={true}
             ref={cropperRef}
@@ -402,45 +447,13 @@ const ImageCropper = ({ imageSrc, handleImage }) => {
             minCropBoxWidth={10}
             background={true}
             responsive={true}
-            // autoCropArea={0}
+            autoCropArea={0}
             checkOrientation={false}
             rotatable={true}
-            // autoCrop={false}
+            autoCrop={false}
           />
-          {/* <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-            <Button className="d-flex justify-content-center" onClick={getCropData}>
-              Select region area
-            </Button>
-          </div> */}
+
           <br />
-          <Row className="mb-2">
-            <label htmlFor="imageName" className="col-md-4 ">
-              Image Name:
-            </label>
-            <div className="col-md-8">
-              <input
-                id="imageName"
-                type="text"
-                placeholder="Enter Image Name"
-                className="form-control"
-                onChange={(e) => setImageName(e.target.value)}
-              />
-            </div>
-          </Row>
-          <Row>
-            <label htmlFor="croppingSide" className="col-md-4">
-              Cropping Side:
-            </label>
-            <div className="col-md-8">
-              <input
-                id="croppingSide"
-                type="text"
-                placeholder="Enter Cropping Side"
-                className="form-control"
-                onChange={(e) => setCroppingSide(e.target.value)}
-              />
-            </div>
-          </Row>
           <br />
           {cropData && (
             <Row className="">
