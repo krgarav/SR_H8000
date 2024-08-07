@@ -147,7 +147,7 @@ const DesignTemplate = () => {
   const [idSelectionCount, setIdSelectionCount] = useState(0);
   const [imageModalShow, setImageModalShow] = useState(false);
   const [imagesSelectedCount, setImagesSelectedCount] = useState(0);
-  
+
   const location = useLocation();
   const state = location.state || {};
   // Initialize state with values from sessionStorage or location.state
@@ -1987,6 +1987,7 @@ const DesignTemplate = () => {
                         Paper ejection to select stacker
                       </option>
                       <option value="0x00000002">Stop reading</option>
+                      <option value="0">No Action</option>
                     </select>
                   </div>
                 </Row>

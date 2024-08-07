@@ -1718,7 +1718,7 @@ const EditDesignTemplate = () => {
                                 )}
                             </Row>
                         )}
-                    {selectedFieldType !== "idField" && (
+                    {(selectedFieldType !== "idField" || selectedFieldType !== "skewMarkField") && (
                         <Row className="mb-2">
                             <label
                                 htmlFor="example-text-input"
@@ -1738,6 +1738,7 @@ const EditDesignTemplate = () => {
                                         Paper ejection to select stacker
                                     </option>
                                     <option value="0x00000002">Stop reading</option>
+                                    <option value="0">No Action</option>
                                 </select>
                             </div>
                         </Row>
