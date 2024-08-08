@@ -28,6 +28,7 @@ import routes from "routes.js";
 import DesignTemplate from "views/DesignTemplate";
 import FolderStructure from "views/FolderStructure";
 import EditDesignTemplate from "views/EditDesignTemplate";
+import AdminScanJob from "views/AdminScanJob";
 
 const Admin = (props) => {
   const mainContent = React.useRef(null);
@@ -85,7 +86,7 @@ const Admin = (props) => {
           <Route path="/design-template" element={<DesignTemplate />} />
           <Route path="/server-folder" element={<FolderStructure />} />
           <Route path="/edit-template" element={<EditDesignTemplate />} />
-          
+          <Route path="/adminscanjob" element={<AdminScanJob />} />
         </Routes>
         {/* <Container fluid>
           <AdminFooter />

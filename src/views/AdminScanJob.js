@@ -32,7 +32,7 @@ import { jwtDecode } from "jwt-decode";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cancelScan } from "helper/TemplateHelper";
 
-const ScanJob = () => {
+const AdminScanJob = () => {
   const [count, setCount] = useState(true);
   const [processedData, setProcessedData] = useState([]);
   const [scanning, setScanning] = useState(false);
@@ -54,12 +54,12 @@ const ScanJob = () => {
     ExcelExport,
     Filter,
   ]);
-  const gridRef = useRef();
   const [gridHeight, setGridHeight] = useState("350px");
   const [starting, setStarting] = useState("fasle");
+  const gridRef = useRef();
+
   const location = useLocation();
   const navigate = useNavigate();
-
   useEffect(() => {
     // Calculate 60% of the viewport height
     const handleResize = () => {
@@ -78,14 +78,14 @@ const ScanJob = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
   useEffect(() => {
-    console.log(location.state === null);
-    if (!location.state) {
-      navigate("/operator/job-queue", { replace: true });
-      return;
-    }
-    const { templateId } = location?.state;
+    // console.log(location.state === null);
+    // if (!location.state) {
+    //   navigate("/admin/icons", { replace: true });
+    //   return;
+    // }
+    // const { templateId } = location?.state;
+    const templateId = 1;
     if (templateId) {
       setSelectedValue(templateId);
     }
@@ -107,25 +107,24 @@ const ScanJob = () => {
   //     return () => clearInterval(interval); // Cleanup on unmount
   // }, [data]);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const decoded = jwtDecode(token);
-    if (decoded.Role === "Operator") {
-      setToolbar([
-        "Add",
-        "Edit",
-        "Delete",
-        "Update",
-        "Cancel",
-        "ExcelExport",
-        "CsvExport",
-      ]);
-      setServices([Sort, Toolbar, ExcelExport, Filter, Edit]);
-    } else {
-      setToolbar(["ExcelExport", "CsvExport"]);
-      setServices([Sort, Toolbar, ExcelExport, Filter]);
-    }
-  }, []);
+  //
+  //     const decoded = jwtDecode(token);
+  //     if (decoded.Role === "Operator") {
+  //       setToolbar([
+  //         "Add",
+  //         "Edit",
+  //         "Delete",
+  //         "Update",
+  //         "Cancel",
+  //         "ExcelExport",
+  //         "CsvExport",
+  //       ]);
+  //       setServices([Sort, Toolbar, ExcelExport, Filter, Edit]);
+  //     } else {
+  //       setToolbar(["ExcelExport", "CsvExport"]);
+  //       setServices([Sort, Toolbar, ExcelExport, Filter]);
+  //     }
+  //   }, []);
   const getScanData = async () => {
     try {
       // Fetch data based on selected value ID
@@ -215,10 +214,10 @@ const ScanJob = () => {
       alert("Choose Template");
       return;
     }
-    if (scanning) {
-      setScanning(false);
-      return;
-    }
+    // if (scanning) {
+    //   setScanning(false);
+    //   return;
+    // }
     setStarting(true);
     setTimeout(async () => {
       setStarting(false);
@@ -302,17 +301,11 @@ const ScanJob = () => {
       const cancel = await cancelScan();
       setScanning(false);
       setStarting(false);
-      // setTimeout(() => {
-      //   setScanning(false);
-      // }, 5000);
+      //   setTimeout(() => {
+      //     setScanning(false);
+      //   }, 5000);
     } catch (error) {
       console.log(error);
-    }
-  };
-  const completeJobHandler = () => {
-    const result = window.confirm("Are you sure to finish the job ?");
-    if (!result) {
-      return;
     }
   };
   const columnsDirective = headData.map((item, index) => {
@@ -326,7 +319,12 @@ const ScanJob = () => {
       ></ColumnDirective>
     );
   });
-
+  const completeJobHandler = () => {
+    const result = window.confirm("Are you sure to finish the job ?");
+    if (!result) {
+      return;
+    }
+  };
   return (
     <>
       <NormalHeader />
@@ -348,6 +346,7 @@ const ScanJob = () => {
       </div>
       <Container className="mt--7" fluid>
         <br />
+
         <div className="control-pane">
           <div className="control-section">
             <GridComponent
@@ -372,7 +371,7 @@ const ScanJob = () => {
             <div className="m-2" style={{ float: "right" }}>
               <Button
                 className=""
-                color={ "success"}
+                color={"success"}
                 type="button"
                 onClick={handleStart}
                 disabled={scanning || starting ? true : false}
@@ -400,4 +399,4 @@ const ScanJob = () => {
   );
 };
 
-export default ScanJob;
+export default AdminScanJob;

@@ -17,6 +17,7 @@ import FolderStructure from "views/FolderStructure";
 import ReactFile from "views/ReactFile";
 import FolderPicker from "views/FolderPicker";
 import FolderPickerDirectory from "views/FolderPickerDirectory";
+import AdminJobQueue from "views/AdminJobQueue";
 
 var routes = [
   {
@@ -64,27 +65,29 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/setting",
-    name: "Settings",
-    icon: "ni ni-settings-gear-65 text-primary",
-    component: <FolderPickerDirectory />,
+    path: "/icons",
+    name: "Admin Job Queue",
+    icon: "ni ni-money-coins text-yellow",
+    component: <AdminJobQueue />,
     layout: "/admin",
   },
+  // {
+  //   path: "/setting",
+  //   name: "Settings",
+  //   icon: "ni ni-settings-gear-65 text-primary",
+  //   component: <FolderPickerDirectory />,
+  //   layout: "/admin",
+  // },
   {
     path: "/server-folder",
-    name: "Folder data",
+    name: "Folder Management",
     icon: "ni ni-settings-gear-65 text-primary",
     component: <FolderStructure />,
     layout: "/admin",
   },
 
-  // {
-  //   path: "/icons",
-  //   name: "Icons",
-  //   icon: "ni ni-planet text-yellow",
-  //   component: <Icons />,
-  //   layout: "/admin",
-  // },
+ 
+  
   // {
   //   path: "/maps",
   //   name: "Maps",
