@@ -85,6 +85,7 @@ const Template = () => {
     const csvpath = res?.templateFiles?.csvPath
     const imgpath = res?.templateFiles?.imagePath
     const res1 = await getTemplateImage(imgpath);
+    console.log(res1);
     if (res1 === undefined) {
       alert("No image found in this template.Cannot Open the template. ")
       return;
@@ -168,7 +169,7 @@ const Template = () => {
       console.error('Error deleting image:', error); // Debugging: Log any error
       throw error;
     }
-  };  
+  };
 
   const deleteHandler = async (arr, index) => {
     const result = window.confirm("Are you sure you want to delete template ?");

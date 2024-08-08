@@ -28,6 +28,8 @@ import {
 import { getAssignedJob } from "helper/job_helper";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { startJob } from "helper/job_helper";
 const AdminJobQueue = () => {
   const [allJob, setAllJob] = useState([]);
   const navigate = useNavigate();
@@ -38,19 +40,51 @@ const AdminJobQueue = () => {
       const UserId = decoded.UserId;
       const fetchAssignedJobs = async () => {
         const response = await getAssignedJob(UserId);
-        if (response.success) {
+        if (response === undefined) {
+          toast.warning("Can't connect to network!! ");
+        }
+        if (response?.success) {
           setAllJob(response.result);
         }
       };
       fetchAssignedJobs();
     }
   }, []);
-  const startHandler = (templateId) => {
-    console.log(templateId);
+  const startHandler = async (item) => {
+    const { id, templateId } = item;
+
+    const obj = {
+      id: id,
+      assignUser: "string",
+      assignId: "string",
+      templateId: templateId,
+      templateName: "string",
+      dataPath: "string",
+      dataType: "string",
+      imagePath: "string",
+      imageType: "string",
+      imageColor: "string",
+      jobStatus: "string",
+      jobStart: true,
+      jobComplete: true,
+      entryAt: "2024-08-08T05:50:51.368Z",
+      entryBy: "string",
+      updatedAt: "2024-08-08T05:50:51.368Z",
+      jobStartAt: "2024-08-08T05:50:51.368Z",
+      jobCompletedAt: "2024-08-08T05:50:51.368Z",
+      updatedBy: "string",
+    };
+    const res = await startJob(obj);
+   
     localStorage.setItem("scantemplateId", templateId);
     navigate("/admin/adminscanjob", { state: { templateId: templateId } });
   };
+  const continueHandler = (item) => {
+    const { id, templateId } = item;
 
+    localStorage.setItem("scantemplateId", templateId);
+    navigate("/admin/adminscanjob", { state: { templateId: templateId } });
+  };
   const ALLJOBS = allJob.map((item, index) => {
     let assignuser = "Not Assigned";
     if (item.assignUser !== "string" || item.assignUser !== "") {
@@ -82,9 +116,16 @@ const AdminJobQueue = () => {
                         <DropdownItem >Delete</DropdownItem>
                     </DropdownMenu>
                 </UncontrolledDropdown> */}
-          <Button color="default" onClick={() => startHandler(item.templateId)}>
-            Start
-          </Button>
+          {item.jobStatus !== "pending" && (
+            <Button color="default" onClick={() => startHandler(item)}>
+              Start
+            </Button>
+          )}
+          {item.jobStatus === "pending" && (
+            <Button color="info" onClick={() => continueHandler(item)}>
+              Continue
+            </Button>
+          )}
         </td>
       </tr>
     );

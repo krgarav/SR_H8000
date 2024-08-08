@@ -40,7 +40,7 @@ import {
 import Header from "components/Headers/Header.js";
 import NormalHeader from "components/Headers/NormalHeader";
 import { Modal } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import * as url from "../helper/url_helper";
 import { toast } from "react-toastify";
@@ -65,7 +65,7 @@ const UserManagment = () => {
   const [allUsers, setAllUsers] = useState([]);
   const [id, setId] = useState("");
   const [toggle, setToggle] = useState(false);
-
+  const emailRef = useRef(null); // Reference to the input element
   const fetchRoles = async () => {
     try {
       const data = await getUserRoles();
@@ -206,7 +206,11 @@ const UserManagment = () => {
     setModalShow(true);
     setId(d.id);
   };
-
+  // Function to validate the email format
+  const validateEmail = (email) => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+  };
   return (
     <>
       <NormalHeader />
@@ -509,6 +513,15 @@ const UserManagment = () => {
                 placeholder="Enter Email Id"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onBlur={() => {
+                  if (!validateEmail(email)) {
+                    alert(
+                      'Invalid email format. "@" is missing or email is incorrectly formatted.'
+                    );
+                    emailRef.current.focus();
+                  }
+                }}
+                ref={emailRef}
               />
               {!email && (
                 <span style={{ color: "red", display: spanDisplay }}>
@@ -536,7 +549,6 @@ const UserManagment = () => {
                 onBlur={() => {
                   if (phoneNumber.length < 10) {
                     alert("Phone number must be at least 10 digits long");
-                    
                   }
                 }}
               />

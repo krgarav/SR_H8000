@@ -497,6 +497,7 @@ const TemplateModal = (props) => {
       // Set the image URL to be used in the component
       setImage(imageUrl);
       setImageSrc(base64ImageUrl);
+      setBackImageSrc(base64ImageUrl2);
     } catch (error) {
       console.log(error);
       toast.error(error.message);

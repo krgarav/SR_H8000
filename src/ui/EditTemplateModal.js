@@ -2142,7 +2142,11 @@ const EditTemplateModal = (props) => {
                     <Button onClick={imageModalHandler}>Select Image</Button>
                   ) : (
                     <div>
-                      <Button variant="info" onClick={imageModalHandler}>
+                      <Button
+                        disabled
+                        variant="info"
+                        onClick={imageModalHandler}
+                      >
                         Choose another
                       </Button>
                       <img
@@ -2176,7 +2180,7 @@ const EditTemplateModal = (props) => {
           >
             Close
           </Button>
-          <Button variant="success" onClick={createTemplateHandler}>
+          <Button disabled variant="success" onClick={createTemplateHandler}>
             Update Template
           </Button>
         </Modal.Footer>

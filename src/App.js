@@ -51,7 +51,7 @@ const useTokenRedirect = () => {
     }, []);
 };
 const App = () => {
-    // useTokenRedirect();
+    useTokenRedirect();
     return (
         <Routes>
             <Route path="/admin/*" element={<AdminLayout />} />

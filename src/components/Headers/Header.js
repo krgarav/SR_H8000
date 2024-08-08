@@ -17,9 +17,28 @@
 */
 
 // reactstrap components
+import { getJobCount } from "helper/job_helper";
+import { fetchAllUsers } from "helper/userManagment_helper";
+import { useEffect, useState } from "react";
 import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
 
 const Header = () => {
+  const [jobCount, setJobCount] = useState(0);
+  const [allUserCount, setAllUserCount] = useState(0);
+  useEffect(() => {
+    const fetchDetails = async () => {
+      const res = await getJobCount();
+      const allUsers = await fetchAllUsers();
+
+      if (res !== undefined) {
+        setJobCount(res);
+      }
+      if (allUsers !== undefined) {
+        setAllUserCount(allUsers.result.length);
+      }
+    };
+    fetchDetails();
+  }, []);
   return (
     <>
       <div className="header bg-gradient-info pb-8 pt-5 pt-md-8">
@@ -39,7 +58,7 @@ const Header = () => {
                           Total Scanning
                         </CardTitle>
                         <span className="h2 font-weight-bold mb-0">
-                          350,897
+                          350,600
                         </span>
                       </div>
                       <Col className="col-auto">
@@ -66,9 +85,11 @@ const Header = () => {
                           tag="h5"
                           className="text-uppercase text-muted mb-0"
                         >
-                          New users
+                          All users
                         </CardTitle>
-                        <span className="h2 font-weight-bold mb-0">10</span>
+                        <span className="h2 font-weight-bold mb-0">
+                          {allUserCount}
+                        </span>
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-warning text-white rounded-circle shadow">
@@ -96,7 +117,9 @@ const Header = () => {
                         >
                           Job
                         </CardTitle>
-                        <span className="h2 font-weight-bold mb-0">924</span>
+                        <span className="h2 font-weight-bold mb-0">
+                          {jobCount}
+                        </span>
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-yellow text-white rounded-circle shadow">

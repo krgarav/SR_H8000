@@ -1239,6 +1239,7 @@ const EditDesignTemplate = () => {
     } catch (error) {
       alert(`Error creating template`);
       console.error("Error sending POST request:", error);
+      setLoading(false);
     }
   };
 
