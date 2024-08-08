@@ -31,6 +31,7 @@ import { fetchAllTemplate } from "helper/TemplateHelper";
 import { jwtDecode } from "jwt-decode";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cancelScan } from "helper/TemplateHelper";
+import { finishJob } from "helper/job_helper";
 
 const ScanJob = () => {
   const [count, setCount] = useState(true);
@@ -131,7 +132,12 @@ const ScanJob = () => {
   const getScanData = async () => {
     try {
       // Fetch data based on selected value ID
-      const data = await fetchProcessData(selectedValue);
+      const token = localStorage.getItem("token");
+
+      const userInfo = jwtDecode(token);
+
+      const userId = userInfo.UserId;
+      const data = await fetchProcessData(selectedValue, userId);
       console.log(data);
 
       // Check if the data fetch was successful
@@ -221,6 +227,10 @@ const ScanJob = () => {
       setScanning(false);
       return;
     }
+    const token = localStorage.getItem("token");
+    const userInfo = jwtDecode(token);
+
+    const userId = userInfo.UserId;
     setStarting(true);
     setTimeout(async () => {
       setStarting(false);
@@ -229,7 +239,7 @@ const ScanJob = () => {
     setTimeout(async () => {
       setScanning(true);
     }, 6000);
-    const response = await scanFiles(selectedValue);
+    const response = await scanFiles(selectedValue, userId);
     console.log(">>>>>>", response);
     if (!response?.result?.success) {
       toast.error(response?.result?.message);
@@ -237,10 +247,16 @@ const ScanJob = () => {
       toast.success(response?.result?.message);
     }
     if (response) {
+      if (!response?.success) {
+        toast.error(response?.message);
+      } else {
+        toast.success(response?.message);
+      }
       setScanning(false);
     }
     if (response === undefined) {
       toast.error("Request Timeout");
+      setScanning(false);
     }
   };
 
@@ -311,11 +327,23 @@ const ScanJob = () => {
       console.log(error);
     }
   };
-  const completeJobHandler = () => {
+  const completeJobHandler = async () => {
     const result = window.confirm("Are you sure to finish the job ?");
     if (!result) {
       return;
     }
+    const id = localStorage.getItem("jobId");
+    const templateId = localStorage.getItem("scantemplateId");
+
+    const obj = {
+      id: id,
+      templateId: templateId,
+    };
+    const res = await finishJob(obj);
+    if (res?.success) {
+      toast.success("Completed the job!!!");
+    }
+    navigate("/job-queue", { replace: true });
   };
   const columnsDirective = headData.map((item, index) => {
     return (

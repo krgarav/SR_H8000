@@ -11,3 +11,4 @@ export const getAssignedJob = (id) => get(url.GET_ASSIGNED_JOB + "?Id=" + id);
 export const getJobCount = (id) => get(url.GET_JOB_COUNT);
 
 export const startJob = (data) => post(url.START_JOB, data);
+export const finishJob = (data) => post(url.FINISH_JOB, data);

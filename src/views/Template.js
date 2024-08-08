@@ -1,4 +1,3 @@
-
 import {
   Card,
   CardHeader,
@@ -12,28 +11,23 @@ import {
 // core components
 import Header from "components/Headers/Header.js";
 import NormalHeader from "components/Headers/NormalHeader";
-import {
-  Modal,
-  Button,
-  Row,
-  Col,
-} from "react-bootstrap";
+import { Modal, Button, Row, Col } from "react-bootstrap";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DataContext from "store/DataContext";
-import axios from 'axios';
+import axios from "axios";
 import TemplateModal from "../ui/TemplateModal";
 import { fetchAllTemplate } from "helper/TemplateHelper";
 import { deleteTemplate } from "helper/TemplateHelper";
-import CryptoJS from 'crypto-js';
+import CryptoJS from "crypto-js";
 import { toast } from "react-toastify";
 import { getTemplateImage } from "helper/TemplateHelper";
 import { getTemplateCsv } from "helper/TemplateHelper";
 import { getLayoutDataById } from "helper/TemplateHelper";
-import Papa from 'papaparse';
+import Papa from "papaparse";
 const base64ToFile = (base64, filename) => {
-  const byteString = atob(base64.split(',')[1]);
-  const mimeString = base64.split(',')[0].split(':')[1].split(';')[0];
+  const byteString = atob(base64.split(",")[1]);
+  const mimeString = base64.split(",")[0].split(":")[1].split(";")[0];
   const ab = new ArrayBuffer(byteString.length);
   const ia = new Uint8Array(ab);
   for (let i = 0; i < byteString.length; i++) {
@@ -44,99 +38,119 @@ const base64ToFile = (base64, filename) => {
 };
 const Template = () => {
   const [modalShow, setModalShow] = useState(false);
-  const [showDetailModal, setShowDetailModal] = useState(false)
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [templateDatail, setTemplateDetail] = useState([]);
-  const [toggle, setToggle] = useState(false)
+  const [toggle, setToggle] = useState(false);
   const navigate = useNavigate();
   const dataCtx = useContext(DataContext);
   useEffect(() => {
     sessionStorage.clear();
-  }, [])
+  }, []);
   useEffect(() => {
-
     const fetchData = async () => {
       const templates = await fetchAllTemplate();
+      console.log(templates);
       if (templates === undefined) {
-        toast.error('Error fetching templates');
-
+        toast.error("Error fetching templates");
       }
       const mpObj = templates?.map((item) => {
-        return [{ layoutParameters: item }]
+        return [{ layoutParameters: item }];
       });
+      console.log(mpObj);
       dataCtx.addToAllTemplate(mpObj);
-
-    }
-    fetchData()
-
+    };
+    fetchData();
   }, [toggle]);
   const showHandler = (arr) => {
     setShowDetailModal(true);
-    setTemplateDetail(arr)
-  }
+    setTemplateDetail(arr);
+  };
 
   const handleRowClick = (rowData, index) => {
-    console.log('Row clicked:', rowData, index);
+    console.log("Row clicked:", rowData, index);
     // Add your logic for handling the row click here
   };
   const editHandler = async (arr, index) => {
+    console.log(arr);
     const tempdata = arr[0].layoutParameters;
+
     const templateId = tempdata.id;
     const res = await getLayoutDataById(templateId);
-    const csvpath = res?.templateFiles?.csvPath
-    const imgpath = res?.templateFiles?.imagePath
+    console.log(res);
+    // return;
+    const csvpath = res?.templateFiles[0].excelPath;
+    const imgpath = res?.templateFiles[0].imagePath;
+    console.log(csvpath);
+    console.log(imgpath);
     const res1 = await getTemplateImage(imgpath);
     console.log(res1);
     if (res1 === undefined) {
-      alert("No image found in this template.Cannot Open the template. ")
+      alert("No image found in this template.Cannot Open the template. ");
       return;
     }
-    const imgfile = base64ToFile(res1.image, 'image.jpg');
+
+    const imgfile = base64ToFile(res1.image, "image.jpg");
+
     const res2 = await getTemplateCsv(csvpath);
     if (res2 === undefined) {
-      alert("No CSV found in this template.Cannot Open the template. ")
+      alert("No CSV found in this template.Cannot Open the template. ");
       return;
     }
     const csvContent = Papa.unparse(res2.data);
 
     // Create a Blob from the CSV content
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
 
     // Create a File from the Blob
-    const csvfile = new File([blob], 'data.csv', { type: 'text/csv' });
-
-
+    const csvfile = new File([blob], "data.csv", { type: "text/csv" });
+    const state = {
+      templateIndex: index,
+      timingMarks: +tempdata.timingMarks,
+      totalColumns: +tempdata.totalColumns,
+      templateImagePath: "",
+      templateBackImagePath: "",
+      bubbleType: tempdata.bubbleType,
+      iSensitivity: +tempdata.iSensitivity ?? 3,
+      iDifference: +tempdata.iDifference ?? 4,
+      iReject: tempdata.iReject,
+      iFace: +tempdata.iFace ?? 0,
+      templateId: tempdata.id,
+      excelJsonFile: res2.data,
+    };
+    console.log(state);
+    console.log(tempdata);
+    // sessionStorage.setItem();
     navigate("/admin/edit-template", {
       state: {
         templateIndex: index,
         timingMarks: +tempdata.timingMarks,
         totalColumns: +tempdata.totalColumns,
-        templateImagePath: res1.image,
+        templateImagePath: "",
         bubbleType: tempdata.bubbleType,
-        iSensitivity: +tempdata.iSensitivity,
-        iDifference: +tempdata.iDifference,
+        iSensitivity: +tempdata.iSensitivity ?? 3,
+        iDifference: +tempdata.iDifference ?? 4,
         iReject: tempdata.iReject,
-        iFace: +tempdata.iFace,
+        iFace: +tempdata.iFace ?? 0,
         templateId: tempdata.id,
         excelJsonFile: res2.data,
         imageTempFile: imgfile,
         excelFile: csvfile,
-      }
+      },
     });
   };
 
   const deleteImage = async (imageUrl) => {
-
-    const cloudName = process.env.REACT_APP_CLOUD_NAME// Your Cloudinary cloud name
+    const cloudName = process.env.REACT_APP_CLOUD_NAME; // Your Cloudinary cloud name
     const apiKey = process.env.REACT_APP_API_KEY; // Your Cloudinary API key
     const apiSecret = process.env.REACT_APP_API_SECRET; // Your Cloudinary API secret
 
     // Extract public ID from URL
-    const urlParts = imageUrl.split('/');
-    const versionIndex = urlParts.findIndex(part => part.startsWith('v'));
-    const publicIdWithFormat = urlParts.slice(versionIndex + 1).join('/'); // omrimages/dj7va6r3farwpblq6txv.jpg
-    const publicId = publicIdWithFormat.split('.')[0]; // omrimages/dj7va6r3farwpblq6txv
+    const urlParts = imageUrl.split("/");
+    const versionIndex = urlParts.findIndex((part) => part.startsWith("v"));
+    const publicIdWithFormat = urlParts.slice(versionIndex + 1).join("/"); // omrimages/dj7va6r3farwpblq6txv.jpg
+    const publicId = publicIdWithFormat.split(".")[0]; // omrimages/dj7va6r3farwpblq6txv
 
-    console.log('Extracted public ID:', publicId); // Debugging: Log the public ID
+    console.log("Extracted public ID:", publicId); // Debugging: Log the public ID
 
     // Create the timestamp and signature
     const timestamp = Math.floor(new Date().getTime() / 1000);
@@ -145,10 +159,10 @@ const Template = () => {
 
     // Form data for the request
     const formData = new FormData();
-    formData.append('public_id', publicId);
-    formData.append('timestamp', timestamp);
-    formData.append('api_key', apiKey);
-    formData.append('signature', signature);
+    formData.append("public_id", publicId);
+    formData.append("timestamp", timestamp);
+    formData.append("api_key", apiKey);
+    formData.append("signature", signature);
 
     try {
       // Make the API request to delete the image
@@ -157,8 +171,8 @@ const Template = () => {
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
 
@@ -166,7 +180,7 @@ const Template = () => {
 
       return response.data;
     } catch (error) {
-      console.error('Error deleting image:', error); // Debugging: Log any error
+      console.error("Error deleting image:", error); // Debugging: Log any error
       throw error;
     }
   };
@@ -174,20 +188,21 @@ const Template = () => {
   const deleteHandler = async (arr, index) => {
     const result = window.confirm("Are you sure you want to delete template ?");
     if (result) {
-      const id = arr[0].layoutParameters.id
+      const id = arr[0].layoutParameters.id;
       // const imageUrl = arr[0].layoutParameters.templateImagePath;
       // const result = await deleteImage(imageUrl);
-      const res = await deleteTemplate(id)
-      console.log(res)
+      const res = await deleteTemplate(id);
+      console.log(res);
       if (res?.success) {
-        setToggle(prev => !prev);
-        toast.success("Successfully deleted template")
+        setToggle((prev) => !prev);
+        toast.success("Successfully deleted template");
       }
 
       // dataCtx.deleteTemplate(index)
-    } else { return }
-
-  }
+    } else {
+      return;
+    }
+  };
   return (
     <>
       <NormalHeader />
@@ -212,7 +227,10 @@ const Template = () => {
                 </div>
               </CardHeader>
               <div style={{ height: "70vh", overflow: "auto" }}>
-                <Table className="align-items-center table-flush mb-5 table-hover" responsive>
+                <Table
+                  className="align-items-center table-flush mb-5 table-hover"
+                  responsive
+                >
                   <thead className="thead-light">
                     <tr>
                       <th scope="col">Sno.</th>
@@ -228,7 +246,7 @@ const Template = () => {
                       <tr
                         key={i}
                         onClick={() => handleRowClick(d, i)}
-                        style={{ cursor: 'pointer' }} // Adds a pointer cursor on hover
+                        style={{ cursor: "pointer" }} // Adds a pointer cursor on hover
                       >
                         <td>{i + 1}</td>
                         <td>{d[0].layoutParameters.layoutName}</td>
@@ -248,10 +266,19 @@ const Template = () => {
                               <i className="fas fa-ellipsis-v" />
                             </DropdownToggle>
                             <DropdownMenu className="dropdown-menu-arrow" right>
-                              <DropdownItem onClick={() => showHandler(d)}>Show</DropdownItem>
-                              <DropdownItem onClick={() => editHandler(d, i)}>Edit</DropdownItem>
+                              <DropdownItem onClick={() => showHandler(d)}>
+                                Show
+                              </DropdownItem>
+                              <DropdownItem onClick={() => editHandler(d, i)}>
+                                Edit
+                              </DropdownItem>
                               {/* <DropdownItem onClick={() => sendToBackendHandler(d, i)}>Send Data</DropdownItem> */}
-                              <DropdownItem style={{ color: "red" }} onClick={() => deleteHandler(d, i)}>Delete</DropdownItem>
+                              <DropdownItem
+                                style={{ color: "red" }}
+                                onClick={() => deleteHandler(d, i)}
+                              >
+                                Delete
+                              </DropdownItem>
                             </DropdownMenu>
                           </UncontrolledDropdown>
                         </td>
@@ -260,14 +287,11 @@ const Template = () => {
                   </tbody>
                 </Table>
               </div>
-
             </Card>
           </div>
         </Row>
       </Container>
-
       {/* Template Detail Modal*/}
-
       {templateDatail.length !== 0 && (
         <Modal
           show={showDetailModal}
@@ -278,13 +302,16 @@ const Template = () => {
         >
           <Modal.Header>
             <Modal.Title id="modal-custom-navbar">
-              Template Name :  {templateDatail[0]["Template Name"]}
+              Template Name : {templateDatail[0]["Template Name"]}
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Row className="mb-3">
               <Col xs={12} md={2}>
-                <label htmlFor="example-text-input" style={{ fontSize: ".9rem" }}>
+                <label
+                  htmlFor="example-text-input"
+                  style={{ fontSize: ".9rem" }}
+                >
                   Name:
                 </label>
               </Col>
@@ -299,7 +326,10 @@ const Template = () => {
             </Row>
             <Row className="mb-3">
               <Col xs={12} md={2}>
-                <label htmlFor="example-text-input" style={{ fontSize: ".9rem" }}>
+                <label
+                  htmlFor="example-text-input"
+                  style={{ fontSize: ".9rem" }}
+                >
                   Total Row:
                 </label>
               </Col>
@@ -312,7 +342,10 @@ const Template = () => {
                 />
               </Col>
               <Col xs={12} md={2}>
-                <label htmlFor="example-text-input" style={{ fontSize: ".9rem" }}>
+                <label
+                  htmlFor="example-text-input"
+                  style={{ fontSize: ".9rem" }}
+                >
                   Total Column:
                 </label>
               </Col>
@@ -325,7 +358,10 @@ const Template = () => {
                 />
               </Col>
               <Col xs={12} md={2}>
-                <label htmlFor="example-text-input" style={{ fontSize: ".9rem" }}>
+                <label
+                  htmlFor="example-text-input"
+                  style={{ fontSize: ".9rem" }}
+                >
                   Bubble Type:
                 </label>
               </Col>
@@ -345,7 +381,10 @@ const Template = () => {
                   <div key={index}>
                     <Row className="mb-3">
                       <Col xs={12} md={2}>
-                        <label htmlFor="example-text-input" style={{ fontSize: ".9rem" }}>
+                        <label
+                          htmlFor="example-text-input"
+                          style={{ fontSize: ".9rem" }}
+                        >
                           Region Name:
                         </label>
                       </Col>
@@ -361,28 +400,56 @@ const Template = () => {
 
                     <Row className="mb-3">
                       <Col xs={6} md={3}>
-                        <label htmlFor="example-text-input" style={{ fontSize: ".9rem" }}>
+                        <label
+                          htmlFor="example-text-input"
+                          style={{ fontSize: ".9rem" }}
+                        >
                           Start Row:
                         </label>
-                        <input className="form-control" value={item["Coordinate"]["Start Row"]} readOnly />
+                        <input
+                          className="form-control"
+                          value={item["Coordinate"]["Start Row"]}
+                          readOnly
+                        />
                       </Col>
                       <Col xs={6} md={3}>
-                        <label htmlFor="example-text-input" style={{ fontSize: ".9rem" }}>
+                        <label
+                          htmlFor="example-text-input"
+                          style={{ fontSize: ".9rem" }}
+                        >
                           Start Col:
                         </label>
-                        <input className="form-control" value={item["Coordinate"]["Start Col"]} readOnly />
+                        <input
+                          className="form-control"
+                          value={item["Coordinate"]["Start Col"]}
+                          readOnly
+                        />
                       </Col>
                       <Col xs={6} md={3}>
-                        <label htmlFor="example-text-input" style={{ fontSize: ".9rem" }}>
+                        <label
+                          htmlFor="example-text-input"
+                          style={{ fontSize: ".9rem" }}
+                        >
                           End Row:
                         </label>
-                        <input className="form-control" value={item["Coordinate"]["End Row"]} readOnly />
+                        <input
+                          className="form-control"
+                          value={item["Coordinate"]["End Row"]}
+                          readOnly
+                        />
                       </Col>
                       <Col xs={6} md={3}>
-                        <label htmlFor="example-text-input" style={{ fontSize: ".9rem" }}>
+                        <label
+                          htmlFor="example-text-input"
+                          style={{ fontSize: ".9rem" }}
+                        >
                           End Col:
                         </label>
-                        <input className="form-control" value={item["Coordinate"]["End Col"]} readOnly />
+                        <input
+                          className="form-control"
+                          value={item["Coordinate"]["End Col"]}
+                          readOnly
+                        />
                       </Col>
                     </Row>
                   </div>
@@ -390,13 +457,17 @@ const Template = () => {
               })}
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowDetailModal(false)}>
+            <Button
+              variant="secondary"
+              onClick={() => setShowDetailModal(false)}
+            >
               Close
             </Button>
           </Modal.Footer>
         </Modal>
       )}
-      <TemplateModal show={modalShow} onHide={() => setModalShow(false)} />    {/* Create Template modal */}
+      <TemplateModal show={modalShow} onHide={() => setModalShow(false)} />{" "}
+      {/* Create Template modal */}
     </>
   );
 };

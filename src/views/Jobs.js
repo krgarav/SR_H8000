@@ -73,8 +73,15 @@ const Jobs = () => {
   }, [modalShow, toggler, assignModalShow]);
 
   const deleteHandler = async (id) => {
+    const result = window.confirm("Are you sure you want to delete the Job?");
+    if (!result) {
+      return;
+    }
     const response = await deleteJob(id);
     console.log(response);
+    if (response?.success) {
+      toast.success("Deleted Job successfully");
+    }
     setToggler((prev) => !prev);
   };
 
@@ -86,7 +93,7 @@ const Jobs = () => {
     return (
       <tr key={index}>
         <td>{index + 1}</td>
-        <td>{`Job ${index + 1}`}</td>
+        <td>{item.jobName}</td>
         <td>{item.templateName}</td>
         <td>{assignuser}</td>
         <td>{item.imageType ? item.imageType : "Disabled"}</td>

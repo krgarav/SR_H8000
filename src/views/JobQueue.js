@@ -28,6 +28,7 @@ import {
 import { getAssignedJob } from "helper/job_helper";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import { startJob } from "helper/job_helper";
 const JobQueue = () => {
   const [allJob, setAllJob] = useState([]);
   const navigate = useNavigate();
@@ -43,12 +44,26 @@ const JobQueue = () => {
     };
     fetchAssignedJobs();
   }, []);
-  const startHandler = (templateId) => {
+  const startHandler = async (item) => {
+    const { id, templateId } = item;
+
+    const obj = {
+      id: id,
+      templateId: templateId,
+    };
+    const res = await startJob(obj);
     console.log(templateId);
     localStorage.setItem("scantemplateId", templateId);
+    localStorage.setItem("jobId", id);
     navigate("/operator/scanjob", { state: { templateId: templateId } });
   };
+  const continueHandler = async (item) => {
+    const { id, templateId } = item;
 
+    localStorage.setItem("scantemplateId", templateId);
+    localStorage.setItem("jobId", id);
+    navigate("/operator/scanjob", { state: { templateId: templateId } });
+  };
   const ALLJOBS = allJob.map((item, index) => {
     let assignuser = "Not Assigned";
     if (item.assignUser !== "string" || item.assignUser !== "") {
@@ -58,9 +73,9 @@ const JobQueue = () => {
     return (
       <tr key={index}>
         <td>{index + 1}</td>
-        <td>{`Job ${index + 1}`}</td>
+        <td>{item.jobName}</td>
         <td>{item.templateName}</td>
-        <td>{assignuser}</td>
+        <td>{item.jobStatus}</td>
         <td>{item.imageType ? item.imageType : "Disabled"}</td>
         <td className="text-right">
           {/* <UncontrolledDropdown>
@@ -80,9 +95,21 @@ const JobQueue = () => {
                         <DropdownItem >Delete</DropdownItem>
                     </DropdownMenu>
                 </UncontrolledDropdown> */}
-          <Button color="default" onClick={() => startHandler(item.templateId)}>
-            Start
-          </Button>
+          {item.jobStatus === "Completed" && (
+            <Button disabled color="default" onClick={() => startHandler(item)}>
+              Job Completed
+            </Button>
+          )}
+          {item.jobStatus === "Pending" && (
+            <Button color="default" onClick={() => startHandler(item)}>
+              Start
+            </Button>
+          )}
+          {item.jobStatus === "In Progress" && (
+            <Button color="info" onClick={() => continueHandler(item)}>
+              Continue
+            </Button>
+          )}
         </td>
       </tr>
     );
@@ -104,15 +131,28 @@ const JobQueue = () => {
               <Table className="align-items-center table-flush mb-5" responsive>
                 <thead className="thead-light">
                   <tr>
-                    <th scope="col">Sno.</th>
+                    <th scope="col">Sl no.</th>
                     <th scope="col">Job Name</th>
                     <th scope="col">Template</th>
-                    <th scope="col">Assigned By </th>
+                    <th scope="col">Job Status</th>
                     <th scope="col">Image</th>
                     <th scope="col"></th>
                   </tr>
                 </thead>
-                <tbody style={{ minHeight: "100rem" }}>{ALLJOBS}</tbody>
+                <tbody style={{ minHeight: "100rem" }}>
+                  {ALLJOBS.length > 0 ? (
+                    ALLJOBS // This assumes ALLJOBS is an array of JSX elements
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan="100%"
+                        style={{ textAlign: "center", width: "100%" }}
+                      >
+                        No Job Queue Present
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
               </Table>
             </Card>
           </div>

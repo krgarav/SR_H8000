@@ -55,34 +55,24 @@ const AdminJobQueue = () => {
 
     const obj = {
       id: id,
-      assignUser: "string",
-      assignId: "string",
       templateId: templateId,
-      templateName: "string",
-      dataPath: "string",
-      dataType: "string",
-      imagePath: "string",
-      imageType: "string",
-      imageColor: "string",
-      jobStatus: "string",
-      jobStart: true,
-      jobComplete: true,
-      entryAt: "2024-08-08T05:50:51.368Z",
-      entryBy: "string",
-      updatedAt: "2024-08-08T05:50:51.368Z",
-      jobStartAt: "2024-08-08T05:50:51.368Z",
-      jobCompletedAt: "2024-08-08T05:50:51.368Z",
-      updatedBy: "string",
     };
     const res = await startJob(obj);
-   
-    localStorage.setItem("scantemplateId", templateId);
-    navigate("/admin/adminscanjob", { state: { templateId: templateId } });
-  };
-  const continueHandler = (item) => {
-    const { id, templateId } = item;
 
     localStorage.setItem("scantemplateId", templateId);
+    localStorage.setItem("jobId", id);
+    navigate("/admin/adminscanjob", { state: { templateId: templateId } });
+  };
+  // const token = localStorage.getItem("token");
+  // if (token) {
+  //   const userInfo = jwtDecode(token);
+  //   console.log(userInfo);
+  // }
+  const continueHandler = (item) => {
+    const { id, templateId } = item;
+    localStorage.setItem("scantemplateId", templateId);
+    localStorage.setItem("jobId", id);
+
     navigate("/admin/adminscanjob", { state: { templateId: templateId } });
   };
   const ALLJOBS = allJob.map((item, index) => {
@@ -94,9 +84,9 @@ const AdminJobQueue = () => {
     return (
       <tr key={index}>
         <td>{index + 1}</td>
-        <td>{`Job ${index + 1}`}</td>
+        <td>{item.jobName}</td>
         <td>{item.templateName}</td>
-        <td>{assignuser}</td>
+        <td>{item.jobStatus}</td>
         <td>{item.imageType ? item.imageType : "Disabled"}</td>
         <td className="text-right">
           {/* <UncontrolledDropdown>
@@ -116,12 +106,18 @@ const AdminJobQueue = () => {
                         <DropdownItem >Delete</DropdownItem>
                     </DropdownMenu>
                 </UncontrolledDropdown> */}
-          {item.jobStatus !== "pending" && (
+
+          {item.jobStatus === "Completed" && (
+            <Button disabled color="default" onClick={() => startHandler(item)}>
+              Job Completed
+            </Button>
+          )}
+          {item.jobStatus === "Pending" && (
             <Button color="default" onClick={() => startHandler(item)}>
               Start
             </Button>
           )}
-          {item.jobStatus === "pending" && (
+          {item.jobStatus === "In Progress" && (
             <Button color="info" onClick={() => continueHandler(item)}>
               Continue
             </Button>
@@ -134,7 +130,6 @@ const AdminJobQueue = () => {
   return (
     <>
       <NormalHeader />
-
       <Container className="mt--7" fluid>
         <Row>
           <div className="col">
@@ -147,15 +142,28 @@ const AdminJobQueue = () => {
               <Table className="align-items-center table-flush mb-5" responsive>
                 <thead className="thead-light">
                   <tr>
-                    <th scope="col">Sno.</th>
+                    <th scope="col">Sl no.</th>
                     <th scope="col">Job Name</th>
                     <th scope="col">Template</th>
-                    <th scope="col">Assigned By </th>
+                    <th scope="col">Job Status </th>
                     <th scope="col">Image</th>
                     <th scope="col"></th>
                   </tr>
                 </thead>
-                <tbody style={{ minHeight: "100rem" }}>{ALLJOBS}</tbody>
+                <tbody style={{ minHeight: "100rem", width: "100%" }}>
+                  {ALLJOBS.length > 0 ? (
+                    ALLJOBS // This assumes ALLJOBS is an array of JSX elements
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan="100%"
+                        style={{ textAlign: "center", width: "100%" }}
+                      >
+                        No Job Queue Present
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
               </Table>
             </Card>
           </div>

@@ -108,7 +108,15 @@ const UserManagment = () => {
       try {
         // const { data } = await axios.post("https://rb5xhrfq-5289.inc1.devtunnels.ms/UserRegistration", { name, email, phoneNumber, role, password, ConfirmPassword });
         let role = selectecdRole.roleName;
-        const data = await updateUser({ id, name, email, phoneNumber, role });
+        let userName = name;
+        let userRole = role;
+        const data = await updateUser({
+          id,
+          userName,
+          email,
+          phoneNumber,
+          userRole,
+        });
         if (data?.success) {
           console.log(data.message);
           toast.success(data?.message);
@@ -119,6 +127,7 @@ const UserManagment = () => {
           setCreateModalShow(false);
           fetchAllUsers();
           setToggle((prev) => !prev);
+          setModalShow(false);
         } else {
           toast.error(data?.message);
         }
@@ -148,13 +157,14 @@ const UserManagment = () => {
         let userRole = selectecdRole.roleName;
         const userName = name;
         const data = await createUser({
-          userName,
-          email,
-          phoneNumber,
-          userRole,
-          password,
-          ConfirmPassword,
+          userName: userName.trim(),
+          email: email.trim(),
+          phoneNumber: phoneNumber.trim(),
+          userRole: userRole.trim(),
+          password: password.trim(),
+          ConfirmPassword: ConfirmPassword.trim(),
         });
+
         if (data?.success) {
           console.log(data.message);
           toast.success(data?.message);
@@ -482,6 +492,36 @@ const UserManagment = () => {
               htmlFor="example-text-input"
               className="col-md-2 col-form-label"
             >
+              Email
+            </label>
+            <div className="col-md-10">
+              <input
+                type="email"
+                className="form-control"
+                placeholder="Enter Email Id"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onBlur={() => {
+                  if (!validateEmail(email)) {
+                    alert(
+                      'Invalid email format. "@" is missing or email is incorrectly formatted.'
+                    );
+                  }
+                }}
+                ref={emailRef}
+              />
+              {!email && (
+                <span style={{ color: "red", display: spanDisplay }}>
+                  This feild is required
+                </span>
+              )}
+            </div>
+          </Row>
+          <Row className="mb-3">
+            <label
+              htmlFor="example-text-input"
+              className="col-md-2 col-form-label"
+            >
               Name
             </label>
             <div className="col-md-10">
@@ -499,37 +539,7 @@ const UserManagment = () => {
               )}
             </div>
           </Row>
-          <Row className="mb-3">
-            <label
-              htmlFor="example-text-input"
-              className="col-md-2 col-form-label"
-            >
-              Email
-            </label>
-            <div className="col-md-10">
-              <input
-                type="email"
-                className="form-control"
-                placeholder="Enter Email Id"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onBlur={() => {
-                  if (!validateEmail(email)) {
-                    alert(
-                      'Invalid email format. "@" is missing or email is incorrectly formatted.'
-                    );
-                    emailRef.current.focus();
-                  }
-                }}
-                ref={emailRef}
-              />
-              {!email && (
-                <span style={{ color: "red", display: spanDisplay }}>
-                  This feild is required
-                </span>
-              )}
-            </div>
-          </Row>
+
           <Row className="mb-3">
             <label
               htmlFor="example-text-input"

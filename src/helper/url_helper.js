@@ -1,5 +1,5 @@
-const url = "https://28mdpn6d-5289.inc1.devtunnels.ms/";
-// const url = "http://localhost:5289/"
+const url = "https://28mdpn6d-5000.inc1.devtunnels.ms/";
+// const url = "http://192.168.0.173:5001/";
 // https://28mdpn6d-5289.inc1.devtunnels.ms/swagger/index.html
 
 export const CREATE_USER = url + "UserRegistration";
@@ -37,6 +37,6 @@ export const GET_ASSIGNED_JOB = url + "GetJobQueueList";
 export const GET_SCANNED_IMAGE = url + "GetSampleData";
 export const GET_JOB_COUNT = url + "GetTotalJobCount";
 export const START_JOB = url + "StartJob";
-
+export const FINISH_JOB = url + "FinishJob";
 
 export const MAIN_URL = url;

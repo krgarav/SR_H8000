@@ -44,6 +44,8 @@ const JobModal = (props) => {
   const [selectedImageDirectory, setSelectedImageDirectory] = useState("");
   const [directoryPickerModal, setDirectoryPickerModal] = useState(false);
   const [jobName, setJobName] = useState("");
+  const [dataName, setDataName] = useState("");
+  const [imageName, setImageName] = useState("");
   const generateUUID = () => {
     return uuidv4();
   };
@@ -113,6 +115,10 @@ const JobModal = (props) => {
       toast.error("Please select data type");
       return;
     }
+    if (!dataName) {
+      toast.error("Please enter data name");
+      return;
+    }
     if (imageEnable) {
       if (!selectedImageDirectory) {
         toast.error("Please select image directory");
@@ -130,6 +136,10 @@ const JobModal = (props) => {
         toast.error("Please select image color");
         return;
       }
+      if (!imageName) {
+        toast.error("Please enter image name");
+        return;
+      }
     }
 
     const jobObj = {
@@ -141,9 +151,12 @@ const JobModal = (props) => {
       imageType: imageType.id,
       imageColor: imageColor.id,
       jobStatus: "pending",
+      jobName: jobName,
+      imageName: imageName,
+      dataFileName: dataName,
       entryAt: new Date().toISOString(),
     };
-    console.log(jobObj);
+   
     const response = await createJob(jobObj);
     if (response?.success) {
       // alert(response.message)
@@ -188,11 +201,11 @@ const JobModal = (props) => {
           <Modal.Title id="modal-custom-navbar">Create Job</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body style={{ height: "65dvh" }}>
+        <Modal.Body style={{ height: "65dvh", overflow: "auto" }}>
           <Row className="mb-2">
             <label
               htmlFor="example-text-input"
-              className="col-md-2 "
+              className="col-md-2  col-form-label"
               style={{ fontSize: ".9rem" }}
             >
               Job Name:
@@ -251,6 +264,24 @@ const JobModal = (props) => {
 
                         </div>
                     </Row> */}
+          <Row className="mb-2">
+            <label
+              htmlFor="example-text-input"
+              className="col-md-2  col-form-label"
+              style={{ fontSize: ".9rem" }}
+            >
+              Data Name:
+            </label>
+            <div className="col-md-10">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Enter the name of data file"
+                value={dataName}
+                onChange={(e) => setDataName(e.target.value)}
+              />
+            </div>
+          </Row>
           <Row className="mb-3">
             <label
               htmlFor="example-text-input"
@@ -364,7 +395,24 @@ const JobModal = (props) => {
                   </Button>
                 </div>
               </Row>
-
+              <Row className="mb-2">
+                <label
+                  htmlFor="example-text-input"
+                  className="col-md-2  col-form-label"
+                  style={{ fontSize: ".9rem" }}
+                >
+                  Image Name:
+                </label>
+                <div className="col-md-10">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter the name of data file"
+                    value={imageName}
+                    onChange={(e) => setImageName(e.target.value)}
+                  />
+                </div>
+              </Row>
               <Row className="mb-3">
                 <label
                   htmlFor="example-text-input"

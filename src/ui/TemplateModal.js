@@ -1,5 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Modal, Button, Nav, Form, Tab, Row, Col } from "react-bootstrap";
+import {
+  Modal,
+  Button,
+  Nav,
+  Form,
+  Tab,
+  Row,
+  Col,
+  Spinner,
+} from "react-bootstrap";
 import {
   IdOptionData,
   rejectData,
@@ -240,8 +249,8 @@ const TemplateModal = (props) => {
 
           setExcelFile(file);
           console.log(json);
-          const Row = json.length - 1;
-          const Column = Object.keys(json[1]).length - 1;
+          const Row = json.length;
+          const Column = Object.keys(json[1]).length;
           console.log(Object.values(json[1]));
           setNumberOfLines(Row);
           setNumberOfFrontSideColumn(Column);
@@ -474,8 +483,8 @@ const TemplateModal = (props) => {
       const base64ImageUrl = response?.frontImage;
       const base64ImageUrl2 = response?.backImage;
       console.log(jsonData);
-      const Row = jsonData.length - 1;
-      const Column = Object.keys(jsonData[1]).length - 1;
+      const Row = jsonData.length;
+      const Column = Object.keys(jsonData[1]).length;
       console.log(Object.values(jsonData[1]));
       setNumberOfLines(Row);
       setNumberOfFrontSideColumn(Column);

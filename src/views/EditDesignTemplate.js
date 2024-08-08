@@ -32,6 +32,7 @@ import isEqual from "lodash/isEqual";
 import { sendFile } from "helper/TemplateHelper";
 import { fetchAllTemplate } from "helper/TemplateHelper";
 import EditTemplateModal from "ui/EditTemplateModal";
+import base64ToFile from "services/Base64toFile";
 
 // Function to get values from sessionStorage or provide default
 const getSessionStorageOrDefault = (key, defaultValue) => {
@@ -101,12 +102,9 @@ const EditDesignTemplate = () => {
   const [coordinateIndex, setCoordinateIndex] = useState(-1);
   const [selectionIndex, setSelectionIndex] = useState();
   const [idSelectionCount, setIdSelectionCount] = useState(0);
-  const [dataLoaded, setDataLoaded] = useState(false);
   const [detailPage, setDetailPage] = useState(false);
   const location = useLocation();
   const state = location.state || {};
-
-  const rndRef = useRef();
   const navigate = useNavigate();
   const [isSmall, setIsSmall] = useState(false);
   const [data, setData] = useState(() => ({
@@ -722,15 +720,15 @@ const EditDesignTemplate = () => {
     } else if (selectedFieldType === "skewMarkField") {
       selectedWindowName = name;
       newData = {
-        iFace: +data.iFace,
+        iFace: +data.iFace??0,
         columnStart: +selection?.startCol,
         columnNumber: +noInCol,
         columnStep: +noOfStepInCol,
         rowStart: +selection?.startRow + 1,
         rowNumber: +noInRow,
         rowStep: +noOfStepInRow,
-        iSensitivity: +data.iSensitivity,
-        iDifference: +data.iDifference,
+        iSensitivity: +data.iSensitivity??3,
+        iDifference: +data.iDifference??5,
         iOption: +option,
         iReject: +data.iReject,
         iDirection: +readingDirectionOption,
@@ -753,7 +751,7 @@ const EditDesignTemplate = () => {
     } else {
       selectedWindowName = name;
       newData = {
-        iFace: +data.iFace,
+        iFace: +data.iFace??0,
         windowName: name,
         columnStart: +selection?.startCol,
         columnNumber: +noInCol,
@@ -762,8 +760,8 @@ const EditDesignTemplate = () => {
         rowNumber: +noInRow,
         rowStep: +noOfStepInRow,
         iDirection: +readingDirectionOption,
-        iSensitivity: +data.iSensitivity,
-        iDifference: +data.iDifference,
+        iSensitivity: +data.iSensitivity??3,
+        iDifference: +data.iDifference??5,
         iOption: +option,
         iMinimumMarks: +minimumMark,
         iMaximumMarks: +maximumMark,
@@ -1210,6 +1208,8 @@ const EditDesignTemplate = () => {
     };
     console.log(fullRequestData);
     // Send the request and handle the response
+    const imageFile = base64ToFile(state.templateImagePath, "image.png");
+    // const backImageFile = base64ToFile(templateBackImagePath, "image.png");
     try {
       setLoading(true);
       const res = await createTemplate(fullRequestData);
@@ -1218,7 +1218,7 @@ const EditDesignTemplate = () => {
         const layoutId = res?.layoutId;
         const formdata = new FormData();
         formdata.append("LayoutId", layoutId);
-        formdata.append("ImageFile", state.imageTempFile);
+        formdata.append("FrontImageFile", imageFile);
         formdata.append("ExcelFile", state.excelFile);
         // Iterate over the FormData entries and log them
         for (let [key, value] of formdata.entries()) {
