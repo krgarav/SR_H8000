@@ -1,5 +1,3 @@
-
-
 // core components
 import Header from "components/Headers/Header.js";
 import NormalHeader from "components/Headers/NormalHeader";
@@ -7,64 +5,65 @@ import { Modal } from "react-bootstrap";
 import { useEffect, useState } from "react";
 
 import {
-    Badge,
-    Card,
-    CardHeader,
-    CardFooter,
-    DropdownMenu,
-    DropdownItem,
-    UncontrolledDropdown,
-    DropdownToggle,
-    Media,
-    Pagination,
-    PaginationItem,
-    PaginationLink,
-    Progress,
-    Table,
-    Container,
-    Row,
-    UncontrolledTooltip,
-    Button,
-    Col,
+  Badge,
+  Card,
+  CardHeader,
+  CardFooter,
+  DropdownMenu,
+  DropdownItem,
+  UncontrolledDropdown,
+  DropdownToggle,
+  Media,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
+  Progress,
+  Table,
+  Container,
+  Row,
+  UncontrolledTooltip,
+  Button,
+  Col,
 } from "reactstrap";
 import { getAssignedJob } from "helper/job_helper";
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 const JobQueue = () => {
-    const [allJob, setAllJob] = useState([]);
-    const navigate = useNavigate();
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        const decoded = jwtDecode(token);
-        const UserId = decoded.UserId
-        const fetchAssignedJobs = async () => {
-            const response = await getAssignedJob(UserId);
-            if (response.success) {
-                setAllJob(response.result)
-            }
-        }
-        fetchAssignedJobs();
-    }, [])
-    const startHandler = (templateId) => {
-        console.log(templateId);
+  const [allJob, setAllJob] = useState([]);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const decoded = jwtDecode(token);
+    const UserId = decoded.UserId;
+    const fetchAssignedJobs = async () => {
+      const response = await getAssignedJob(UserId);
+      if (response.success) {
+        setAllJob(response.result);
+      }
+    };
+    fetchAssignedJobs();
+  }, []);
+  const startHandler = (templateId) => {
+    console.log(templateId);
+    localStorage.setItem("scantemplateId", templateId);
+    navigate("/operator/scanjob", { state: { templateId: templateId } });
+  };
 
-        navigate("/operator/scanjob", { state: { templateId: templateId } })
+  const ALLJOBS = allJob.map((item, index) => {
+    let assignuser = "Not Assigned";
+    if (item.assignUser !== "string" || item.assignUser !== "") {
+      assignuser = item.assignUser;
     }
-
-    const ALLJOBS = allJob.map((item, index) => {
-        let assignuser = "Not Assigned"
-        if (item.assignUser !== "string" || item.assignUser !== "") {
-            assignuser = item.assignUser
-        }
-        console.log(item)
-        return <tr key={index}>
-            <td>{index + 1}</td>
-            <td>{`Job ${index + 1}`}</td>
-            <td>{item.templateName}</td>
-            <td>{assignuser}</td>
-            <td>{item.imageType ? item.imageType : "Disabled"}</td>
-            <td className="text-right">
-                {/* <UncontrolledDropdown>
+    console.log(item);
+    return (
+      <tr key={index}>
+        <td>{index + 1}</td>
+        <td>{`Job ${index + 1}`}</td>
+        <td>{item.templateName}</td>
+        <td>{assignuser}</td>
+        <td>{item.imageType ? item.imageType : "Disabled"}</td>
+        <td className="text-right">
+          {/* <UncontrolledDropdown>
                     <DropdownToggle
                         className="btn-icon-only text-light"
                         href="#pablo"
@@ -81,48 +80,46 @@ const JobQueue = () => {
                         <DropdownItem >Delete</DropdownItem>
                     </DropdownMenu>
                 </UncontrolledDropdown> */}
-                <Button color="default" onClick={() => startHandler(item.templateId)}>Start</Button>
-            </td>
-        </tr>
-    })
+          <Button color="default" onClick={() => startHandler(item.templateId)}>
+            Start
+          </Button>
+        </td>
+      </tr>
+    );
+  });
 
-    return (
-        <>
-            <NormalHeader />
+  return (
+    <>
+      <NormalHeader />
 
-            <Container className="mt--7" fluid >
+      <Container className="mt--7" fluid>
+        <Row>
+          <div className="col">
+            <Card className="shadow">
+              <CardHeader className="border-0">
+                <div className="d-flex justify-content-between">
+                  <h3 className="mt-2"> Job Queue</h3>
+                </div>
+              </CardHeader>
+              <Table className="align-items-center table-flush mb-5" responsive>
+                <thead className="thead-light">
+                  <tr>
+                    <th scope="col">Sno.</th>
+                    <th scope="col">Job Name</th>
+                    <th scope="col">Template</th>
+                    <th scope="col">Assigned By </th>
+                    <th scope="col">Image</th>
+                    <th scope="col"></th>
+                  </tr>
+                </thead>
+                <tbody style={{ minHeight: "100rem" }}>{ALLJOBS}</tbody>
+              </Table>
+            </Card>
+          </div>
+        </Row>
+      </Container>
 
-                <Row>
-                    <div className="col">
-                        <Card className="shadow">
-                            <CardHeader className="border-0">
-                                <div className="d-flex justify-content-between">
-                                    <h3 className="mt-2"> Job Queue</h3>
-                                </div>
-                            </CardHeader>
-                            <Table className="align-items-center table-flush mb-5" responsive>
-                                <thead className="thead-light">
-                                    <tr>
-                                        <th scope="col">Sno.</th>
-                                        <th scope="col">Job Name</th>
-                                        <th scope="col">Template</th>
-                                        <th scope="col">Assigned By </th>
-                                        <th scope="col">Image</th>
-                                        <th scope="col"></th>
-                                    </tr>
-                                </thead>
-                                <tbody style={{ minHeight: "100rem" }}>
-
-                                    {ALLJOBS}
-                                </tbody>
-                            </Table>
-                        </Card>
-                    </div>
-                </Row>
-            </Container>
-
-
-            {/* <div className=" head">
+      {/* <div className=" head">
                 <div className="table-main">
                     <table className=" ">
                         <thead>
@@ -164,10 +161,8 @@ const JobQueue = () => {
                     </Button>
                 </div>
             </div> */}
-        </>
-    );
+    </>
+  );
 };
 
 export default JobQueue;
-
-

@@ -47,7 +47,7 @@ const AdminJobQueue = () => {
   }, []);
   const startHandler = (templateId) => {
     console.log(templateId);
-
+    localStorage.setItem("scantemplateId", templateId);
     navigate("/admin/adminscanjob", { state: { templateId: templateId } });
   };
 

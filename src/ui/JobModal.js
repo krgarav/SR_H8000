@@ -84,10 +84,7 @@ const JobModal = (props) => {
       if (data?.success) {
         const structuredOperators = data.result
           .map((item) => {
-            if (item.userRoleList[0]?.roleName === "Operator") {
-              return { id: item.email, name: item.email };
-            }
-            return null;
+            return { id: item.email, name: item.email };
           })
           .filter((item) => item !== null);
         setAllOperators(structuredOperators);

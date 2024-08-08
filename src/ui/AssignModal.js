@@ -28,14 +28,11 @@ const AssignModal = (props) => {
             console.log(data.result)
             if (data?.success) {
                 const structuredOperators = data.result.map((item) => {
-                    if (item.userRoleList[0]?.roleName === "Operator") {
-                        return { id: item.id, name: item.email }
-                    }
-                    return null
-                }).filter((item) => item !== null);
-                
+                  return { id: item.id, name: item.email };
+                });
+        
                 setAllOperators(structuredOperators);
-            }
+              }
             // const structuredTemplate = template.map((item) => ({ id: item.id, name: item.layoutName }))
             // console.log(structuredTemplate)
             // setAllTemplateOptions(structuredTemplate);

@@ -57,13 +57,13 @@ var routes = [
   //   component: <Booklet24Page />,
   //   layout: "/admin",
   // },
-  {
-    path: "/32-page-booklet",
-    name: "Scan Template",
-    icon: "ni ni-books text-success",
-    component: <Booklet32Page />,
-    layout: "/admin",
-  },
+  // {
+  //   path: "/32-page-booklet",
+  //   name: "Scan Template",
+  //   icon: "ni ni-books text-success",
+  //   component: <Booklet32Page />,
+  //   layout: "/admin",
+  // },
   {
     path: "/icons",
     name: "Admin Job Queue",

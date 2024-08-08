@@ -55,7 +55,7 @@ const AdminScanJob = () => {
     Filter,
   ]);
   const [gridHeight, setGridHeight] = useState("350px");
-  const [starting, setStarting] = useState("fasle");
+  const [starting, setStarting] = useState(false);
   const gridRef = useRef();
 
   const location = useLocation();
@@ -79,15 +79,17 @@ const AdminScanJob = () => {
     };
   }, []);
   useEffect(() => {
-    // console.log(location.state === null);
-    // if (!location.state) {
-    //   navigate("/admin/icons", { replace: true });
-    //   return;
-    // }
-    // const { templateId } = location?.state;
-    const templateId = 1;
+    if (!location.state) {
+      navigate("/admin/icons", { replace: true });
+      return;
+    }
+    const { templateId } = location?.state;
+    const loacalTemplateId = localStorage.getItem("scantemplateId");
     if (templateId) {
       setSelectedValue(templateId);
+    }
+    if (loacalTemplateId) {
+      setSelectedValue(loacalTemplateId);
     }
   }, [location]);
   console.log(selectedValue);
@@ -171,16 +173,16 @@ const AdminScanJob = () => {
     }
   };
   console.log(scanning);
-  useEffect(() => {
-    const fetchData = async () => {
-      const template = await fetchAllTemplate();
-      const optionObject = template?.map((item) => {
-        return { id: item.id, value: item.layoutName };
-      });
-      setTemplateOptions(optionObject);
-    };
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const template = await fetchAllTemplate();
+  //     const optionObject = template?.map((item) => {
+  //       return { id: item.id, value: item.layoutName };
+  //     });
+  //     setTemplateOptions(optionObject);
+  //   };
+  //   fetchData();
+  // }, []);
   useEffect(() => {
     if (!scanning) return;
 

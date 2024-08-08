@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import Select from "react-select";
 import { fetchProcessData } from "helper/Booklet32Page_helper";
 import { toast } from "react-toastify";
-import { Button, Container, } from "reactstrap";
+import { Button, Container } from "reactstrap";
 import { refreshScanner } from "helper/Booklet32Page_helper";
 import { scanFiles } from "helper/Booklet32Page_helper";
 import {
@@ -50,6 +50,7 @@ const Booklet32Page = () => {
     ExcelExport,
     Filter,
   ]);
+  const [starting, setStarting] = useState(false);
   const gridRef = useRef();
   const jsonDataRef = useRef(jsonData);
   // useEffect(() => {
@@ -175,7 +176,6 @@ const Booklet32Page = () => {
   //             newItem["Serial No"] = num++;
   //             return newItem;
   //           });
-          
 
   //         // Set headData with the new keys, ensuring "Serial No" is included as a heading
   //         setHeadData(["Serial No", ...newDataKeys]);
@@ -234,7 +234,7 @@ const Booklet32Page = () => {
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
-    } 
+    }
   };
 
   useEffect(() => {
@@ -276,15 +276,19 @@ const Booklet32Page = () => {
       alert("Choose Template");
       return;
     }
-    if (scanning) {
-      setScanning(false);
-      return;
-    }
+    // if (scanning) {
+    //   setScanning(false);
+    //   return;
+    // }
+    setStarting(true);
+    setTimeout(async () => {
+      setStarting(false);
+    }, 6000);
     setProcessedData([]);
     setTimeout(async () => {
       setScanning(true);
     }, 6000);
-    const response = await scanFiles(selectedValue.id);
+    const response = await scanFiles(selectedValue);
     console.log(response);
     if (!response?.result?.success) {
       toast.error(response?.result?.message);
@@ -349,7 +353,7 @@ const Booklet32Page = () => {
     );
   });
 
-  // ****************function without scrolling behaviour will give u data in real time********* 
+  // ****************function without scrolling behaviour will give u data in real time*********
 
   // const dataBound = () => {
   //   if (gridRef.current) {
@@ -363,7 +367,6 @@ const Booklet32Page = () => {
   // }
   // *************************************************************************************************
 
-
   const dataBound = () => {
     if (gridRef.current) {
       const grid = gridRef.current;
@@ -375,23 +378,24 @@ const Booklet32Page = () => {
           const gridContent = grid?.getContent()?.firstElementChild;
           gridContent.scrollTo({
             top: gridContent.scrollHeight,
-            behavior: 'smooth',
+            behavior: "smooth",
           });
         }, 500); // Delay to ensure the grid is fully rendered before scrolling
       }
     }
   };
-  const handleStop = async()=>{
+  const handleStop = async () => {
     try {
-        const cancel = await cancelScan();
-        setTimeout(()=>{
-          setScanning(false);
-        },5000)
-        
+      const cancel = await cancelScan();
+      setScanning(false);
+      setStarting(false);
+      //   setTimeout(() => {
+      //     setScanning(false);
+      //   }, 5000);
     } catch (error) {
-        console.log(error)
+      console.log(error);
     }
-}
+  };
 
   return (
     <>
@@ -440,8 +444,11 @@ const Booklet32Page = () => {
             color={scanning ? "warning" : "success"}
             type="button"
             onClick={handleStart}
+            disabled={scanning || starting ? true : false}
           >
-            {scanning ? "Stop" : "Start"}
+            {starting && !scanning && "Starting"}
+            {!starting && !scanning && "Start"}
+            {scanning && "Scanning"}
           </Button>
           {/* <Button
             className=""
@@ -451,7 +458,16 @@ const Booklet32Page = () => {
           >
             Refresh
           </Button> */}
-         {scanning&& <Button className="" color="danger" type="button" onClick={handleStop} >Cancel Scanning</Button>}
+          {scanning && (
+            <Button
+              className=""
+              color="danger"
+              type="button"
+              onClick={handleStop}
+            >
+              Cancel Scanning
+            </Button>
+          )}
         </div>
       </Container>
     </>

@@ -56,7 +56,7 @@ const ScanJob = () => {
   ]);
   const gridRef = useRef();
   const [gridHeight, setGridHeight] = useState("350px");
-  const [starting, setStarting] = useState("fasle");
+  const [starting, setStarting] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -78,16 +78,18 @@ const ScanJob = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
   useEffect(() => {
-    console.log(location.state === null);
     if (!location.state) {
-      navigate("/operator/job-queue", { replace: true });
+      navigate("/admin/icons", { replace: true });
       return;
     }
     const { templateId } = location?.state;
+    const loacalTemplateId = localStorage.getItem("scantemplateId");
     if (templateId) {
       setSelectedValue(templateId);
+    }
+    if (loacalTemplateId) {
+      setSelectedValue(loacalTemplateId);
     }
   }, [location]);
   console.log(selectedValue);
@@ -228,7 +230,7 @@ const ScanJob = () => {
       setScanning(true);
     }, 6000);
     const response = await scanFiles(selectedValue);
-    console.log(response);
+    console.log(">>>>>>", response);
     if (!response?.result?.success) {
       toast.error(response?.result?.message);
     } else {
@@ -372,7 +374,7 @@ const ScanJob = () => {
             <div className="m-2" style={{ float: "right" }}>
               <Button
                 className=""
-                color={ "success"}
+                color={"success"}
                 type="button"
                 onClick={handleStart}
                 disabled={scanning || starting ? true : false}
