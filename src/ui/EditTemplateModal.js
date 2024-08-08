@@ -49,6 +49,7 @@ const EditTemplateModal = (props) => {
   const [size, setSize] = useState({ id: 1, name: "A4" });
   const [numberOfLines, setNumberOfLines] = useState("");
   const [imageSrc, setImageSrc] = useState("");
+  const [backImageSrc, setBackImageSrc] = useState("");
   const [sensitivity, setSensitivity] = useState(1);
   const [difference, setDifference] = useState("");
   const [barCount, setBarCount] = useState(0);
@@ -87,6 +88,7 @@ const EditTemplateModal = (props) => {
   const [imageModal, setImageModal] = useState();
   const [image, setImage] = useState();
   const [imageTempFile, setTempImageFile] = useState();
+  const [imageBack, setImageBack] = useState();
   const [selectedUI, setSelectedUI] = useState("SIMPLEX");
   const [activeTab, setActiveTab] = useState("simplex");
   const [barcodeEnable, setBarcodeEnable] = useState({
@@ -210,7 +212,11 @@ const EditTemplateModal = (props) => {
 
           setSelectedBubble(comparewithName(bubbleData, layout.bubbleType));
           setSensitivity(layout.iSensitivity);
-          setDifference(layout.iDifference)
+          setDifference(layout.iDifference);
+
+          const file = base64ToFile(layout.templateImagePath, "image.png");
+          setImageFile(file);
+          setImage(layout.templateImagePath);
         }
       }
       // dataCtx.addFieldToTemplate(res, data.templateIndex);
@@ -280,6 +286,20 @@ const EditTemplateModal = (props) => {
     }
   };
 
+  const handleImage2Upload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBackImageSrc(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+    if (file) {
+      setImageBack(URL.createObjectURL(file));
+      // setTempImageFile(file);
+    }
+  };
   const validatePrintField = () => {
     const errors = {
       startPosition: "Printing start position cannot be empty",
@@ -407,12 +427,12 @@ const EditTemplateModal = (props) => {
             totalColumns: +numberOfFrontSideColumn,
             bubbleType: selectedBubble?.name,
             templateImagePath: imageSrc,
+            templateBackImagePath: backImageSrc,
             iSensitivity: +sensitivity,
             iDifference: +difference,
             ngAction: windowNgOption?.id,
             dataReadDirection: direction?.id,
             iReject: 1,
-            idMarksPattern: "000000000000000000000000",
             excelJsonFile: excelJsonFile,
           },
           barcodeData: {
@@ -449,8 +469,9 @@ const EditTemplateModal = (props) => {
         },
       ];
       console.log(templateData);
-      const index = dataCtx.setAllTemplates(templateData);
-      setModalShow(false);
+      // localStorage.setItem("Template", JSON.stringify(templateData));
+      // const index = dataCtx.setAllTemplates(templateData);
+      // setModalShow(false);
     } catch (error) {
       console.error("Error uploading file: ", error);
     }
@@ -2281,6 +2302,19 @@ const EditTemplateModal = (props) => {
             />
             {image && (
               <img src={image} alt="Scanned" width={100} height={100} />
+            )}
+          </Row>
+          <Row className="d-flex justify-content-center mt-4">
+            <label>Choose Back Image</label>
+            <input
+              className="form-control"
+              type="file"
+              id="formFile"
+              onChange={handleImage2Upload}
+              accept="image/*"
+            />
+            {imageBack && (
+              <img src={imageBack} alt="Scanned" width={100} height={100} />
             )}
           </Row>
           <Row className="d-flex justify-content-center mt-4">

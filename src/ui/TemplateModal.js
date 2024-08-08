@@ -2280,7 +2280,7 @@ const TemplateModal = (props) => {
         <Modal.Header>
           <Modal.Title id="modal-custom-navbar">Select Image</Modal.Title>
         </Modal.Header>
-        <Modal.Body style={{ height: "65dvh" }}>
+        <Modal.Body style={{ height: "65dvh", overflow: "auto" }}>
           <Row className="d-flex justify-content-center mt-4">
             <label>Choose Front Image</label>
             <input
