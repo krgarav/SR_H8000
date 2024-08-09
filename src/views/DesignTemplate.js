@@ -1410,10 +1410,10 @@ const DesignTemplate = () => {
                   id="grid-div"
                   style={{
                     border: "2px solid black",
-                    paddingTop: "1.0rem",
-                    padding: "1rem",
-                    paddingLeft: ".5rem",
-
+                    paddingTop: "1rem",
+                    // padding: "1rem",
+                    paddingLeft: "0.5rem",
+                    width: "102%",
                     // overflowX: "auto",
                   }}
                 >
