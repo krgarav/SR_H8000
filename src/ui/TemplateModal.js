@@ -142,6 +142,7 @@ const TemplateModal = (props) => {
   const [printDigit, setPrintDigit] = useState(null);
   const [printStartNumber, setPrintStartNumber] = useState(null);
   const [printCustomValue, setPrintCustomValue] = useState(null);
+  const [scannerLoading, setScannerLoading] = useState(false);
   const navigate = useNavigate();
 
   const jobHandler = (e) => {
@@ -476,13 +477,13 @@ const TemplateModal = (props) => {
   };
 
   const scannerHandler = async () => {
+    setScannerLoading(true);
     try {
       const response = await getSampleData();
       console.log(response);
       const jsonData = response?.data;
       const base64ImageUrl = response?.frontImage;
       const base64ImageUrl2 = response?.backImage;
-      console.log(jsonData);
       const Row = jsonData.length;
       const Column = Object.keys(jsonData[1]).length;
       console.log(Object.values(jsonData[1]));
@@ -507,8 +508,10 @@ const TemplateModal = (props) => {
       setImage(imageUrl);
       setImageSrc(base64ImageUrl);
       setBackImageSrc(base64ImageUrl2);
+      setScannerLoading(false);
     } catch (error) {
       console.log(error);
+      setScannerLoading(false);
       toast.error(error.message);
     }
   };
@@ -2195,72 +2198,73 @@ const TemplateModal = (props) => {
           <Modal.Title id="modal-custom-navbar">Select Image</Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ height: "65dvh" }}>
-          {/* <Row>
-                        <div class="mb-4" >
-                            <label for="formFile" class="form-label">Upload OMR Image</label>
-                            <input class="form-control" type="file" id="formFile" onChange={handleImageUpload} accept="image/*" />
-                        </div>
-                    </Row>
-                    <Row>
-
-                        <ImageSelection />
-                    </Row> */}
-
-          <div className="container mt-4">
-            <style jsx>{`
-              .upload-box {
-                cursor: pointer;
-                background-color: #f8f9fa;
-                border: 1px solid #dee2e6;
-                border-radius: 10px;
-                padding: 20px;
-                text-align: center;
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
-              }
-              .upload-box:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-              }
-              .upload-box h1 {
-                font-size: 1.5rem;
-                color: #333;
-              }
-            `}</style>
-            <Row>
-              <Col lg={6} md={6} className="mb-4">
-                <div
-                  onClick={systemHandler}
-                  className="upload-box p-4 text-center border rounded"
-                >
-                  <h1 className="fs-3 text-dark">Upload From System</h1>
-                  {/* <label htmlFor="formFile" className="form-label sr-only">
-                    Upload OMR Image
-                  </label>
-                  <input
-                    className="form-control sr-only"
-                    type="file"
-                    id="formFile"
-                    onChange={handleImageUpload}
-                    accept="image/*"
-                  /> */}
-                </div>
-              </Col>
-              <Col lg={6} md={6} className="mb-4">
-                <div
-                  onClick={scannerHandler}
-                  className="upload-box p-4 text-center border rounded"
-                >
-                  <h1>Upload From Scanner</h1>
-                </div>
-              </Col>
-            </Row>
-          </div>
-          <Row className="d-flex justify-content-center mt-4">
-            {image && (
-              <img src={image} alt="Scanned" width={200} height={200} />
+          <>
+            {scannerLoading && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: "rgba(0, 0, 0, 0.2)", // Slightly opaque background
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  zIndex: 999,
+                  pointerEvents: "auto", // Make the overlay not clickable
+                }}
+              >
+                <Spinner />
+              </div>
             )}
-            {!image && <p>Please select the image</p>}
-          </Row>
+            <div className="container mt-4">
+              <style jsx>{`
+                .upload-box {
+                  cursor: pointer;
+                  background-color: #f8f9fa;
+                  border: 1px solid #dee2e6;
+                  border-radius: 10px;
+                  padding: 20px;
+                  text-align: center;
+                  transition: transform 0.3s ease, box-shadow 0.3s ease;
+                }
+                .upload-box:hover {
+                  transform: translateY(-5px);
+                  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+                }
+                .upload-box h1 {
+                  font-size: 1.5rem;
+                  color: #333;
+                }
+              `}</style>
+
+              <Row>
+                <Col lg={6} md={6} className="mb-4">
+                  <div
+                    onClick={systemHandler}
+                    className="upload-box p-4 text-center border rounded"
+                  >
+                    <h1 className="fs-3 text-dark">Upload From System</h1>
+                  </div>
+                </Col>
+                <Col lg={6} md={6} className="mb-4">
+                  <div
+                    onClick={scannerHandler}
+                    className="upload-box p-4 text-center border rounded"
+                  >
+                    <h1>Upload From Scanner</h1>
+                  </div>
+                </Col>
+              </Row>
+            </div>
+            <Row className="d-flex justify-content-center mt-4">
+              {image && (
+                <img src={image} alt="Scanned" width={200} height={200} />
+              )}
+              {!image && <p>Please select the image</p>}
+            </Row>
+          </>
         </Modal.Body>
         <Modal.Footer>
           <Button
