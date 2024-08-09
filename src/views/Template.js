@@ -11,7 +11,7 @@ import {
 // core components
 import Header from "components/Headers/Header.js";
 import NormalHeader from "components/Headers/NormalHeader";
-import { Modal, Button, Row, Col } from "react-bootstrap";
+import { Modal, Button, Row, Col, Placeholder, Spinner } from "react-bootstrap";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DataContext from "store/DataContext";
@@ -41,6 +41,7 @@ const Template = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [templateDatail, setTemplateDetail] = useState([]);
   const [toggle, setToggle] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const dataCtx = useContext(DataContext);
   useEffect(() => {
@@ -70,6 +71,7 @@ const Template = () => {
   };
   const editHandler = async (arr, index) => {
     console.log(arr);
+    setLoading(true);
     const tempdata = arr[0].layoutParameters;
 
     const templateId = tempdata.id;
@@ -78,6 +80,7 @@ const Template = () => {
     const templateFile = res.templateFiles.slice(-3);
     console.log(templateFile);
     if (templateFile.length < 3) {
+      setLoading(false);
       return;
     }
     const csvpath = res?.templateFiles[2].excelPath;
@@ -90,10 +93,12 @@ const Template = () => {
 
     if (res3 === undefined) {
       alert("No back image found in this template.Cannot Open the template. ");
+      setLoading(false);
       return;
     }
     if (res1 === undefined) {
       alert("No front image found in this template.Cannot Open the template. ");
+      setLoading(false);
       return;
     }
 
@@ -102,6 +107,7 @@ const Template = () => {
     const res2 = await getTemplateCsv(csvpath);
     if (res2 === undefined) {
       alert("No CSV found in this template.Cannot Open the template. ");
+      setLoading(false);
       return;
     }
     const csvContent = Papa.unparse(res2.data);
@@ -129,6 +135,7 @@ const Template = () => {
     console.log(tempdata);
     // sessionStorage.setItem();
     // return;
+    setLoading(false);
     navigate("/admin/edit-template", {
       state: {
         templateIndex: index,
@@ -146,6 +153,7 @@ const Template = () => {
         excelFile: csvfile,
       },
     });
+    setLoading(false);
   };
 
   const deleteImage = async (imageUrl) => {
@@ -235,7 +243,27 @@ const Template = () => {
                   </Button>
                 </div>
               </CardHeader>
-              <div style={{ height: "70vh", overflow: "auto" }}>
+
+              <div style={{ height: "65vh", overflow: "auto" }}>
+                {loading && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      backgroundColor: "rgba(0, 0, 0, 0.2)", // Slightly opaque background
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      zIndex: 999,
+                      pointerEvents: "auto", // Make the overlay not clickable
+                    }}
+                  >
+                    <Spinner />
+                  </div>
+                )}
                 <Table
                   className="align-items-center table-flush mb-5 table-hover"
                   responsive
@@ -251,6 +279,75 @@ const Template = () => {
                     </tr>
                   </thead>
                   <tbody>
+                    {/* <tr>
+                      <td>
+                        <Placeholder as="h1" animation="glow">
+                          <Placeholder xs={6} />
+                        </Placeholder>
+                      </td>
+                      <td>
+                        <Placeholder as="h1" animation="glow">
+                          <Placeholder xs={6} />
+                        </Placeholder>
+                      </td>
+                      <td>
+                        <Placeholder as="h1" animation="glow">
+                          <Placeholder xs={6} />
+                        </Placeholder>
+                      </td>
+                      <td>
+                        <Placeholder as="h1" animation="glow">
+                          <Placeholder xs={6} />
+                        </Placeholder>
+                      </td>
+                      <td>
+                        <Placeholder as="h1" animation="glow">
+                          <Placeholder xs={6} />
+                        </Placeholder>
+                      </td>
+                      <td className="text-right">
+                        <p aria-hidden="true">
+                          <Placeholder xs={6} />
+                        </p>
+                      </td>
+                    </tr> */}
+                    {/* <tr>
+                      <td>
+                        <Placeholder as="h1" animation="glow">
+                          <Placeholder xs={6} />
+                        </Placeholder>
+                      </td>
+                      <td>
+                        <Placeholder as="h1" animation="glow">
+                          <Placeholder xs={6} />
+                        </Placeholder>
+                      </td>
+                      <td>
+                        {" "}
+                        <Placeholder as="h1" animation="glow">
+                          <Placeholder xs={6} />
+                        </Placeholder>
+                      </td>
+                      <td>
+                        {" "}
+                        <Placeholder as="h1" animation="glow">
+                          <Placeholder xs={6} />
+                        </Placeholder>
+                      </td>
+                      <td>
+                        {" "}
+                        <Placeholder as="h1" animation="glow">
+                          <Placeholder xs={6} />
+                        </Placeholder>
+                      </td>
+                      <td className="text-right">
+                        {" "}
+                        <Placeholder as="h1" animation="glow">
+                          <Placeholder xs={6} />
+                        </Placeholder>
+                      </td>
+                    </tr> */}
+
                     {dataCtx.allTemplates?.map((d, i) => (
                       <tr
                         key={i}
@@ -281,7 +378,6 @@ const Template = () => {
                               <DropdownItem onClick={() => editHandler(d, i)}>
                                 Edit
                               </DropdownItem>
-                              {/* <DropdownItem onClick={() => sendToBackendHandler(d, i)}>Send Data</DropdownItem> */}
                               <DropdownItem
                                 style={{ color: "red" }}
                                 onClick={() => deleteHandler(d, i)}
