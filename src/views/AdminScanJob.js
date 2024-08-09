@@ -180,7 +180,7 @@ const AdminScanJob = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong");
+      // toast.error("Something went wrong");
 
       // Set scanning to false in case of error
       // setScanning(false);
@@ -233,7 +233,6 @@ const AdminScanJob = () => {
     const token = localStorage.getItem("token");
     if (token) {
       const userInfo = jwtDecode(token);
-
       const userId = userInfo.UserId;
 
       // if (scanning) {

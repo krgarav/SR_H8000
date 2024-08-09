@@ -62,7 +62,7 @@ const ModeratorJobQueue = () => {
 
     localStorage.setItem("scantemplateId", templateId);
     localStorage.setItem("jobId", id);
-    navigate("/moderator/adminscanjob", { state: { templateId: templateId } });
+    navigate("/moderator/scanjob", { state: { templateId: templateId } });
   };
   // const token = localStorage.getItem("token");
   // if (token) {
@@ -74,7 +74,7 @@ const ModeratorJobQueue = () => {
     localStorage.setItem("scantemplateId", templateId);
     localStorage.setItem("jobId", id);
 
-    navigate("/admin/adminscanjob", { state: { templateId: templateId } });
+    navigate("/moderator/scanjob", { state: { templateId: templateId } });
   };
   const ALLJOBS = allJob.map((item, index) => {
     let assignuser = "Not Assigned";

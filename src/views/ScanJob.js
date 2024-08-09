@@ -32,6 +32,8 @@ import { jwtDecode } from "jwt-decode";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cancelScan } from "helper/TemplateHelper";
 import { finishJob } from "helper/job_helper";
+import axios from "axios";
+import { GET_PROCESS_32_PAG_DATA } from "helper/url_helper";
 
 const ScanJob = () => {
   const [count, setCount] = useState(true);
@@ -137,9 +139,10 @@ const ScanJob = () => {
       const userInfo = jwtDecode(token);
 
       const userId = userInfo.UserId;
-      const data = await fetchProcessData(selectedValue, userId);
-      console.log(data);
-
+      const res = await axios.get(
+        GET_PROCESS_32_PAG_DATA + `?Id=${selectedValue}&UserId=${userId}`
+      );
+      const data = res.data;
       // Check if the data fetch was successful
       if (data?.result?.success) {
         // Extract keys from the first item in the data array
@@ -173,23 +176,13 @@ const ScanJob = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong");
+      // toast.error("Something went wrong");
 
       // Set scanning to false in case of error
       // setScanning(false);
     }
   };
-  console.log(scanning);
-  useEffect(() => {
-    const fetchData = async () => {
-      const template = await fetchAllTemplate();
-      const optionObject = template?.map((item) => {
-        return { id: item.id, value: item.layoutName };
-      });
-      setTemplateOptions(optionObject);
-    };
-    fetchData();
-  }, []);
+
   useEffect(() => {
     if (!scanning) return;
 
@@ -223,40 +216,38 @@ const ScanJob = () => {
       alert("Choose Template");
       return;
     }
-    if (scanning) {
-      setScanning(false);
-      return;
-    }
-    const token = localStorage.getItem("token");
-    const userInfo = jwtDecode(token);
 
-    const userId = userInfo.UserId;
-    setStarting(true);
-    setTimeout(async () => {
-      setStarting(false);
-    }, 6000);
-    setProcessedData([]);
-    setTimeout(async () => {
-      setScanning(true);
-    }, 6000);
-    const response = await scanFiles(selectedValue, userId);
-    console.log(">>>>>>", response);
-    if (!response?.result?.success) {
-      toast.error(response?.result?.message);
-    } else {
-      toast.success(response?.result?.message);
-    }
-    if (response) {
-      if (!response?.success) {
-        toast.error(response?.message);
+    const token = localStorage.getItem("token");
+    if (token) {
+      const userInfo = jwtDecode(token);
+      const userId = userInfo.UserId;
+
+      setStarting(true);
+      setTimeout(async () => {
+        setStarting(false);
+      }, 6000);
+      setProcessedData([]);
+      setTimeout(async () => {
+        setScanning(true);
+      }, 6000);
+      const response = await scanFiles(selectedValue, userId);
+      if (!response?.result?.success) {
+        toast.error(response?.result?.message);
       } else {
-        toast.success(response?.message);
+        toast.success(response?.result?.message);
       }
-      setScanning(false);
-    }
-    if (response === undefined) {
-      toast.error("Request Timeout");
-      setScanning(false);
+      if (response) {
+        if (!response?.success) {
+          toast.error(response?.message);
+        } else {
+          toast.success(response?.message);
+        }
+        setScanning(false);
+      }
+      if (response === undefined) {
+        // toast.error("Request Timeout");
+        setScanning(false);
+      }
     }
   };
 
@@ -328,6 +319,7 @@ const ScanJob = () => {
     }
   };
   const completeJobHandler = async () => {
+    console.log("called");
     const result = window.confirm("Are you sure to finish the job ?");
     if (!result) {
       return;
@@ -339,11 +331,19 @@ const ScanJob = () => {
       id: id,
       templateId: templateId,
     };
+    const token = localStorage.getItem("token");
+    const { Role } = jwtDecode(token);
+
     const res = await finishJob(obj);
     if (res?.success) {
       toast.success("Completed the job!!!");
     }
-    navigate("/job-queue", { replace: true });
+
+    if (Role === "Moderator") {
+      navigate("moderator/icons", { replace: true });
+    } else {
+      navigate("operator/job-queue", { replace: true });
+    }
   };
   const columnsDirective = headData.map((item, index) => {
     return (

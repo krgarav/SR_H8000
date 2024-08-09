@@ -512,7 +512,7 @@ const TemplateModal = (props) => {
     } catch (error) {
       console.log(error);
       setScannerLoading(false);
-      toast.error(error.message);
+      // toast.error(error.message);
     }
   };
   const systemHandler = () => {

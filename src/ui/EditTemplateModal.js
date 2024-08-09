@@ -1,5 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Modal, Button, Nav, Form, Tab, Row, Col } from "react-bootstrap";
+import {
+  Modal,
+  Button,
+  Nav,
+  Form,
+  Tab,
+  Row,
+  Col,
+  Spinner,
+} from "react-bootstrap";
 import {
   IdOptionData,
   rejectData,
@@ -111,7 +120,7 @@ const EditTemplateModal = (props) => {
   const [printDigit, setPrintDigit] = useState(null);
   const [printStartNumber, setPrintStartNumber] = useState(null);
   const [printCustomValue, setPrintCustomValue] = useState(null);
-
+  const [scannerLoading, setScannerLoading] = useState(false);
   const jobHandler = (e) => {
     setSelectedUI(e);
   };
@@ -183,15 +192,11 @@ const EditTemplateModal = (props) => {
   }, [props.show]);
   // *****************************************************************************************
   const comparewithId = (optiondata, optionvalue) => {
-    console.log(optiondata);
     const filter = optiondata.find((item) => item.id === optionvalue);
-    console.log(filter);
     return filter;
   };
   const comparewithName = (optiondata, optionvalue) => {
-    console.log(optiondata);
     const filter = optiondata.find((item) => item.name === optionvalue);
-    console.log(filter);
     return filter;
   };
   useEffect(() => {
@@ -217,6 +222,7 @@ const EditTemplateModal = (props) => {
           const file = base64ToFile(layout.templateImagePath, "image.png");
           setImageFile(file);
           setImage(layout.templateImagePath);
+          setDirection(comparewithId(directionData, layout.dataReadDirection));
         }
       }
       // dataCtx.addFieldToTemplate(res, data.templateIndex);
@@ -327,20 +333,7 @@ const EditTemplateModal = (props) => {
       }
     }
 
-    if (
-      !name ||
-      !numberOfLines ||
-      !numberOfFrontSideColumn ||
-      !selectedBubble ||
-      !idPresent ||
-      !reject ||
-      !face ||
-      barCount.length === 0 ||
-      difference.length == 0 ||
-      !direction ||
-      face.length === 0 ||
-      !imageFile
-    ) {
+    
       settoggle((prevData) => ({
         ...prevData,
         name: !name ? true : prevData.name,
@@ -377,22 +370,28 @@ const EditTemplateModal = (props) => {
         toast.error("Please Select ID Field ");
         return;
       }
-      if (!face) {
-        toast.error("Please Select Id Mark");
-        return;
+      if (idPresent.id === "present") {
+        if (!face) {
+          toast.error("Please Select Id Mark");
+          return;
+        }
       }
+
       if (Object.values(selectedBubble).length == 0) {
         toast.error("Please Select Bubble Variant");
         return;
       }
-
-      if (Object.values(windowNgOption).length == 0) {
-        toast.error("Please Select WindowNg");
-        return;
+      if (idPresent.id === "present") {
+        if (Object.values(windowNgOption).length == 0) {
+          toast.error("Please Select WindowNg");
+          return;
+        }
       }
-      if (!reject) {
-        toast.error("Please Select a Value in Rejected Field");
-        return;
+      if (idPresent.id === "present") {
+        if (!reject) {
+          toast.error("Please Select a Value in Rejected Field");
+          return;
+        }
       }
       if (barCount.length === 0) {
         toast.error("Barcode Field can not be empty");
@@ -414,8 +413,7 @@ const EditTemplateModal = (props) => {
         toast.error("Please Select Excel File");
         return;
       }
-      return;
-    }
+      console.log(face)
     try {
       const templateData = [
         {
@@ -423,7 +421,7 @@ const EditTemplateModal = (props) => {
             layoutName: name,
             timingMarks: +numberOfLines,
             barcodeCount: +barCount,
-            iFace: +face.id,
+            iFace: +face.id??0,
             totalColumns: +numberOfFrontSideColumn,
             bubbleType: selectedBubble?.name,
             templateImagePath: imageSrc,
@@ -468,7 +466,10 @@ const EditTemplateModal = (props) => {
           },
         },
       ];
+      const templateIndex = sessionStorage.getItem("templateIndex");
+      console.log(dataCtx.allTemplates[templateIndex]);
       console.log(templateData);
+      return;
       // localStorage.setItem("Template", JSON.stringify(templateData));
       // const index = dataCtx.setAllTemplates(templateData);
       // setModalShow(false);
@@ -478,28 +479,24 @@ const EditTemplateModal = (props) => {
   };
 
   const scannerHandler = async () => {
+    setScannerLoading(true);
     try {
       const response = await getSampleData();
-      console.log(response);
       const jsonData = response?.data;
-      const base64ImageUrl = response?.image;
-      console.log(jsonData);
-      const Row = jsonData.length - 1;
-      const Column = Object.keys(jsonData[1]).length - 1;
-      console.log(Object.values(jsonData[1]));
+      const base64ImageUrl = response?.frontImage;
+      const base64ImageUrl2 = response?.backImage;
+      const Row = jsonData.length;
+      const Column = Object.keys(jsonData[1]).length;
       setNumberOfLines(Row);
       setNumberOfFrontSideColumn(Column);
       setExcelJsonFile(jsonData);
       const csv = Papa.unparse(jsonData);
       // Create a Blob from the CSV string
       const blob = new Blob([csv], { type: "text/csv" });
-
       // Create a File object from the Blob
       const csvfile = new File([blob], "data.csv", { type: "text/csv" });
-
       // Set the File object to state
       setExcelFile(csvfile);
-
       const file = base64ToFile(base64ImageUrl, "image.png");
       // Convert the File object to an image URL
       const imageUrl = URL.createObjectURL(file);
@@ -507,9 +504,12 @@ const EditTemplateModal = (props) => {
       // Set the image URL to be used in the component
       setImage(imageUrl);
       setImageSrc(base64ImageUrl);
+      setBackImageSrc(base64ImageUrl2);
+      setScannerLoading(false);
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      setScannerLoading(false);
+      // toast.error(error.message);
     }
   };
   const systemHandler = () => {
@@ -2143,7 +2143,7 @@ const EditTemplateModal = (props) => {
                   ) : (
                     <div>
                       <Button
-                        disabled
+                        // disabled
                         variant="info"
                         onClick={imageModalHandler}
                       >
@@ -2180,7 +2180,7 @@ const EditTemplateModal = (props) => {
           >
             Close
           </Button>
-          <Button disabled variant="success" onClick={createTemplateHandler}>
+          <Button variant="success" onClick={createTemplateHandler}>
             Update Template
           </Button>
         </Modal.Footer>
@@ -2199,6 +2199,25 @@ const EditTemplateModal = (props) => {
           <Modal.Title id="modal-custom-navbar">Select Image</Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ height: "65dvh" }}>
+          {scannerLoading && (
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                backgroundColor: "rgba(0, 0, 0, 0.2)", // Slightly opaque background
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 999,
+                pointerEvents: "auto", // Make the overlay not clickable
+              }}
+            >
+              <Spinner />
+            </div>
+          )}
           {/* <Row>
                         <div class="mb-4" >
                             <label for="formFile" class="form-label">Upload OMR Image</label>

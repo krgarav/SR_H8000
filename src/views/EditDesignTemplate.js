@@ -894,7 +894,6 @@ const EditDesignTemplate = () => {
       setSelection(null);
     }
   };
-  console.log(dataCtx.allTemplates);
   const handleSkewMarkOptionChange = (event) => {
     setSkewOption(event.target.value);
   };
@@ -1334,7 +1333,7 @@ const EditDesignTemplate = () => {
                   ))}
                 </div>
                 <div
-                  id="grid-div"
+                  id="grid-divs"
                   style={{
                     border: "2px solid black",
                     paddingTop: "1.0rem",

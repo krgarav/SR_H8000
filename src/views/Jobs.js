@@ -17,7 +17,6 @@
 */
 // reactstrap components
 import {
-  Badge,
   Card,
   CardHeader,
   CardFooter,
@@ -37,6 +36,7 @@ import {
   Button,
   Col,
 } from "reactstrap";
+import { Badge } from "react-bootstrap";
 // core components
 import Header from "components/Headers/Header.js";
 import NormalHeader from "components/Headers/NormalHeader";
@@ -86,9 +86,15 @@ const Jobs = () => {
   };
 
   const ALLJOBS = allJobs.map((item, index) => {
-    let assignuser = "Not Assigned";
-    if (item.assignUser !== "string" || item.assignUser !== "") {
-      assignuser = item.assignUser;
+    let assignuser = !item.assignUser ? "Not Assigned" : item.assignUser;
+    // if (item.assignUser !== "string" || item.assignUser !== "") {
+    //   assignuser = item.assignUser;
+    // }
+    let bgColor = "warning";
+    if (item.jobStatus === "Completed") {
+      bgColor = "success";
+    } else if (item.jobStatus === "In Progress") {
+      bgColor = "primary";
     }
     return (
       <tr key={index}>
@@ -96,7 +102,15 @@ const Jobs = () => {
         <td>{item.jobName}</td>
         <td>{item.templateName}</td>
         <td>{assignuser}</td>
-        <td>{item.imageType ? item.imageType : "Disabled"}</td>
+        <td style={{ color: "black" }}>
+          <Badge
+            pill
+            bg={bgColor}
+            // text={bgColor === "warning" ? "dark" : "light"}
+          >
+            {item.jobStatus}
+          </Badge>
+        </td>
         <td className="text-right">
           <UncontrolledDropdown>
             <DropdownToggle
@@ -116,9 +130,9 @@ const Jobs = () => {
                   setCurrentJobData(item);
                 }}
               >
-                Assign
+                {item.jobStatus === "Completed" ? "Re-Assign" : "Assign"}
               </DropdownItem>
-              <DropdownItem>Edit</DropdownItem>
+              {/* <DropdownItem>Edit</DropdownItem> */}
               <DropdownItem
                 style={{ color: "red" }}
                 onClick={() => deleteHandler(item.id)}
@@ -162,7 +176,7 @@ const Jobs = () => {
                     <th scope="col">Job Name</th>
                     <th scope="col">Template</th>
                     <th scope="col">Operator </th>
-                    <th scope="col">Image</th>
+                    <th scope="col">Job Status</th>
                     <th scope="col"></th>
                   </tr>
                 </thead>
