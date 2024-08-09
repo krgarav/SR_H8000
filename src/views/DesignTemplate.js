@@ -1410,6 +1410,8 @@ const DesignTemplate = () => {
                   paddingTop: "2.0rem",
                   padding: "1rem",
                   paddingLeft: ".5rem",
+                  
+                  overflowY:"auto"
                 }}
               >
                 <div
@@ -1418,6 +1420,7 @@ const DesignTemplate = () => {
                   onMouseDown={handleMouseDown}
                   onMouseUp={handleMouseUp}
                   onMouseMove={handleMouseMove}
+                  
                 >
                   {Array.from({ length: numRows }).map((_, rowIndex) => {
                     const result = [...excelJsonFile.map(Object.values)];
@@ -1438,6 +1441,7 @@ const DesignTemplate = () => {
                                   result[rowIndex][colIndex] !== undefined
                                   ? "black"
                                   : "",
+                                  overflow:"auto"
                             }}
                             // style={{
                             //     backgroundColor:

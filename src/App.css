@@ -41,6 +41,7 @@ input[type="number"] {
   width: 100%;
   justify-content: center; 
   align-items: center; 
+  overflow-y: auto;
   /* al */
 }
 
@@ -77,6 +78,7 @@ input[type="number"] {
   display: flex;
   flex-direction: column;
   position: relative;
+  overflow: "auto";
 }
 
 .row {
