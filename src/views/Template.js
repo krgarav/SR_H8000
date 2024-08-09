@@ -49,14 +49,12 @@ const Template = () => {
   useEffect(() => {
     const fetchData = async () => {
       const templates = await fetchAllTemplate();
-      console.log(templates);
       if (templates === undefined) {
         toast.error("Error fetching templates");
       }
       const mpObj = templates?.map((item) => {
         return [{ layoutParameters: item }];
       });
-      console.log(mpObj);
       dataCtx.addToAllTemplate(mpObj);
     };
     fetchData();
@@ -77,19 +75,29 @@ const Template = () => {
     const templateId = tempdata.id;
     const res = await getLayoutDataById(templateId);
     console.log(res);
-    // return;
-    const csvpath = res?.templateFiles[0].excelPath;
-    const imgpath = res?.templateFiles[0].imagePath;
-    console.log(csvpath);
-    console.log(imgpath);
-    const res1 = await getTemplateImage(imgpath);
-    console.log(res1);
+    const templateFile = res.templateFiles.slice(-3);
+    console.log(templateFile);
+    if (templateFile.length < 3) {
+      return;
+    }
+    const csvpath = res?.templateFiles[2].excelPath;
+    const frontImgpath = res?.templateFiles[0].imagePath;
+    const backImgpath = res?.templateFiles[1].imagePath;
+
+    const res1 = await getTemplateImage(frontImgpath);
+    const res3 = await getTemplateImage(backImgpath);
+    console.log(res3);
+
+    if (res3 === undefined) {
+      alert("No back image found in this template.Cannot Open the template. ");
+      return;
+    }
     if (res1 === undefined) {
-      alert("No image found in this template.Cannot Open the template. ");
+      alert("No front image found in this template.Cannot Open the template. ");
       return;
     }
 
-    const imgfile = base64ToFile(res1.image, "image.jpg");
+    const imgfile = base64ToFile(res1.image, "front.jpg");
 
     const res2 = await getTemplateCsv(csvpath);
     if (res2 === undefined) {
@@ -120,6 +128,7 @@ const Template = () => {
     console.log(state);
     console.log(tempdata);
     // sessionStorage.setItem();
+    // return;
     navigate("/admin/edit-template", {
       state: {
         templateIndex: index,

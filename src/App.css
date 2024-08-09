@@ -30,7 +30,13 @@ input[type="number"] {
   padding: 0.5rem;
   width: 20vw;
 }
-
+.main-container{
+  display: flex;
+  /* width:80vw; */
+    justify-content: center; 
+    align-items: center;
+   
+}
 .containers {
   display: flex;
   flex-direction: column;
@@ -38,10 +44,11 @@ input[type="number"] {
   align-self: center;
   padding-top: 1rem;
   padding-left: 2rem;
-  width: 100%;
-  justify-content: center; 
-  align-items: center; 
-  overflow-y: auto;
+  /* width: max-content; */
+  /* width: 100%; */
+  /* justify-content: center;  */
+  /* align-items: center;  */
+  overflow-x: auto;
   /* al */
 }
 
@@ -103,7 +110,6 @@ input[type="number"] {
   justify-content: right;
   padding-right: 5px;
   /* Space before the grid starts */
-
   width: 20px;
   height: 20px;
   font-size: 0.4rem;

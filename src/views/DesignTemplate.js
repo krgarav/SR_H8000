@@ -1194,13 +1194,13 @@ const DesignTemplate = () => {
         const { Coordinate, ...rest } = item;
         const questionWindowCoordinates = Coordinate
           ? {
-            right: Coordinate["End Col"],
-            end: Coordinate["End Row"],
-            left: Coordinate["Start Col"],
-            start: Coordinate["Start Row"],
-            name: Coordinate["name"],
-            fieldType: Coordinate["fieldType"],
-          }
+              right: Coordinate["End Col"],
+              end: Coordinate["End Row"],
+              left: Coordinate["Start Col"],
+              start: Coordinate["Start Row"],
+              name: Coordinate["name"],
+              fieldType: Coordinate["fieldType"],
+            }
           : {};
         return { ...rest, questionWindowCoordinates };
       });
@@ -1211,13 +1211,13 @@ const DesignTemplate = () => {
         const { Coordinate, ...rest } = item;
         const layoutWindowCoordinates = Coordinate
           ? {
-            right: Coordinate["End Col"],
-            end: Coordinate["End Row"],
-            left: Coordinate["Start Col"],
-            start: Coordinate["Start Row"],
-            name: Coordinate["name"],
-            fieldType: Coordinate["fieldType"],
-          }
+              right: Coordinate["End Col"],
+              end: Coordinate["End Row"],
+              left: Coordinate["Start Col"],
+              start: Coordinate["Start Row"],
+              name: Coordinate["name"],
+              fieldType: Coordinate["fieldType"],
+            }
           : {};
         return { ...rest, layoutWindowCoordinates };
       });
@@ -1228,13 +1228,13 @@ const DesignTemplate = () => {
         const { Coordinate, ...rest } = item;
         const formFieldCoordinates = Coordinate
           ? {
-            right: Coordinate["End Col"],
-            end: Coordinate["End Row"],
-            left: Coordinate["Start Col"],
-            start: Coordinate["Start Row"],
-            name: Coordinate["name"],
-            fieldType: Coordinate["fieldType"],
-          }
+              right: Coordinate["End Col"],
+              end: Coordinate["End Row"],
+              left: Coordinate["Start Col"],
+              start: Coordinate["Start Row"],
+              name: Coordinate["name"],
+              fieldType: Coordinate["fieldType"],
+            }
           : {};
         return { ...rest, formFieldCoordinates };
       });
@@ -1257,13 +1257,13 @@ const DesignTemplate = () => {
 
     // Create a File object from the Blob
     const csvfile = new File([blob], "data.csv", { type: "text/csv" });
-    const imageFile = base64ToFile(templateImagePath, "image.png");
-    const backImageFile = base64ToFile(templateBackImagePath, "image.png");
+    const imageFile = base64ToFile(templateImagePath, "front.png");
+    const backImageFile = base64ToFile(templateBackImagePath, "back.png");
     // Send the request and handle the response
     try {
       setLoading(true);
       const res = await createTemplate(fullRequestData);
-
+      console.log(res);
       if (res.success === true) {
         const layoutId = res?.layoutId;
         const formdata = new FormData();
@@ -1272,9 +1272,11 @@ const DesignTemplate = () => {
         formdata.append("BackImageFile", backImageFile);
         formdata.append("ExcelFile", csvfile);
         // Iterate over the FormData entries and log them
-
+        for (let [key, value] of formdata.entries()) {
+          console.log(`${key}: ${value}`);
+        }
         const res2 = await sendFile(formdata);
-
+        console.log(res2);
         setLoading(false);
 
         alert(`Response : ${JSON.stringify(res2?.message)}`);
@@ -1344,7 +1346,7 @@ const DesignTemplate = () => {
         </Button>
       )}
 
-      <div style={{ overflow: "auto" }}>
+      <div style={{ overflow: "auto", width: "100%" }}>
         <Button
           onClick={sendHandler}
           disabled={loading}
@@ -1384,167 +1386,179 @@ const DesignTemplate = () => {
             open
           </Button>
         </div>
-        <div className="containers">
-          <div className="d-flex">
-            <div style={{ marginRight: "1rem" }}>
-              <div className="top"></div>
-              {Array.from({ length: numRows }).map((_, rowIndex) => (
-                <div key={rowIndex} className="row">
-                  <div className="left-nums">{rowIndex + 1}</div>
-                </div>
-              ))}
-            </div>
-            <div>
-              <div className="top-row">
-                <div className="corner"></div>
-                {Array.from({ length: numCols }).map((_, index) => (
-                  <div key={index} className="top-num">
-                    {index + 1}
+        <div className="main-container">
+          <div className="containers">
+            <div className="d-flex">
+              <div style={{ marginRight: "1rem" }}>
+                <div className="top"></div>
+                {Array.from({ length: numRows }).map((_, rowIndex) => (
+                  <div key={rowIndex} className="row">
+                    <div className="left-nums">{rowIndex + 1}</div>
                   </div>
                 ))}
               </div>
-              <div
-                id="grid-div"
-                style={{
-                  border: "2px solid black",
-                  paddingTop: "2.0rem",
-                  padding: "1rem",
-                  paddingLeft: ".5rem",
-                  
-                  overflowY:"auto"
-                }}
-              >
-                <div
-                  className="grid"
-                  ref={imageRef}
-                  onMouseDown={handleMouseDown}
-                  onMouseUp={handleMouseUp}
-                  onMouseMove={handleMouseMove}
-                  
-                >
-                  {Array.from({ length: numRows }).map((_, rowIndex) => {
-                    const result = [...excelJsonFile.map(Object.values)];
-
-                    return (
-                      <div key={rowIndex} className="row">
-                        <div className="left-num" sty>
-                          <div className="timing-mark "></div>
-                        </div>
-                        {Array.from({ length: numCols }).map((_, colIndex) => (
-                          <div
-                            key={colIndex}
-                            style={{
-                              backgroundColor:
-                                rowIndex < result.length &&
-                                  colIndex < result[rowIndex].length &&
-                                  result[rowIndex][colIndex] != 0 &&
-                                  result[rowIndex][colIndex] !== undefined
-                                  ? "black"
-                                  : "",
-                                  overflow:"auto"
-                            }}
-                            // style={{
-                            //     backgroundColor:
-                            //         result[rowIndex][colIndex] != 0 ? "black" : "",
-                            // }}
-                            className={`${bubbleType} ${selected[`${rowIndex},${colIndex}`]
-                              ? "selected"
-                              : ""
-                              }`}
-                          ></div>
-                        ))}
-                      </div>
-                    );
-                  })}
-
-                  {selectedCoordinates.map((data, index) => (
-                    <div
-                      key={index}
-                      className="border-blue-900"
-                      style={{
-                        border: "3px solid #007bff",
-                        position: "absolute",
-                        left: `${data.startCol *
-                          (imageRef.current.getBoundingClientRect().width /
-                            numCols) -
-                          4
-                          }px`,
-                        top: `${data.startRow *
-                          (imageRef.current.getBoundingClientRect().height /
-                            numRows) -
-                          3
-                          }px`,
-                        width: `${(data.endCol - data.startCol + 1) *
-                          (imageRef.current.getBoundingClientRect().width /
-                            numCols)
-                          }px`,
-                        height: `${(data.endRow - data.startRow + 1) *
-                          (imageRef.current.getBoundingClientRect().height /
-                            numRows)
-                          }px`,
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <div
-                        className="d-flex justify-content-between align-items-center bg-dark text-white p-1"
-                        style={{
-                          opacity: 0.8,
-                          fontSize: "12px",
-                          position: "relative",
-                        }}
-                      >
-                        <span className="user-select-none">{data.name}</span>
-                        <span
-                          className={`d-flex align-items-center user-select-none gap-10`}
-                        >
-                          <i
-                            className={`fas fa-eye me-2 mr-1 ${classes.eye}`}
-                            onMouseUp={handleIconMouseUp}
-                            onClick={(e) => {
-                              handleEyeClick(data, index);
-                            }}
-                            style={{ cursor: "pointer" }}
-                          ></i>
-                          <i
-                            className="fas fa-times text-danger cross-icon  ml-1"
-                            onMouseUp={handleIconMouseUp}
-                            onClick={() => {
-                              handleCrossClick(data, index);
-                            }}
-                            style={{ cursor: "pointer" }}
-                          ></i>
-                        </span>
-                      </div>
+              <div>
+                <div className="top-row">
+                  <div className="corner"></div>
+                  {Array.from({ length: numCols }).map((_, index) => (
+                    <div key={index} className="top-num">
+                      {index + 1}
                     </div>
                   ))}
-                  {selection && (
-                    <div
-                      className="border-green-700"
-                      style={{
-                        border: "2px solid green",
-                        position: "absolute",
-                        left: `${selection.startCol *
-                          (imageRef.current.getBoundingClientRect().width /
-                            numCols) -
-                          4
+                </div>
+                <div
+                  id="grid-div"
+                  style={{
+                    border: "2px solid black",
+                    paddingTop: "1.0rem",
+                    padding: "1rem",
+                    paddingLeft: ".5rem",
+
+                    // overflowX: "auto",
+                  }}
+                >
+                  <div
+                    className="grid"
+                    ref={imageRef}
+                    onMouseDown={handleMouseDown}
+                    onMouseUp={handleMouseUp}
+                    onMouseMove={handleMouseMove}
+                  >
+                    {Array.from({ length: numRows }).map((_, rowIndex) => {
+                      const result = [...excelJsonFile.map(Object.values)];
+
+                      return (
+                        <div key={rowIndex} className="row">
+                          <div className="left-num" sty>
+                            <div className="timing-mark "></div>
+                          </div>
+                          {Array.from({ length: numCols }).map(
+                            (_, colIndex) => (
+                              <div
+                                key={colIndex}
+                                style={{
+                                  backgroundColor:
+                                    rowIndex < result.length &&
+                                    colIndex < result[rowIndex].length &&
+                                    result[rowIndex][colIndex] != 0 &&
+                                    result[rowIndex][colIndex] !== undefined
+                                      ? "black"
+                                      : "",
+                                  overflow: "auto",
+                                }}
+                                // style={{
+                                //     backgroundColor:
+                                //         result[rowIndex][colIndex] != 0 ? "black" : "",
+                                // }}
+                                className={`${bubbleType} ${
+                                  selected[`${rowIndex},${colIndex}`]
+                                    ? "selected"
+                                    : ""
+                                }`}
+                              ></div>
+                            )
+                          )}
+                        </div>
+                      );
+                    })}
+
+                    {selectedCoordinates.map((data, index) => (
+                      <div
+                        key={index}
+                        className="border-blue-900"
+                        style={{
+                          border: "3px solid #007bff",
+                          position: "absolute",
+                          left: `${
+                            data.startCol *
+                              (imageRef.current.getBoundingClientRect().width /
+                                numCols) -
+                            4
                           }px`,
-                        top: `${selection.startRow *
-                          (imageRef.current.getBoundingClientRect().height /
-                            numRows) -
-                          3
+                          top: `${
+                            data.startRow *
+                              (imageRef.current.getBoundingClientRect().height /
+                                numRows) -
+                            3
                           }px`,
-                        width: `${(selection.endCol - selection.startCol + 1) *
-                          (imageRef.current.getBoundingClientRect().width /
-                            numCols)
+                          width: `${
+                            (data.endCol - data.startCol + 1) *
+                            (imageRef.current.getBoundingClientRect().width /
+                              numCols)
                           }px`,
-                        height: `${(selection.endRow - selection.startRow + 1) *
-                          (imageRef.current.getBoundingClientRect().height /
-                            numRows)
+                          height: `${
+                            (data.endRow - data.startRow + 1) *
+                            (imageRef.current.getBoundingClientRect().height /
+                              numRows)
                           }px`,
-                        content: "question field",
-                      }}
-                    ></div>
-                  )}
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div
+                          className="d-flex justify-content-between align-items-center bg-dark text-white p-1"
+                          style={{
+                            opacity: 0.8,
+                            fontSize: "12px",
+                            position: "relative",
+                          }}
+                        >
+                          <span className="user-select-none">{data.name}</span>
+                          <span
+                            className={`d-flex align-items-center user-select-none gap-10`}
+                          >
+                            <i
+                              className={`fas fa-eye me-2 mr-1 ${classes.eye}`}
+                              onMouseUp={handleIconMouseUp}
+                              onClick={(e) => {
+                                handleEyeClick(data, index);
+                              }}
+                              style={{ cursor: "pointer" }}
+                            ></i>
+                            <i
+                              className="fas fa-times text-danger cross-icon  ml-1"
+                              onMouseUp={handleIconMouseUp}
+                              onClick={() => {
+                                handleCrossClick(data, index);
+                              }}
+                              style={{ cursor: "pointer" }}
+                            ></i>
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                    {selection && (
+                      <div
+                        className="border-green-700"
+                        style={{
+                          border: "2px solid green",
+                          position: "absolute",
+                          left: `${
+                            selection.startCol *
+                              (imageRef.current.getBoundingClientRect().width /
+                                numCols) -
+                            4
+                          }px`,
+                          top: `${
+                            selection.startRow *
+                              (imageRef.current.getBoundingClientRect().height /
+                                numRows) -
+                            3
+                          }px`,
+                          width: `${
+                            (selection.endCol - selection.startCol + 1) *
+                            (imageRef.current.getBoundingClientRect().width /
+                              numCols)
+                          }px`,
+                          height: `${
+                            (selection.endRow - selection.startRow + 1) *
+                            (imageRef.current.getBoundingClientRect().height /
+                              numRows)
+                          }px`,
+                          content: "question field",
+                        }}
+                      ></div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -1884,119 +1898,119 @@ const DesignTemplate = () => {
               )}
               {(selectedFieldType === "questionField" ||
                 selectedFieldType === "formField") && (
-                  <Row className="mb-2">
-                    <label
-                      htmlFor="example-text-input"
-                      className="col-md-2 col-form-label"
+                <Row className="mb-2">
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2 col-form-label"
+                  >
+                    Multiple
+                  </label>
+                  <div
+                    className={multiple !== "allow" ? "col-md-4" : "col-md-10"}
+                  >
+                    <select
+                      className="form-control"
+                      value={multiple}
+                      onChange={(e) => {
+                        setMultiple(e.target.value);
+                      }}
+                      defaultValue={""}
                     >
-                      Multiple
-                    </label>
-                    <div
-                      className={multiple !== "allow" ? "col-md-4" : "col-md-10"}
-                    >
-                      <select
-                        className="form-control"
-                        value={multiple}
-                        onChange={(e) => {
-                          setMultiple(e.target.value);
-                        }}
-                        defaultValue={""}
-                      >
-                        <option value="">Select an option</option>
-                        <option value="allow">Allow All</option>
-                        <option value="not allow">Allow None</option>
-                      </select>
-                    </div>
-                    {multiple !== "allow" && (
-                      <>
-                        <label htmlFor="example-text-input" className="col-md-2 ">
-                          Multiple Value
-                        </label>
-                        <div className="col-md-4">
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Character of Multiple"
-                            value={multipleValue}
-                            onChange={(e) => setMultipleValue(e.target.value)}
-                            required
-                          />
-                        </div>
-                      </>
-                    )}
-                  </Row>
-                )}
+                      <option value="">Select an option</option>
+                      <option value="allow">Allow All</option>
+                      <option value="not allow">Allow None</option>
+                    </select>
+                  </div>
+                  {multiple !== "allow" && (
+                    <>
+                      <label htmlFor="example-text-input" className="col-md-2 ">
+                        Multiple Value
+                      </label>
+                      <div className="col-md-4">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Character of Multiple"
+                          value={multipleValue}
+                          onChange={(e) => setMultipleValue(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </>
+                  )}
+                </Row>
+              )}
               {(selectedFieldType === "questionField" ||
                 selectedFieldType === "formField") && (
-                  <Row className="mb-2">
-                    <label
-                      htmlFor="example-text-input"
-                      className="col-md-2 col-form-label"
+                <Row className="mb-2">
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2 col-form-label"
+                  >
+                    Blanks
+                  </label>
+                  <div className={blank !== "allow" ? "col-md-4" : "col-md-10"}>
+                    <select
+                      className="form-control"
+                      value={blank}
+                      onChange={(e) => {
+                        setBlank(e.target.value);
+                      }}
+                      defaultValue={""}
                     >
-                      Blanks
-                    </label>
-                    <div className={blank !== "allow" ? "col-md-4" : "col-md-10"}>
-                      <select
-                        className="form-control"
-                        value={blank}
-                        onChange={(e) => {
-                          setBlank(e.target.value);
-                        }}
-                        defaultValue={""}
+                      <option value="">Select an option</option>
+                      <option value="allow">Allow All</option>
+                      <option value="not allow">Allow None</option>
+                    </select>
+                  </div>
+                  {blank !== "allow" && (
+                    <>
+                      <label
+                        htmlFor="example-text-input"
+                        className="col-md-2 col-form-label"
                       >
-                        <option value="">Select an option</option>
-                        <option value="allow">Allow All</option>
-                        <option value="not allow">Allow None</option>
-                      </select>
-                    </div>
-                    {blank !== "allow" && (
-                      <>
-                        <label
-                          htmlFor="example-text-input"
-                          className="col-md-2 col-form-label"
-                        >
-                          Blank Value
-                        </label>
-                        <div className="col-md-4">
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Character of Blank"
-                            value={blankValue}
-                            onChange={(e) => setBlankValue(e.target.value)}
-                            required
-                          />
-                        </div>
-                      </>
-                    )}
-                  </Row>
-                )}
+                        Blank Value
+                      </label>
+                      <div className="col-md-4">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Character of Blank"
+                          value={blankValue}
+                          onChange={(e) => setBlankValue(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </>
+                  )}
+                </Row>
+              )}
               {(selectedFieldType !== "idField" ||
                 selectedFieldType !== "skewMarkField") && (
-                  <Row className="mb-2">
-                    <label
-                      htmlFor="example-text-input"
-                      className="col-md-2 col-form-label"
+                <Row className="mb-2">
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2 col-form-label"
+                  >
+                    Window NG
+                  </label>
+                  <div className="col-md-10">
+                    <select
+                      className="form-control"
+                      value={windowNgOption}
+                      onChange={handleWindowNgOptionChange}
+                      defaultValue={""}
                     >
-                      Window NG
-                    </label>
-                    <div className="col-md-10">
-                      <select
-                        className="form-control"
-                        value={windowNgOption}
-                        onChange={handleWindowNgOptionChange}
-                        defaultValue={""}
-                      >
-                        <option value="">Select an option</option>
-                        <option value="0x00000001">
-                          Paper ejection to select stacker
-                        </option>
-                        <option value="0x00000002">Stop reading</option>
-                        <option value="0">No Action</option>
-                      </select>
-                    </div>
-                  </Row>
-                )}
+                      <option value="">Select an option</option>
+                      <option value="0x00000001">
+                        Paper ejection to select stacker
+                      </option>
+                      <option value="0x00000002">Stop reading</option>
+                      <option value="0">No Action</option>
+                    </select>
+                  </div>
+                </Row>
+              )}
               {selectedFieldType !== "idField" && (
                 <Row>
                   <label htmlFor="example-select-input" className="col-md-2">
@@ -2370,45 +2384,45 @@ const DesignTemplate = () => {
               )}
               {(selectedFieldType === "questionField" ||
                 selectedFieldType === "formField") && (
-                  <Row className="mb-2">
-                    <label
-                      htmlFor="example-text-input"
-                      className="col-md-2 col-form-label "
+                <Row className="mb-2">
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2 col-form-label "
+                  >
+                    Total Fields :
+                  </label>
+                  <div className="col-4 ">
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={numberOfField}
+                      onChange={(e) => setNumberOfField(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <label
+                    htmlFor="example-text-input"
+                    className="col-md-2 col-form-label "
+                  >
+                    Field Type :
+                  </label>
+                  <div className="col-4 ">
+                    <select
+                      className="form-control"
+                      value={fieldType}
+                      onChange={(e) => {
+                        setFieldType(e.target.value);
+                      }}
+                      defaultValue={""}
                     >
-                      Total Fields :
-                    </label>
-                    <div className="col-4 ">
-                      <input
-                        type="number"
-                        className="form-control"
-                        value={numberOfField}
-                        onChange={(e) => setNumberOfField(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <label
-                      htmlFor="example-text-input"
-                      className="col-md-2 col-form-label "
-                    >
-                      Field Type :
-                    </label>
-                    <div className="col-4 ">
-                      <select
-                        className="form-control"
-                        value={fieldType}
-                        onChange={(e) => {
-                          setFieldType(e.target.value);
-                        }}
-                        defaultValue={""}
-                      >
-                        <option value="">Select field type... </option>
-                        <option value="numeric">Numeric </option>
-                        <option value="alphabet">Alphabet </option>
-                        <option value="custom">Custom </option>
-                      </select>
-                    </div>
-                  </Row>
-                )}
+                      <option value="">Select field type... </option>
+                      <option value="numeric">Numeric </option>
+                      <option value="alphabet">Alphabet </option>
+                      <option value="custom">Custom </option>
+                    </select>
+                  </div>
+                </Row>
+              )}
               {(selectedFieldType === "questionField" ||
                 selectedFieldType === "formField") &&
                 fieldType === "custom" && (
