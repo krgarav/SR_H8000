@@ -8,24 +8,6 @@ import DataContext from "store/DataContext";
 import { MultiSelect } from "react-multi-select-component";
 import { createTemplate } from "helper/TemplateHelper";
 import { getLayoutDataById } from "helper/TemplateHelper";
-import {
-  Badge,
-  Card,
-  CardHeader,
-  CardFooter,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
-  DropdownToggle,
-  Media,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-  Progress,
-  Table,
-  Container,
-  UncontrolledTooltip,
-} from "reactstrap";
 import SmallHeader from "components/Headers/SmallHeader";
 import { toast } from "react-toastify";
 import isEqual from "lodash/isEqual";
@@ -33,11 +15,11 @@ import { sendFile } from "helper/TemplateHelper";
 import { fetchAllTemplate } from "helper/TemplateHelper";
 import EditTemplateModal from "ui/EditTemplateModal";
 import base64ToFile from "services/Base64toFile";
+import Papa from "papaparse";
 
 // Function to get values from sessionStorage or provide default
 const getSessionStorageOrDefault = (key, defaultValue) => {
   const stored = sessionStorage.getItem(key);
-
   if (!stored) {
     return defaultValue;
   }
@@ -53,6 +35,7 @@ const getSessionStorageOrDefault = (key, defaultValue) => {
     return defaultValue;
   }
 };
+
 const EditDesignTemplate = () => {
   const [selected, setSelected] = useState({});
   const [selection, setSelection] = useState(null);
@@ -117,28 +100,20 @@ const EditDesignTemplate = () => {
       "templateImagePath",
       state.templateImagePath
     ),
+    templateBackImagePath: getSessionStorageOrDefault(
+      "templateBackImagePath",
+      state.templateBackImagePath
+    ),
     bubbleType: getSessionStorageOrDefault("bubbleType", state.bubbleType),
     templateIndex: getSessionStorageOrDefault(
       "templateIndex",
       state.templateIndex
     ),
-    iSensitivity: getSessionStorageOrDefault(
-      "iSensitivity",
-      state.iSensitivity
-    ),
-    iDifference: getSessionStorageOrDefault("iDifference", state.iDifference),
-    iReject: getSessionStorageOrDefault("iReject", state.iReject),
-    iFace: getSessionStorageOrDefault("iFace", state.iFace),
     templateId: getSessionStorageOrDefault("templateId", state.templateId),
     excelJsonFile: getSessionStorageOrDefault(
       "excelJsonFile",
       state.excelJsonFile
     ),
-    imageTempFile: getSessionStorageOrDefault(
-      "imageTempFile",
-      state.imageTempFile
-    ),
-    excelFile: getSessionStorageOrDefault("excelFile", state.excelFile),
   }));
   const divRef = useRef(null);
   const numRows = data.timingMarks;
@@ -182,26 +157,17 @@ const EditDesignTemplate = () => {
         "templateImagePath",
         JSON.stringify(state.templateImagePath)
       );
+      sessionStorage.setItem(
+        "templateBackImagePath",
+        JSON.stringify(state.templateBackImagePath)
+      );
       sessionStorage.setItem("bubbleType", JSON.stringify(state.bubbleType));
       sessionStorage.setItem("templateIndex", state.templateIndex);
-      sessionStorage.setItem(
-        "iSensitivity",
-        JSON.stringify(state.iSensitivity)
-      );
-      sessionStorage.setItem("iDifference", JSON.stringify(state.iDifference));
-      sessionStorage.setItem("iReject", JSON.stringify(state.iReject));
-      sessionStorage.setItem("iFace", JSON.stringify(state.iFace));
-      sessionStorage.setItem("arr", JSON.stringify(state.arr));
       sessionStorage.setItem("templateId", JSON.stringify(state.templateId));
       sessionStorage.setItem(
         "excelJsonFile",
         JSON.stringify(state.excelJsonFile)
       );
-      sessionStorage.setItem(
-        "imageTempFile",
-        JSON.stringify(state.imageTempFile)
-      );
-      sessionStorage.setItem("excelFile", JSON.stringify(state.excelFile));
     }
   }, [location.state]);
 
@@ -695,7 +661,9 @@ const EditDesignTemplate = () => {
 
     let newData = {};
     let selectedWindowName = "";
-
+    const layoutData = layoutFieldData.layoutParameters;
+    console.log(layoutData);
+    // return;
     if (selectedFieldType === "idField") {
       selectedWindowName = "Id Field";
       newData = {
@@ -720,17 +688,17 @@ const EditDesignTemplate = () => {
     } else if (selectedFieldType === "skewMarkField") {
       selectedWindowName = name;
       newData = {
-        iFace: +data.iFace ?? 0,
+        iFace: +layoutData.iFace ?? 0,
         columnStart: +selection?.startCol,
         columnNumber: +noInCol,
         columnStep: +noOfStepInCol,
         rowStart: +selection?.startRow + 1,
         rowNumber: +noInRow,
         rowStep: +noOfStepInRow,
-        iSensitivity: +data.iSensitivity ?? 3,
-        iDifference: +data.iDifference ?? 5,
+        iSensitivity: +layoutData.iSensitivity,
+        iDifference: +layoutData.iDifference,
         iOption: +option,
-        iReject: +data.iReject,
+        iReject: +layoutData.iReject,
         iDirection: +readingDirectionOption,
         windowName: name,
         Coordinate: {
@@ -751,7 +719,7 @@ const EditDesignTemplate = () => {
     } else {
       selectedWindowName = name;
       newData = {
-        iFace: +data.iFace ?? 0,
+        iFace: +layoutData.iFace ?? 0,
         windowName: name,
         columnStart: +selection?.startCol,
         columnNumber: +noInCol,
@@ -760,8 +728,8 @@ const EditDesignTemplate = () => {
         rowNumber: +noInRow,
         rowStep: +noOfStepInRow,
         iDirection: +readingDirectionOption,
-        iSensitivity: +data.iSensitivity ?? 3,
-        iDifference: +data.iDifference ?? 5,
+        iSensitivity: +layoutData.iSensitivity ?? 3,
+        iDifference: +layoutData.iDifference ?? 5,
         iOption: +option,
         iMinimumMarks: +minimumMark,
         iMaximumMarks: +maximumMark,
@@ -1208,8 +1176,20 @@ const EditDesignTemplate = () => {
     };
     console.log(fullRequestData);
     // Send the request and handle the response
-    const imageFile = base64ToFile(state.templateImagePath, "image.png");
-    // const backImageFile = base64ToFile(templateBackImagePath, "image.png");
+
+    const imageFile = base64ToFile(data.templateImagePath.image, "front.jpg");
+    const backImageFile = base64ToFile(
+      data.templateBackImagePath.image,
+      "back.jpg"
+    );
+    const csv = Papa.unparse(data.excelJsonFile);
+    // Create a Blob from the CSV string
+    const blob = new Blob([csv], { type: "text/csv" });
+
+    // Create a File object from the Blob
+    const csvfile = new File([blob], "data.csv", { type: "text/csv" });
+    console.log(csvfile);
+
     try {
       setLoading(true);
       const res = await createTemplate(fullRequestData);
@@ -1219,7 +1199,8 @@ const EditDesignTemplate = () => {
         const formdata = new FormData();
         formdata.append("LayoutId", layoutId);
         formdata.append("FrontImageFile", imageFile);
-        formdata.append("ExcelFile", state.excelFile);
+        formdata.append("BackImageFile", backImageFile);
+        formdata.append("ExcelFile", csvfile);
         // Iterate over the FormData entries and log them
         for (let [key, value] of formdata.entries()) {
           console.log(`${key}: ${value}`);
@@ -1357,8 +1338,8 @@ const EditDesignTemplate = () => {
                   style={{
                     border: "2px solid black",
                     paddingTop: "1.0rem",
-                    padding: "1rem",
-                    paddingLeft: ".5rem",
+                    paddingLeft: "1rem",
+                    overflow: "auto",
                   }}
                 >
                   <div

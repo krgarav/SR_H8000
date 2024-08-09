@@ -110,6 +110,7 @@ const Template = () => {
       setLoading(false);
       return;
     }
+    console.log(res2.data);
     const csvContent = Papa.unparse(res2.data);
 
     // Create a Blob from the CSV content
@@ -121,36 +122,28 @@ const Template = () => {
       templateIndex: index,
       timingMarks: +tempdata.timingMarks,
       totalColumns: +tempdata.totalColumns,
-      templateImagePath: "",
-      templateBackImagePath: "",
+      templateImagePath: res1,
+      templateBackImagePath: res3,
       bubbleType: tempdata.bubbleType,
-      iSensitivity: +tempdata.iSensitivity ?? 3,
-      iDifference: +tempdata.iDifference ?? 4,
-      iReject: tempdata.iReject,
-      iFace: +tempdata.iFace ?? 0,
       templateId: tempdata.id,
       excelJsonFile: res2.data,
     };
     console.log(state);
     console.log(tempdata);
     // sessionStorage.setItem();
-    // return;
     setLoading(false);
+    // return;
+
     navigate("/admin/edit-template", {
       state: {
         templateIndex: index,
         timingMarks: +tempdata.timingMarks,
         totalColumns: +tempdata.totalColumns,
-        templateImagePath: "",
+        templateImagePath: res1,
+        templateBackImagePath: res3,
         bubbleType: tempdata.bubbleType,
-        iSensitivity: +tempdata.iSensitivity ?? 3,
-        iDifference: +tempdata.iDifference ?? 4,
-        iReject: tempdata.iReject,
-        iFace: +tempdata.iFace ?? 0,
         templateId: tempdata.id,
         excelJsonFile: res2.data,
-        imageTempFile: imgfile,
-        excelFile: csvfile,
       },
     });
     setLoading(false);
