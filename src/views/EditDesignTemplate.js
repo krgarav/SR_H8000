@@ -140,6 +140,28 @@ const EditDesignTemplate = () => {
     });
   };
 
+  // Function to fetch data from localStorage
+  const fetchDataFromLocalStorage = () => {
+    setData((item) => {
+      return {
+        ...item,
+        totalColumns: sessionStorage.getItem("totalColumns"),
+        timingMarks: sessionStorage.getItem("timingMarks"),
+        templateImagePath: sessionStorage.getItem("templateImagePath"),
+        templateBackImagePath: sessionStorage.getItem("templateBackImagePath"),
+        bubbleType: sessionStorage.getItem("bubbleType"),
+        excelJsonFile: sessionStorage.getItem("excelJsonFile"),
+      };
+    });
+  };
+
+  useEffect(() => {
+    if (!detailPage) {
+      setTimeout(() => {
+        // fetchDataFromLocalStorage();
+      }, [2000]);
+    }
+  }, [detailPage]);
   useEffect(() => {
     const idFieldCount = selectedCoordinates.filter(
       (item) => item.fieldType === "idField"

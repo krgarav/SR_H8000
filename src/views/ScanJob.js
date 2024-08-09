@@ -81,6 +81,7 @@ const ScanJob = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+  
   useEffect(() => {
     if (!location.state) {
       navigate("/admin/icons", { replace: true });

@@ -333,87 +333,83 @@ const EditTemplateModal = (props) => {
       }
     }
 
-    
-      settoggle((prevData) => ({
-        ...prevData,
-        name: !name ? true : prevData.name,
-        row: !numberOfLines ? true : prevData.row,
-        col: !numberOfFrontSideColumn ? true : prevData.col,
-        barcode: !barCount ? true : prevData.barcode,
-        ID: !idPresent ? true : prevData.idPresent,
-        numberOfLines: !numberOfLines ? true : prevData.numberOfLines,
-        barcodeEnable: !barcodeEnable ? true : prevData.barcodeEnable,
-        bubbleVariant: Object.values(selectedBubble).length == 0 ? true : false,
-        Rejected: !reject ? true : prevData.Rejected,
-        difference: difference.length == 0 ? true : prevData.difference,
-        face: face.length == 0 ? true : prevData.face,
-        direction: !direction ? true : prevData.direction,
-        windowNgOption:
-          Object.values(windowNgOption).length == 0
-            ? true
-            : prevData.windowNgOption,
-      }));
-      if (!name) {
-        toast.error("Name Field can not be empty");
-        return;
-      }
-      if (!numberOfLines) {
-        toast.error("Row can not be empty");
-        return;
-      }
-      if (!numberOfFrontSideColumn) {
-        toast.error("Columns can not be empty");
-        return;
-      }
+    settoggle((prevData) => ({
+      ...prevData,
+      name: !name ? true : prevData.name,
+      row: !numberOfLines ? true : prevData.row,
+      col: !numberOfFrontSideColumn ? true : prevData.col,
+      barcode: !barCount ? true : prevData.barcode,
+      ID: !idPresent ? true : prevData.idPresent,
+      numberOfLines: !numberOfLines ? true : prevData.numberOfLines,
+      barcodeEnable: !barcodeEnable ? true : prevData.barcodeEnable,
+      bubbleVariant: Object.values(selectedBubble).length == 0 ? true : false,
+      Rejected: !reject ? true : prevData.Rejected,
+      difference: difference.length == 0 ? true : prevData.difference,
+      face: face.length == 0 ? true : prevData.face,
+      direction: !direction ? true : prevData.direction,
+      windowNgOption:
+        Object.values(windowNgOption).length == 0
+          ? true
+          : prevData.windowNgOption,
+    }));
+    if (!name) {
+      toast.error("Name Field can not be empty");
+      return;
+    }
+    if (!numberOfLines) {
+      toast.error("Row can not be empty");
+      return;
+    }
+    if (!numberOfFrontSideColumn) {
+      toast.error("Columns can not be empty");
+      return;
+    }
 
-      if (!idPresent) {
-        toast.error("Please Select ID Field ");
+    if (!idPresent) {
+      toast.error("Please Select ID Field ");
+      return;
+    }
+    if (idPresent.id === "present") {
+      if (!face) {
+        toast.error("Please Select Id Mark");
         return;
       }
-      if (idPresent.id === "present") {
-        if (!face) {
-          toast.error("Please Select Id Mark");
-          return;
-        }
-      }
+    }
 
-      if (Object.values(selectedBubble).length == 0) {
-        toast.error("Please Select Bubble Variant");
+    if (Object.values(selectedBubble).length == 0) {
+      toast.error("Please Select Bubble Variant");
+      return;
+    }
+    if (idPresent.id === "present") {
+      if (Object.values(windowNgOption).length == 0) {
+        toast.error("Please Select WindowNg");
         return;
       }
-      if (idPresent.id === "present") {
-        if (Object.values(windowNgOption).length == 0) {
-          toast.error("Please Select WindowNg");
-          return;
-        }
-      }
-      if (idPresent.id === "present") {
-        if (!reject) {
-          toast.error("Please Select a Value in Rejected Field");
-          return;
-        }
-      }
-      if (barCount.length === 0) {
-        toast.error("Barcode Field can not be empty");
+    }
+    if (idPresent.id === "present") {
+      if (!reject) {
+        toast.error("Please Select a Value in Rejected Field");
         return;
       }
-      if (difference.length === 0) {
-        toast.error("Difference can not be empty");
-        return;
-      }
-      if (!direction) {
-        toast.error("Please Select Page Position");
-        return;
-      }
-      if (!imageFile) {
-        toast.error("Please Select Image");
-        return;
-      }
-      if (!excelJsonFile) {
-        toast.error("Please Select Excel File");
-        return;
-      }
-      console.log(face)
+    }
+    if (barCount.length === 0) {
+      toast.error("Barcode Field can not be empty");
+      return;
+    }
+    if (difference.length === 0) {
+      toast.error("Difference can not be empty");
+      return;
+    }
+    if (!direction) {
+      toast.error("Please Select Page Position");
+      return;
+    }
+    if (!imageFile) {
+      toast.error("Please Select Image");
+      return;
+    }
+
+    console.log(face);
     try {
       const templateData = [
         {
@@ -421,7 +417,7 @@ const EditTemplateModal = (props) => {
             layoutName: name,
             timingMarks: +numberOfLines,
             barcodeCount: +barCount,
-            iFace: +face.id??0,
+            iFace: +face.id ?? 0,
             totalColumns: +numberOfFrontSideColumn,
             bubbleType: selectedBubble?.name,
             templateImagePath: imageSrc,
@@ -466,17 +462,40 @@ const EditTemplateModal = (props) => {
           },
         },
       ];
+
       const templateIndex = sessionStorage.getItem("templateIndex");
-      console.log(dataCtx.allTemplates[templateIndex]);
+      // console.log(dataCtx.allTemplates[templateIndex]);
       console.log(templateData);
-      return;
+    
+// return
+      // dataCtx.updateLayoutParameter(templateIndex, templateData[0]);
+     
+        sessionStorage.setItem("totalColumns", templateData[0].layoutParameters.totalColumns);
+        sessionStorage.setItem("timingMarks", JSON.stringify(templateData[0].layoutParameters.timingMarks));
+        sessionStorage.setItem(
+          "templateImagePath",
+          JSON.stringify(templateData[0].layoutParameters.templateImagePath)
+        );
+        sessionStorage.setItem(
+          "templateBackImagePath",
+          JSON.stringify(templateData[0].layoutParameters.templateBackImagePath)
+        );
+        sessionStorage.setItem("bubbleType", JSON.stringify(templateData[0].layoutParameters.bubbleType));
+      
+        sessionStorage.setItem(
+          "excelJsonFile",
+          JSON.stringify(templateData[0].layoutParameters.excelJsonFile)
+        );
+      
       // localStorage.setItem("Template", JSON.stringify(templateData));
       // const index = dataCtx.setAllTemplates(templateData);
-      // setModalShow(false);
+      setModalShow(false);
     } catch (error) {
       console.error("Error uploading file: ", error);
     }
   };
+  const templateIndex = sessionStorage.getItem("templateIndex");
+  console.log(dataCtx.allTemplates[templateIndex]);
 
   const scannerHandler = async () => {
     setScannerLoading(true);
