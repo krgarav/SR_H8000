@@ -16,6 +16,9 @@ import { fetchAllTemplate } from "helper/TemplateHelper";
 import EditTemplateModal from "ui/EditTemplateModal";
 import base64ToFile from "services/Base64toFile";
 import Papa from "papaparse";
+import { deleteTemplate } from "helper/TemplateHelper";
+import axios from "axios";
+import { DELETE_TEMPLATE } from "helper/url_helper";
 
 // Function to get values from sessionStorage or provide default
 const getSessionStorageOrDefault = (key, defaultValue) => {
@@ -1094,7 +1097,7 @@ const EditDesignTemplate = () => {
 
     // Extract layout parameters and its coordinates
     const layoutParameters = template[0].layoutParameters;
-    layoutParameters.id= data.templateId;
+    layoutParameters.id = data.templateId;
     const Coordinate = layoutParameters.Coordinate;
     let layoutCoordinates = {};
     // Transform layout coordinates into the required format
@@ -1129,7 +1132,6 @@ const EditDesignTemplate = () => {
     };
     delete updatedLayout.Coordinate;
     delete updatedLayout.imageStructureData;
-
 
     // Extract and format barcode, image, and printing data
     const barcodeData = template[0].barcodeData;
@@ -1199,7 +1201,7 @@ const EditDesignTemplate = () => {
     };
     console.log(fullRequestData);
     // Send the request and handle the response
-// return
+    // return
     const imageFile = base64ToFile(data.templateImagePath.image, "front.jpg");
     const backImageFile = base64ToFile(
       data.templateBackImagePath.image,
@@ -1211,12 +1213,12 @@ const EditDesignTemplate = () => {
 
     // Create a File object from the Blob
     const csvfile = new File([blob], "data.csv", { type: "text/csv" });
-    console.log(csvfile);
-
+    const deleteTemplat = axios.delete(
+      `${DELETE_TEMPLATE}?Id=${data.templateId}`
+    );
     try {
       setLoading(true);
       const res = await createTemplate(fullRequestData);
-      console.log(res);
       if (res.success === true) {
         const layoutId = res?.layoutId;
         const formdata = new FormData();
@@ -1229,7 +1231,6 @@ const EditDesignTemplate = () => {
           console.log(`${key}: ${value}`);
         }
         const res2 = await sendFile(formdata);
-        console.log(res2);
         setLoading(false);
 
         alert(`Response : ${JSON.stringify(res2?.message)}`);
@@ -1362,7 +1363,7 @@ const EditDesignTemplate = () => {
                     border: "2px solid black",
                     paddingTop: "1rem",
                     paddingLeft: "1rem",
-                    width:"102%",
+                    width: "102%",
                     // overflow: "auto",
                   }}
                 >

@@ -12,3 +12,5 @@ export const getJobCount = (id) => get(url.GET_JOB_COUNT);
 
 export const startJob = (data) => post(url.START_JOB, data);
 export const finishJob = (data) => post(url.FINISH_JOB, data);
+
+export const getJobDetail = (id) => get(`${url.GET_JOB_DETAIL}?Id=${id}`);

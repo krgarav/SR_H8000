@@ -50,6 +50,8 @@ import { deleteJob } from "helper/job_helper";
 import AssignModal from "ui/AssignModal";
 import { fetchAllUsers } from "helper/userManagment_helper";
 import { toast } from "react-toastify";
+import SmallHeader from "components/Headers/SmallHeader";
+import EditJobModal from "ui/EditJobModal";
 
 const Jobs = () => {
   const [modalShow, setModalShow] = useState(false);
@@ -57,6 +59,8 @@ const Jobs = () => {
   const [allJobs, setAllJobs] = useState([]);
   const [toggler, setToggler] = useState(true);
   const [currentJobData, setCurrentJobData] = useState({});
+  const [editJobModal, setEditJobModal] = useState(false);
+  const [currentId, setCurrentId] = useState();
   useEffect(() => {
     const fetchAllJobs = async () => {
       const response = await getJobs();
@@ -78,13 +82,15 @@ const Jobs = () => {
       return;
     }
     const response = await deleteJob(id);
-    console.log(response);
     if (response?.success) {
       toast.success("Deleted Job successfully");
     }
     setToggler((prev) => !prev);
   };
-
+  const jobEditHandler = async (id) => {
+    setCurrentId(id);
+    setEditJobModal(true);
+  };
   const ALLJOBS = allJobs.map((item, index) => {
     let assignuser = !item.assignUser ? "Not Assigned" : item.assignUser;
     // if (item.assignUser !== "string" || item.assignUser !== "") {
@@ -103,11 +109,7 @@ const Jobs = () => {
         <td>{item.templateName}</td>
         <td>{assignuser}</td>
         <td style={{ color: "black" }}>
-          <Badge
-            pill
-            bg={bgColor}
-            // text={bgColor === "warning" ? "dark" : "light"}
-          >
+          <Badge pill bg={bgColor}>
             {item.jobStatus}
           </Badge>
         </td>
@@ -132,7 +134,9 @@ const Jobs = () => {
               >
                 {item.jobStatus === "Completed" ? "Re-Assign" : "Assign"}
               </DropdownItem>
-              {/* <DropdownItem>Edit</DropdownItem> */}
+              <DropdownItem onClick={() => jobEditHandler(item.id)}>
+                Edit
+              </DropdownItem>
               <DropdownItem
                 style={{ color: "red" }}
                 onClick={() => deleteHandler(item.id)}
@@ -149,7 +153,7 @@ const Jobs = () => {
     <>
       <NormalHeader />
       {/* Page content */}
-
+      {/* <SmallHeader /> */}
       <Container className="mt--7" fluid>
         <Row>
           <div className="col">
@@ -195,6 +199,14 @@ const Jobs = () => {
       )}
       {modalShow && (
         <JobModal show={modalShow} onHide={() => setModalShow(false)} />
+      )}
+
+      {editJobModal && (
+        <EditJobModal
+          show={editJobModal}
+          onHide={() => setEditJobModal(false)}
+          jobId={currentId}
+        />
       )}
     </>
   );

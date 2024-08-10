@@ -32,6 +32,9 @@ export const CANCEL_SCAN = url + "CancelScan";
 export const CREATE_JOB = url + "CreateJobs";
 export const GET_ALL_JOBS = url + "GetAllJobs";
 export const DELETE_JOB = url + "DeleteJob";
+export const GET_JOB_DETAIL = url + "GetJobById";
+
+
 
 export const ASSIGN_JOB = url + "AssignJob";
 export const GET_ASSIGNED_JOB = url + "GetJobQueueList";

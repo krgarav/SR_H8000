@@ -16,4 +16,5 @@ export const getTemplateImage = (path) =>
 export const getTemplateCsv = (path) =>
   get(`${url.GET_TEMPLATE_CSV}?csvPath=${path}`);
 export const cancelScan = () => get(url.CANCEL_SCAN);
-export const checkJobStatus = (id) => get(`${url.CHECK_DELETE_TEMPLATE}?Id=${id}`);
+export const checkJobStatus = (id) =>
+  get(`${url.CHECK_DELETE_TEMPLATE}?Id=${id}`);

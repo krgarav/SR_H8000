@@ -25,15 +25,18 @@ import { jwtDecode } from "jwt-decode";
 import { v4 as uuidv4 } from "uuid";
 import { createJob } from "helper/job_helper";
 import DirectoryPicker from "views/DirectoryPicker";
-
-const JobModal = (props) => {
+import { getJobDetail } from "helper/job_helper";
+const comparewithId = (optiondata, optionvalue) => {
+  const filter = optiondata.find((item) => item.id === optionvalue);
+  return filter;
+};
+const EditJobModal = (props) => {
   const [modalShow, setModalShow] = useState(false);
   const [allTemplateOptions, setAllTemplateOptions] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState();
   const [fileNames, setFileNames] = useState([]);
   const [imageEnable, setImageEnable] = useState(false);
   const [allOperators, setAllOperators] = useState([]);
-  const [selectedOperator, setSelectedOperator] = useState("");
   const [dataPath, setDataPath] = useState("");
   const [dataType, setDataType] = useState("");
   const [imagePath, setImagePath] = useState("");
@@ -91,13 +94,25 @@ const JobModal = (props) => {
           .filter((item) => item !== null);
         setAllOperators(structuredOperators);
       }
-      // const structuredTemplate = template.map((item) => ({ id: item.id, name: item.layoutName }))
-      // console.log(structuredTemplate)
-      // setAllTemplateOptions(structuredTemplate);
     };
     getUsers();
   }, []);
+  useEffect(() => {
+    const getData = async () => {
+      const res = await getJobDetail(props.jobId);
+      console.log(res);
+      const jobData = res.result[0];
+      setJobName(jobData.jobName);
 
+      setSelectedTemplate(
+        comparewithId(allTemplateOptions, jobData.templateId)
+      );
+      setDataName(jobData.dataFileName);
+      setSelectedDataDirectory(jobData.dataPath);
+      setDataType(comparewithId(fileType, jobData.dataType));
+    };
+    getData();
+  });
   const createTemplateHandler = async () => {
     if (!jobName) {
       toast.error("Please enter job name");
@@ -143,6 +158,7 @@ const JobModal = (props) => {
     // }
 
     const jobObj = {
+      id: props.jobId,
       assignUser: "",
       templateId: selectedTemplate?.id,
       dataPath: selectedDataDirectory,
@@ -326,18 +342,6 @@ const JobModal = (props) => {
                 value={imageEnable}
                 onChange={(val) => changeHandler(val)}
               />
-              {/* <Select
-                                value={colorType}
-                                onChange={(selectedValue) =>
-                                    setColorType(selectedValue)
-                                }
-                                options={colorTypeData}
-                                getOptionLabel={(option) => option?.name || ""}
-                                getOptionValue={(option) =>
-                                    option?.id?.toString() || ""
-                                }
-                                placeholder="Select color type..."
-                            /> */}
             </div>
           </Row>
 
@@ -517,11 +521,11 @@ const JobModal = (props) => {
             Close
           </Button>
           <Button variant="success" onClick={createTemplateHandler}>
-            Add Job
+            Update Job
           </Button>
         </Modal.Footer>
       </Modal>
-
+      {/* ****************************directory picker modal************************** */}
       <Modal
         show={directoryPickerModal}
         // onHide={props.onHide}
@@ -560,8 +564,9 @@ const JobModal = (props) => {
           )}
         </Modal.Footer>
       </Modal>
+      {/* ****************************directory picker modal************************** */}
     </>
   );
 };
 
-export default JobModal;
+export default EditJobModal;
