@@ -24,6 +24,7 @@ export const GET_LAYOUT_DATA = url + "GetLayoutDataById";
 export const CREATE_TEMPLATE = url + "LayoutSetting";
 export const SEND_FILE = url + "SaveLayoutFiles";
 export const DELETE_TEMPLATE = url + "DeleteLayout";
+export const CHECK_DELETE_TEMPLATE = url + "GetJobStatus";
 export const GET_TEMPLATE_IMAGE = url + "GetTemplateImage";
 export const GET_TEMPLATE_CSV = url + "GetTemplateCSV";
 export const CANCEL_SCAN = url + "CancelScan";

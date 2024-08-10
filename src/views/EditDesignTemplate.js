@@ -1094,6 +1094,7 @@ const EditDesignTemplate = () => {
 
     // Extract layout parameters and its coordinates
     const layoutParameters = template[0].layoutParameters;
+    layoutParameters.id= data.templateId;
     const Coordinate = layoutParameters.Coordinate;
     let layoutCoordinates = {};
     // Transform layout coordinates into the required format
@@ -1128,6 +1129,7 @@ const EditDesignTemplate = () => {
     };
     delete updatedLayout.Coordinate;
     delete updatedLayout.imageStructureData;
+
 
     // Extract and format barcode, image, and printing data
     const barcodeData = template[0].barcodeData;
@@ -1197,7 +1199,7 @@ const EditDesignTemplate = () => {
     };
     console.log(fullRequestData);
     // Send the request and handle the response
-
+// return
     const imageFile = base64ToFile(data.templateImagePath.image, "front.jpg");
     const backImageFile = base64ToFile(
       data.templateBackImagePath.image,
@@ -1358,9 +1360,10 @@ const EditDesignTemplate = () => {
                   id="grid-divs"
                   style={{
                     border: "2px solid black",
-                    paddingTop: "1.0rem",
+                    paddingTop: "1rem",
                     paddingLeft: "1rem",
-                    overflow: "auto",
+                    width:"102%",
+                    // overflow: "auto",
                   }}
                 >
                   <div

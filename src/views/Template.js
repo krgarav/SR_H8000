@@ -25,6 +25,7 @@ import { getTemplateImage } from "helper/TemplateHelper";
 import { getTemplateCsv } from "helper/TemplateHelper";
 import { getLayoutDataById } from "helper/TemplateHelper";
 import Papa from "papaparse";
+import { checkJobStatus } from "helper/TemplateHelper";
 const base64ToFile = (base64, filename) => {
   const byteString = atob(base64.split(",")[1]);
   const mimeString = base64.split(",")[0].split(":")[1].split(";")[0];
@@ -201,8 +202,19 @@ const Template = () => {
       const id = arr[0].layoutParameters.id;
       // const imageUrl = arr[0].layoutParameters.templateImagePath;
       // const result = await deleteImage(imageUrl);
+      const responseJob = await checkJobStatus(id);
+      console.log(responseJob);
+      // return;
+      if (responseJob.success) {
+        const result = window.confirm(
+          "Job already created by this template.Do you still want to delete Template?"
+        );
+        if (!result) {
+          return;
+        }
+      }
+
       const res = await deleteTemplate(id);
-      console.log(res);
       if (res?.success) {
         setToggle((prev) => !prev);
         toast.success("Successfully deleted template");

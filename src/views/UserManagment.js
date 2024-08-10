@@ -66,6 +66,7 @@ const UserManagment = () => {
   const [id, setId] = useState("");
   const [toggle, setToggle] = useState(false);
   const emailRef = useRef(null); // Reference to the input element
+  const confirmRef = useRef(null);
   const fetchRoles = async () => {
     try {
       const data = await getUserRoles();
@@ -502,10 +503,16 @@ const UserManagment = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onBlur={() => {
+                  const toastId = "email-error-toast";
                   if (!validateEmail(email)) {
-                    alert(
-                      'Invalid email format. "@" is missing or email is incorrectly formatted.'
-                    );
+                    toast.error("Please enter a valid email address.", {
+                      toastId, // Use the same ID for this toast
+                    });
+
+                    emailRef.current.focus();
+                    // alert(
+                    //   'Invalid email format. "@" is missing or email is incorrectly formatted.'
+                    // );
                   }
                 }}
                 ref={emailRef}
@@ -630,7 +637,16 @@ const UserManagment = () => {
                 className="form-control"
                 placeholder="Enter Password"
                 value={ConfirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                ref={confirmRef}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                }}
+                onBlur={() => {
+                  if (password !== ConfirmPassword) {
+                    toast.error("Password and confirm password does not match");
+                    confirmRef.current.focus();
+                  }
+                }}
               />
               {!ConfirmPassword && (
                 <span style={{ color: "red", display: spanDisplay }}>
