@@ -148,23 +148,23 @@ const EditDesignTemplate = () => {
     setData((item) => {
       return {
         ...item,
-        totalColumns: sessionStorage.getItem("totalColumns"),
-        timingMarks: sessionStorage.getItem("timingMarks"),
-        templateImagePath: sessionStorage.getItem("templateImagePath"),
-        templateBackImagePath: sessionStorage.getItem("templateBackImagePath"),
-        bubbleType: sessionStorage.getItem("bubbleType"),
-        excelJsonFile: sessionStorage.getItem("excelJsonFile"),
+        totalColumns: JSON.parse(sessionStorage.getItem("totalColumns")),
+        timingMarks: JSON.parse(sessionStorage.getItem("timingMarks")),
+        templateImagePath: JSON.parse(sessionStorage.getItem("templateImagePath")),
+        templateBackImagePath: JSON.parse(sessionStorage.getItem("templateBackImagePath")),
+        bubbleType: JSON.parse(sessionStorage.getItem("bubbleType")),
+        excelJsonFile: JSON.parse(sessionStorage.getItem("excelJsonFile"))
       };
     });
   };
 
-  // useEffect(() => {
-  //   if (!detailPage) {
-  //     setTimeout(() => {
-  //       // fetchDataFromLocalStorage();
-  //     }, [2000]);
-  //   }
-  // }, [detailPage]);
+  useEffect(() => {
+    if (!detailPage) {
+      setTimeout(() => {
+        fetchDataFromLocalStorage();
+      }, [2000]);
+    }
+  }, [detailPage]);
   useEffect(() => {
     const idFieldCount = selectedCoordinates.filter(
       (item) => item.fieldType === "idField"
@@ -2231,12 +2231,13 @@ const EditDesignTemplate = () => {
           </div>
         </Modal.Footer>
       </Modal>
-      <EditTemplateModal
-        show={detailPage}
-        templateId={data.templateId}
-        layoutData={layoutFieldData}
-        onHide={() => setDetailPage(false)}
-      />
+      {detailPage &&
+        <EditTemplateModal
+          show={detailPage}
+          templateId={data.templateId}
+          layoutData={dataCtx.allTemplates[data.templateIndex][0]}
+          onHide={() => setDetailPage(false)}
+        />}
     </>
   );
 };

@@ -32,7 +32,6 @@ const DataProvider = (props) => {
   };
 
   const modifyTemplateHandler = (index, regionData, fieldType) => {
-    console.log(index);
     setDataState((item) => {
       const copiedData = [...item.allTemplates];
       const currentTemplate = copiedData[index];
@@ -723,6 +722,48 @@ const DataProvider = (props) => {
     });
   };
 
+  const updateTemplateParameterHandler = (templateIndex, dataField) => {
+    setDataState((prevState) => {
+      // Make sure the index is valid
+      if (templateIndex < 0 || templateIndex >= prevState.allTemplates.length) {
+        console.warn("Invalid templateIndex:", templateIndex);
+        return prevState; // or handle the error as needed
+      }
+
+      // Destructure dataField
+      const { layoutParameters, imageData, printingData, barcodeData } =
+        dataField;
+
+      // Clone the previous state
+      const copiedData = [...prevState.allTemplates];
+      const currentTemplate = copiedData[templateIndex][0];
+
+      // Update the fields in the current template
+      currentTemplate.layoutParameters = {
+        ...currentTemplate.layoutParameters,
+        ...layoutParameters, // Assuming you want to merge with existing layoutParameters
+      };
+      currentTemplate.imageData = {
+        ...currentTemplate.imageData,
+        ...imageData, // Assuming you want to merge with existing imageData
+      };
+      currentTemplate.printingData = {
+        ...currentTemplate.printingData,
+        ...printingData, // Assuming you want to merge with existing printingData
+      };
+      currentTemplate.barcodeData = {
+        ...currentTemplate.barcodeData,
+        ...barcodeData, // Assuming you want to merge with existing barcodeData
+      };
+
+      // Return the new state
+      return {
+        ...prevState,
+        allTemplates: copiedData,
+      };
+    });
+  };
+
   const dataContext = {
     allTemplates: dataState.allTemplates,
     setAllTemplates: templateHandler,
@@ -738,6 +779,7 @@ const DataProvider = (props) => {
     deleteFieldTemplateWithUUID: deleteFieldTemplateWithUUIDHandler,
     addImageCoordinate: addImageCoordinateHandler,
     updateLayoutParameter: updateLayoutParameterHandler,
+    updateTemplateParameter: updateTemplateParameterHandler,
   };
 
   return (

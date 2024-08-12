@@ -107,7 +107,6 @@ const EditTemplateModal = (props) => {
   const [idPresent, setIdPresent] = useState();
   const [fileModal, setFileModal] = useState(false);
   const [excelJsonFile, setExcelJsonFile] = useState();
-  const [excelFile, setExcelFile] = useState("");
   const [printEnable, setPrintEnable] = useState({
     id: "0",
     name: "Not Enable",
@@ -184,6 +183,15 @@ const EditTemplateModal = (props) => {
     // createTemplateHandler();
   };
   useEffect(() => {
+    const storedFile = sessionStorage.getItem("excelJsonFile");
+    if (storedFile) {
+      setExcelJsonFile(JSON.parse(storedFile));
+    }
+    const templateFrontImage =""; 
+    const templateBackImage =""
+
+  }, []);
+  useEffect(() => {
     if (props.show) {
       setModalShow(true);
     } else {
@@ -258,11 +266,8 @@ const EditTemplateModal = (props) => {
         header: true,
         complete: (results) => {
           const json = results.data;
-
-          setExcelFile(file);
-          console.log(json);
-          const Row = json.length - 1;
-          const Column = Object.keys(json[1]).length - 1;
+          const Row = json.length ;
+          const Column = Object.keys(json[1]).length;
           console.log(Object.values(json[1]));
           setNumberOfLines(Row);
           setNumberOfFrontSideColumn(Column);
@@ -277,7 +282,6 @@ const EditTemplateModal = (props) => {
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    console.log(file);
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -409,7 +413,6 @@ const EditTemplateModal = (props) => {
       return;
     }
 
-    console.log(face);
     try {
       const templateData = [
         {
@@ -468,7 +471,7 @@ const EditTemplateModal = (props) => {
       console.log(templateData);
     
 // return
-      // dataCtx.updateLayoutParameter(templateIndex, templateData[0]);
+      dataCtx.updateLayoutParameter(templateIndex, templateData[0]);
      
         sessionStorage.setItem("totalColumns", templateData[0].layoutParameters.totalColumns);
         sessionStorage.setItem("timingMarks", JSON.stringify(templateData[0].layoutParameters.timingMarks));
@@ -516,7 +519,6 @@ const EditTemplateModal = (props) => {
       // Create a File object from the Blob
       const csvfile = new File([blob], "data.csv", { type: "text/csv" });
       // Set the File object to state
-      setExcelFile(csvfile);
       const file = base64ToFile(base64ImageUrl, "image.png");
       // Convert the File object to an image URL
       const imageUrl = URL.createObjectURL(file);
