@@ -35,8 +35,11 @@ import {
   UncontrolledTooltip,
   Button,
   Col,
+
+
 } from "reactstrap";
 import { Badge } from "react-bootstrap";
+
 // core components
 import Header from "components/Headers/Header.js";
 import NormalHeader from "components/Headers/NormalHeader";
@@ -52,6 +55,7 @@ import { fetchAllUsers } from "helper/userManagment_helper";
 import { toast } from "react-toastify";
 import SmallHeader from "components/Headers/SmallHeader";
 import EditJobModal from "ui/EditJobModal";
+import Placeholder from "ui/Placeholder";
 
 const Jobs = () => {
   const [modalShow, setModalShow] = useState(false);
@@ -61,15 +65,19 @@ const Jobs = () => {
   const [currentJobData, setCurrentJobData] = useState({});
   const [editJobModal, setEditJobModal] = useState(false);
   const [currentId, setCurrentId] = useState();
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     const fetchAllJobs = async () => {
+      setLoading(true);
       const response = await getJobs();
       console.log(response);
       if (response) {
         setAllJobs(response.result);
+        setLoading(false);
       }
       if (response === undefined) {
         toast.error("Cant connect to network");
+        setLoading(false)
       }
       // console.log(response.result)
     };
@@ -91,6 +99,17 @@ const Jobs = () => {
     setCurrentId(id);
     setEditJobModal(true);
   };
+
+  const placeHolderJobs = new Array(10).fill(null).map((_, index) => (
+    <tr key={index}>
+      <td><Placeholder width="60%" height="1.5em" /></td>
+      <td><Placeholder width="60%" height="1.5em" /></td>
+      <td><Placeholder width="60%" height="1.5em" /></td>
+      <td><Placeholder width="60%" height="1.5em" /></td>
+      <td><Placeholder width="60%" height="1.5em" /></td>
+      <td></td>
+    </tr>
+  ))
   const ALLJOBS = allJobs.map((item, index) => {
     let assignuser = !item.assignUser ? "Not Assigned" : item.assignUser;
     // if (item.assignUser !== "string" || item.assignUser !== "") {
@@ -105,8 +124,12 @@ const Jobs = () => {
     return (
       <tr key={index}>
         <td>{index + 1}</td>
+        {/* <td>{item.jobName}</td> */}
         <td>{item.jobName}</td>
-        <td>{item.templateName}</td>
+        <td>
+          {item.templateName}
+
+        </td>
         <td>{assignuser}</td>
         <td style={{ color: "black" }}>
           <Badge pill bg={bgColor}>
@@ -173,19 +196,30 @@ const Jobs = () => {
                   </Button>
                 </div>
               </CardHeader>
-              <Table className="align-items-center table-flush mb-5" responsive>
-                <thead className="thead-light">
-                  <tr>
-                    <th scope="col">Sno.</th>
-                    <th scope="col">Job Name</th>
-                    <th scope="col">Template</th>
-                    <th scope="col">Operator </th>
-                    <th scope="col">Job Status</th>
-                    <th scope="col"></th>
-                  </tr>
-                </thead>
-                <tbody style={{ minHeight: "100rem" }}>{ALLJOBS}</tbody>
-              </Table>
+              <div style={{ height: "75vh", overflow: "auto" }}>
+                <Table className="align-items-center table-flush mb-5" responsive>
+                  <thead className="thead-light">
+                    <tr>
+                      <th scope="col">Sno.</th>
+                      <th scope="col">Job Name</th>
+                      <th scope="col">Template</th>
+                      <th scope="col">Operator </th>
+                      <th scope="col">Job Status</th>
+                      <th scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody style={{
+                    height: "50dvh", overflow:
+                      "auto"
+                  }}>
+
+                    {loading ? (
+                      placeHolderJobs
+                    ) : (ALLJOBS)}
+
+                  </tbody>
+                </Table>
+              </div>
             </Card>
           </div>
         </Row>

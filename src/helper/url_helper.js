@@ -42,5 +42,5 @@ export const GET_SCANNED_IMAGE = url + "GetSampleData";
 export const GET_JOB_COUNT = url + "GetTotalJobCount";
 export const START_JOB = url + "StartJob";
 export const FINISH_JOB = url + "FinishJob";
-
+export const UPDATE_JOB = url+ "UpdateJobs";
 export const MAIN_URL = url;

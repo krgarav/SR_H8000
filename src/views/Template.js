@@ -11,7 +11,7 @@ import {
 // core components
 import Header from "components/Headers/Header.js";
 import NormalHeader from "components/Headers/NormalHeader";
-import { Modal, Button, Row, Col, Placeholder, Spinner } from "react-bootstrap";
+import { Modal, Button, Row, Col, Spinner } from "react-bootstrap";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DataContext from "store/DataContext";
@@ -26,6 +26,7 @@ import { getTemplateCsv } from "helper/TemplateHelper";
 import { getLayoutDataById } from "helper/TemplateHelper";
 import Papa from "papaparse";
 import { checkJobStatus } from "helper/TemplateHelper";
+import Placeholder from "ui/Placeholder";
 const base64ToFile = (base64, filename) => {
   const byteString = atob(base64.split(",")[1]);
   const mimeString = base64.split(",")[0].split(":")[1].split(";")[0];
@@ -43,6 +44,7 @@ const Template = () => {
   const [templateDatail, setTemplateDetail] = useState([]);
   const [toggle, setToggle] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [templateLoading, setTemplateLoading] = useState(false);
   const navigate = useNavigate();
   const dataCtx = useContext(DataContext);
   useEffect(() => {
@@ -50,14 +52,17 @@ const Template = () => {
   }, []);
   useEffect(() => {
     const fetchData = async () => {
+      setTemplateLoading(true);
       const templates = await fetchAllTemplate();
       if (templates === undefined) {
         toast.error("Error fetching templates");
+        setTemplateLoading(false);
       }
       const mpObj = templates?.map((item) => {
         return [{ layoutParameters: item }];
       });
       dataCtx.addToAllTemplate(mpObj);
+      setTemplateLoading(false);
     };
     fetchData();
   }, [toggle]);
@@ -225,6 +230,58 @@ const Template = () => {
       return;
     }
   };
+  const placeHolderJobs = new Array(10).fill(null).map((_, index) => (
+    <tr key={index}>
+      <td><Placeholder width="60%" height="1.5em" /></td>
+      <td><Placeholder width="60%" height="1.5em" /></td>
+      <td><Placeholder width="60%" height="1.5em" /></td>
+      <td><Placeholder width="60%" height="1.5em" /></td>
+      <td><Placeholder width="60%" height="1.5em" /></td>
+      <td></td>
+    </tr>
+  ))
+  const LoadedTemplates = dataCtx.allTemplates?.map((d, i) => (
+    <tr
+      key={i}
+      onClick={() => handleRowClick(d, i)}
+      style={{ cursor: "pointer" }} // Adds a pointer cursor on hover
+    >
+      <td>{i + 1}</td>
+      <td>{d[0].layoutParameters.layoutName}</td>
+      <td>{d[0].layoutParameters.timingMarks}</td>
+      <td>{d[0].layoutParameters.totalColumns}</td>
+      <td>{d[0].layoutParameters["bubbleType"]}</td>
+      <td className="text-right">
+        <UncontrolledDropdown>
+          <DropdownToggle
+            className="btn-icon-only text-light"
+            href="#pablo"
+            role="button"
+            size="sm"
+            color=""
+            onClick={(e) => e.preventDefault()}
+          >
+            <i className="fas fa-ellipsis-v" />
+          </DropdownToggle>
+          <DropdownMenu className="dropdown-menu-arrow" right>
+            <DropdownItem onClick={() => showHandler(d)}>
+              Show
+            </DropdownItem>
+            <DropdownItem onClick={() => editHandler(d, i)}>
+              Edit
+            </DropdownItem>
+            <DropdownItem
+              style={{ color: "red" }}
+              onClick={() => deleteHandler(d, i)}
+            >
+              Delete
+            </DropdownItem>
+          </DropdownMenu>
+        </UncontrolledDropdown>
+      </td>
+    </tr>
+  ));
+
   return (
     <>
       <NormalHeader />
@@ -249,7 +306,8 @@ const Template = () => {
                 </div>
               </CardHeader>
 
-              <div style={{ height: "65vh", overflow: "auto" }}>
+              <div style={{ height: "75vh", overflow: "auto" }}>
+
                 {loading && (
                   <div
                     style={{
@@ -269,6 +327,8 @@ const Template = () => {
                     <Spinner />
                   </div>
                 )}
+
+
                 <Table
                   className="align-items-center table-flush mb-5 table-hover"
                   responsive
@@ -284,116 +344,11 @@ const Template = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {/* <tr>
-                      <td>
-                        <Placeholder as="h1" animation="glow">
-                          <Placeholder xs={6} />
-                        </Placeholder>
-                      </td>
-                      <td>
-                        <Placeholder as="h1" animation="glow">
-                          <Placeholder xs={6} />
-                        </Placeholder>
-                      </td>
-                      <td>
-                        <Placeholder as="h1" animation="glow">
-                          <Placeholder xs={6} />
-                        </Placeholder>
-                      </td>
-                      <td>
-                        <Placeholder as="h1" animation="glow">
-                          <Placeholder xs={6} />
-                        </Placeholder>
-                      </td>
-                      <td>
-                        <Placeholder as="h1" animation="glow">
-                          <Placeholder xs={6} />
-                        </Placeholder>
-                      </td>
-                      <td className="text-right">
-                        <p aria-hidden="true">
-                          <Placeholder xs={6} />
-                        </p>
-                      </td>
-                    </tr> */}
-                    {/* <tr>
-                      <td>
-                        <Placeholder as="h1" animation="glow">
-                          <Placeholder xs={6} />
-                        </Placeholder>
-                      </td>
-                      <td>
-                        <Placeholder as="h1" animation="glow">
-                          <Placeholder xs={6} />
-                        </Placeholder>
-                      </td>
-                      <td>
-                        {" "}
-                        <Placeholder as="h1" animation="glow">
-                          <Placeholder xs={6} />
-                        </Placeholder>
-                      </td>
-                      <td>
-                        {" "}
-                        <Placeholder as="h1" animation="glow">
-                          <Placeholder xs={6} />
-                        </Placeholder>
-                      </td>
-                      <td>
-                        {" "}
-                        <Placeholder as="h1" animation="glow">
-                          <Placeholder xs={6} />
-                        </Placeholder>
-                      </td>
-                      <td className="text-right">
-                        {" "}
-                        <Placeholder as="h1" animation="glow">
-                          <Placeholder xs={6} />
-                        </Placeholder>
-                      </td>
-                    </tr> */}
+                    {templateLoading ? (
+                      placeHolderJobs
+                    ) : (LoadedTemplates)}
 
-                    {dataCtx.allTemplates?.map((d, i) => (
-                      <tr
-                        key={i}
-                        onClick={() => handleRowClick(d, i)}
-                        style={{ cursor: "pointer" }} // Adds a pointer cursor on hover
-                      >
-                        <td>{i + 1}</td>
-                        <td>{d[0].layoutParameters.layoutName}</td>
-                        <td>{d[0].layoutParameters.timingMarks}</td>
-                        <td>{d[0].layoutParameters.totalColumns}</td>
-                        <td>{d[0].layoutParameters["bubbleType"]}</td>
-                        <td className="text-right">
-                          <UncontrolledDropdown>
-                            <DropdownToggle
-                              className="btn-icon-only text-light"
-                              href="#pablo"
-                              role="button"
-                              size="sm"
-                              color=""
-                              onClick={(e) => e.preventDefault()}
-                            >
-                              <i className="fas fa-ellipsis-v" />
-                            </DropdownToggle>
-                            <DropdownMenu className="dropdown-menu-arrow" right>
-                              <DropdownItem onClick={() => showHandler(d)}>
-                                Show
-                              </DropdownItem>
-                              <DropdownItem onClick={() => editHandler(d, i)}>
-                                Edit
-                              </DropdownItem>
-                              <DropdownItem
-                                style={{ color: "red" }}
-                                onClick={() => deleteHandler(d, i)}
-                              >
-                                Delete
-                              </DropdownItem>
-                            </DropdownMenu>
-                          </UncontrolledDropdown>
-                        </td>
-                      </tr>
-                    ))}
+
                   </tbody>
                 </Table>
               </div>

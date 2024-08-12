@@ -8,7 +8,7 @@ const Imageswitch = (props) => {
    
     return (
         <label className={classes.switch}>
-            <input type="checkbox" onChange={() => { setChecked(prev => !prev) }} />
+            <input type="checkbox" id='image-enable-input' onChange={() => { setChecked(prev => !prev) }} />
             <span className={classes.slider}></span>
         </label>
     )

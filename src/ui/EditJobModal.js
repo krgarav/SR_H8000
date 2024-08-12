@@ -1,8 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Modal, Button, Nav, Form, Tab, Row, Col } from "react-bootstrap";
-
 import { useNavigate } from "react-router-dom";
-
 import "@syncfusion/ej2-base/styles/material.css";
 import "@syncfusion/ej2-react-dropdowns/styles/material.css";
 import { MultiSelect } from "react-multi-select-component";
@@ -22,10 +20,11 @@ import {
   imageDPIData,
 } from "data/helperData";
 import { jwtDecode } from "jwt-decode";
-import { v4 as uuidv4 } from "uuid";
-import { createJob } from "helper/job_helper";
 import DirectoryPicker from "views/DirectoryPicker";
 import { getJobDetail } from "helper/job_helper";
+import { updateJob } from "helper/job_helper";
+
+
 const comparewithId = (optiondata, optionvalue) => {
   const filter = optiondata.find((item) => item.id === optionvalue);
   return filter;
@@ -34,12 +33,10 @@ const EditJobModal = (props) => {
   const [modalShow, setModalShow] = useState(false);
   const [allTemplateOptions, setAllTemplateOptions] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState();
-  const [fileNames, setFileNames] = useState([]);
   const [imageEnable, setImageEnable] = useState(false);
   const [allOperators, setAllOperators] = useState([]);
   const [dataPath, setDataPath] = useState("");
   const [dataType, setDataType] = useState("");
-  const [imagePath, setImagePath] = useState("");
   const [imageType, setImageType] = useState("");
   const [imageDpi, setImageDpi] = useState("");
   const [imageColor, setImageColor] = useState("");
@@ -50,9 +47,6 @@ const EditJobModal = (props) => {
   const [dataName, setDataName] = useState("");
   const [imageName, setImageName] = useState("");
   const [currentDirState, setCurrentDirState] = useState("data");
-  const generateUUID = () => {
-    return uuidv4();
-  };
   const changeHandler = (val) => {
     // if (!selectedDataDirectory && val === true) {
     //   toast.error("Please select data directory first");
@@ -103,16 +97,21 @@ const EditJobModal = (props) => {
       console.log(res);
       const jobData = res.result[0];
       setJobName(jobData.jobName);
-
       setSelectedTemplate(
         comparewithId(allTemplateOptions, jobData.templateId)
       );
       setDataName(jobData.dataFileName);
       setSelectedDataDirectory(jobData.dataPath);
       setDataType(comparewithId(fileType, jobData.dataType));
+      const input = document.getElementById("image-enable-input");
+      if (jobData.imageColor || jobData.imagePath || jobData.imageType) {
+        input.click();
+        setImageName(jobData.imageName);
+        setSelectedImageDirectory(jobData.imagePath);
+      }
     };
     getData();
-  });
+  }, []);
   const createTemplateHandler = async () => {
     if (!jobName) {
       toast.error("Please enter job name");
@@ -122,40 +121,40 @@ const EditJobModal = (props) => {
       toast.error("Please select template");
       return;
     }
-    // if (!selectedDataDirectory) {
-    //   toast.error("Please select data directory");
-    //   return;
-    // }
-    // if (!dataType) {
-    //   toast.error("Please select data type");
-    //   return;
-    // }
-    // if (!dataName) {
-    //   toast.error("Please enter data name");
-    //   return;
-    // }
-    // if (imageEnable) {
-    //   if (!selectedImageDirectory) {
-    //     toast.error("Please select image directory");
-    //     return;
-    //   }
-    //   if (!imageType) {
-    //     toast.error("Please select image type");
-    //     return;
-    //   }
-    //   if (!imageDpi) {
-    //     toast.error("Please select dpi");
-    //     return;
-    //   }
-    //   if (!imageColor) {
-    //     toast.error("Please select image color");
-    //     return;
-    //   }
-    //   if (!imageName) {
-    //     toast.error("Please enter image name");
-    //     return;
-    //   }
-    // }
+    if (!selectedDataDirectory) {
+      toast.error("Please select data directory");
+      return;
+    }
+    if (!dataType) {
+      toast.error("Please select data type");
+      return;
+    }
+    if (!dataName) {
+      toast.error("Please enter data name");
+      return;
+    }
+    if (imageEnable) {
+      if (!selectedImageDirectory) {
+        toast.error("Please select image directory");
+        return;
+      }
+      if (!imageType) {
+        toast.error("Please select image type");
+        return;
+      }
+      if (!imageDpi) {
+        toast.error("Please select dpi");
+        return;
+      }
+      if (!imageColor) {
+        toast.error("Please select image color");
+        return;
+      }
+      if (!imageName) {
+        toast.error("Please enter image name");
+        return;
+      }
+    }
 
     const jobObj = {
       id: props.jobId,
@@ -175,7 +174,7 @@ const EditJobModal = (props) => {
 
     // console.log(jobObj);
     // return;
-    const response = await createJob(jobObj);
+    const response = await updateJob(jobObj);
     console.log(response);
     if (response?.success) {
       // alert(response.message)
