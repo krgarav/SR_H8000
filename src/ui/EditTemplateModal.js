@@ -489,7 +489,8 @@ const EditTemplateModal = (props) => {
       
       // localStorage.setItem("Template", JSON.stringify(templateData));
       // const index = dataCtx.setAllTemplates(templateData);
-      setModalShow(false);
+      props.onHide()
+      // setModalShow(false);
     } catch (error) {
       console.error("Error uploading file: ", error);
     }

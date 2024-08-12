@@ -232,7 +232,7 @@ const Template = () => {
   };
   const placeHolderJobs = new Array(10).fill(null).map((_, index) => (
     <tr key={index}>
-      <td><Placeholder width="60%" height="1.5em" /></td>
+      <td><Placeholder width="20%" height="1.5em" /></td>
       <td><Placeholder width="60%" height="1.5em" /></td>
       <td><Placeholder width="60%" height="1.5em" /></td>
       <td><Placeholder width="60%" height="1.5em" /></td>
