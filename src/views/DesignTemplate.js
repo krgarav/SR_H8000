@@ -1305,7 +1305,16 @@ const DesignTemplate = () => {
       <div>
         <SmallHeader />
       </div>
-      <div style={{ position: "fixed", top: "20px", zIndex: "999" }}>
+      <div
+        style={{
+          position: "absolute",
+          top: "30px", // Adjust the top value as needed
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: "999",
+        }}
+        
+      >
         <Button
           variant="primary"
           onClick={() => {
@@ -1319,8 +1328,8 @@ const DesignTemplate = () => {
             variant="light"
             style={{
               position: "absolute",
-              top: "-10px", // Adjust this value to position the badge correctly
-              right: "-10px", // Adjust this value to position the badge correctly
+              top: "-5px", // Adjust this value to position the badge correctly
+              right: "-5px", // Adjust this value to position the badge correctly
               transform: "translate(50%, -50%)",
               zIndex: "1000",
             }}
@@ -1328,16 +1337,25 @@ const DesignTemplate = () => {
             {imagesSelectedCount} {/* Replace this with your dynamic number */}
           </Badge>
         </Button>
+
+        <Button
+        variant="secondary"
+            onClick={() => {
+              setDetailPage(true);
+            }}
+          >
+            Layout details
+          </Button>
       </div>
       {!modalShow && selection && (
         <Button
           onClick={() => {
             setModalShow(true);
           }}
-          variant="primary"
+          variant="default"
           style={{
             position: "fixed",
-            top: "20px", // Adjust the top value as needed
+            bottom: "50px", // Adjust the top value as needed
             left: "50%",
             transform: "translateX(-50%)",
             zIndex: "999",
@@ -1371,7 +1389,7 @@ const DesignTemplate = () => {
           {!loading ? "Save" : "Saving"}
         </Button>
 
-        <div
+        {/* <div
           style={{
             position: "fixed",
             top: "50%", // Center vertically
@@ -1384,9 +1402,9 @@ const DesignTemplate = () => {
               setDetailPage(true);
             }}
           >
-            open
+            Layout details
           </Button>
-        </div>
+        </div> */}
         <div className="main-container">
           <div className="containers">
             <div className="d-flex">
