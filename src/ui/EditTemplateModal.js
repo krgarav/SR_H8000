@@ -215,14 +215,17 @@ const EditTemplateModal = (props) => {
       const layoutData = props.layoutData;
 
       if (layoutData) {
-        console.log(layoutData);
         const layout = layoutData?.layoutParameters;
+        console.log(layout);
         if (layout) {
           setName(layout.layoutName);
           setNumberOfLines(layout.timingMarks);
           setNumberOfFrontSideColumn(layout.totalColumns);
           if (layout.idMarksPattern === "000000000000000000000000") {
             const filter = IdOptionData[1];
+            setIdPresent(filter);
+          } else {
+            const filter = IdOptionData[0];
             setIdPresent(filter);
           }
 
@@ -470,10 +473,9 @@ const EditTemplateModal = (props) => {
       ];
 
       const templateIndex = sessionStorage.getItem("templateIndex");
-      // console.log(dataCtx.allTemplates[templateIndex]);
       console.log(templateData);
 
-      return;
+      // return;
       dataCtx.updateLayoutParameter(templateIndex, templateData[0]);
 
       sessionStorage.setItem(
@@ -484,13 +486,16 @@ const EditTemplateModal = (props) => {
         "timingMarks",
         JSON.stringify(templateData[0].layoutParameters.timingMarks)
       );
-      sessionStorage.setItem(
-        "templateImagePath",
-        JSON.stringify(templateData[0].layoutParameters.templateImagePath)
-      );
+      const firstobj = {
+        image: templateData[0].layoutParameters.templateImagePath,
+      };
+      sessionStorage.setItem("templateImagePath", JSON.stringify(firstobj));
+      const secondobj = {
+        image: templateData[0].layoutParameters.templateBackImagePath,
+      };
       sessionStorage.setItem(
         "templateBackImagePath",
-        JSON.stringify(templateData[0].layoutParameters.templateBackImagePath)
+        JSON.stringify(secondobj)
       );
       sessionStorage.setItem(
         "bubbleType",

@@ -196,7 +196,7 @@ const Jobs = () => {
                   </Button>
                 </div>
               </CardHeader>
-              <div style={{ height: "75vh", overflow: "auto" }}>
+              <div style={{ height: "70vh", overflow: "auto" }}>
                 <Table className="align-items-center table-flush mb-5" responsive>
                   <thead className="thead-light">
                     <tr>

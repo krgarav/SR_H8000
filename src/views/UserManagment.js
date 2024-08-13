@@ -244,59 +244,76 @@ const UserManagment = () => {
                   </Button>
                 </div>
               </CardHeader>
-              <Table className="align-items-center table-flush mb-5" responsive>
-                <thead className="thead-light">
-                  <tr>
-                    <th scope="col">Sno.</th>
-                    <th scope="col">Username</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Phone Number</th>
-                    <th scope="col">Role</th>
-                    <th scope="col" />
-                  </tr>
-                </thead>
-                <tbody style={{ minHeight: "100rem" }}>
-                  {allUsers?.map((d, i) => (
-                    <>
-                      <tr key={i}>
-                        <td>{i + 1}</td>
-                        <td>{d.userName}</td>
-                        <td>{d.email}</td>
-                        <td>{d.phoneNumber}</td>
-                        <td>{d?.userRoleList[0]?.roleName}</td>
-                        <td className="text-right">
-                          <UncontrolledDropdown>
-                            <DropdownToggle
-                              className="btn-icon-only text-light"
-                              href="#pablo"
-                              role="button"
-                              size="sm"
-                              color=""
-                              onClick={(e) => e.preventDefault()}
-                            >
-                              <i className="fas fa-ellipsis-v" />
-                            </DropdownToggle>
-                            <DropdownMenu className="dropdown-menu-arrow" right>
-                              <DropdownItem
+              <div style={{ height: "70vh", overflow: "auto" }}>
+                <Table
+                  className="align-items-center table-flush mb-5"
+                  responsive
+                  style={{ borderCollapse: "collapse" }}
+                >
+                  <thead
+                    className="thead-light"
+                    style={{
+                      position: "sticky",
+                      top: 0,
+                      backgroundColor: "#f8f9fa", // Adjust to match your table's background color
+                      zIndex: 10, // Ensure the header stays on top of other content
+                    }}
+                  >
+                    <tr>
+                      <th scope="col">Sno.</th>
+                      <th scope="col">Username</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Phone Number</th>
+                      <th scope="col">Role</th>
+                      <th scope="col" />
+                    </tr>
+                  </thead>
+                  <tbody style={{ minHeight: "100rem" }}>
+                    {allUsers?.map((d, i) => (
+                      <>
+                        <tr key={i}>
+                          <td>{i + 1}</td>
+                          <td>{d.userName}</td>
+                          <td>{d.email}</td>
+                          <td>{d.phoneNumber}</td>
+                          <td>{d?.userRoleList[0]?.roleName}</td>
+                          <td className="text-right">
+                            <UncontrolledDropdown>
+                              <DropdownToggle
+                                className="btn-icon-only text-light"
                                 href="#pablo"
-                                onClick={() => handleRowClick(d)}
+                                role="button"
+                                size="sm"
+                                color=""
+                                onClick={(e) => e.preventDefault()}
                               >
-                                Edit
-                              </DropdownItem>
-                              <DropdownItem
-                                href="#pablo"
-                                onClick={(e) => deleteUser(d)}
+                                <i className="fas fa-ellipsis-v" />
+                              </DropdownToggle>
+                              <DropdownMenu
+                                className="dropdown-menu-arrow"
+                                right
                               >
-                                Delete
-                              </DropdownItem>
-                            </DropdownMenu>
-                          </UncontrolledDropdown>
-                        </td>
-                      </tr>
-                    </>
-                  ))}
-                </tbody>
-              </Table>
+                                <DropdownItem
+                                  href="#pablo"
+                                  onClick={() => handleRowClick(d)}
+                                >
+                                  Edit
+                                </DropdownItem>
+                                <DropdownItem
+                                  href="#pablo"
+                                  onClick={(e) => deleteUser(d)}
+                                >
+                                  Delete
+                                </DropdownItem>
+                              </DropdownMenu>
+                            </UncontrolledDropdown>
+                          </td>
+                        </tr>
+                      </>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
               {/* <CardFooter className=" py-4">
                                 <nav aria-label="...">
                                     <Pagination

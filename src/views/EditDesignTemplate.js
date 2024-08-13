@@ -1374,11 +1374,12 @@ const EditDesignTemplate = () => {
                   style={{
                     border: "2px solid black",
                     paddingTop: "1rem",
-                    padding: "1rem",
+                    // padding: "1rem",
+                    paddingRight:"0.9rem",
                     paddingLeft: "1rem",
-                    width: "100%",
+                    // width: "100%",
                     // overflow: "auto",
-                    overflowY: "auto",
+                    // overflowY: "auto",
                   }}
                 >
                   <div

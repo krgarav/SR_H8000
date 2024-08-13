@@ -295,7 +295,7 @@ const Template = () => {
                 </div>
               </CardHeader>
 
-              <div style={{ height: "75vh", overflow: "auto" }}>
+              <div style={{ height: "70vh", overflow: "auto" }}>
                 {loading && (
                   <div
                     style={{
@@ -322,7 +322,7 @@ const Template = () => {
                 >
                   <thead className="thead-light">
                     <tr>
-                      <th scope="col">Sno.</th>
+                      <th scope="col">SL no.</th>
                       <th scope="col">Template Name</th>
                       <th scope="col">Row</th>
                       <th scope="col">Col</th>
