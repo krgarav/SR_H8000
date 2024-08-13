@@ -1411,10 +1411,10 @@ const DesignTemplate = () => {
                   style={{
                     border: "2px solid black",
                     paddingTop: "1rem",
-                    // padding: "1rem",
-                    paddingLeft: "0.5rem",
-                    width: "102%",
-                    // overflowX: "auto",
+                    padding: "1rem",
+                    paddingLeft: "1rem",
+                    // width: "102%",
+                    overflowY: "auto",
                   }}
                 >
                   <div

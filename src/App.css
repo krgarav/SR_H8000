@@ -54,7 +54,7 @@ input[type="number"] {
 
 .top-row {
   display: flex;
-  margin-left: 27px;
+  margin-left: 40px;
   /* Adjust according to the size of the timing marks */
 }
 

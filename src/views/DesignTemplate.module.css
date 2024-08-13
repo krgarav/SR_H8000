@@ -41,10 +41,10 @@
 
 /* YourStyles.css */
 .container {
-  width: 100%;
+  /* width: 100%;
   height: 100vh;
   position: relative;
-  border: 1px solid black;
+  border: 1px solid black; */
 }
 
 .object-contain {

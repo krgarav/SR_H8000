@@ -1363,13 +1363,15 @@ const EditDesignTemplate = () => {
                   ))}
                 </div>
                 <div
-                  id="grid-divs"
+                  id="grid-div"
                   style={{
                     border: "2px solid black",
                     paddingTop: "1rem",
+                    padding: "1rem",
                     paddingLeft: "1rem",
-                    width: "102%",
+                    width: "100%",
                     // overflow: "auto",
+                    overflowY: "auto",
                   }}
                 >
                   <div
