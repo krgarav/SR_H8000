@@ -41,6 +41,7 @@ import RegionSelector from "ui/RangeSelector";
 import ImageRegionSelector from "ui/RangeSelector";
 import Cropper from "ui/RangeSelector";
 import EditTemplateModal from "ui/EditTemplateModal";
+import LayoutDetailModal from "ui/LayoutDetailModal";
 
 // Function to get values from sessionStorage or provide default
 const getLocalStorageOrDefault = (key, defaultValue) => {
@@ -2518,11 +2519,11 @@ const DesignTemplate = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-      {/* <EditTemplateModal
+      <LayoutDetailModal
         show={detailPage}
         layoutData={layoutFieldData}
         onHide={() => setDetailPage(false)}
-      /> */}
+      />
     </>
   );
 };
