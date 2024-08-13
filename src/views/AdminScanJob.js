@@ -263,7 +263,7 @@ const AdminScanJob = () => {
         setScanning(false);
       }
       if (response === undefined) {
-        toast.error("Request Timeout");
+        // toast.error("Request Timeout");
         setScanning(false);
       }
     }

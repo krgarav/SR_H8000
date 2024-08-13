@@ -2518,11 +2518,11 @@ const DesignTemplate = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-      <EditTemplateModal
+      {/* <EditTemplateModal
         show={detailPage}
         layoutData={layoutFieldData}
         onHide={() => setDetailPage(false)}
-      />
+      /> */}
     </>
   );
 };

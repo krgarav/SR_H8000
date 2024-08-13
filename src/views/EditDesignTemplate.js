@@ -1210,8 +1210,7 @@ const EditDesignTemplate = () => {
     };
     console.log(fullRequestData);
     // Send the request and handle the response
-    return;
-    const imageFile = base64ToFile(data.templateImagePath.image, "front.jpg");
+      const imageFile = base64ToFile(data.templateImagePath.image, "front.jpg");
     const backImageFile = base64ToFile(
       data.templateBackImagePath.image,
       "back.jpg"
