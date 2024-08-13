@@ -76,26 +76,22 @@ const Template = () => {
     // Add your logic for handling the row click here
   };
   const editHandler = async (arr, index) => {
-    console.log(arr);
     setLoading(true);
     const tempdata = arr[0].layoutParameters;
-
     const templateId = tempdata.id;
     const res = await getLayoutDataById(templateId);
-    console.log(res);
     const templateFile = res.templateFiles.slice(-3);
-    console.log(templateFile);
+
     if (templateFile.length < 3) {
+      alert("No images found in this template.Cannot Open the template.");
       setLoading(false);
       return;
     }
     const csvpath = res?.templateFiles[2].excelPath;
     const frontImgpath = res?.templateFiles[0].imagePath;
     const backImgpath = res?.templateFiles[1].imagePath;
-
     const res1 = await getTemplateImage(frontImgpath);
     const res3 = await getTemplateImage(backImgpath);
-    console.log(res3);
 
     if (res3 === undefined) {
       alert("No back image found in this template.Cannot Open the template. ");
@@ -124,21 +120,8 @@ const Template = () => {
 
     // Create a File from the Blob
     const csvfile = new File([blob], "data.csv", { type: "text/csv" });
-    const state = {
-      templateIndex: index,
-      timingMarks: +tempdata.timingMarks,
-      totalColumns: +tempdata.totalColumns,
-      templateImagePath: res1,
-      templateBackImagePath: res3,
-      bubbleType: tempdata.bubbleType,
-      templateId: tempdata.id,
-      excelJsonFile: res2.data,
-    };
-    console.log(state);
-    console.log(tempdata);
-    // sessionStorage.setItem();
     setLoading(false);
-    // return;
+
 
     navigate("/admin/edit-template", {
       state: {
@@ -232,14 +215,24 @@ const Template = () => {
   };
   const placeHolderJobs = new Array(10).fill(null).map((_, index) => (
     <tr key={index}>
-      <td><Placeholder width="20%" height="1.5em" /></td>
-      <td><Placeholder width="60%" height="1.5em" /></td>
-      <td><Placeholder width="60%" height="1.5em" /></td>
-      <td><Placeholder width="60%" height="1.5em" /></td>
-      <td><Placeholder width="60%" height="1.5em" /></td>
+      <td>
+        <Placeholder width="20%" height="1.5em" />
+      </td>
+      <td>
+        <Placeholder width="60%" height="1.5em" />
+      </td>
+      <td>
+        <Placeholder width="60%" height="1.5em" />
+      </td>
+      <td>
+        <Placeholder width="60%" height="1.5em" />
+      </td>
+      <td>
+        <Placeholder width="60%" height="1.5em" />
+      </td>
       <td></td>
     </tr>
-  ))
+  ));
   const LoadedTemplates = dataCtx.allTemplates?.map((d, i) => (
     <tr
       key={i}
@@ -264,12 +257,8 @@ const Template = () => {
             <i className="fas fa-ellipsis-v" />
           </DropdownToggle>
           <DropdownMenu className="dropdown-menu-arrow" right>
-            <DropdownItem onClick={() => showHandler(d)}>
-              Show
-            </DropdownItem>
-            <DropdownItem onClick={() => editHandler(d, i)}>
-              Edit
-            </DropdownItem>
+            <DropdownItem onClick={() => showHandler(d)}>Show</DropdownItem>
+            <DropdownItem onClick={() => editHandler(d, i)}>Edit</DropdownItem>
             <DropdownItem
               style={{ color: "red" }}
               onClick={() => deleteHandler(d, i)}
@@ -307,7 +296,6 @@ const Template = () => {
               </CardHeader>
 
               <div style={{ height: "75vh", overflow: "auto" }}>
-
                 {loading && (
                   <div
                     style={{
@@ -328,7 +316,6 @@ const Template = () => {
                   </div>
                 )}
 
-
                 <Table
                   className="align-items-center table-flush mb-5 table-hover"
                   responsive
@@ -344,11 +331,7 @@ const Template = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {templateLoading ? (
-                      placeHolderJobs
-                    ) : (LoadedTemplates)}
-
-
+                    {templateLoading ? placeHolderJobs : LoadedTemplates}
                   </tbody>
                 </Table>
               </div>

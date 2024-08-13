@@ -187,9 +187,11 @@ const EditTemplateModal = (props) => {
     if (storedFile) {
       setExcelJsonFile(JSON.parse(storedFile));
     }
-    const templateFrontImage =""; 
-    const templateBackImage =""
+    const templateFrontImage = sessionStorage.getItem("templateImagePath");
+    setImageSrc(JSON.parse(templateFrontImage).image);
+    const templateBackImage = sessionStorage.getItem("templateBackImagePath");
 
+    setBackImageSrc(JSON.parse(templateBackImage).image);
   }, []);
   useEffect(() => {
     if (props.show) {
@@ -213,6 +215,7 @@ const EditTemplateModal = (props) => {
       const layoutData = props.layoutData;
 
       if (layoutData) {
+        console.log(layoutData);
         const layout = layoutData?.layoutParameters;
         if (layout) {
           setName(layout.layoutName);
@@ -266,7 +269,7 @@ const EditTemplateModal = (props) => {
         header: true,
         complete: (results) => {
           const json = results.data;
-          const Row = json.length ;
+          const Row = json.length;
           const Column = Object.keys(json[1]).length;
           console.log(Object.values(json[1]));
           setNumberOfLines(Row);
@@ -469,37 +472,43 @@ const EditTemplateModal = (props) => {
       const templateIndex = sessionStorage.getItem("templateIndex");
       // console.log(dataCtx.allTemplates[templateIndex]);
       console.log(templateData);
-    
-// return
+
+      return;
       dataCtx.updateLayoutParameter(templateIndex, templateData[0]);
-     
-        sessionStorage.setItem("totalColumns", templateData[0].layoutParameters.totalColumns);
-        sessionStorage.setItem("timingMarks", JSON.stringify(templateData[0].layoutParameters.timingMarks));
-        sessionStorage.setItem(
-          "templateImagePath",
-          JSON.stringify(templateData[0].layoutParameters.templateImagePath)
-        );
-        sessionStorage.setItem(
-          "templateBackImagePath",
-          JSON.stringify(templateData[0].layoutParameters.templateBackImagePath)
-        );
-        sessionStorage.setItem("bubbleType", JSON.stringify(templateData[0].layoutParameters.bubbleType));
-      
-        sessionStorage.setItem(
-          "excelJsonFile",
-          JSON.stringify(templateData[0].layoutParameters.excelJsonFile)
-        );
-      
+
+      sessionStorage.setItem(
+        "totalColumns",
+        templateData[0].layoutParameters.totalColumns
+      );
+      sessionStorage.setItem(
+        "timingMarks",
+        JSON.stringify(templateData[0].layoutParameters.timingMarks)
+      );
+      sessionStorage.setItem(
+        "templateImagePath",
+        JSON.stringify(templateData[0].layoutParameters.templateImagePath)
+      );
+      sessionStorage.setItem(
+        "templateBackImagePath",
+        JSON.stringify(templateData[0].layoutParameters.templateBackImagePath)
+      );
+      sessionStorage.setItem(
+        "bubbleType",
+        JSON.stringify(templateData[0].layoutParameters.bubbleType)
+      );
+
+      sessionStorage.setItem(
+        "excelJsonFile",
+        JSON.stringify(templateData[0].layoutParameters.excelJsonFile)
+      );
+
       // localStorage.setItem("Template", JSON.stringify(templateData));
       // const index = dataCtx.setAllTemplates(templateData);
-      props.onHide()
-      // setModalShow(false);
+      props.onHide();
     } catch (error) {
       console.error("Error uploading file: ", error);
     }
   };
-  const templateIndex = sessionStorage.getItem("templateIndex");
-  console.log(dataCtx.allTemplates[templateIndex]);
 
   const scannerHandler = async () => {
     setScannerLoading(true);
@@ -535,7 +544,6 @@ const EditTemplateModal = (props) => {
     }
   };
   const systemHandler = () => {
-    // document.getElementById("formFile").click();
     setFileModal(true);
   };
   const saveHandler = () => {
@@ -557,6 +565,7 @@ const EditTemplateModal = (props) => {
     }
     setFileModal(false);
   };
+
   return (
     <>
       <Modal
