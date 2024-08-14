@@ -53,6 +53,7 @@ export const errorOfTheNumberOfTimingMarksData = [
 export const windowNgData = [
     { id: "0x00000001", name: "SKDV_ACTION_SELECT(0x00000001)", showName: "Paper ejection to select stacker" },
     { id: "0x00000002", name: "SKDV_ACTION_STOP(0x00000002)", showName: "Stop reading" },
+    { id: "0", name: "SKDV_ACTION_STOP(0x00000002)", showName: "No action" },
 ];
 
 export const faceData = [

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Modal, Button, Col } from "react-bootstrap";
+import { Modal, Button, Col, Spinner, Badge } from "react-bootstrap";
 import { Row } from "reactstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import classes from "./DesignTemplate.module.css";
@@ -19,6 +19,7 @@ import Papa from "papaparse";
 import { deleteTemplate } from "helper/TemplateHelper";
 import axios from "axios";
 import { DELETE_TEMPLATE } from "helper/url_helper";
+import EditImageCropper from "ui/EditImageCropper";
 
 // Function to get values from sessionStorage or provide default
 const getSessionStorageOrDefault = (key, defaultValue) => {
@@ -89,6 +90,8 @@ const EditDesignTemplate = () => {
   const [selectionIndex, setSelectionIndex] = useState();
   const [idSelectionCount, setIdSelectionCount] = useState(0);
   const [detailPage, setDetailPage] = useState(false);
+  const [imageModalShow, setImageModalShow] = useState(false);
+  const [imagesSelectedCount, setImagesSelectedCount] = useState(0);
   const location = useLocation();
   const state = location.state || {};
   const navigate = useNavigate();
@@ -446,10 +449,8 @@ const EditDesignTemplate = () => {
   };
   // *****************************************************************************************
   useEffect(() => {
-    console.log(layoutFieldData);
     const runandupdate = async () => {
       const res = await fetchDetails();
-      console.log(res);
       dataCtx.addFieldToTemplate(res, data.templateIndex);
     };
     runandupdate();
@@ -1255,42 +1256,86 @@ const EditDesignTemplate = () => {
       setLoading(false);
     }
   };
-
+  const handleImage = (images) => {
+    setImagesSelectedCount(images.length);
+    
+  };
   return (
     <>
       <div>
         <SmallHeader />
       </div>
-
-      <div
+      {loading && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)", // Slightly opaque background
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+            pointerEvents: "auto", // Make the overlay not clickable
+          }}
+        >
+          <Spinner />
+        </div>
+      )}
+<div
         style={{
-          position: "fixed",
-          top: "50%", // Center vertically
-          transform: "translateY(-50%) rotate(90deg)", // Center vertically and rotate
+          position: "absolute",
+          top: "30px", // Adjust the top value as needed
+          left: "50%",
+          transform: "translateX(-50%)",
           zIndex: "999",
-          margin: "0",
-          padding: "0",
-          left: "14%",
         }}
       >
         <Button
+          variant="primary"
+          onClick={() => {
+            setImageModalShow(true);
+          }}
+          style={{ position: "relative" }}
+        >
+          Image Area
+          <Badge
+            pill
+            variant="light"
+            style={{
+              position: "absolute",
+              top: "-5px", // Adjust this value to position the badge correctly
+              right: "-5px", // Adjust this value to position the badge correctly
+              transform: "translate(50%, -50%)",
+              zIndex: "1000",
+            }}
+          >
+            {imagesSelectedCount} {/* Replace this with your dynamic number */}
+          </Badge>
+        </Button>
+
+        <Button
+          variant="secondary"
           onClick={() => {
             setDetailPage(true);
           }}
         >
-          layout details
+          Layout details
         </Button>
       </div>
+    
 
       {!modalShow && selection && (
         <Button
           onClick={() => {
             setModalShow(true);
           }}
-          variant="primary"
+          variant="default"
           style={{
             position: "fixed",
-            top: "20px", // Adjust the top value as needed
+            bottom: "50px", // Adjust the top value as needed
             left: "50%",
             transform: "translateX(-50%)",
             zIndex: "999",
@@ -2247,6 +2292,45 @@ const EditDesignTemplate = () => {
               {!modalUpdate ? "Save" : "Update"}
             </Button>
           </div>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal
+        show={imageModalShow}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Image Detail
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{ height: "60vh" }}>
+          <EditImageCropper
+            handleImage={handleImage}
+            imageSrc={data.templateImagePath?.image}
+            backImageSrc={data.templateBackImagePath?.image}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            type="button"
+            variant="danger"
+            onClick={() => setImageModalShow(false)}
+            className="waves-effect waves-light"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            variant="success"
+            // onClick={saveHandler}
+            onClick={() => setImageModalShow(false)}
+            className="waves-effect waves-light"
+          >
+            Save
+          </Button>
         </Modal.Footer>
       </Modal>
       {detailPage && (

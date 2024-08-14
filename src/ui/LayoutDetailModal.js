@@ -209,11 +209,11 @@ const LayoutDetailModal = (props) => {
     const filter = optiondata.find((item) => item.name === optionvalue);
     return filter;
   };
+
   useEffect(() => {
     const runandupdate = async () => {
       console.log(props.layoutData);
       const layoutData = props.layoutData;
-
       if (layoutData) {
         const layout = layoutData?.layoutParameters;
         console.log(layout);
@@ -221,6 +221,7 @@ const LayoutDetailModal = (props) => {
           setName(layout.layoutName);
           setNumberOfLines(layout.timingMarks);
           setNumberOfFrontSideColumn(layout.totalColumns);
+
           if (layout.idMarksPattern === "000000000000000000000000") {
             const filter = IdOptionData[1];
             setIdPresent(filter);
@@ -232,11 +233,11 @@ const LayoutDetailModal = (props) => {
           setSelectedBubble(comparewithName(bubbleData, layout.bubbleType));
           setSensitivity(layout.iSensitivity);
           setDifference(layout.iDifference);
-
-          const file = base64ToFile(layout.templateImagePath, "image.png");
-          setImageFile(file);
           setImage(layout.templateImagePath);
           setDirection(comparewithId(directionData, layout.dataReadDirection));
+          setBackImageSrc(layout.templateBackImagePath);
+          setImageSrc(layout.templateImagePath);
+          setExcelJsonFile(layout.excelJsonFile);
         }
       }
       // dataCtx.addFieldToTemplate(res, data.templateIndex);
@@ -414,10 +415,6 @@ const LayoutDetailModal = (props) => {
       toast.error("Please Select Page Position");
       return;
     }
-    if (!imageFile) {
-      toast.error("Please Select Image");
-      return;
-    }
 
     try {
       const templateData = [
@@ -448,6 +445,7 @@ const LayoutDetailModal = (props) => {
             barcodeLeftPos: barcodeLeftPos ? +barcodeLeftPos : 0,
             barcodeTopPos: barcodeTopPos ? +barcodeTopPos : 0,
             barcodeBottomPos: barcodeBottomPos ? +barcodeBottomPos : 0,
+            readFrom : barcodeCategory?.id===undefined?"":barcodeCategory?.id
           },
           imageData: {
             imageEnable: imageStatus ? +imageStatus?.id : 0,
@@ -468,59 +466,24 @@ const LayoutDetailModal = (props) => {
             printFontSize: 0,
             printFontSpace: +fontSpace ?? 0,
             printMode: printMode?.id === undefined ? 0 : +printMode?.id,
+            customType: printCustom?.id === undefined ? "" : printCustom?.id,
+            customValue: printCustomValue ? printCustomValue : "",
           },
         },
       ];
       const layoutDataKey = props.layoutData.layoutParameters.key;
-console.log(layoutDataKey)
-       console.log(dataCtx.allTemplates)
-       const templateIndex = dataCtx.allTemplates.findIndex(
+      const templateIndex = dataCtx.allTemplates.findIndex(
         (item) => item[0].layoutParameters?.key === layoutDataKey
       );
-      
-      console.log(templateIndex);
-      //   console.log(templateData);
-
-      // return;
-      //   dataCtx.updateLayoutParameter(templateIndex, templateData[0]);
-
-      //   sessionStorage.setItem(
-      //     "totalColumns",
-      //     templateData[0].layoutParameters.totalColumns
-      //   );
-      //   sessionStorage.setItem(
-      //     "timingMarks",
-      //     JSON.stringify(templateData[0].layoutParameters.timingMarks)
-      //   );
-      //   const firstobj = {
-      //     image: templateData[0].layoutParameters.templateImagePath,
-      //   };
-      //   sessionStorage.setItem("templateImagePath", JSON.stringify(firstobj));
-      //   const secondobj = {
-      //     image: templateData[0].layoutParameters.templateBackImagePath,
-      //   };
-      //   sessionStorage.setItem(
-      //     "templateBackImagePath",
-      //     JSON.stringify(secondobj)
-      //   );
-      //   sessionStorage.setItem(
-      //     "bubbleType",
-      //     JSON.stringify(templateData[0].layoutParameters.bubbleType)
-      //   );
-
-      //   sessionStorage.setItem(
-      //     "excelJsonFile",
-      //     JSON.stringify(templateData[0].layoutParameters.excelJsonFile)
-      //   );
-
-      // localStorage.setItem("Template", JSON.stringify(templateData));
-      // const index = dataCtx.setAllTemplates(templateData);
+    
+   
+      dataCtx.updateLayoutParameter(templateIndex, templateData[0]);
+      localStorage.setItem("Template", JSON.stringify(templateData));
       props.onHide();
     } catch (error) {
       console.error("Error uploading file: ", error);
     }
   };
-
   const scannerHandler = async () => {
     setScannerLoading(true);
     try {
@@ -731,7 +694,7 @@ console.log(layoutDataKey)
                                                 )}
                                             </div>
                                         </Row> */}
-                      <Row className="mb-3">
+                      {/* <Row className="mb-3">
                         <Col md={6}>
                           <Row>
                             <label
@@ -804,7 +767,7 @@ console.log(layoutDataKey)
                             </div>
                           </Row>
                         </Col>
-                      </Row>
+                      </Row> */}
                       <Row className="mb-3">
                         <label
                           htmlFor="example-text-input"
@@ -1024,7 +987,6 @@ console.log(layoutDataKey)
                         >
                           Bubble Variant
                         </label>
-                        {/* {console.log( )} */}
                         <div className="col-md-10">
                           <Select
                             value={selectedBubble}

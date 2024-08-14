@@ -269,6 +269,8 @@ const DataProvider = (props) => {
       skewMarksWindowParameters,
       barcodeData,
       layoutParameters,
+      imageCroppingDTO
+
     } = regionData;
 
     const imageCoordinates = layoutParameters.imageCoordinates;
@@ -344,6 +346,7 @@ const DataProvider = (props) => {
         printingData: printingData,
         barcodeData: barcodeData,
         layoutParameters: updatedLayoutParameter,
+        imageCroppingDTO:imageCroppingDTO
       };
 
       console.log(copiedData);
@@ -656,6 +659,24 @@ const DataProvider = (props) => {
       };
     });
   };
+  const addImageCoordinateWithIndexHandler = (templateIndex, imageCoordinates) => {
+    setDataState((prevState) => {
+      // Create a deep copy of the current state to avoid direct mutation
+      const copiedData = [...prevState.allTemplates];
+
+      // If a matching template is found, update its imageCroppingDTO
+      if (templateIndex !== -1) {
+        copiedData[templateIndex][0].imageCroppingDTO =
+          imageCoordinates;
+      }
+
+      // Return the new state
+      return {
+        ...prevState,
+        allTemplates: copiedData,
+      };
+    });
+  };
   const addImageCoordinateHandler = (uuid, imageCoordinates) => {
     setDataState((prevState) => {
       // Create a deep copy of the current state to avoid direct mutation
@@ -666,9 +687,9 @@ const DataProvider = (props) => {
         return template[0].layoutParameters?.key ?? "" === uuid;
       });
       console.log(templateIndex);
-      // If a matching template is found, update its imageCroppingCoordinates
+      // If a matching template is found, update its imageCroppingDTO
       if (templateIndex !== -1) {
-        copiedData[templateIndex][0].imageCroppingCoordinates =
+        copiedData[templateIndex][0].imageCroppingDTO =
           imageCoordinates;
       }
 
@@ -780,6 +801,7 @@ const DataProvider = (props) => {
     addImageCoordinate: addImageCoordinateHandler,
     updateLayoutParameter: updateLayoutParameterHandler,
     updateTemplateParameter: updateTemplateParameterHandler,
+    addImageCoordinateWithIndex:addImageCoordinateWithIndexHandler
   };
 
   return (

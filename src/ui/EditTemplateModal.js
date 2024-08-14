@@ -448,6 +448,7 @@ const EditTemplateModal = (props) => {
             barcodeLeftPos: barcodeLeftPos ? +barcodeLeftPos : 0,
             barcodeTopPos: barcodeTopPos ? +barcodeTopPos : 0,
             barcodeBottomPos: barcodeBottomPos ? +barcodeBottomPos : 0,
+            readFrom : barcodeCategory?.id===undefined?"":barcodeCategory?.id
           },
           imageData: {
             imageEnable: imageStatus ? +imageStatus?.id : 0,
@@ -468,6 +469,8 @@ const EditTemplateModal = (props) => {
             printFontSize: 0,
             printFontSpace: +fontSpace ?? 0,
             printMode: printMode?.id === undefined ? 0 : +printMode?.id,
+            customType: printCustom?.id === undefined ? "" : printCustom?.id,
+            customValue: printCustomValue ? printCustomValue : "",
           },
         },
       ];
@@ -506,9 +509,6 @@ const EditTemplateModal = (props) => {
         "excelJsonFile",
         JSON.stringify(templateData[0].layoutParameters.excelJsonFile)
       );
-
-      // localStorage.setItem("Template", JSON.stringify(templateData));
-      // const index = dataCtx.setAllTemplates(templateData);
       props.onHide();
     } catch (error) {
       console.error("Error uploading file: ", error);

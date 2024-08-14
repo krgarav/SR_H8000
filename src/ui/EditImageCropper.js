@@ -17,7 +17,7 @@ import classes from "./ImageCropper.module.css";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 import DataContext from "store/DataContext";
-const ImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
+const EditImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
   const dataCtx = useContext(DataContext);
   const cropperRef = useRef(null);
   const [cropData, setCropData] = useState(null);
@@ -29,23 +29,17 @@ const ImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const templateIndex = JSON.parse(localStorage.getItem("Template"))[0]
-      .layoutParameters.key;
-
-    const currentTemplate = dataCtx.allTemplates.find((item) => {
-      return item[0].layoutParameters?.key ?? "" === templateIndex;
-    });
-
-    const imageCoordinate = currentTemplate[0].imageCroppingDTO ?? [];
-
+    const currentTemplate = sessionStorage.getItem("templateIndex");
+    const imageCoordinate =
+      dataCtx.allTemplates[currentTemplate][0]?.imageCroppingDTO ?? [];
     setAllImages(imageCoordinate);
-  }, [dataCtx.allTemplates]);
+  }, [dataCtx.allTemplates, imageSrc]);
+;
 
   useEffect(() => {
-    const templateIndex = JSON.parse(localStorage.getItem("Template"))[0]
-      .layoutParameters.key;
+    const templateIndex = sessionStorage.getItem("templateIndex");
     if (allImages.length > 0) {
-      dataCtx.addImageCoordinate(templateIndex, allImages);
+      dataCtx.addImageCoordinateWithIndex(templateIndex, allImages);
     }
   }, [allImages]);
   useEffect(() => {
@@ -153,7 +147,6 @@ const ImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
     setCroppingSide("");
   };
   const allData = allImages.map((item, index) => {
-    console.log(item);
     return (
       <>
         <tr
@@ -166,10 +159,10 @@ const ImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
           <td>{item.croppingSide}</td>
           <td>
             {" "}
-            TopLeftX={Math.floor(item.topLeftX)}&nbsp; TopLeftY=
+            TopLeftX={Math.floor(item.topLeftX)}&nbsp; TopRightY=
             {Math.floor(item.topLeftY)}
             <br />
-            BottomRightX={Math.floor(item.bottomRightX)}&nbsp; BottomRightY=
+            BottomLeftX={Math.floor(item.bottomRightX)}&nbsp; BottomRightY=
             {Math.floor(item.bottomRightY)}
           </td>
           <td className="text-right">
@@ -381,7 +374,7 @@ const ImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
           </Table>
         </div>
       </Card>
-{/* ****************** modal for showing cropping images *************** */ }
+      {/* ****************** modal for showing cropping images *************** */}
       <Modal
         show={show}
         fullscreen={true}
@@ -495,9 +488,9 @@ const ImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
           </Button>
         </Modal.Footer>
       </Modal>
-{/* ******************************************************************** */ }
+      {/* ******************************************************************** */}
     </>
   );
 };
 
-export default ImageCropper;
+export default EditImageCropper;

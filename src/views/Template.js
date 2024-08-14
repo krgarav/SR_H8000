@@ -54,6 +54,7 @@ const Template = () => {
     const fetchData = async () => {
       setTemplateLoading(true);
       const templates = await fetchAllTemplate();
+      console.log(templates)
       if (templates === undefined) {
         toast.error("Error fetching templates");
         setTemplateLoading(false);
@@ -257,7 +258,7 @@ const Template = () => {
             <i className="fas fa-ellipsis-v" />
           </DropdownToggle>
           <DropdownMenu className="dropdown-menu-arrow" right>
-            <DropdownItem onClick={() => showHandler(d)}>Show</DropdownItem>
+            {/* <DropdownItem onClick={() => showHandler(d)}>Show</DropdownItem> */}
             <DropdownItem onClick={() => editHandler(d, i)}>Edit</DropdownItem>
             <DropdownItem
               style={{ color: "red" }}

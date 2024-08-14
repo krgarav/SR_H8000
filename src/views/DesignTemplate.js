@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Modal, Button, Col, Badge } from "react-bootstrap";
+import { Modal, Button, Col, Badge, Spinner } from "react-bootstrap";
 import { Row } from "reactstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import classes from "./DesignTemplate.module.css";
@@ -111,22 +111,6 @@ const DesignTemplate = () => {
   const [loading, setLoading] = useState(false);
   const [detailPage, setDetailPage] = useState(false);
   const dataCtx = useContext(DataContext);
-  // const {
-  //   totalColumns,
-  //   timingMarks,
-  //   templateImagePath,
-  //   bubbleType,
-  //   templateIndex,
-  //   iSensitivity,
-  //   iDifference,
-  //   iReject,
-  //   iFace,
-  //   arr,
-  //   templateId,
-  //   excelJsonFile,
-  //   imageTempFile,
-  //   excelFile,
-  // } = useLocation().state;
   const [localData, setLocalData] = useState(
     JSON.parse(localStorage.getItem("Template"))
   );
@@ -152,42 +136,6 @@ const DesignTemplate = () => {
   const [imagesSelectedCount, setImagesSelectedCount] = useState(0);
 
   const location = useLocation();
-  const state = location.state || {};
-  // Initialize state with values from sessionStorage or location.state
-  // const [data, setData] = useState(() => ({
-  //     totalColumns: getSessionStorageOrDefault(
-  //         "totalColumns",
-  //         state.totalColumns
-  //     ),
-  //     timingMarks: getSessionStorageOrDefault("timingMarks", state.timingMarks),
-  //     templateImagePath: getSessionStorageOrDefault(
-  //         "templateImagePath",
-  //         state.templateImagePath
-  //     ),
-  //     bubbleType: getSessionStorageOrDefault("bubbleType", state.bubbleType),
-  //     templateIndex: getSessionStorageOrDefault(
-  //         "templateIndex",
-  //         state.templateIndex
-  //     ),
-  //     iSensitivity: getSessionStorageOrDefault(
-  //         "iSensitivity",
-  //         state.iSensitivity
-  //     ),
-  //     iDifference: getSessionStorageOrDefault("iDifference", state.iDifference),
-  //     iReject: getSessionStorageOrDefault("iReject", state.iReject),
-  //     iFace: getSessionStorageOrDefault("iFace", state.iFace),
-  //     arr: getSessionStorageOrDefault("arr", state.arr),
-  //     templateId: getSessionStorageOrDefault("templateId", state.templateId),
-  //     excelJsonFile: getSessionStorageOrDefault(
-  //         "excelJsonFile",
-  //         state.excelJsonFile
-  //     ),
-  //     imageTempFile: getSessionStorageOrDefault(
-  //         "imageTempFile",
-  //         state.imageTempFile
-  //     ),
-  //     excelFile: getSessionStorageOrDefault("excelFile", state.excelFile),
-  // }));
   const {
     totalColumns,
     timingMarks,
@@ -201,8 +149,6 @@ const DesignTemplate = () => {
     arr,
     templateId,
     excelJsonFile,
-    imageTempFile,
-    excelFile,
     templateBackImagePath,
   } = localData[0].layoutParameters;
 
@@ -231,6 +177,12 @@ const DesignTemplate = () => {
       return newState;
     });
   };
+  useEffect(() => {
+    setTimeout(()=>{
+      setLocalData(JSON.parse(localStorage.getItem("Template")));
+
+    },1000)
+  },[detailPage]);
 
   useEffect(() => {
     const idFieldCount = selectedCoordinates.filter(
@@ -289,7 +241,6 @@ const DesignTemplate = () => {
     dataCtx.setAllTemplates(templateData);
     // }
   }, []);
-  console.log(dataCtx.allTemplates);
   useEffect(() => {
     const handleBeforeUnload = (event) => {
       const confirmationMessage =
@@ -462,6 +413,7 @@ const DesignTemplate = () => {
     console.log(template);
     setLayoutFieldData(template[0]);
   }, [dataCtx.allTemplates]);
+
   useEffect(() => {
     switch (bubbleType) {
       case "rounded rectangle":
@@ -943,7 +895,6 @@ const DesignTemplate = () => {
 
         return newSelectedFields;
       });
-      console.log(selectedCoordinates);
       //   console.log(templateIndex,selectedFieldType,coordinateIndex);
       //   if(templateIndex,selectedFieldType,coordinateIndex)
       dataCtx.modifyRegionWithUUID(
@@ -955,7 +906,6 @@ const DesignTemplate = () => {
       setSelection(null);
     }
   };
-  console.log(selectedCoordinates);
   const handleSkewMarkOptionChange = (event) => {
     setSkewOption(event.target.value);
   };
@@ -965,7 +915,6 @@ const DesignTemplate = () => {
   const handleRadioChange = (e) => {
     setSelectedFieldType(e.target.value);
   };
-  console.log(selection);
 
   const handleEyeClick = (selectedField, index) => {
     console.log(selectedField);
@@ -1239,7 +1188,7 @@ const DesignTemplate = () => {
           : {};
         return { ...rest, formFieldCoordinates };
       });
-    const { imageCroppingCoordinates } = template[0];
+    const { imageCroppingDTO } = template[0];
     // Assemble the full request data
     const fullRequestData = {
       layoutParameters: updatedLayout,
@@ -1249,7 +1198,7 @@ const DesignTemplate = () => {
       questionsWindowParameters,
       skewMarksWindowParameters,
       formFieldWindowParameters,
-      imageCroppingCoordinates,
+      imageCroppingDTO,
     };
     console.log(fullRequestData);
     const csv = Papa.unparse(excelJsonFile);
@@ -1265,7 +1214,7 @@ const DesignTemplate = () => {
       setLoading(true);
       const res = await createTemplate(fullRequestData);
       console.log(res);
-      if (res.success === true) {
+      if (res?.success === true) {
         const layoutId = res?.layoutId;
         const formdata = new FormData();
         formdata.append("LayoutId", layoutId);
@@ -1305,6 +1254,26 @@ const DesignTemplate = () => {
       <div>
         <SmallHeader />
       </div>
+      {loading && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)", // Slightly opaque background
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+            pointerEvents: "auto", // Make the overlay not clickable
+          }}
+        >
+          <Spinner />
+        </div>
+      )}
+
       <div
         style={{
           position: "absolute",
@@ -1313,7 +1282,6 @@ const DesignTemplate = () => {
           transform: "translateX(-50%)",
           zIndex: "999",
         }}
-        
       >
         <Button
           variant="primary"
@@ -1339,13 +1307,13 @@ const DesignTemplate = () => {
         </Button>
 
         <Button
-        variant="secondary"
-            onClick={() => {
-              setDetailPage(true);
-            }}
-          >
-            Layout details
-          </Button>
+          variant="secondary"
+          onClick={() => {
+            setDetailPage(true);
+          }}
+        >
+          Layout details
+        </Button>
       </div>
       {!modalShow && selection && (
         <Button
@@ -2510,7 +2478,7 @@ const DesignTemplate = () => {
             Image Detail
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body style={{ height: "70vh" }}>
+        <Modal.Body style={{ height: "60vh" }}>
           <ImageCropper
             handleImage={handleImage}
             imageSrc={templateImagePath}
@@ -2537,11 +2505,14 @@ const DesignTemplate = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-      <LayoutDetailModal
-        show={detailPage}
-        layoutData={layoutFieldData}
-        onHide={() => setDetailPage(false)}
-      />
+
+      {detailPage && (
+        <LayoutDetailModal
+          show={detailPage}
+          layoutData={layoutFieldData}
+          onHide={() => setDetailPage(false)}
+        />
+      )}
     </>
   );
 };
