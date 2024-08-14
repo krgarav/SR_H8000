@@ -1010,6 +1010,7 @@ const EditDesignTemplate = () => {
       setBlankValue(data?.blankValue);
       setNoOfStepInRow(data?.rowStep);
       setNoOfStepInCol(data?.columnStep);
+      setCustomValue(data?.customFieldValue)
     } else if (selectedField?.fieldType === "formField") {
       // const data = template[0].formFieldWindowParameters.filter((item) => {
 
@@ -1052,6 +1053,7 @@ const EditDesignTemplate = () => {
       setMultipleValue(data?.multipleValue);
       setBlank(data?.blankAllow);
       setBlankValue(data?.blankValue);
+      setCustomValue(data?.customFieldValue)
     } else if (selectedField?.fieldType === "skewMarkField") {
       const parameters = template[0].skewMarksWindowParameters;
       const index = parameters.findIndex((item) =>
