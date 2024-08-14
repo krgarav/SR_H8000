@@ -1730,7 +1730,7 @@ const EditDesignTemplate = () => {
                 htmlFor="example-text-input"
                 className="col-md-2 col-form-label"
               >
-                Multiple
+                Grid
               </label>
               <div className={multiple !== "allow" ? "col-md-4" : "col-md-10"}>
                 <select
@@ -1749,7 +1749,7 @@ const EditDesignTemplate = () => {
               {multiple !== "allow" && (
                 <>
                   <label htmlFor="example-text-input" className="col-md-2 ">
-                    Multiple Value
+                    Grid Value
                   </label>
                   <div className="col-md-4">
                     <input
@@ -2092,9 +2092,9 @@ const EditDesignTemplate = () => {
             </div>
             <label
               htmlFor="example-select-input"
-              className="col-2 col-form-label"
+              className="col-2 "
             >
-              Total Col
+              Total Column
             </label>
             <div className="col-2">
               <input value={numCols} readOnly className="form-control" />
@@ -2102,7 +2102,7 @@ const EditDesignTemplate = () => {
           </Row>
           <Row className="mb-2">
             <label htmlFor="example-select-input" className="col-2 ">
-              Total No In Col
+              Total No In Column
             </label>
             <div className="col-4">
               <input
@@ -2114,7 +2114,7 @@ const EditDesignTemplate = () => {
               />
             </div>
             <label htmlFor="example-select-input" className="col-2 ">
-              Total Step In A Col
+              Total Step In A Column
             </label>
             <div className="col-4">
               <input

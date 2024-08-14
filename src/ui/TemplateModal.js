@@ -81,7 +81,7 @@ const TemplateModal = (props) => {
   const [numberOfLines, setNumberOfLines] = useState("");
   const [imageSrc, setImageSrc] = useState("");
   const [backImageSrc, setBackImageSrc] = useState("");
-  const [sensitivity, setSensitivity] = useState(1);
+  const [sensitivity, setSensitivity] = useState(5);
   const [difference, setDifference] = useState("");
   const [barCount, setBarCount] = useState(0);
   const [selectedBubble, setSelectedBubble] = useState({});
@@ -438,7 +438,7 @@ const TemplateModal = (props) => {
             iDifference: +difference,
             ngAction: windowNgOption?.id,
             dataReadDirection: direction?.id,
-            iReject: 1,
+            iReject: 0,
             idMarksPattern: "000000000000000000000000",
             excelJsonFile: excelJsonFile,
           },
@@ -1585,7 +1585,7 @@ const TemplateModal = (props) => {
                           className="col-md-2 "
                           style={{ fontSize: ".9rem" }}
                         >
-                          Barcode Category:
+                          Barcode Category :
                         </label>
                         <div className="col-md-10">
                           <Select
@@ -1640,7 +1640,7 @@ const TemplateModal = (props) => {
                         <Row className="mb-3">
                           <label
                             htmlFor="example-text-input"
-                            className="col-md-2 "
+                            className="col-md-2 col-form-label"
                             style={{ fontSize: ".9rem" }}
                           >
                             Barcode Type :
@@ -1742,15 +1742,17 @@ const TemplateModal = (props) => {
                             </div>
                           </Row>
                         )}
-                        <Row className="mb-3">
-                          <label
-                            htmlFor="example-text-input"
-                            className="col-md-6 "
-                            style={{ fontSize: ".9rem" }}
-                          >
-                            Set Barcode reading area :-
-                          </label>
-                        </Row>
+                        {barcodeCategory.id !== "software" && (
+                          <Row className="mb-3">
+                            <label
+                              htmlFor="example-text-input"
+                              className="col-md-6 "
+                              style={{ fontSize: ".9rem" }}
+                            >
+                              Set Barcode reading area :-
+                            </label>
+                          </Row>
+                        )}
                         {/* <Row className="mb-3">
 
                                         <label

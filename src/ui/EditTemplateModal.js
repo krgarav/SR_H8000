@@ -435,7 +435,7 @@ const EditTemplateModal = (props) => {
             iDifference: +difference,
             ngAction: windowNgOption?.id,
             dataReadDirection: direction?.id,
-            iReject: 1,
+            iReject: 0,
             excelJsonFile: excelJsonFile,
           },
           barcodeData: {
@@ -448,7 +448,8 @@ const EditTemplateModal = (props) => {
             barcodeLeftPos: barcodeLeftPos ? +barcodeLeftPos : 0,
             barcodeTopPos: barcodeTopPos ? +barcodeTopPos : 0,
             barcodeBottomPos: barcodeBottomPos ? +barcodeBottomPos : 0,
-            readFrom : barcodeCategory?.id===undefined?"":barcodeCategory?.id
+            readFrom:
+              barcodeCategory?.id === undefined ? "" : barcodeCategory?.id,
           },
           imageData: {
             imageEnable: imageStatus ? +imageStatus?.id : 0,
@@ -1750,15 +1751,17 @@ const EditTemplateModal = (props) => {
                             </div>
                           </Row>
                         )}
-                        <Row className="mb-3">
-                          <label
-                            htmlFor="example-text-input"
-                            className="col-md-6 "
-                            style={{ fontSize: ".9rem" }}
-                          >
-                            Set Barcode reading area :-
-                          </label>
-                        </Row>
+                        {barcodeCategory.id !== "software" && (
+                          <Row className="mb-3">
+                            <label
+                              htmlFor="example-text-input"
+                              className="col-md-6 "
+                              style={{ fontSize: ".9rem" }}
+                            >
+                              Set Barcode reading area :-
+                            </label>
+                          </Row>
+                        )}
                         {/* <Row className="mb-3">
 
                                         <label

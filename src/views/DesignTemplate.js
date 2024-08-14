@@ -1201,6 +1201,7 @@ const DesignTemplate = () => {
       imageCroppingDTO,
     };
     console.log(fullRequestData);
+    // return;
     const csv = Papa.unparse(excelJsonFile);
     // Create a Blob from the CSV string
     const blob = new Blob([csv], { type: "text/csv" });
@@ -1210,6 +1211,7 @@ const DesignTemplate = () => {
     const imageFile = base64ToFile(templateImagePath, "front.png");
     const backImageFile = base64ToFile(templateBackImagePath, "back.png");
     // Send the request and handle the response
+   
     try {
       setLoading(true);
       const res = await createTemplate(fullRequestData);
@@ -1890,7 +1892,7 @@ const DesignTemplate = () => {
                     htmlFor="example-text-input"
                     className="col-md-2 col-form-label"
                   >
-                    Multiple
+                    Grid
                   </label>
                   <div
                     className={multiple !== "allow" ? "col-md-4" : "col-md-10"}
@@ -1907,11 +1909,11 @@ const DesignTemplate = () => {
                       <option value="allow">Allow All</option>
                       <option value="not allow">Allow None</option>
                     </select>
-                  </div>
+                  </div> 
                   {multiple !== "allow" && (
                     <>
                       <label htmlFor="example-text-input" className="col-md-2 ">
-                        Multiple Value
+                        Grid Value
                       </label>
                       <div className="col-md-4">
                         <input
@@ -2256,7 +2258,7 @@ const DesignTemplate = () => {
                   htmlFor="example-select-input"
                   className="col-2 col-form-label"
                 >
-                  Total Col
+                  Total Column
                 </label>
                 <div className="col-2">
                   <input value={numCols} readOnly className="form-control" />
@@ -2264,7 +2266,7 @@ const DesignTemplate = () => {
               </Row>
               <Row className="mb-2">
                 <label htmlFor="example-select-input" className="col-2 ">
-                  Total No In Col
+                  Total No In Column
                 </label>
                 <div className="col-4">
                   <input
@@ -2276,7 +2278,7 @@ const DesignTemplate = () => {
                   />
                 </div>
                 <label htmlFor="example-select-input" className="col-2 ">
-                  Total Step In A Col
+                  Total Step In A Column
                 </label>
                 <div className="col-4">
                   <input

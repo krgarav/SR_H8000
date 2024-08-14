@@ -139,6 +139,10 @@ const UserManagment = () => {
   };
 
   const handleCreate = async () => {
+    if(ConfirmPassword!==password){
+      alert("Password and confirm password do not match");
+      return;
+    }
     if (
       !name ||
       !email ||
@@ -546,7 +550,7 @@ const UserManagment = () => {
               htmlFor="example-text-input"
               className="col-md-2 col-form-label"
             >
-              Name
+              Username
             </label>
             <div className="col-md-10">
               <input
@@ -556,11 +560,14 @@ const UserManagment = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
-              {!name && (
-                <span style={{ color: "red", display: spanDisplay }}>
+              <small style={{ color: "red", display: "block" }}>
+                  No space is allowed between username. 
+                </small>
+              {/* {!name && (
+                <span style={{ color: "red", display: "block" }}>
                   This feild is required
                 </span>
-              )}
+              )} */}
             </div>
           </Row>
 
@@ -627,7 +634,7 @@ const UserManagment = () => {
             </label>
             <div className="col-md-10">
               <input
-                type="text"
+                type="password"
                 className="form-control"
                 placeholder="Enter Password"
                 value={password}
@@ -644,13 +651,13 @@ const UserManagment = () => {
           <Row className="mb-3">
             <label
               htmlFor="example-text-input"
-              className="col-md-2 col-form-label"
+              className="col-md-2 "
             >
               Confirm Password
             </label>
             <div className="col-md-10">
               <input
-                type="text"
+                type="password"
                 className="form-control"
                 placeholder="Enter Password"
                 value={ConfirmPassword}
@@ -661,7 +668,7 @@ const UserManagment = () => {
                 onBlur={() => {
                   if (password !== ConfirmPassword) {
                     toast.error("Password and confirm password does not match");
-                    confirmRef.current.focus();
+                    // confirmRef.current.focus();
                   }
                 }}
               />
