@@ -84,7 +84,7 @@ const TemplateModal = (props) => {
   const [sensitivity, setSensitivity] = useState(5);
   const [difference, setDifference] = useState("");
   const [barCount, setBarCount] = useState(0);
-  const [selectedBubble, setSelectedBubble] = useState({});
+  const [selectedBubble, setSelectedBubble] = useState(null);
   const [reject, setReject] = useState({ id: 1, name: "0", showName: "False" });
   const [numberOfFrontSideColumn, setNumberOfFrontSideColumn] = useState("");
   const [windowNgOption, setWindowNgOption] = useState({
@@ -840,6 +840,7 @@ const TemplateModal = (props) => {
                             }}
                             options={IdOptionData}
                             getOptionLabel={(option) => option?.name || ""}
+                            placeholder="Select ID"
                             getOptionValue={(option) =>
                               option?.id?.toString() || ""
                             }
@@ -1014,6 +1015,7 @@ const TemplateModal = (props) => {
                         <div className="col-md-10">
                           <Select
                             value={selectedBubble}
+                            placeholder="Select bubble"
                             onChange={(selectedValue) => {
                               setSelectedBubble(selectedValue);
                               settoggle((item) => ({
@@ -1034,7 +1036,7 @@ const TemplateModal = (props) => {
                             getOptionValue={(option) =>
                               option?.id?.toString() || ""
                             }
-                            placeholder="Select type of bubble"
+                           
                             components={{ Option, SingleValue }}
                           />
                           {!selectedBubble && (
@@ -1283,6 +1285,7 @@ const TemplateModal = (props) => {
                         <div className="col-md-10">
                           <Select
                             value={direction}
+                            placeholder="Select position of sheet"
                             onChange={(selectedValue) => {
                               settoggle((item) => ({
                                 ...item,

@@ -1382,7 +1382,7 @@ const DesignTemplate = () => {
                 <div className="top"></div>
                 {Array.from({ length: numRows }).map((_, rowIndex) => (
                   <div key={rowIndex} className="row">
-                    <div className="left-nums">{rowIndex + 1}</div>
+                    <div className=  {(bubbleType==="circle"||bubbleType==="oval")?"left-nums-circle":"left-nums" }>{rowIndex + 1}</div>
                   </div>
                 ))}
               </div>
@@ -1418,7 +1418,7 @@ const DesignTemplate = () => {
 
                       return (
                         <div key={rowIndex} className="row">
-                          <div className="left-num" sty>
+                          <div className={(bubbleType==="circle"||bubbleType==="oval")?"left-num-circle":"left-num" } sty>
                             <div className="timing-mark "></div>
                           </div>
                           {Array.from({ length: numCols }).map(

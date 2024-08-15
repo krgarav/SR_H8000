@@ -91,8 +91,11 @@ input[type="number"] {
 
 .row {
   display: flex;
+  
 }
-
+.row2{
+  display: flex;
+}
 /* .circle {
     width: 17px;
     height: 10px;
@@ -100,10 +103,9 @@ input[type="number"] {
     border-radius: 50%;
     margin: 2px;
 } */
-
-.left-num {
+.left-num-circle{
   /* margin-bottom: 0.6rem; */
-  padding-top: 3px;
+  padding-top: 7px;
   width: 30px;
   /* Enough space to fit the timing mark and number */
   display: flex;
@@ -116,7 +118,32 @@ input[type="number"] {
   font-size: 0.4rem;
   margin-left: 0.9rem;
 }
-
+.left-num {
+  /* margin-bottom: 0.6rem; */
+  padding-top: 2.5px;
+  width: 30px;
+  /* Enough space to fit the timing mark and number */
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  padding-right: 5px;
+  /* Space before the grid starts */
+  width: 20px;
+  height: 20px;
+  font-size: 0.4rem;
+  margin-left: 0.9rem;
+}
+.left-nums-circle{
+  height: 20px;
+  font-size: 0.6rem;
+  width: 30px;
+  /* Enough space to fit the timing mark and number */
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  padding-right: 5px;
+  margin-top: 1px;
+}
 .left-nums {
   height: 20px;
   font-size: 0.6rem;
@@ -126,6 +153,8 @@ input[type="number"] {
   align-items: center;
   justify-content: right;
   padding-right: 5px;
+ 
+ 
   /* padding-top: px; */
   /* Space before the grid starts */
 }

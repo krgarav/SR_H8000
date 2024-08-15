@@ -62,7 +62,7 @@ const EditTemplateModal = (props) => {
   const [sensitivity, setSensitivity] = useState(1);
   const [difference, setDifference] = useState("");
   const [barCount, setBarCount] = useState(0);
-  const [selectedBubble, setSelectedBubble] = useState({});
+  const [selectedBubble, setSelectedBubble] = useState(null);
   const [reject, setReject] = useState({ id: 1, name: "0", showName: "False" });
   const [numberOfFrontSideColumn, setNumberOfFrontSideColumn] = useState("");
   const [windowNgOption, setWindowNgOption] = useState({
