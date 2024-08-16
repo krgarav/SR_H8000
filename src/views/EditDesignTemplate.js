@@ -20,6 +20,7 @@ import { deleteTemplate } from "helper/TemplateHelper";
 import axios from "axios";
 import { DELETE_TEMPLATE } from "helper/url_helper";
 import EditImageCropper from "ui/EditImageCropper";
+import LineLoader from "loaders/LineLoader";
 
 // Function to get values from sessionStorage or provide default
 const getSessionStorageOrDefault = (key, defaultValue) => {
@@ -95,7 +96,9 @@ const EditDesignTemplate = () => {
   const location = useLocation();
   const state = location.state || {};
   const navigate = useNavigate();
-  const [isSmall, setIsSmall] = useState(false);
+  const [sizes, setSizes] = useState({});
+  console.log(sizes);
+  const [detailLoader, setDetailLoader] = useState(false);
   const [data, setData] = useState(() => ({
     totalColumns: getSessionStorageOrDefault(
       "totalColumns",
@@ -121,7 +124,7 @@ const EditDesignTemplate = () => {
       state.excelJsonFile
     ),
   }));
-  const divRef = useRef(null);
+  const divRefs = useRef([]);
   const numRows = data.timingMarks;
   const numCols = data.totalColumns;
 
@@ -241,21 +244,23 @@ const EditDesignTemplate = () => {
   }, [selection]);
 
   useEffect(() => {
-    const checkSize = () => {
-      if (divRef.current) {
-        const { offsetWidth } = divRef.current;
-        console.log(offsetWidth);
-        setIsSmall(offsetWidth < 50); // Define your threshold for "small"
-      }
+    const checkSizes = () => {
+      const newSizes = {};
+      divRefs.current.forEach((ref, index) => {
+        if (ref) {
+          const { offsetWidth } = ref;
+          newSizes[index] = offsetWidth <= 42; // Define your threshold for "small"
+        }
+      });
+      setSizes(newSizes);
     };
 
-    checkSize(); // Initial check
-    window.addEventListener("resize", checkSize); // Check on window resize
+    checkSizes(); // Initial check
+    window.addEventListener("resize", checkSizes);
 
-    return () => {
-      window.removeEventListener("resize", checkSize);
-    };
-  }, [selection]);
+    return () => window.removeEventListener("resize", checkSizes);
+  }, [selectedCoordinates, selection]);
+
   // *************************For Fetching the details and setting the coordinate******************
   // useEffect(() => {
 
@@ -450,8 +455,10 @@ const EditDesignTemplate = () => {
   // *****************************************************************************************
   useEffect(() => {
     const runandupdate = async () => {
+      setDetailLoader(true);
       const res = await fetchDetails();
       dataCtx.addFieldToTemplate(res, data.templateIndex);
+      setDetailLoader(false);
     };
     runandupdate();
     // if (layoutFieldData) {
@@ -471,7 +478,6 @@ const EditDesignTemplate = () => {
       case "circle":
         setSelectedClass("circle");
         break;
-
       case "oval":
         setSelectedClass("oval");
         break;
@@ -1010,7 +1016,7 @@ const EditDesignTemplate = () => {
       setBlankValue(data?.blankValue);
       setNoOfStepInRow(data?.rowStep);
       setNoOfStepInCol(data?.columnStep);
-      setCustomValue(data?.customFieldValue)
+      setCustomValue(data?.customFieldValue);
     } else if (selectedField?.fieldType === "formField") {
       // const data = template[0].formFieldWindowParameters.filter((item) => {
 
@@ -1053,7 +1059,7 @@ const EditDesignTemplate = () => {
       setMultipleValue(data?.multipleValue);
       setBlank(data?.blankAllow);
       setBlankValue(data?.blankValue);
-      setCustomValue(data?.customFieldValue)
+      setCustomValue(data?.customFieldValue);
     } else if (selectedField?.fieldType === "skewMarkField") {
       const parameters = template[0].skewMarksWindowParameters;
       const index = parameters.findIndex((item) =>
@@ -1213,7 +1219,7 @@ const EditDesignTemplate = () => {
     };
     console.log(fullRequestData);
     // Send the request and handle the response
-      const imageFile = base64ToFile(data.templateImagePath.image, "front.jpg");
+    const imageFile = base64ToFile(data.templateImagePath.image, "front.jpg");
     const backImageFile = base64ToFile(
       data.templateBackImagePath.image,
       "back.jpg"
@@ -1260,13 +1266,32 @@ const EditDesignTemplate = () => {
   };
   const handleImage = (images) => {
     setImagesSelectedCount(images.length);
-    
   };
   return (
     <>
       <div>
         <SmallHeader />
       </div>
+
+      {detailLoader && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)", // Slightly opaque background
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+            pointerEvents: "auto", // Make the overlay not clickable
+          }}
+        >
+          <LineLoader />
+        </div>
+      )}
       {loading && (
         <div
           style={{
@@ -1286,7 +1311,7 @@ const EditDesignTemplate = () => {
           <Spinner />
         </div>
       )}
-<div
+      <div
         style={{
           position: "absolute",
           top: "30px", // Adjust the top value as needed
@@ -1327,7 +1352,6 @@ const EditDesignTemplate = () => {
           Layout details
         </Button>
       </div>
-    
 
       {!modalShow && selection && (
         <Button
@@ -1402,7 +1426,15 @@ const EditDesignTemplate = () => {
                 <div className="top"></div>
                 {Array.from({ length: numRows }).map((_, rowIndex) => (
                   <div key={rowIndex} className="row">
-                    <div className="left-nums">{rowIndex + 1}</div>
+                    <div
+                      className={
+                        data.bubbleType === "circle"
+                          ? "left-nums-circle"
+                          : "left-nums"
+                      }
+                    >
+                      {rowIndex + 1}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -1421,11 +1453,9 @@ const EditDesignTemplate = () => {
                     border: "2px solid black",
                     paddingTop: "1rem",
                     // padding: "1rem",
-                    paddingRight:"0.9rem",
+                    paddingRight: "0.9rem",
                     paddingLeft: "1rem",
-                    // width: "100%",
-                    // overflow: "auto",
-                    // overflowY: "auto",
+                    overflowY: "auto",
                   }}
                 >
                   <div
@@ -1440,7 +1470,14 @@ const EditDesignTemplate = () => {
 
                       return (
                         <div key={rowIndex} className="row">
-                          <div className="left-num" sty>
+                          <div
+                            className={
+                              data.bubbleType === "circle"
+                                ? "left-num-circle"
+                                : "left-num"
+                            }
+                            sty
+                          >
                             <div className="timing-mark "></div>
                           </div>
                           {Array.from({ length: numCols }).map(
@@ -1475,10 +1512,12 @@ const EditDesignTemplate = () => {
                     {selectedCoordinates.map((data, index) => (
                       <div
                         key={index}
+                        ref={(el) => (divRefs.current[index] = el)}
                         className="border-blue-900"
                         style={{
                           border: "3px solid #007bff",
                           position: "absolute",
+                           overflow:"hidden",
                           left: `${
                             data.startCol *
                               (imageRef.current.getBoundingClientRect().width /
@@ -1510,64 +1549,47 @@ const EditDesignTemplate = () => {
                             opacity: 0.8,
                             fontSize: "12px",
                             position: "relative",
+                            overflow:"hidden"
                           }}
+                          onClick={(e) => e.stopPropagation()} 
                         >
-                          <span className="user-select-none">{data.name}</span>
-                          <span className="d-flex align-items-center user-select-none gap-10">
-                            <i
-                              className={`fas fa-eye me-2 mr-1 ${classes.eye}`}
-                              onMouseUp={handleIconMouseUp}
-                              onClick={(e) => {
-                                handleEyeClick(data, index);
-                              }}
-                              style={{ cursor: "pointer" }}
-                            ></i>
-                            <i
-                              className="fas fa-times text-danger cross-icon  ml-1"
-                              onMouseUp={handleIconMouseUp}
-                              onClick={() => {
-                                handleCrossClick(data, index);
-                              }}
-                              style={{ cursor: "pointer" }}
-                            ></i>
-                          </span>
+                          {sizes[index] ? (
+                            <span>
+                              <i
+                                className={`fas fa-eye me-2 mr-1 ${classes.eye}`}
+                                onMouseUp={handleIconMouseUp}
+                                onClick={(e) => handleEyeClick(data, index)}
+                                style={{ cursor: "pointer" }}
+                              ></i>
+                              <i
+                                className="fas fa-times text-danger cross-icon ml-1"
+                                onMouseUp={handleIconMouseUp}
+                                onClick={() => handleCrossClick(data, index)}
+                                style={{ cursor: "pointer" }}
+                              ></i>
+                            </span>
+                          ) : (
+                            <>
+                              <span className="user-select-none">
+                                {data.name}
+                              </span>
+                              <span className="d-flex align-items-center user-select-none gap-10">
+                                <i
+                                  className={`fas fa-eye me-2 mr-1 ${classes.eye}`}
+                                  onMouseUp={handleIconMouseUp}
+                                  onClick={(e) => handleEyeClick(data, index)}
+                                  style={{ cursor: "pointer" }}
+                                ></i>
+                                <i
+                                  className="fas fa-times text-danger cross-icon ml-1"
+                                  onMouseUp={handleIconMouseUp}
+                                  onClick={() => handleCrossClick(data, index)}
+                                  style={{ cursor: "pointer" }}
+                                ></i>
+                              </span>
+                            </>
+                          )}
                         </div>
-                        {/* <div
-                                                ref={divRef}
-                                                className="d-flex justify-content-between align-items-center bg-dark text-white p-1"
-                                                style={{
-                                                    opacity: 0.8,
-                                                    fontSize: "12px",
-                                                    position: "relative",
-                                                }}
-                                            >
-                                                {isSmall ? (
-                                                    <i
-                                                        className={`fas fa-eye me-2 mr-1 ${classes.eye}`}
-                                                        onMouseUp={handleIconMouseUp}
-                                                        onClick={(e) => handleEyeClick(data, index)}
-                                                        style={{ cursor: "pointer" }}
-                                                    ></i>
-                                                ) : (
-                                                    <>
-                                                        <span className="user-select-none">{data.name}</span>
-                                                        <span className="d-flex align-items-center user-select-none gap-10">
-                                                            <i
-                                                                className={`fas fa-eye me-2 mr-1 ${classes.eye}`}
-                                                                onMouseUp={handleIconMouseUp}
-                                                                onClick={(e) => handleEyeClick(data, index)}
-                                                                style={{ cursor: "pointer" }}
-                                                            ></i>
-                                                            <i
-                                                                className="fas fa-times text-danger cross-icon ml-1"
-                                                                onMouseUp={handleIconMouseUp}
-                                                                onClick={() => handleCrossClick(data, index)}
-                                                                style={{ cursor: "pointer" }}
-                                                            ></i>
-                                                        </span>
-                                                    </>
-                                                )}
-                                            </div> */}
                       </div>
                     ))}
                     {selection && (
@@ -1621,8 +1643,11 @@ const EditDesignTemplate = () => {
             id="contained-modal-title-vcenter"
             style={{ width: "100vw" }}
           >
-            <h2 className="text-center">Choose field type</h2>
+           <h2 className="text-center">
+              {!modalUpdate ? "Choose field type" : selectedFieldType}
+            </h2>
             <br />
+            {!modalUpdate && (
             <Row className="mb-2">
               <label
                 htmlFor="example-text-input"
@@ -1700,6 +1725,7 @@ const EditDesignTemplate = () => {
                 </div>
               </Col>
             </Row>
+            )}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ height: "55vh", overflowX: "auto" }}>
@@ -2092,10 +2118,7 @@ const EditDesignTemplate = () => {
                 className="form-control"
               /> */}
             </div>
-            <label
-              htmlFor="example-select-input"
-              className="col-2 "
-            >
+            <label htmlFor="example-select-input" className="col-2 ">
               Total Column
             </label>
             <div className="col-2">

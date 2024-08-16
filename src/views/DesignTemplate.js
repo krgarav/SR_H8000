@@ -9,28 +9,6 @@ import { MultiSelect } from "react-multi-select-component";
 import { createTemplate } from "helper/TemplateHelper";
 import { getLayoutDataById } from "helper/TemplateHelper";
 import Papa from "papaparse";
-import {
-  // Badge,
-  Card,
-  CardHeader,
-  CardFooter,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
-  DropdownToggle,
-  Media,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-  Progress,
-  Table,
-  Container,
-  CardSubtitle,
-  CardBody,
-  CardTitle,
-  CardText,
-  UncontrolledTooltip,
-} from "reactstrap";
 import SmallHeader from "components/Headers/SmallHeader";
 import { toast } from "react-toastify";
 import isEqual from "lodash/isEqual";
@@ -69,18 +47,10 @@ const DesignTemplate = () => {
   const [modalShow, setModalShow] = useState(false);
   const [selectedClass, setSelectedClass] = useState("circle");
   const imageRef = useRef(null);
-  const containerRef = useRef(null);
-  const [open, setOpen] = useState(false);
   const [selectedCoordinates, setSelectedCoordinates] = useState([]);
 
   const [name, setName] = useState();
-  const [frameType, setFrameType] = useState({});
-  const [frameUnit, setFrameUnit] = useState({});
-  const [outputDataSetting, setOutputDataSetting] = useState({});
-  const [developementDirection, setDevelopementDirection] = useState({});
-  const [outputOrderDirection, setOutputOrderDirection] = useState({});
-  const [lineInterval, setLineinterval] = useState(0);
-  const [columnInterval, setColumnInterval] = useState(0);
+
   const [spanDisplay, setSpanDisplay] = useState("none");
   const [skewoption, setSkewOption] = useState("none");
   const [windowNgOption, setWindowNgOption] = useState("");
@@ -96,12 +66,6 @@ const DesignTemplate = () => {
   const [selectedFieldType, setSelectedFieldType] = useState("formField");
   const [fieldType, setFieldType] = useState();
   const [numberOfField, setNumberOfField] = useState();
-  const [imageState, setImageState] = useState({
-    x: 0,
-    y: 0,
-    width: 400,
-    height: 400,
-  });
   const [position, setPosition] = useState({
     x: 0,
     y: 0,
@@ -134,7 +98,7 @@ const DesignTemplate = () => {
   const [idSelectionCount, setIdSelectionCount] = useState(0);
   const [imageModalShow, setImageModalShow] = useState(false);
   const [imagesSelectedCount, setImagesSelectedCount] = useState(0);
-
+  const [sizes, setSizes] = useState({});
   const location = useLocation();
   const {
     totalColumns,
@@ -156,7 +120,7 @@ const DesignTemplate = () => {
   const navigate = useNavigate();
   const numRows = timingMarks;
   const numCols = totalColumns;
-
+  const divRefs = useRef([]);
   const handleDragStop = (e, d) => {
     setPosition((prev) => ({ ...prev, x: d.x, y: d.y }));
   };
@@ -291,6 +255,23 @@ const DesignTemplate = () => {
       });
     }
   }, []);
+  useEffect(() => {
+    const checkSizes = () => {
+      const newSizes = {};
+      divRefs.current.forEach((ref, index) => {
+        if (ref) {
+          const { offsetWidth } = ref;
+          newSizes[index] = offsetWidth <= 42; // Define your threshold for "small"
+        }
+      });
+      setSizes(newSizes);
+    };
+
+    checkSizes(); // Initial check
+    window.addEventListener("resize", checkSizes);
+
+    return () => window.removeEventListener("resize", checkSizes);
+  }, [selectedCoordinates, selection]);
   useEffect(() => {
     if (arr) {
       // Extract parameters from the first element of the array (if it exists)
@@ -864,9 +845,12 @@ const DesignTemplate = () => {
           ...coordinateOfSkewField,
           ...[coordinateOfIdField],
         ];
-        console.log(allCoordinates);
+        const filteredCoordinates = allCoordinates.filter(
+          (item) => Object.keys(item).length > 0
+        );
+        console.log(filteredCoordinates);
         // Map each coordinate to a new format
-        const newSelectedFields = allCoordinates?.map((item) => {
+        const newSelectedFields = filteredCoordinates?.map((item) => {
           const {
             "Start Row": startRow,
             "Start Col": startCol,
@@ -886,12 +870,7 @@ const DesignTemplate = () => {
           };
         });
 
-        // const copiedSelectedField = [...item];
-        // copiedSelectedField[coordinateIndex] = {
-        //   ...copiedSelectedField[coordinateIndex],
-        //   name: name,
-        //   fieldType: selectedFieldType,
-        // };
+       
 
         return newSelectedFields;
       });
@@ -1382,7 +1361,7 @@ const DesignTemplate = () => {
                 <div className="top"></div>
                 {Array.from({ length: numRows }).map((_, rowIndex) => (
                   <div key={rowIndex} className="row">
-                    <div className=  {(bubbleType==="circle"||bubbleType==="oval")?"left-nums-circle":"left-nums" }>{rowIndex + 1}</div>
+                    <div className={(bubbleType==="circle")?"left-nums-circle":"left-nums" }>{rowIndex + 1}</div>
                   </div>
                 ))}
               </div>
@@ -1400,9 +1379,8 @@ const DesignTemplate = () => {
                   style={{
                     border: "2px solid black",
                     paddingTop: "1rem",
-                    padding: "1rem",
+                    paddingRight: "0.9rem",
                     paddingLeft: "1rem",
-                    // width: "102%",
                     overflowY: "auto",
                   }}
                 >
@@ -1418,7 +1396,7 @@ const DesignTemplate = () => {
 
                       return (
                         <div key={rowIndex} className="row">
-                          <div className={(bubbleType==="circle"||bubbleType==="oval")?"left-num-circle":"left-num" } sty>
+                          <div className={(bubbleType==="circle")?"left-num-circle":"left-num" } >
                             <div className="timing-mark "></div>
                           </div>
                           {Array.from({ length: numCols }).map(
@@ -1451,13 +1429,15 @@ const DesignTemplate = () => {
                       );
                     })}
 
-                    {selectedCoordinates.map((data, index) => (
+{selectedCoordinates.map((data, index) => (
                       <div
                         key={index}
+                        ref={(el) => (divRefs.current[index] = el)}
                         className="border-blue-900"
                         style={{
                           border: "3px solid #007bff",
                           position: "absolute",
+                           overflow:"hidden",
                           left: `${
                             data.startCol *
                               (imageRef.current.getBoundingClientRect().width /
@@ -1489,29 +1469,46 @@ const DesignTemplate = () => {
                             opacity: 0.8,
                             fontSize: "12px",
                             position: "relative",
+                            overflow:"hidden"
                           }}
+                          onClick={(e) => e.stopPropagation()} 
                         >
-                          <span className="user-select-none">{data.name}</span>
-                          <span
-                            className={`d-flex align-items-center user-select-none gap-10`}
-                          >
-                            <i
-                              className={`fas fa-eye me-2 mr-1 ${classes.eye}`}
-                              onMouseUp={handleIconMouseUp}
-                              onClick={(e) => {
-                                handleEyeClick(data, index);
-                              }}
-                              style={{ cursor: "pointer" }}
-                            ></i>
-                            <i
-                              className="fas fa-times text-danger cross-icon  ml-1"
-                              onMouseUp={handleIconMouseUp}
-                              onClick={() => {
-                                handleCrossClick(data, index);
-                              }}
-                              style={{ cursor: "pointer" }}
-                            ></i>
-                          </span>
+                          {sizes[index] ? (
+                            <span>
+                              <i
+                                className={`fas fa-eye me-2 mr-1 ${classes.eye}`}
+                                onMouseUp={handleIconMouseUp}
+                                onClick={(e) => handleEyeClick(data, index)}
+                                style={{ cursor: "pointer" }}
+                              ></i>
+                              <i
+                                className="fas fa-times text-danger cross-icon ml-1"
+                                onMouseUp={handleIconMouseUp}
+                                onClick={() => handleCrossClick(data, index)}
+                                style={{ cursor: "pointer" }}
+                              ></i>
+                            </span>
+                          ) : (
+                            <>
+                              <span className="user-select-none">
+                                {data.name}
+                              </span>
+                              <span className="d-flex align-items-center user-select-none gap-10">
+                                <i
+                                  className={`fas fa-eye me-2 mr-1 ${classes.eye}`}
+                                  onMouseUp={handleIconMouseUp}
+                                  onClick={(e) => handleEyeClick(data, index)}
+                                  style={{ cursor: "pointer" }}
+                                ></i>
+                                <i
+                                  className="fas fa-times text-danger cross-icon ml-1"
+                                  onMouseUp={handleIconMouseUp}
+                                  onClick={() => handleCrossClick(data, index)}
+                                  style={{ cursor: "pointer" }}
+                                ></i>
+                              </span>
+                            </>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -1762,27 +1759,6 @@ const DesignTemplate = () => {
                     )}
                   </div>
                 </Col>
-                {/* <Col xs={12} sm={6} md={3} className="d-flex align-items-center">
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                  <div>
-                    <label
-                      htmlFor="imageArea"
-                      className="mr-2 mb-0 field-label"
-                    >
-                      Image Area:
-                    </label>
-                    <input
-                      id="imageArea"
-                      type="radio"
-                      name="fieldType"
-                      value="imageArea"
-                      checked={selectedFieldType === "imageArea"}
-                      onChange={handleRadioChange}
-                      className="field-label mt-1"
-                    />
-                  </div>
-                </div>
-              </Col> */}
               </Row>
             )}
           </Modal.Title>
@@ -1791,74 +1767,6 @@ const DesignTemplate = () => {
           {selectedFieldType === "imageArea" && (
             <>
               <ImageCropper imageSrc={templateImagePath} />
-
-              {/* <Card
-                style={{
-                  width: '18rem'
-                }}
-              >
-                <img
-                  alt="Sample"
-                  src="https://picsum.photos/300/200"
-                />
-                <CardBody>
-                  <CardTitle tag="h5">
-                    Card title
-                  </CardTitle>
-                  <CardSubtitle
-                    className="mb-2 text-muted"
-                    tag="h6"
-                  >
-                    Card subtitle
-                  </CardSubtitle>
-                  <CardText>
-                    Some quick example text to build on the card title and make up the bulk of the card‘s content.
-                  </CardText>
-                  <Button>
-                    Button
-                  </Button>
-                </CardBody>
-              </Card> */}
-
-              {/* <Row>
-                <label
-                  htmlFor="example-text-input"
-                  className="col-md-2  col-form-label"
-                >
-                  Image Name:
-                </label>
-                <div className="col-md-2">
-                  <input
-                    id="imageArea"
-                    type="text"
-                    placeholder="Enter Image Name"
-                    className="form-control"
-                  />
-                </div>
-                <label
-                  htmlFor="example-text-input"
-                  className="col-md-2 "
-                >
-                  Cropping Side:
-                </label>
-                <div className="col-md-2">
-                  <input
-                    id="imageArea"
-                    type="text"
-                    placeholder="Enter Image Name"
-                    className="form-control"
-                  />
-                </div>
-                <div className="col-md-4">
-                  <Button>Select Coordinate</Button>
-                </div>
-
-
-              </Row> */}
-              {/* <ImageRegionSelector imageSrc={templateImagePath} /> */}
-              {/* <RegionSelector imageSrc={templateImagePath} /> */}
-              {/* <ImageRegionSelector imageSrc={templateImagePath} /> */}
-              {/* <Cropper src={templateImagePath} /> */}
             </>
           )}
           {selectedFieldType !== "imageArea" && (
@@ -2499,14 +2407,13 @@ const DesignTemplate = () => {
           <Button
             type="button"
             variant="success"
-            // onClick={saveHandler}
             onClick={() => setImageModalShow(false)}
             className="waves-effect waves-light"
           >
             Save
           </Button>
         </Modal.Footer>
-      </Modal>
+      </Modal>  
 
       {detailPage && (
         <LayoutDetailModal

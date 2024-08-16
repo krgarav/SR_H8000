@@ -120,6 +120,7 @@ const EditTemplateModal = (props) => {
   const [printStartNumber, setPrintStartNumber] = useState(null);
   const [printCustomValue, setPrintCustomValue] = useState(null);
   const [scannerLoading, setScannerLoading] = useState(false);
+ 
   const jobHandler = (e) => {
     setSelectedUI(e);
   };
@@ -702,31 +703,6 @@ const EditTemplateModal = (props) => {
                         </div>
                       </Row>
                       {/* <Row className="mb-3">
-                                            <label
-                                                htmlFor="example-text-input"
-                                                className="col-md-2 "
-                                                style={{ fontSize: ".9rem" }}
-                                            >
-                                                Size:
-                                            </label>
-                                            <div className="col-md-10">
-                                                <Select
-                                                    value={size}
-                                                    onChange={(selectedValue) => setSize(selectedValue)}
-                                                    options={sizeData}
-                                                    getOptionLabel={(option) => option?.name || ""}
-                                                    getOptionValue={(option) =>
-                                                        option?.id?.toString() || ""
-                                                    }
-                                                />
-                                                {!size && (
-                                                    <span style={{ color: "red", display: "block" }}>
-                                                        This feild is required
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </Row> */}
-                      <Row className="mb-3">
                         <Col md={6}>
                           <Row>
                             <label
@@ -799,7 +775,7 @@ const EditTemplateModal = (props) => {
                             </div>
                           </Row>
                         </Col>
-                      </Row>
+                      </Row> */}
                       <Row className="mb-3">
                         <label
                           htmlFor="example-text-input"
@@ -2257,16 +2233,6 @@ const EditTemplateModal = (props) => {
               <Spinner />
             </div>
           )}
-          {/* <Row>
-                        <div class="mb-4" >
-                            <label for="formFile" class="form-label">Upload OMR Image</label>
-                            <input class="form-control" type="file" id="formFile" onChange={handleImageUpload} accept="image/*" />
-                        </div>
-                    </Row>
-                    <Row>
-
-                        <ImageSelection />
-                    </Row> */}
 
           <div className="container mt-4">
             <style jsx>{`

@@ -1718,15 +1718,17 @@ const LayoutDetailModal = (props) => {
                             </div>
                           </Row>
                         )}
-                        <Row className="mb-3">
-                          <label
-                            htmlFor="example-text-input"
-                            className="col-md-6 "
-                            style={{ fontSize: ".9rem" }}
-                          >
-                            Set Barcode reading area :-
-                          </label>
-                        </Row>
+                          {barcodeCategory.id !== "software" && (
+                          <Row className="mb-3">
+                            <label
+                              htmlFor="example-text-input"
+                              className="col-md-6 "
+                              style={{ fontSize: ".9rem" }}
+                            >
+                              Set Barcode reading area :-
+                            </label>
+                          </Row>
+                        )}
                         {/* <Row className="mb-3">
 
                                         <label
