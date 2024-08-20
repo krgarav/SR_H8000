@@ -24,8 +24,7 @@ const DirectoryPicker = ({ handleChange }) => {
 
     return (
         <>
-
-            <div>
+            <div style={{height:"65vh", overflow:"auto"}}>
                 <h2>Pick directory of server </h2>
                 <FileManagerComponent
                     id="filemanager"

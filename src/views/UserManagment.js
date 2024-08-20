@@ -1,21 +1,3 @@
-/*!
-
-=========================================================
-* Argon Dashboard React - v1.2.4
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/argon-dashboard-react
-* Copyright 2024 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/argon-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-// reactstrap components
 import {
   Badge,
   Card,
@@ -50,6 +32,7 @@ import { createUser } from "helper/userManagment_helper";
 import { fetchAllUsers } from "helper/userManagment_helper";
 import { updateUser } from "helper/userManagment_helper";
 import { removeUser } from "helper/userManagment_helper";
+import Placeholder from "ui/Placeholder";
 
 const UserManagment = () => {
   const [modalShow, setModalShow] = useState(false);
@@ -65,6 +48,7 @@ const UserManagment = () => {
   const [allUsers, setAllUsers] = useState([]);
   const [id, setId] = useState("");
   const [toggle, setToggle] = useState(false);
+  const [loading, setLoading] = useState(false);
   const emailRef = useRef(null); // Reference to the input element
   const confirmRef = useRef(null);
   const fetchRoles = async () => {
@@ -82,7 +66,9 @@ const UserManagment = () => {
   };
   const fetchUsers = async () => {
     try {
+      setLoading(true);
       const data = await fetchAllUsers();
+      setLoading(false);
       console.log(data);
       if (data?.success) {
         console.log(roles.result);
@@ -91,6 +77,7 @@ const UserManagment = () => {
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -139,7 +126,7 @@ const UserManagment = () => {
   };
 
   const handleCreate = async () => {
-    if(ConfirmPassword!==password){
+    if (ConfirmPassword !== password) {
       alert("Password and confirm password do not match");
       return;
     }
@@ -226,6 +213,60 @@ const UserManagment = () => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailPattern.test(email);
   };
+
+  const placeHolderUser = new Array(10).fill(null).map((_, index) => (
+    <tr key={index}>
+      <td>
+        <Placeholder width="60%" height="1.5em" />
+      </td>
+      <td>
+        <Placeholder width="60%" height="1.5em" />
+      </td>
+      <td>
+        <Placeholder width="60%" height="1.5em" />
+      </td>
+      <td>
+        <Placeholder width="60%" height="1.5em" />
+      </td>
+      <td>
+        <Placeholder width="60%" height="1.5em" />
+      </td>
+      <td></td>
+    </tr>
+  ));
+  const ALLUSER = allUsers?.map((d, i) => (
+    <>
+      <tr key={i}>
+        <td>{i + 1}</td>
+        <td>{d.userName}</td>
+        <td>{d.email}</td>
+        <td>{d.phoneNumber}</td>
+        <td>{d?.userRoleList[0]?.roleName}</td>
+        <td className="text-right">
+          <UncontrolledDropdown>
+            <DropdownToggle
+              className="btn-icon-only text-light"
+              href="#pablo"
+              role="button"
+              size="sm"
+              color=""
+              onClick={(e) => e.preventDefault()}
+            >
+              <i className="fas fa-ellipsis-v" />
+            </DropdownToggle>
+            <DropdownMenu className="dropdown-menu-arrow" right>
+              <DropdownItem href="#pablo" onClick={() => handleRowClick(d)}>
+                Edit
+              </DropdownItem>
+              <DropdownItem href="#pablo" onClick={(e) => deleteUser(d)}>
+                Delete
+              </DropdownItem>
+            </DropdownMenu>
+          </UncontrolledDropdown>
+        </td>
+      </tr>
+    </>
+  ));
   return (
     <>
       <NormalHeader />
@@ -273,48 +314,17 @@ const UserManagment = () => {
                     </tr>
                   </thead>
                   <tbody style={{ minHeight: "100rem" }}>
-                    {allUsers?.map((d, i) => (
-                      <>
-                        <tr key={i}>
-                          <td>{i + 1}</td>
-                          <td>{d.userName}</td>
-                          <td>{d.email}</td>
-                          <td>{d.phoneNumber}</td>
-                          <td>{d?.userRoleList[0]?.roleName}</td>
-                          <td className="text-right">
-                            <UncontrolledDropdown>
-                              <DropdownToggle
-                                className="btn-icon-only text-light"
-                                href="#pablo"
-                                role="button"
-                                size="sm"
-                                color=""
-                                onClick={(e) => e.preventDefault()}
-                              >
-                                <i className="fas fa-ellipsis-v" />
-                              </DropdownToggle>
-                              <DropdownMenu
-                                className="dropdown-menu-arrow"
-                                right
-                              >
-                                <DropdownItem
-                                  href="#pablo"
-                                  onClick={() => handleRowClick(d)}
-                                >
-                                  Edit
-                                </DropdownItem>
-                                <DropdownItem
-                                  href="#pablo"
-                                  onClick={(e) => deleteUser(d)}
-                                >
-                                  Delete
-                                </DropdownItem>
-                              </DropdownMenu>
-                            </UncontrolledDropdown>
-                          </td>
-                        </tr>
-                      </>
-                    ))}
+                    {loading ? placeHolderUser : ALLUSER}
+                    {ALLUSER.length === 0 && (
+                      <tr>
+                        <td
+                          colSpan="100%"
+                          style={{ textAlign: "center", width: "100%" }}
+                        >
+                          No User Present
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </Table>
               </div>
@@ -561,8 +571,8 @@ const UserManagment = () => {
                 onChange={(e) => setName(e.target.value)}
               />
               <small style={{ color: "red", display: "block" }}>
-                  No space is allowed between username. 
-                </small>
+                No space is allowed between username.
+              </small>
               {/* {!name && (
                 <span style={{ color: "red", display: "block" }}>
                   This feild is required
@@ -649,10 +659,7 @@ const UserManagment = () => {
           </Row>
 
           <Row className="mb-3">
-            <label
-              htmlFor="example-text-input"
-              className="col-md-2 "
-            >
+            <label htmlFor="example-text-input" className="col-md-2 ">
               Confirm Password
             </label>
             <div className="col-md-10">

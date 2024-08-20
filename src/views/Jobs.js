@@ -187,7 +187,6 @@ const Jobs = () => {
     <>
       <NormalHeader />
       {/* Page content */}
-      {/* <SmallHeader /> */}
       <Container className="mt--7" fluid>
         <Row>
           <div className="col">

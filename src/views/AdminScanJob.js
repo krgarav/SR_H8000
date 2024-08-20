@@ -60,10 +60,17 @@ const AdminScanJob = () => {
   ]);
   const [gridHeight, setGridHeight] = useState("350px");
   const [starting, setStarting] = useState(false);
+  const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 576);
   const gridRef = useRef();
 
   const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleResize = () => setIsSmallScreen(window.innerWidth < 576);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   useEffect(() => {
     // Calculate 60% of the viewport height
     const handleResize = () => {
@@ -249,8 +256,10 @@ const AdminScanJob = () => {
         setScanning(true);
       }, 6000);
       const response = await scanFiles(selectedValue, userId);
-      const excelgenerate = await axios.get(GENERATE_EXCEL+ `?Id=${selectedValue}&UserId=${userId}`);
-      console.log(excelgenerate)
+      const excelgenerate = await axios.get(
+        GENERATE_EXCEL + `?Id=${selectedValue}&UserId=${userId}`
+      );
+      console.log(excelgenerate);
       console.log(response);
       if (!response?.result?.success) {
         toast.error(response?.result?.message);
@@ -332,10 +341,6 @@ const AdminScanJob = () => {
       setScanning(false);
       setStarting(false);
       const cancel = await cancelScan();
-   
-      //   setTimeout(() => {
-      //     setScanning(false);
-      //   }, 5000);
     } catch (error) {
       console.log(error);
     }
@@ -372,24 +377,19 @@ const AdminScanJob = () => {
   return (
     <>
       <NormalHeader />
-
       <div
         style={{
           position: "absolute",
-          left: "40%",
-          top: "20px",
+          left: isSmallScreen?"30%":"40%",
+          top: isSmallScreen?"10px":"20px",
           zIndex: "999",
         }}
       >
-        <Button
-          variant="primary"
-          onClick={completeJobHandler}
-          style={{ position: "relative" }}
-        >
+        <Button variant="primary" onClick={completeJobHandler}>
           Complete Job
         </Button>
       </div>
-      <Container className="mt--7" fluid>
+      <Container className={isSmallScreen?"mt--6":"mt--7"} fluid>
         <br />
 
         <div className="control-pane">

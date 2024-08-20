@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import "@syncfusion/ej2-base/styles/material.css";
 import "@syncfusion/ej2-react-dropdowns/styles/material.css";
 import { MultiSelect } from "react-multi-select-component";
-import axios from "axios";
 import ImageSelection from "./imageSelection";
 import { getScannedImage } from "helper/TemplateHelper";
 import { toast } from "react-toastify";
@@ -498,21 +497,7 @@ const JobModal = (props) => {
                             </div>
                         </Row>} */}
         </Modal.Body>
-        <Modal.Footer>
-          <div style={{ width: "50%" }}>
-            {/* <div class="mb-4" >
-                        <label for="formFile" class="form-label">Upload OMR Image</label>
-                        <input class="form-control" type="file" id="formFile" onChange={handleImageUpload} accept="image/*" />
-                    </div> */}
-          </div>
-          <div
-            className="w-20 flex-shrink-0"
-            style={{
-              content: "",
-              width: "12%",
-            }}
-          ></div>{" "}
-          {/* Spacer div */}
+        <Modal.Footer>  
           <Button variant="secondary" onClick={props.onHide}>
             Close
           </Button>
