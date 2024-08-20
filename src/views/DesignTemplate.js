@@ -1211,7 +1211,7 @@ const DesignTemplate = () => {
         alert(`Response : ${JSON.stringify(res2?.message)}`);
 
         if (res2?.success) {
-          sessionStorage.clear();
+          // sessionStorage.clear();
           toast.success("Layout Saved");
           navigate("/admin/template", { replace: true });
         }
