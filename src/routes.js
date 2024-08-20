@@ -18,6 +18,7 @@ import ReactFile from "views/ReactFile";
 import FolderPicker from "views/FolderPicker";
 import FolderPickerDirectory from "views/FolderPickerDirectory";
 import AdminJobQueue from "views/AdminJobQueue";
+import AppManagement from "views/AppManagement";
 
 var routes = [
  
@@ -87,7 +88,13 @@ var routes = [
     layout: "/admin",
   },
 
- 
+  {
+    path: "/application-ip",
+    name: "App Management",
+    icon: "ni ni-bullet-list-67 text-red",
+    component: <AppManagement />,
+    layout: "/admin",
+  },
   
   // {
   //   path: "/maps",

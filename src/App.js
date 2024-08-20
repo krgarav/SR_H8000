@@ -59,23 +59,24 @@ const useTokenRedirect = () => {
         navigate("/auth/login", { replace: true });
       }
     } else {
-      navigate("/", { replace: true });
-      // navigate("/auth/login", { replace: true });
+      // navigate("/", { replace: true });
+      navigate("/auth/login", { replace: true });
     }
   }, []);
 };
 const App = () => {
   const [showIpModal, setShowIpModal] = useState(false);
 
-  useEffect(() => {
-    const backendIP = sessionStorage.getItem("backendIP");
-    if (!backendIP) {
-      setShowIpModal(true); // Show the modal if no backend IP is set
-    }
-  }, []);
+  // useEffect(() => {
+  //   const backendIP = sessionStorage.getItem("backendIP");
+  //   if (!backendIP) {
+  //     setShowIpModal(true); // Show the modal if no backend IP is set
+  //   }
+  // }, []);
 
-  const handleSaveIp = (ip) => {
+  const handleSaveIp = (ip,protocol) => {
     sessionStorage.setItem("backendIP", ip); // Save the IP to localStorage
+    // sessionStorage.setItem("protocol",protocol)
     setTimeout(() => {
       window.location.reload(); // Reload the page
   }, 400);
@@ -83,13 +84,14 @@ const App = () => {
   useTokenRedirect();
   return (<>
 
-    <IpModal
+    {/* <IpModal
       show={showIpModal}
       onHide={() => setShowIpModal(false)}
       onSave={handleSaveIp}
-    />
+    /> */}
+    
     <Routes>
-      <Route path="/" element={<MainLogin />} />
+      {/* <Route path="/" element={<MainLogin />} /> */}
       <Route path="/admin/*" element={<AdminLayout />} />
       <Route path="/operator/*" element={<Operator />} />
       <Route path="/moderator/*" element={<Moderator />} />
