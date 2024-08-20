@@ -20,6 +20,7 @@ import ImageRegionSelector from "ui/RangeSelector";
 import Cropper from "ui/RangeSelector";
 import EditTemplateModal from "ui/EditTemplateModal";
 import LayoutDetailModal from "ui/LayoutDetailModal";
+import TextLoader from "loaders/TextLoader";
 
 // Function to get values from sessionStorage or provide default
 const getLocalStorageOrDefault = (key, defaultValue) => {
@@ -142,11 +143,10 @@ const DesignTemplate = () => {
     });
   };
   useEffect(() => {
-    setTimeout(()=>{
+    setTimeout(() => {
       setLocalData(JSON.parse(localStorage.getItem("Template")));
-
-    },1000)
-  },[detailPage]);
+    }, 1000);
+  }, [detailPage]);
 
   useEffect(() => {
     const idFieldCount = selectedCoordinates.filter(
@@ -870,8 +870,6 @@ const DesignTemplate = () => {
           };
         });
 
-       
-
         return newSelectedFields;
       });
       //   console.log(templateIndex,selectedFieldType,coordinateIndex);
@@ -1190,7 +1188,7 @@ const DesignTemplate = () => {
     const imageFile = base64ToFile(templateImagePath, "front.png");
     const backImageFile = base64ToFile(templateBackImagePath, "back.png");
     // Send the request and handle the response
-   
+
     try {
       setLoading(true);
       const res = await createTemplate(fullRequestData);
@@ -1243,7 +1241,7 @@ const DesignTemplate = () => {
             left: 0,
             width: "100%",
             height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.5)", // Slightly opaque background
+            backgroundColor: "rgba(0, 0, 0, 0.9)", // Slightly opaque background
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
@@ -1251,7 +1249,9 @@ const DesignTemplate = () => {
             pointerEvents: "auto", // Make the overlay not clickable
           }}
         >
-          <Spinner />
+          <div style={{height:"50%"}}>
+            <TextLoader message={"Saving, Please wait..."} />
+          </div>
         </div>
       )}
 
@@ -1361,7 +1361,15 @@ const DesignTemplate = () => {
                 <div className="top"></div>
                 {Array.from({ length: numRows }).map((_, rowIndex) => (
                   <div key={rowIndex} className="row">
-                    <div className={(bubbleType==="circle")?"left-nums-circle":"left-nums" }>{rowIndex + 1}</div>
+                    <div
+                      className={
+                        bubbleType === "circle"
+                          ? "left-nums-circle"
+                          : "left-nums"
+                      }
+                    >
+                      {rowIndex + 1}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -1396,7 +1404,13 @@ const DesignTemplate = () => {
 
                       return (
                         <div key={rowIndex} className="row">
-                          <div className={(bubbleType==="circle")?"left-num-circle":"left-num" } >
+                          <div
+                            className={
+                              bubbleType === "circle"
+                                ? "left-num-circle"
+                                : "left-num"
+                            }
+                          >
                             <div className="timing-mark "></div>
                           </div>
                           {Array.from({ length: numCols }).map(
@@ -1429,7 +1443,7 @@ const DesignTemplate = () => {
                       );
                     })}
 
-{selectedCoordinates.map((data, index) => (
+                    {selectedCoordinates.map((data, index) => (
                       <div
                         key={index}
                         ref={(el) => (divRefs.current[index] = el)}
@@ -1437,7 +1451,7 @@ const DesignTemplate = () => {
                         style={{
                           border: "3px solid #007bff",
                           position: "absolute",
-                           overflow:"hidden",
+                          overflow: "hidden",
                           left: `${
                             data.startCol *
                               (imageRef.current.getBoundingClientRect().width /
@@ -1469,9 +1483,9 @@ const DesignTemplate = () => {
                             opacity: 0.8,
                             fontSize: "12px",
                             position: "relative",
-                            overflow:"hidden"
+                            overflow: "hidden",
                           }}
-                          onClick={(e) => e.stopPropagation()} 
+                          onClick={(e) => e.stopPropagation()}
                         >
                           {sizes[index] ? (
                             <span>
@@ -1817,7 +1831,7 @@ const DesignTemplate = () => {
                       <option value="allow">Allow All</option>
                       <option value="not allow">Allow None</option>
                     </select>
-                  </div> 
+                  </div>
                   {multiple !== "allow" && (
                     <>
                       <label htmlFor="example-text-input" className="col-md-2 ">
@@ -2413,7 +2427,7 @@ const DesignTemplate = () => {
             Save
           </Button>
         </Modal.Footer>
-      </Modal>  
+      </Modal>
 
       {detailPage && (
         <LayoutDetailModal

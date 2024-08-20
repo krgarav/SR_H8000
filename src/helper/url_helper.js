@@ -1,6 +1,6 @@
-// const url = "https://28mdpn6d-5000.inc1.devtunnels.ms/";
-const url = "http://192.168.0.173:81/";
-// https://28mdpn6d-5289.inc1.devtunnels.ms/swagger/index.html
+ const url = "https://rb5xhrfq-5289.inc1.devtunnels.ms/";
+// const url = "http://192.168.137.1:81/";
+//https://28mdpn6d-5289.inc1.devtunnels.ms/swagger/index.html
 
 export const CREATE_USER = url + "UserRegistration";
 export const UPDATE_USER = url + "UpdateUser";
@@ -28,6 +28,7 @@ export const CHECK_DELETE_TEMPLATE = url + "GetJobStatus";
 export const GET_TEMPLATE_IMAGE = url + "GetTemplateImage";
 export const GET_TEMPLATE_CSV = url + "GetTemplateCSV";
 export const CANCEL_SCAN = url + "CancelScan";
+export const GENERATE_EXCEL = url + "GenerateExcelFile";
 
 export const CREATE_JOB = url + "CreateJobs";
 export const GET_ALL_JOBS = url + "GetAllJobs";

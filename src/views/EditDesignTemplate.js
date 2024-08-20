@@ -21,6 +21,7 @@ import axios from "axios";
 import { DELETE_TEMPLATE } from "helper/url_helper";
 import EditImageCropper from "ui/EditImageCropper";
 import LineLoader from "loaders/LineLoader";
+import TextLoader from "loaders/TextLoader";
 
 // Function to get values from sessionStorage or provide default
 const getSessionStorageOrDefault = (key, defaultValue) => {
@@ -1281,7 +1282,7 @@ const EditDesignTemplate = () => {
             left: 0,
             width: "100%",
             height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.5)", // Slightly opaque background
+            backgroundColor: "rgba(0, 0, 0, 0.8)", // Slightly opaque background
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
@@ -1289,7 +1290,9 @@ const EditDesignTemplate = () => {
             pointerEvents: "auto", // Make the overlay not clickable
           }}
         >
-          <LineLoader />
+      <div style={{height:"50%"}}>
+            <TextLoader message={"Loading Data, Please wait..."} />
+          </div>
         </div>
       )}
       {loading && (
@@ -1300,7 +1303,7 @@ const EditDesignTemplate = () => {
             left: 0,
             width: "100%",
             height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.5)", // Slightly opaque background
+            backgroundColor: "rgba(0, 0, 0, 0.9)", // Slightly opaque background
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
@@ -1308,7 +1311,9 @@ const EditDesignTemplate = () => {
             pointerEvents: "auto", // Make the overlay not clickable
           }}
         >
-          <Spinner />
+        <div style={{height:"50%"}}>
+            <TextLoader message={"Updating, Please wait..."} />
+          </div>
         </div>
       )}
       <div
@@ -1452,11 +1457,37 @@ const EditDesignTemplate = () => {
                   style={{
                     border: "2px solid black",
                     paddingTop: "1rem",
-                    // padding: "1rem",
+                    padding: "1rem",
                     paddingRight: "0.9rem",
                     paddingLeft: "1rem",
-                    overflowY: "auto",
+                    // width:"101%"
+                    // overflowY: "auto",
                   }}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  
                 >
                   <div
                     className="grid"

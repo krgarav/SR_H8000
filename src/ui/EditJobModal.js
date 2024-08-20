@@ -104,12 +104,13 @@ const EditJobModal = (props) => {
       setSelectedDataDirectory(jobData.dataPath);
       setDataType(comparewithId(fileType, jobData.dataType));
       const input = document.getElementById("image-enable-input");
+      if(input){
       if (jobData.imageColor || jobData.imagePath || jobData.imageType) {
         input.click();
         setImageName(jobData.imageName);
         setSelectedImageDirectory(jobData.imagePath);
       }
-    };
+    }};
     getData();
   }, []);
   const createTemplateHandler = async () => {

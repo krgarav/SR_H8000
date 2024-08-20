@@ -34,6 +34,7 @@ import { cancelScan } from "helper/TemplateHelper";
 import { finishJob } from "helper/job_helper";
 import axios from "axios";
 import { GET_PROCESS_32_PAG_DATA } from "helper/url_helper";
+import { GENERATE_EXCEL } from "helper/url_helper";
 
 const ScanJob = () => {
   const [count, setCount] = useState(true);
@@ -232,6 +233,8 @@ const ScanJob = () => {
         setScanning(true);
       }, 6000);
       const response = await scanFiles(selectedValue, userId);
+      const excelgenerate = await axios.get(GENERATE_EXCEL+ `?Id=${selectedValue}&UserId=${userId}`);
+      console.log(excelgenerate)
       if (!response?.result?.success) {
         toast.error(response?.result?.message);
       } else {
@@ -309,9 +312,10 @@ const ScanJob = () => {
   };
   const handleStop = async () => {
     try {
-      const cancel = await cancelScan();
       setScanning(false);
       setStarting(false);
+      const cancel = await cancelScan();
+    
       // setTimeout(() => {
       //   setScanning(false);
       // }, 5000);

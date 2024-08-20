@@ -35,8 +35,6 @@ import {
   UncontrolledTooltip,
   Button,
   Col,
-
-
 } from "reactstrap";
 import { Badge } from "react-bootstrap";
 
@@ -72,13 +70,19 @@ const Jobs = () => {
       const response = await getJobs();
       console.log(response);
       if (response) {
-        setAllJobs(response.result);
+        if (response.result !== null) {
+          setAllJobs(response.result);
+        }
+        if(response.result === null){
+          setAllJobs([])
+        }
         setLoading(false);
       }
       if (response === undefined) {
         toast.error("Cant connect to network");
-        setLoading(false)
+        setLoading(false);
       }
+      setLoading(false);
       // console.log(response.result)
     };
     fetchAllJobs();
@@ -102,15 +106,25 @@ const Jobs = () => {
 
   const placeHolderJobs = new Array(10).fill(null).map((_, index) => (
     <tr key={index}>
-      <td><Placeholder width="60%" height="1.5em" /></td>
-      <td><Placeholder width="60%" height="1.5em" /></td>
-      <td><Placeholder width="60%" height="1.5em" /></td>
-      <td><Placeholder width="60%" height="1.5em" /></td>
-      <td><Placeholder width="60%" height="1.5em" /></td>
+      <td>
+        <Placeholder width="60%" height="1.5em" />
+      </td>
+      <td>
+        <Placeholder width="60%" height="1.5em" />
+      </td>
+      <td>
+        <Placeholder width="60%" height="1.5em" />
+      </td>
+      <td>
+        <Placeholder width="60%" height="1.5em" />
+      </td>
+      <td>
+        <Placeholder width="60%" height="1.5em" />
+      </td>
       <td></td>
     </tr>
-  ))
-  const ALLJOBS = allJobs.map((item, index) => {
+  ));
+  const ALLJOBS = allJobs?.map((item, index) => {
     let assignuser = !item.assignUser ? "Not Assigned" : item.assignUser;
     // if (item.assignUser !== "string" || item.assignUser !== "") {
     //   assignuser = item.assignUser;
@@ -126,10 +140,7 @@ const Jobs = () => {
         <td>{index + 1}</td>
         {/* <td>{item.jobName}</td> */}
         <td>{item.jobName}</td>
-        <td>
-          {item.templateName}
-
-        </td>
+        <td>{item.templateName}</td>
         <td>{assignuser}</td>
         <td style={{ color: "black" }}>
           <Badge pill bg={bgColor}>
@@ -197,7 +208,10 @@ const Jobs = () => {
                 </div>
               </CardHeader>
               <div style={{ height: "70vh", overflow: "auto" }}>
-                <Table className="align-items-center table-flush mb-5" responsive>
+                <Table
+                  className="align-items-center table-flush mb-5"
+                  responsive
+                >
                   <thead className="thead-light">
                     <tr>
                       <th scope="col">Sno.</th>
@@ -208,15 +222,23 @@ const Jobs = () => {
                       <th scope="col"></th>
                     </tr>
                   </thead>
-                  <tbody style={{
-                    height: "50dvh", overflow:
-                      "auto"
-                  }}>
+                  <tbody
+                    style={{
+                      overflow: "auto",
+                    }}
+                  >
+                    {loading ? placeHolderJobs : ALLJOBS}
 
-                    {loading ? (
-                      placeHolderJobs
-                    ) : (ALLJOBS)}
-
+                    {ALLJOBS.length === 0 && (
+                      <tr>
+                        <td
+                          colSpan="100%"
+                          style={{ textAlign: "center", width: "100%" }}
+                        >
+                          No Jobs Present
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </Table>
               </div>
