@@ -1,6 +1,7 @@
 import React from "react";
 const DataContext = React.createContext({
   allTemplates: [],
+  backendIP : "localhost",
   addToAllTemplate: () => {},
   setAllTemplates: () => {},
   modifyAllTemplate: () => {},
@@ -8,7 +9,8 @@ const DataContext = React.createContext({
   deleteTemplate: () => {},
   deleteFieldTemplate : ()=>{},
   modifyRegionWithUUID : ()=>{},
-  addImageCoordinate : ()=>{}
+  addImageCoordinate : ()=>{},
+  setBackendIP : ()=>{},
 });
 
 export default DataContext;

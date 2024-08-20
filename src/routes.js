@@ -20,6 +20,7 @@ import FolderPickerDirectory from "views/FolderPickerDirectory";
 import AdminJobQueue from "views/AdminJobQueue";
 
 var routes = [
+ 
   {
     path: "/index",
     name: "Dashboard",

@@ -1,5 +1,5 @@
  const url = "https://rb5xhrfq-5289.inc1.devtunnels.ms/";
-// const url = "http://192.168.137.1:81/";
+// const url = "http://localhost:81/";
 //https://28mdpn6d-5289.inc1.devtunnels.ms/swagger/index.html
 
 export const CREATE_USER = url + "UserRegistration";

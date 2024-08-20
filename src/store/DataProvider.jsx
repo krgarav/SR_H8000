@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import DataContext from "./DataContext"; // Assuming you have a DataContext
 import { isEqual } from "lodash";
 
-const initialData = { allTemplates: [] }; // Initial data if localStorage is empty
+const initialData = { allTemplates: [], backendIP: "localhost" }; // Initial data if localStorage is empty
 
 const DataProvider = (props) => {
   // Initialize dataState from localStorage if it exists, otherwise use initialData
@@ -269,8 +269,7 @@ const DataProvider = (props) => {
       skewMarksWindowParameters,
       barcodeData,
       layoutParameters,
-      imageCroppingDTO
-
+      imageCroppingDTO,
     } = regionData;
 
     const imageCoordinates = layoutParameters.imageCoordinates;
@@ -346,7 +345,7 @@ const DataProvider = (props) => {
         printingData: printingData,
         barcodeData: barcodeData,
         layoutParameters: updatedLayoutParameter,
-        imageCroppingDTO:imageCroppingDTO
+        imageCroppingDTO: imageCroppingDTO,
       };
 
       console.log(copiedData);
@@ -659,15 +658,17 @@ const DataProvider = (props) => {
       };
     });
   };
-  const addImageCoordinateWithIndexHandler = (templateIndex, imageCoordinates) => {
+  const addImageCoordinateWithIndexHandler = (
+    templateIndex,
+    imageCoordinates
+  ) => {
     setDataState((prevState) => {
       // Create a deep copy of the current state to avoid direct mutation
       const copiedData = [...prevState.allTemplates];
 
       // If a matching template is found, update its imageCroppingDTO
       if (templateIndex !== -1) {
-        copiedData[templateIndex][0].imageCroppingDTO =
-          imageCoordinates;
+        copiedData[templateIndex][0].imageCroppingDTO = imageCoordinates;
       }
 
       // Return the new state
@@ -689,8 +690,7 @@ const DataProvider = (props) => {
       console.log(templateIndex);
       // If a matching template is found, update its imageCroppingDTO
       if (templateIndex !== -1) {
-        copiedData[templateIndex][0].imageCroppingDTO =
-          imageCoordinates;
+        copiedData[templateIndex][0].imageCroppingDTO = imageCoordinates;
       }
 
       // Return the new state
@@ -784,7 +784,14 @@ const DataProvider = (props) => {
       };
     });
   };
-
+  const setBackendIPHandler = (enteredIP) => {
+    setDataState((prevState) => {
+      return {
+        ...prevState,
+        backendIP: enteredIP,
+      };
+    });
+  };
   const dataContext = {
     allTemplates: dataState.allTemplates,
     setAllTemplates: templateHandler,
@@ -801,7 +808,8 @@ const DataProvider = (props) => {
     addImageCoordinate: addImageCoordinateHandler,
     updateLayoutParameter: updateLayoutParameterHandler,
     updateTemplateParameter: updateTemplateParameterHandler,
-    addImageCoordinateWithIndex:addImageCoordinateWithIndexHandler
+    addImageCoordinateWithIndex: addImageCoordinateWithIndexHandler,
+    setBackendIP: setBackendIPHandler,
   };
 
   return (

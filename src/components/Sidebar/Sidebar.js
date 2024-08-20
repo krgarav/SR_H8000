@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavLink as NavLinkRRD, Link, useLocation } from "react-router-dom";
 // nodejs library to set properties for components
 import { PropTypes } from "prop-types";
@@ -34,11 +33,13 @@ import {
   Row,
   Col,
 } from "reactstrap";
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 var ps;
 
 const Sidebar = (props) => {
   const [collapseOpen, setCollapseOpen] = useState();
+  const sidebarRef = useRef(null);
   // verifies if routeName is the one active (in browser input)
   const location = useLocation().pathname;
   const activeRoute = (routeName) => {
@@ -60,7 +61,6 @@ const Sidebar = (props) => {
           <NavLink
             to={prop.layout + prop.path}
             tag={NavLinkRRD}
-            
             onClick={closeCollapse}
           >
             <i className={prop.icon} />
@@ -84,12 +84,27 @@ const Sidebar = (props) => {
       target: "_blank",
     };
   }
+  // Click outside handler
+  const handleClickOutside = (event) => {
+    if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+      closeCollapse();
+    }
+  };
+  // useEffect(() => {
+  //   // Attach the click event listener when the component mounts
+  //   document.addEventListener('mousedown', handleClickOutside);
 
+  //   // Clean up the event listener on component unmount
+  //   return () => {
+  //     document.removeEventListener('mousedown', handleClickOutside);
+  //   };
+  // }, []);
   return (
     <Navbar
       className="navbar-vertical fixed-left navbar-light bg-white"
       expand="md"
       id="sidenav-main"
+      ref={sidebarRef}
     >
       <Container fluid>
         {/* Toggler */}
@@ -169,9 +184,14 @@ const Sidebar = (props) => {
         {/* Collapse */}
         <Collapse navbar isOpen={collapseOpen}>
           {/* Collapse header */}
-
-
           {/* Form */}
+          <Button
+          className="navbar-toggler"
+          type="button"
+          onClick={toggleCollapse}
+        >
+         <i class="fa-solid fa-xmark"></i> {/* FontAwesome cross icon */}
+        </Button>
           <Form className="mt-4 mb-3 d-md-none">
             <InputGroup className="input-group-rounded input-group-merge">
               <Input
@@ -188,9 +208,7 @@ const Sidebar = (props) => {
             </InputGroup>
           </Form>
           {/* Navigation */}
-          <Nav navbar>{createLinks(routes)}
-
-          </Nav>
+          <Nav navbar>{createLinks(routes)}</Nav>
           {/* Divider */}
           {/* <hr className="my-3" /> */}
           {/* Heading */}

@@ -12,6 +12,7 @@ import AdminLayout from "layouts/Admin.js";
 import Operator from "layouts/Operator";
 import AuthLayout from "layouts/Auth.js";
 import Moderator from "layouts/Moderator";
+import MainLogin from "views/examples/MainLogin";
 const useTokenRedirect = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -55,9 +56,10 @@ const useTokenRedirect = () => {
   }, []);
 };
 const App = () => {
-  useTokenRedirect();
+  // useTokenRedirect();
   return (
     <Routes>
+      <Route path="/" element={<MainLogin/>}/>
       <Route path="/admin/*" element={<AdminLayout />} />
       <Route path="/operator/*" element={<Operator />} />
       <Route path="/moderator/*" element={<Moderator />} />
