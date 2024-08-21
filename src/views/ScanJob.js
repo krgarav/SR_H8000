@@ -35,6 +35,7 @@ import { finishJob } from "helper/job_helper";
 import axios from "axios";
 import { GET_PROCESS_32_PAG_DATA } from "helper/url_helper";
 import { GENERATE_EXCEL } from "helper/url_helper";
+import { getUrls } from "helper/url_helper";
 
 const ScanJob = () => {
   const [count, setCount] = useState(true);
@@ -141,8 +142,10 @@ const ScanJob = () => {
       const userInfo = jwtDecode(token);
 
       const userId = userInfo.UserId;
+      const response = await getUrls();
+      const GetDataURL = await response?.GET_PROCESS_32_PAG_DATA;
       const res = await axios.get(
-        GET_PROCESS_32_PAG_DATA + `?Id=${selectedValue}&UserId=${userId}`
+        GetDataURL + `?Id=${selectedValue}&UserId=${userId}`
       );
       const data = res.data;
       // Check if the data fetch was successful
@@ -233,7 +236,9 @@ const ScanJob = () => {
         setScanning(true);
       }, 6000);
       const response = await scanFiles(selectedValue, userId);
-      const excelgenerate = await axios.get(GENERATE_EXCEL+ `?Id=${selectedValue}&UserId=${userId}`);
+      const response2 = await getUrls();
+      const GetDataURL = response2?.GENERATE_EXCEL;
+      const excelgenerate = await axios.get(GetDataURL+ `?Id=${selectedValue}&UserId=${userId}`);
       console.log(excelgenerate)
       if (!response?.result?.success) {
         toast.error(response?.result?.message);

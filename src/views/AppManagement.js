@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Card,
   CardHeader,
@@ -28,13 +28,23 @@ import SmallHeader from "components/Headers/SmallHeader";
 import DataContext from "store/DataContext";
 import { useNavigate } from "react-router-dom";
 import NormalHeader from "components/Headers/NormalHeader";
+import axios from "axios";
+import { toast } from "react-toastify";
+import getBaseUrl from "services/BackendApi";
 const AppManagement = () => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [baseURL, setBaseURL] = useState("Loading...");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const dataCtx = useContext(DataContext);
   const navigate = useNavigate();
+  useEffect(() => {
+    const fetchUrl = async () => {
+      const URL = await getBaseUrl();
+      setBaseURL(URL);
+    };
+    fetchUrl()
+  }, []);
   const handleSubmit = (event) => {
     event.preventDefault();
     // Here you would typically handle form submission, e.g., call an API
@@ -48,7 +58,14 @@ const AppManagement = () => {
       if (!res) {
         return;
       }
-      localStorage.setItem("backendIP", email); // Save the IP to localStorage
+      const Obj = {
+        backendUrl: email,
+      };
+      const res2 = axios.post("http://localhost/api/config", Obj);
+      if (res2) {
+        toast.success("Changed Ip");
+      }
+      // localStorage.setItem("backendIP", email); // Save the IP to localStorage
       // sessionStorage.setItem("protocol",protocol)
       setTimeout(() => {
         window.location.reload(); // Reload the page
@@ -107,8 +124,8 @@ const AppManagement = () => {
                     {" "}
                     {/* Use xs="auto" to size the column based on its content */}
                     <label className="text-center d-block">
-                      Current App IP ={" "}
-                      {applicationId ? applicationId : "localhost"}
+                      Current App IP ={baseURL}
+                      {/* {applicationId ? applicationId : "localhost"} */}
                     </label>
                   </Col>
                 </Row>

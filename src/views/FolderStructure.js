@@ -14,9 +14,38 @@ import SmallHeader from 'components/Headers/SmallHeader';
 import { Container } from "reactstrap";
 import "../App.css"
 import { MAIN_URL } from 'helper/url_helper';
+import { getUrls } from 'helper/url_helper';
 const Overview = () => {
-    const hostUrl = MAIN_URL;
+    const [hostUrl, setHostUrl] = React.useState("");
+  const [loading, setLoading] = React.useState(true);
 
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getUrls();
+        const GetDataURL = response.MAIN_URL;
+        setHostUrl(GetDataURL);
+      } catch (error) {
+        console.error('Error fetching URLs:', error);
+        // Handle the error appropriately (e.g., show an error message)
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
+
+    if (loading) {
+        return (
+          <div className="loader-container">
+            {/* Add your loader component or spinner here */}
+            <p>Loading...</p>
+          </div>
+        );
+      }
     return (
         <div className="full-height-container">
             <SmallHeader />

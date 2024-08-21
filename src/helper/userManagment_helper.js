@@ -3,10 +3,35 @@ import { post, del, get, put } from "./api_helper"
 import * as url from "./url_helper"
 
 // Create Class
-export const createUser = data => post(url.CREATE_USER, data);
-export const updateUser = data => post(url.UPDATE_USER, data);
-export const removeUser = id => del(url.DELETE_USER + id);
-export const fetchAllUsers = () => get(url.GET_USERS);
-export const getUserRoles = () => get(url.GET_USER_ROLES);
+export const createUser = async (data) => {
+    const urls = await  url.getUrls();
+    return post(urls.CREATE_USER, data);
+  };
+  
+  export const updateUser = async (data) => {
+    const urls = await  url.getUrls();
+    return post(urls.UPDATE_USER, data);
+  };
+  
+  export const removeUser = async (id) => {
+    const urls = await  url.getUrls();
+    return del(`${urls.DELETE_USER}?Id=${id}`);
+  };
+  
+  export const fetchAllUsers = async () => {
+    const urls = await  url.getUrls();
+    return get(urls.GET_USERS);
+  };
+  
+  export const getUserRoles = async () => {
+    const urls = await  url.getUrls();
+    return get(urls.GET_USER_ROLES);
+  };
+  
+  export const login = async (data) => {
+    const urls = await  url.getUrls();
+    return post(urls.LOGIN, data);
+  };
+  
 
-export const login=(data)=>post(url.LOGIN,data);
+  

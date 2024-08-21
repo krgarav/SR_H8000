@@ -22,6 +22,7 @@ import { DELETE_TEMPLATE } from "helper/url_helper";
 import EditImageCropper from "ui/EditImageCropper";
 import LineLoader from "loaders/LineLoader";
 import TextLoader from "loaders/TextLoader";
+import { getUrls } from "../helper/url_helper";
 
 // Function to get values from sessionStorage or provide default
 const getSessionStorageOrDefault = (key, defaultValue) => {
@@ -1231,8 +1232,10 @@ const EditDesignTemplate = () => {
 
     // Create a File object from the Blob
     const csvfile = new File([blob], "data.csv", { type: "text/csv" });
+    const response2 = await getUrls();
+    const GetDataURL = response2?.DELETE_TEMPLATE;
     const deleteTemplat = axios.delete(
-      `${DELETE_TEMPLATE}?Id=${data.templateId}`
+      `${GetDataURL}?Id=${data.templateId}`
     );
     try {
       setLoading(true);

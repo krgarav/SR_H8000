@@ -14,6 +14,8 @@ import AuthLayout from "layouts/Auth.js";
 import Moderator from "layouts/Moderator";
 import MainLogin from "views/examples/MainLogin";
 import IpModal from "ui/IpChange";
+import axios from "axios";
+import { getUrls } from "helper/url_helper";
 const useTokenRedirect = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -67,39 +69,70 @@ const useTokenRedirect = () => {
 const App = () => {
   const [showIpModal, setShowIpModal] = useState(false);
 
-  // useEffect(() => {
-  //   const backendIP = sessionStorage.getItem("backendIP");
-  //   if (!backendIP) {
-  //     setShowIpModal(true); // Show the modal if no backend IP is set
-  //   }
-  // }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response2 = await getUrls();
+        const getUserUrl = response2?.GET_USERS;
 
-  const handleSaveIp = (ip,protocol) => {
+        if (!getUserUrl) {
+          throw new Error('GET_USERS URL is not defined in configuration');
+        }
+
+        // Perform the GET request to fetch user data
+        const getUserResponse = await fetch(getUserUrl);
+
+        if (!getUserResponse.ok) {
+          throw new Error('Failed to fetch user data');
+        }
+
+        const userData = await getUserResponse.json();
+        console.log(userData);
+
+        // Handle successful fetch here
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setShowIpModal(true); // Show the modal or handle the error as needed
+      }
+    };
+
+    fetchData();
+ 
+    // const backendIP = sessionStorage.getItem("backendIP");
+    // if (!backendIP) {
+    //   setShowIpModal(true); // Show the modal if no backend IP is set
+    // }
+  }, []);
+
+  const handleSaveIp = (ip, protocol) => {
     sessionStorage.setItem("backendIP", ip); // Save the IP to localStorage
     // sessionStorage.setItem("protocol",protocol)
+    const Obj = {
+      backendUrl: ip,
+    };
+    const res2 = axios.post("http://localhost/api/config", Obj);
     setTimeout(() => {
       window.location.reload(); // Reload the page
-  }, 400);
+    }, 400);
   };
   useTokenRedirect();
-  return (<>
+  return (
+    <>
+      <IpModal
+        show={showIpModal}
+        onHide={() => setShowIpModal(false)}
+        onSave={handleSaveIp}
+      />
 
-    {/* <IpModal
-      show={showIpModal}
-      onHide={() => setShowIpModal(false)}
-      onSave={handleSaveIp}
-    /> */}
-    
-    <Routes>
-      {/* <Route path="/" element={<MainLogin />} /> */}
-      <Route path="/admin/*" element={<AdminLayout />} />
-      <Route path="/operator/*" element={<Operator />} />
-      <Route path="/moderator/*" element={<Moderator />} />
-      <Route path="/auth/*" element={<AuthLayout />} />
-      <Route path="*" element={<Navigate to="/auth/login" replace />} />
-    </Routes>
-  </>
-
+      <Routes>
+        {/* <Route path="/" element={<MainLogin />} /> */}
+        <Route path="/admin/*" element={<AdminLayout />} />
+        <Route path="/operator/*" element={<Operator />} />
+        <Route path="/moderator/*" element={<Moderator />} />
+        <Route path="/auth/*" element={<AuthLayout />} />
+        <Route path="*" element={<Navigate to="/auth/login" replace />} />
+      </Routes>
+    </>
   );
 };
 

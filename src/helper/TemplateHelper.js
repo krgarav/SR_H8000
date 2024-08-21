@@ -3,18 +3,61 @@ import { post, del, get, put, postWithFormData } from "./api_helper";
 import * as url from "./url_helper";
 
 // Create Class
-export const fetchAllTemplate = () => get(url.GET_AllTEMPLATE);
+export const fetchAllTemplate = async () => {
+  const urls = await   url.getUrls();
+  const endpoint = urls.GET_ALL_TEMPLATE;
+  return await get(endpoint);
+};
+export const createTemplate = async (data) => {
+  const urls = await  url.getUrls();
+  const endpoint = urls.CREATE_TEMPLATE;
+  return await post(endpoint, data);
+};
 
-export const createTemplate = (data) => post(url.CREATE_TEMPLATE, data);
-export const deleteTemplate = (id) => del(`${url.DELETE_TEMPLATE}?Id=${id}`);
-export const getLayoutDataById = (id) => get(`${url.GET_LAYOUT_DATA}?Id=${id}`);
+export const deleteTemplate = async (id) => {
+  const urls = await  url.getUrls();
+  const endpoint = `${urls.DELETE_TEMPLATE}?Id=${id}`;
+  return await del(endpoint);
+};
 
-export const sendFile = (data) => postWithFormData(url.SEND_FILE, data);
-export const getSampleData = () => get(url.GET_SCANNED_IMAGE);
-export const getTemplateImage = (path) =>
-  get(`${url.GET_TEMPLATE_IMAGE}?filePath=${path}`);
-export const getTemplateCsv = (path) =>
-  get(`${url.GET_TEMPLATE_CSV}?csvPath=${path}`);
-export const cancelScan = () => get(url.CANCEL_SCAN);
-export const checkJobStatus = (id) =>
-  get(`${url.CHECK_DELETE_TEMPLATE}?Id=${id}`);
+export const getLayoutDataById = async (id) => {
+  const urls = await  url.getUrls();
+  const endpoint = `${urls.GET_LAYOUT_DATA}?Id=${id}`;
+  return await get(endpoint);
+};
+
+export const sendFile = async (data) => {
+  const urls = await  url.getUrls();
+  const endpoint = urls.SEND_FILE;
+  return await postWithFormData(endpoint, data);
+};
+
+export const getSampleData = async () => {
+  const urls = await  url.getUrls();
+  const endpoint = urls.GET_SCANNED_IMAGE;
+  return await get(endpoint);
+};
+
+export const getTemplateImage = async (path) => {
+  const urls = await  url.getUrls();
+  const endpoint = `${urls.GET_TEMPLATE_IMAGE}?filePath=${path}`;
+  return await get(endpoint);
+};
+
+export const getTemplateCsv = async (path) => {
+  const urls = await  url.getUrls();
+  const endpoint = `${urls.GET_TEMPLATE_CSV}?csvPath=${path}`;
+  return await get(endpoint);
+};
+
+export const cancelScan = async () => {
+  const urls = await  url.getUrls();
+  const endpoint = urls.CANCEL_SCAN;
+  return await get(endpoint);
+};
+
+export const checkJobStatus = async (id) => {
+  const urls = await  url.getUrls();
+  const endpoint = `${urls.CHECK_DELETE_TEMPLATE}?Id=${id}`;
+  return await get(endpoint);
+};

@@ -35,6 +35,7 @@ import { finishJob } from "helper/job_helper";
 import axios from "axios";
 import { GET_PROCESS_32_PAG_DATA } from "helper/url_helper";
 import { GENERATE_EXCEL } from "helper/url_helper";
+import { getUrls } from "helper/url_helper";
 
 const AdminScanJob = () => {
   const [count, setCount] = useState(true);
@@ -61,15 +62,27 @@ const AdminScanJob = () => {
   const [gridHeight, setGridHeight] = useState("350px");
   const [starting, setStarting] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 576);
+  const [proccessUrl, setProcessURL] = useState("");
+
   const gridRef = useRef();
 
   const location = useLocation();
   const navigate = useNavigate();
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await getUrls();
 
+      console.log(response);
+      const GetDataURL = response.GET_PROCESS_32_PAGE_DATA;
+
+      setProcessURL(GetDataURL);
+    };
+    fetchData();
+  }, []);
   useEffect(() => {
     const handleResize = () => setIsSmallScreen(window.innerWidth < 576);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
   useEffect(() => {
     // Calculate 60% of the viewport height
@@ -147,8 +160,12 @@ const AdminScanJob = () => {
 
       const userId = userInfo.UserId;
       // Fetch data based on selected value ID
+      // const response = await getUrls();
+      // console.log(response)
+      // const GetDataURL =  response.GET_PROCESS_32_PAG_DATA;
+      // console.log(GetDataURL)
       const res = await axios.get(
-        GET_PROCESS_32_PAG_DATA + `?Id=${selectedValue}&UserId=${userId}`
+        proccessUrl + `?Id=${selectedValue}&UserId=${userId}`
       );
 
       const data = res.data;
@@ -256,8 +273,11 @@ const AdminScanJob = () => {
         setScanning(true);
       }, 6000);
       const response = await scanFiles(selectedValue, userId);
+      const response2 = await getUrls();
+      const GetDataURL = response2?.GENERATE_EXCEL;
+      console.log(GetDataURL);
       const excelgenerate = await axios.get(
-        GENERATE_EXCEL + `?Id=${selectedValue}&UserId=${userId}`
+        GetDataURL + `?Id=${selectedValue}&UserId=${userId}`
       );
       console.log(excelgenerate);
       console.log(response);
@@ -380,8 +400,8 @@ const AdminScanJob = () => {
       <div
         style={{
           position: "absolute",
-          left: isSmallScreen?"30%":"40%",
-          top: isSmallScreen?"10px":"20px",
+          left: isSmallScreen ? "30%" : "40%",
+          top: isSmallScreen ? "10px" : "20px",
           zIndex: "999",
         }}
       >
@@ -389,7 +409,7 @@ const AdminScanJob = () => {
           Complete Job
         </Button>
       </div>
-      <Container className={isSmallScreen?"mt--6":"mt--7"} fluid>
+      <Container className={isSmallScreen ? "mt--6" : "mt--7"} fluid>
         <br />
 
         <div className="control-pane">

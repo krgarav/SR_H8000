@@ -1,10 +1,27 @@
-
-const getBaseUrl = () => {
-    const backendIP = localStorage.getItem("backendIP");
-    const protocol =sessionStorage.getItem("protocol");
-    // const port =sessionStorage.getItem("port")
-    return backendIP ? `http://${backendIP}:81/` : "http://localhost:81/";
-  };
+// Function to fetch config.json and get the base URL
+const getBaseUrl =  () => {
+  const fetchDetails = async()=>{
+    try {
+      // Fetch the config.json file
+      const response = await fetch("/config.json");
   
-
-  export default getBaseUrl
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+  
+      // Parse the JSON response
+      const config = await response.json();
+  
+      // Extract configuration values
+      const backendIP = await config.backendUrl
+  console.log(backendIP)
+      // Return the base URL based on the config
+      return `http://${backendIP}/`;
+    } catch (error) {
+      console.error("Error fetching config:", error);
+      return "http://localhost:81/";
+    }
+  }
+ return fetchDetails();
+};
+export default getBaseUrl;
