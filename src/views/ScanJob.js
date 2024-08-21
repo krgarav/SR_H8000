@@ -143,7 +143,7 @@ const ScanJob = () => {
 
       const userId = userInfo.UserId;
       const response = await getUrls();
-      const GetDataURL = await response?.GET_PROCESS_32_PAG_DATA;
+      const GetDataURL = await response?.GET_PROCESS_32_PAGE_DATA;
       const res = await axios.get(
         GetDataURL + `?Id=${selectedValue}&UserId=${userId}`
       );
@@ -221,6 +221,8 @@ const ScanJob = () => {
       alert("Choose Template");
       return;
     }
+try {
+  
 
     const token = localStorage.getItem("token");
     if (token) {
@@ -257,6 +259,8 @@ const ScanJob = () => {
         // toast.error("Request Timeout");
         setScanning(false);
       }
+    }} catch (error) {
+      console.log(error);
     }
   };
 

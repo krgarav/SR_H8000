@@ -255,6 +255,7 @@ const AdminScanJob = () => {
       alert("Choose Template");
       return;
     }
+    try{
     const token = localStorage.getItem("token");
     if (token) {
       const userInfo = jwtDecode(token);
@@ -298,6 +299,8 @@ const AdminScanJob = () => {
         // toast.error("Request Timeout");
         setScanning(false);
       }
+    }} catch (error) {
+      console.log(error);
     }
   };
 
