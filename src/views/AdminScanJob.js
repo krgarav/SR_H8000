@@ -301,7 +301,7 @@ const AdminScanJob = () => {
       refreshScanner();
     } catch (error) {
       console.log(error);
-      toast.error("Error in Refresh");
+      toast.error("Error in Refresh Occured");
     }
   };
 
