@@ -32,13 +32,6 @@ var moderatorRoute = [
     component: <Jobs />,
     layout: "/moderator",
   },
-  // {
-  //     path: "/32-page-booklet",
-  //     name: "Scan Template",
-  //     icon: "ni ni-books text-success",
-  //     component: <Booklet32Page />,
-  //     layout: "/moderator",
-  // },
   {
     path: "/icons",
     name: "Moderator Job Queue",

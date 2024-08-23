@@ -11,10 +11,8 @@ import {
   UncontrolledDropdown,
   DropdownToggle,
   Table,
-  Container,
 } from "reactstrap";
 import classes from "./ImageCropper.module.css";
-import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 import DataContext from "store/DataContext";
 const ImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
@@ -128,7 +126,7 @@ const ImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
     });
     // setModalShow(false)
   };
-  const editHandler = () => {};
+  const editHandler = () => { };
 
   const deleteHandler = (index) => {
     console.log(index);
@@ -204,144 +202,6 @@ const ImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
 
   return (
     <>
-      <div className="justify-content-center">
-        {/* <Cropper
-          src={imageSrc}
-          style={{ height: 300, width: "100%" }}
-          initialAspectRatio={1}
-          guides={true}
-          ref={cropperRef}
-          // cropend={() => getCropData()}
-          viewMode={1}
-          minCropBoxHeight={10}
-          minCropBoxWidth={10}
-          background={true}
-          responsive={true}
-          // autoCropArea={0}
-          checkOrientation={false}
-          rotatable={true}
-        // autoCrop={false}
-        /> */}
-
-        {/* {cropData && (
-          <Modal
-            show={modalShow}
-            size="sm"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-          >
-            <Modal.Header>
-              <Modal.Title id="contained-modal-title-vcenter">
-                Image Detail
-              </Modal.Title>
-            </Modal.Header>
-            <Modal.Body style={{ height: "60vh" }}>
-              <Row>
-                <label htmlFor="imageName" className="col-md-4 ">
-                  Image Name:
-                </label>
-                <div className="col-md-8">
-                  <input
-                    id="imageName"
-                    type="text"
-                    placeholder="Enter Image Name"
-                    className="form-control"
-                    onChange={(e) => setImageName(e.target.value)}
-                  />
-                </div>
-              </Row>
-              <Row>
-                <label htmlFor="croppingSide" className="col-md-4">
-                  Cropping Side:
-                </label>
-                <div className="col-md-8">
-                  <input
-                    id="croppingSide"
-                    type="text"
-                    placeholder="Enter Cropping Side"
-                    className="form-control"
-                    onChange={(e) => setCroppingSide(e.target.value)}
-                  />
-                </div>
-              </Row>
-              <Row className="">
-                <div className="col-12">
-                  <img
-                    src={cropData.croppedImage}
-                    alt="Cropped"
-                    className="img-fluid"
-                  />
-                </div>
-              </Row>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button
-                type="button"
-                variant="danger"
-                onClick={() => setModalShow(false)}
-                className="waves-effect waves-light"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                variant="success"
-                onClick={saveHandler2}
-                // onClick={() => setModalShow(false)}
-                className="waves-effect waves-light"
-              >
-                Save
-              </Button>
-            </Modal.Footer>
-          </Modal>
-        )} */}
-
-        {/* {cropData &&
-        <Row>
-          <label
-            htmlFor="example-text-input"
-            className="col-md-2  col-form-label"
-          >
-            Image Name:
-          </label>
-          <div className="col-md-2">
-            <input
-              id="imageArea"
-              type="text"
-              placeholder="Enter Image Name"
-              className="form-control"
-            />
-          </div>
-          <label
-            htmlFor="example-text-input"
-            className="col-md-2 "
-          >
-            Cropping Side:
-          </label>
-          <div className="col-md-2">
-            <input
-              id="imageArea"
-              type="text"
-              placeholder="Enter Image Name"
-              className="form-control"
-            />
-          </div>
-          <div className="col-md-4">
-            <Button>Select Coordinate</Button>
-          </div>
-
-
-        </Row>} */}
-        {/* {cropData && (
-        <div>
-          <h3>Cropped Image</h3>
-          <img src={cropData.croppedImage} alt="Cropped" />
-          <h3>Coordinates</h3>
-          <pre>{JSON.stringify(cropData.coordinates, null, 2)}</pre>
-        </div>
-      )} */}
-      </div>
-
       <Card className="shadow">
         <CardHeader className="border-0">
           <div className="d-flex justify-content-between">
@@ -361,10 +221,11 @@ const ImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
           <Table className="align-items-center table-flush mb-5" responsive>
             <thead className="thead-light">
               <tr>
-                <th scope="col">SL no.</th>
-                <th scope="col">Image Name</th>
-                <th scope="col">Cropping Area</th>
-                <th scope="col">Coordinate</th>
+                <th scope="col" className="text-center">SL no.</th>
+                <th scope="col" className="text-center">Image Name</th>
+                <th scope="col" className="text-center">Cropping Area</th>
+                <th scope="col" className="text-center">Coordinate</th>
+                <th scope="col" className="text-center"></th>
               </tr>
             </thead>
             <tbody style={{ textAlign: "center" }}>
@@ -381,7 +242,7 @@ const ImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
           </Table>
         </div>
       </Card>
-{/* ****************** modal for showing cropping images *************** */ }
+      {/* ****************** modal for showing cropping images *************** */}
       <Modal
         show={show}
         fullscreen={true}
@@ -401,7 +262,7 @@ const ImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
                   placeholder="Enter Image Name"
                   className="form-control"
                   onChange={(e) => setImageName(e.target.value)}
-                  autoComplete="false"
+                  autoComplete="off"
                 />
               </div>
             </Row>
@@ -495,7 +356,7 @@ const ImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
           </Button>
         </Modal.Footer>
       </Modal>
-{/* ******************************************************************** */ }
+      {/* ******************************************************************** */}
     </>
   );
 };

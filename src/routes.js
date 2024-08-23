@@ -52,20 +52,7 @@ var routes = [
     component: <UserManagment />,
     layout: "/admin",
   },
-  // {
-  //   path: "/24-page-booklet",
-  //   name: "24 page Booklet",
-  //   icon: "ni ni-book-bookmark text-orange",
-  //   component: <Booklet24Page />,
-  //   layout: "/admin",
-  // },
-  // {
-  //   path: "/32-page-booklet",
-  //   name: "Scan Template",
-  //   icon: "ni ni-books text-success",
-  //   component: <Booklet32Page />,
-  //   layout: "/admin",
-  // },
+
   {
     path: "/icons",
     name: "Admin Job Queue",
@@ -73,13 +60,6 @@ var routes = [
     component: <AdminJobQueue />,
     layout: "/admin",
   },
-  // {
-  //   path: "/setting",
-  //   name: "Settings",
-  //   icon: "ni ni-settings-gear-65 text-primary",
-  //   component: <FolderPickerDirectory />,
-  //   layout: "/admin",
-  // },
   {
     path: "/server-folder",
     name: "Folder Management",

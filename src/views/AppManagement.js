@@ -24,7 +24,6 @@ import {
   Input,
   CardBody,
 } from "reactstrap";
-import SmallHeader from "components/Headers/SmallHeader";
 import DataContext from "store/DataContext";
 import { useNavigate } from "react-router-dom";
 import NormalHeader from "components/Headers/NormalHeader";
@@ -35,7 +34,6 @@ const AppManagement = () => {
   const [email, setEmail] = useState("");
   const [baseURL, setBaseURL] = useState("Loading...");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const dataCtx = useContext(DataContext);
   const navigate = useNavigate();
   useEffect(() => {
@@ -45,37 +43,42 @@ const AppManagement = () => {
     };
     fetchUrl()
   }, []);
-  const handleSubmit = (event) => {
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Here you would typically handle form submission, e.g., call an API
+
     if (email === "") {
       setError("Entered IP cannot be blank.");
-    } else {
-      //   console.log(email);
-      const res = window.confirm(
-        `Are You sure you want to connect to ${email} IP`
-      );
-      if (!res) {
-        return;
-      }
-      const Obj = {
-        backendUrl: email,
-      };
-      const res2 = axios.post("http://localhost/api/config", Obj);
+      return;
+    }
+
+    const res = window.confirm(`Are you sure you want to connect to ${email} IP?`);
+    if (!res) {
+      return;
+    }
+    const Obj = {
+      backendUrl: email,
+    };
+
+    try {
+      const res2 = await axios.post("http://localhost/api/config", Obj);
+      console.log(res2);
+
       if (res2) {
-        toast.success("Changed Ip");
+        toast.success("Changed IP");
       }
-      // localStorage.setItem("backendIP", email); // Save the IP to localStorage
-      // sessionStorage.setItem("protocol",protocol)
+
       setTimeout(() => {
         window.location.reload(); // Reload the page
       }, 400);
-      //   dataCtx.setBackendIP(email);
-      //   navigate("/auth/login");
-      //   setSuccess("Login successful!");
+    } catch (error) {
+      // Handle error here
+      toast.error("Cannot set IP");
+      console.error("There was an error submitting the form:", error);
+      setError("Failed to change IP. Please try again.");
     }
   };
-  const applicationId = localStorage.getItem("backendIP");
+
   return (
     <>
       <NormalHeader />
@@ -86,13 +89,6 @@ const AppManagement = () => {
               <CardHeader className="border-0">
                 <div className="d-flex justify-content-between">
                   <h3 className="mt-2">Set Application IP</h3>
-                  {/* <Button
-                    color="primary"
-                    type="button"
-                    // onClick={() => setModalShow(true)}
-                  >
-                    Add Job
-                  </Button> */}
                 </div>
               </CardHeader>
               <CardBody>
@@ -121,11 +117,9 @@ const AppManagement = () => {
               <CardFooter>
                 <Row className="justify-content-center mb-3">
                   <Col xs="auto">
-                    {" "}
                     {/* Use xs="auto" to size the column based on its content */}
                     <label className="text-center d-block">
                       Current App IP ={baseURL}
-                      {/* {applicationId ? applicationId : "localhost"} */}
                     </label>
                   </Col>
                 </Row>

@@ -178,9 +178,6 @@ const EditImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
                 <i className="fas fa-ellipsis-v" />
               </DropdownToggle>
               <DropdownMenu className="dropdown-menu-arrow" right>
-                <DropdownItem onClick={() => editHandler(index)}>
-                  Edit
-                </DropdownItem>
                 <DropdownItem
                   style={{ color: "red" }}
                   onClick={() => deleteHandler(index)}
@@ -354,10 +351,11 @@ const EditImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
           <Table className="align-items-center table-flush mb-5" responsive>
             <thead className="thead-light">
               <tr>
-                <th scope="col">SL no.</th>
-                <th scope="col">Image Name</th>
-                <th scope="col">Cropping Area</th>
-                <th scope="col">Coordinate</th>
+                <th scope="col" className="text-center">SL no.</th>
+                <th scope="col" className="text-center">Image Name</th>
+                <th scope="col" className="text-center">Cropping Area</th>
+                <th scope="col" className="text-center">Coordinate</th>
+                <th scope="col"className="text-center"></th>
               </tr>
             </thead>
             <tbody style={{ textAlign: "center" }}>
@@ -394,7 +392,7 @@ const EditImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
                   placeholder="Enter Image Name"
                   className="form-control"
                   onChange={(e) => setImageName(e.target.value)}
-                  autoComplete="false"
+                  autoComplete="off"
                 />
               </div>
             </Row>

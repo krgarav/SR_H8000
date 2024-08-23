@@ -98,19 +98,16 @@ const App = () => {
 
     fetchData();
  
-    // const backendIP = sessionStorage.getItem("backendIP");
-    // if (!backendIP) {
-    //   setShowIpModal(true); // Show the modal if no backend IP is set
-    // }
+   
   }, []);
 
   const handleSaveIp = (ip, protocol) => {
-    sessionStorage.setItem("backendIP", ip); // Save the IP to localStorage
-    // sessionStorage.setItem("protocol",protocol)
+  
     const Obj = {
       backendUrl: ip,
     };
     const res2 = axios.post("http://localhost/api/config", Obj);
+    
     setTimeout(() => {
       window.location.reload(); // Reload the page
     }, 400);
