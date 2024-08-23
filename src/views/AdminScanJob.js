@@ -273,6 +273,8 @@ const AdminScanJob = () => {
       setTimeout(async () => {
         setScanning(true);
       }, 6000);
+      const respons = await getUrls();
+
       const response = await scanFiles(selectedValue, userId);
       const response2 = await getUrls();
       const GetDataURL = response2?.GENERATE_EXCEL;

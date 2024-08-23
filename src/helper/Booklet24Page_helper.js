@@ -11,7 +11,7 @@ export const fetchProcessData = async () => {
   
   export const scanFiles = async () => {
     const urls = await  url.getUrls();
-    return post(urls.SCAN_24_PAGE_FILES);
+    return post(urls.SCAN_24_PAGE_FILES );
   };
   
   export const refreshScanner = async () => {

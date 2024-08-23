@@ -260,7 +260,7 @@ const DataProvider = (props) => {
   //   };
 
   const addFieldToTemplateHandler = (regionData, index) => {
-    console.log("called");
+    console.log(regionData);
     const {
       formFieldWindowParameters,
       imageData,

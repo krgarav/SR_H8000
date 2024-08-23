@@ -86,13 +86,13 @@ const AppManagement = () => {
               <CardHeader className="border-0">
                 <div className="d-flex justify-content-between">
                   <h3 className="mt-2">Set Application IP</h3>
-                  <Button
+                  {/* <Button
                     color="primary"
                     type="button"
                     // onClick={() => setModalShow(true)}
                   >
                     Add Job
-                  </Button>
+                  </Button> */}
                 </div>
               </CardHeader>
               <CardBody>

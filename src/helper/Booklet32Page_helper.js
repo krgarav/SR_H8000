@@ -9,9 +9,9 @@ export const fetchProcessData = async () => {
   return get(urls.GET_PROCESS_24_PAGE_DATA);
 };
 
-export const scanFiles = async () => {
+export const scanFiles = async (selectedValue,userId) => {
   const urls = await  url.getUrls();
-  return post(urls.SCAN_24_PAGE_FILES);
+  return post(`${urls.SCAN_FILES}?Id=${selectedValue}&UserId=${userId}`);
 };
 
 export const refreshScanner = async () => {

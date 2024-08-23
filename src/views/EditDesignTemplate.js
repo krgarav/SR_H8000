@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Modal, Button, Col, Spinner, Badge } from "react-bootstrap";
 import { Row } from "reactstrap";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -23,6 +23,9 @@ import EditImageCropper from "ui/EditImageCropper";
 import LineLoader from "loaders/LineLoader";
 import TextLoader from "loaders/TextLoader";
 import { getUrls } from "../helper/url_helper";
+import { validateFormField } from "data/errorData";
+import { validateSkewField } from "data/errorData";
+import { validateIdField } from "data/errorData";
 
 // Function to get values from sessionStorage or provide default
 const getSessionStorageOrDefault = (key, defaultValue) => {
@@ -44,6 +47,10 @@ const getSessionStorageOrDefault = (key, defaultValue) => {
 };
 
 const EditDesignTemplate = () => {
+  const [draggingIndex, setDraggingIndex] = useState(null);
+  const [dragStart2, setDragStart2] = useState({ x: 0, y: 0 });
+  const [dragOffset, setDragOffset] = useState({ left: 0, top: 0 });
+  const [copiedCoordinates, setCopiedCoordinates] = useState([]);
   const [selected, setSelected] = useState({});
   const [selection, setSelection] = useState(null);
   const [dragStart, setDragStart] = useState(null);
@@ -99,7 +106,6 @@ const EditDesignTemplate = () => {
   const state = location.state || {};
   const navigate = useNavigate();
   const [sizes, setSizes] = useState({});
-  console.log(sizes);
   const [detailLoader, setDetailLoader] = useState(false);
   const [data, setData] = useState(() => ({
     totalColumns: getSessionStorageOrDefault(
@@ -130,27 +136,6 @@ const EditDesignTemplate = () => {
   const numRows = data.timingMarks;
   const numCols = data.totalColumns;
 
-  const handleDragStop = (e, d) => {
-    setPosition((prev) => ({ ...prev, x: d.x, y: d.y }));
-  };
-
-  const handleResizeStop = (e, direction, ref, delta, position) => {
-    setPosition({
-      x: position.x,
-      y: position.y,
-      width: ref.style.width.replace("px", ""),
-      height: ref.style.height.replace("px", ""),
-    });
-  };
-  const toggleSelection = (row, col) => {
-    const key = `${row},${col}`;
-    setSelected((prev) => {
-      const newState = { ...prev, [key]: !prev[key] };
-
-      return newState;
-    });
-  };
-
   // Function to fetch data from localStorage
   const fetchDataFromLocalStorage = () => {
     setData((item) => {
@@ -169,7 +154,36 @@ const EditDesignTemplate = () => {
       };
     });
   };
+ // **************************PREVENT FROM RELOADING*********************
+ useEffect(() => {
+  const handleBeforeUnload = (event) => {
+    const confirmationMessage =
+      "Are you sure you want to leave this page? All unsaved data will be lost.";
+    event.returnValue = confirmationMessage; // Standard for most browsers
+    return confirmationMessage; // Required for some browsers
+  };
 
+  const handleNavigation = (event) => {
+    if (
+      event.type === "POP" &&
+      !window.confirm(
+        "Are you sure you want to leave this page? All unsaved data will be lost."
+      )
+    ) {
+      navigate(location.pathname); // Navigate back to the current page
+    }
+  };
+
+  window.addEventListener("beforeunload", handleBeforeUnload);
+  window.addEventListener("popstate", handleNavigation);
+
+  return () => {
+    window.removeEventListener("beforeunload", handleBeforeUnload);
+    window.removeEventListener("popstate", handleNavigation);
+  };
+}, [navigate, location.pathname]);
+
+// *****************************************************************
   useEffect(() => {
     if (!detailPage) {
       setTimeout(() => {
@@ -177,6 +191,7 @@ const EditDesignTemplate = () => {
       }, [2000]);
     }
   }, [detailPage]);
+
   useEffect(() => {
     const idFieldCount = selectedCoordinates.filter(
       (item) => item.fieldType === "idField"
@@ -208,36 +223,7 @@ const EditDesignTemplate = () => {
     }
   }, [location.state]);
 
-  // **************************PREVENT FROM RELOADING*********************
-  useEffect(() => {
-    const handleBeforeUnload = (event) => {
-      const confirmationMessage =
-        "Are you sure you want to leave this page? All unsaved data will be lost.";
-      event.returnValue = confirmationMessage; // Standard for most browsers
-      return confirmationMessage; // Required for some browsers
-    };
-
-    const handleNavigation = (event) => {
-      if (
-        event.type === "POP" &&
-        !window.confirm(
-          "Are you sure you want to leave this page? All unsaved data will be lost."
-        )
-      ) {
-        navigate(location.pathname); // Navigate back to the current page
-      }
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    window.addEventListener("popstate", handleNavigation);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("popstate", handleNavigation);
-    };
-  }, [navigate, location.pathname]);
-
-  // *****************************************************************
+ 
   useEffect(() => {
     setStartRowInput(selection?.startRow + 1);
     setEndRowInput(selection?.endRow + 1);
@@ -459,7 +445,9 @@ const EditDesignTemplate = () => {
     const runandupdate = async () => {
       setDetailLoader(true);
       const res = await fetchDetails();
-      dataCtx.addFieldToTemplate(res, data.templateIndex);
+      if (res) {
+        dataCtx.addFieldToTemplate(res, data.templateIndex);
+      }
       setDetailLoader(false);
     };
     runandupdate();
@@ -544,20 +532,6 @@ const EditDesignTemplate = () => {
 
     setDragStart({ row, col });
   };
-  // const handleMouseMove = (e) => {
-  //     if (!e.buttons || !dragStart) return;
-  //     const boundingRect = imageRef.current.getBoundingClientRect();
-  //     const col = Math.floor((e.clientX - boundingRect.left) / (boundingRect.width / numCols));
-  //     const row = Math.floor((e.clientY - boundingRect.top) / (boundingRect.height / numRows));
-  //     setSelection({
-  //         startRow: Math.min(dragStart.row, row),
-  //         startCol: Math.min(dragStart.col, col),
-  //         endRow: Math.max(dragStart.row, row),
-  //         endCol: Math.max(dragStart.col, col),
-  //     });
-
-  //     console.log(selection);
-  // };
 
   const handleMouseMove = (e) => {
     if (!e.buttons || !dragStart) return;
@@ -598,75 +572,6 @@ const EditDesignTemplate = () => {
     setModalUpdate(false);
   };
 
-  const validateFormField = () => {
-    const errors = {
-      name: "Name Field can not be empty",
-      multiple: "Please select multiple",
-      blank: "Please select blank",
-      windowNgOption: "Please select window Ng",
-      minimumMark: "Minimum mark cannot be empty",
-      maximumMark: "Maximum mark cannot be empty",
-      noInRow: "Total number in row cannot be empty",
-      noOfStepInRow: "Total number of step in a row cannot be empty",
-      noInCol: "Total number in col cannot be empty",
-      noOfStepInCol: "Total number of step in a col cannot be empty",
-      readingDirectionOption: "Please select reading direction",
-      type: "Please select type",
-      option: "Please select option",
-      numberOfField: "Total field cannot be empty",
-      fieldType: "Please select field type",
-    };
-
-    for (let [field, errorMsg] of Object.entries(errors)) {
-      if (!eval(field)) {
-        toast.error(errorMsg);
-        return false;
-      }
-    }
-    return true;
-  };
-
-  const validateSkewField = () => {
-    const errors = {
-      name: "Name Field can not be empty",
-      windowNgOption: "Please select window Ng",
-      minimumMark: "Minimum mark cannot be empty",
-      maximumMark: "Maximum mark cannot be empty",
-      skewoption: "Please select the skew mark position",
-      noInRow: "Total number in row cannot be empty",
-      noOfStepInRow: "Total number of step in a row cannot be empty",
-      noInCol: "Total number in col cannot be empty",
-      noOfStepInCol: "Total number of step in a col cannot be empty",
-      readingDirectionOption: "Please select reading direction",
-      type: "Please select type",
-      option: "Please select option",
-    };
-
-    for (let [field, errorMsg] of Object.entries(errors)) {
-      if (!eval(field)) {
-        toast.error(errorMsg);
-        return false;
-      }
-    }
-    return true;
-  };
-  const validateIdField = () => {
-    const errors = {
-      noInRow: "Total number in row cannot be empty",
-      noOfStepInRow: "Total number of step in a row cannot be empty",
-      noInCol: "Total number in col cannot be empty",
-      noOfStepInCol: "Total number of step in a col cannot be empty",
-      readingDirectionOption: "Please select reading direction",
-    };
-
-    for (let [field, errorMsg] of Object.entries(errors)) {
-      if (!eval(field)) {
-        toast.error(errorMsg);
-        return false;
-      }
-    }
-    return true;
-  };
   const handleSave = () => {
     if (
       selectedFieldType === "formField" ||
@@ -700,8 +605,6 @@ const EditDesignTemplate = () => {
     let newData = {};
     let selectedWindowName = "";
     const layoutData = layoutFieldData.layoutParameters;
-    console.log(layoutData);
-    // return;
     if (selectedFieldType === "idField") {
       selectedWindowName = "Id Field";
       newData = {
@@ -752,7 +655,6 @@ const EditDesignTemplate = () => {
         iMaximumMarks: +maximumMark,
         skewMark: +skewoption,
         iType: type,
-        // imageStructureData: position,
       };
     } else {
       selectedWindowName = name;
@@ -1232,11 +1134,15 @@ const EditDesignTemplate = () => {
 
     // Create a File object from the Blob
     const csvfile = new File([blob], "data.csv", { type: "text/csv" });
-    const response2 = await getUrls();
-    const GetDataURL = response2?.DELETE_TEMPLATE;
-    const deleteTemplat = axios.delete(
-      `${GetDataURL}?Id=${data.templateId}`
-    );
+    try {
+      const response2 = await getUrls();
+      const GetDataURL = response2.DELETE_TEMPLATE;
+
+      const deleteTemplat = axios.delete(`${GetDataURL}?Id=${data.templateId}`);
+    } catch (error) {
+      console.log(error);
+    }
+
     try {
       setLoading(true);
       const res = await createTemplate(fullRequestData);
@@ -1271,6 +1177,12 @@ const EditDesignTemplate = () => {
   const handleImage = (images) => {
     setImagesSelectedCount(images.length);
   };
+  const handleMouseDown2 = useCallback((index, e) => {
+    const rect = divRefs.current[index].getBoundingClientRect();
+    setDraggingIndex(index);
+    setDragStart2({ x: e.clientX, y: e.clientY });
+    setDragOffset({ left: e.clientX - rect.left, top: e.clientY - rect.top });
+  }, []);
   return (
     <>
       <div>
@@ -1293,7 +1205,7 @@ const EditDesignTemplate = () => {
             pointerEvents: "auto", // Make the overlay not clickable
           }}
         >
-      <div style={{height:"50%"}}>
+          <div style={{ height: "50%" }}>
             <TextLoader message={"Loading Data, Please wait..."} />
           </div>
         </div>
@@ -1314,7 +1226,7 @@ const EditDesignTemplate = () => {
             pointerEvents: "auto", // Make the overlay not clickable
           }}
         >
-        <div style={{height:"50%"}}>
+          <div style={{ height: "50%" }}>
             <TextLoader message={"Updating, Please wait..."} />
           </div>
         </div>
@@ -1404,31 +1316,6 @@ const EditDesignTemplate = () => {
         </Button>
         <div className="main-container">
           <div className="containers">
-            {/* <div id="imagecontainer" className={classes.img}>
-                        <Rnd
-                            default={{
-                                x: 0,
-                                y: 0,
-                                width: 400,
-                                height: 400,
-                            }}
-                            minWidth={100}
-                            minHeight={100}
-                            position={{ x: position?.x, y: position?.y }}
-                            size={{ width: position?.width, height: position?.height }}
-                            onDragStop={handleDragStop}
-                            onResizeStop={handleResizeStop}
-                        //   bounds={null}
-
-                        >
-                            <img
-                                src={data.templateImagePath}
-                                className={`${classes["object-contain"]} ${classes["draggable-resizable-image"]} rounded`}
-                                alt="omr sheet"
-                                id="omr-style-sheet"
-                            />
-                        </Rnd>
-                    </div> */}
             <div className="d-flex">
               <div style={{ marginRight: "1rem" }}>
                 <div className="top"></div>
@@ -1466,31 +1353,6 @@ const EditDesignTemplate = () => {
                     // width:"101%"
                     // overflowY: "auto",
                   }}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                  
                 >
                   <div
                     className="grid"
@@ -1551,7 +1413,7 @@ const EditDesignTemplate = () => {
                         style={{
                           border: "3px solid #007bff",
                           position: "absolute",
-                           overflow:"hidden",
+                          overflow: "hidden",
                           left: `${
                             data.startCol *
                               (imageRef.current.getBoundingClientRect().width /
@@ -1576,6 +1438,7 @@ const EditDesignTemplate = () => {
                           }px`,
                         }}
                         onClick={(e) => e.stopPropagation()}
+                        // onMouseDown={(e) => handleMouseDown2(index, e)}
                       >
                         <div
                           className="d-flex justify-content-between align-items-center bg-dark text-white p-1"
@@ -1583,9 +1446,9 @@ const EditDesignTemplate = () => {
                             opacity: 0.8,
                             fontSize: "12px",
                             position: "relative",
-                            overflow:"hidden"
+                            overflow: "hidden",
                           }}
-                          onClick={(e) => e.stopPropagation()} 
+                          onClick={(e) => e.stopPropagation()}
                         >
                           {sizes[index] ? (
                             <span>
@@ -1677,88 +1540,91 @@ const EditDesignTemplate = () => {
             id="contained-modal-title-vcenter"
             style={{ width: "100vw" }}
           >
-           <h2 className="text-center">
+            <h2 className="text-center">
               {!modalUpdate ? "Choose field type" : selectedFieldType}
             </h2>
             <br />
             {!modalUpdate && (
-            <Row className="mb-2">
-              <label
-                htmlFor="example-text-input"
-                className="col-md-2 col-form-label"
-              ></label>
-              <Col md={2} className="d-flex align-items-center">
-                <label htmlFor="formField" className="mr-2 mb-0 field-label">
-                  Form :{" "}
-                </label>
-                <input
-                  id="formField"
-                  type="radio"
-                  name="fieldType"
-                  value="formField"
-                  checked={selectedFieldType === "formField"}
-                  onChange={handleRadioChange}
-                  className=" field-label"
-                />
-              </Col>
-              <Col md={2} className="d-flex align-items-center">
-                <label htmlFor="fieldType" className="mr-2 mb-0 field-label">
-                  Question :{" "}
-                </label>
-                <input
-                  id="fieldType"
-                  type="radio"
-                  name="fieldType"
-                  value="questionField"
-                  checked={selectedFieldType === "questionField"}
-                  onChange={handleRadioChange}
-                  className=" field-label"
-                />
-              </Col>
-              <Col md={3} className="d-flex align-items-center">
+              <Row className="mb-2">
                 <label
-                  htmlFor="skewMarkField"
-                  className="mr-2 mb-0 field-label"
-                >
-                  Skew Mark:
-                </label>
-                <input
-                  id="skewMarkField"
-                  type="radio"
-                  name="fieldType"
-                  value="skewMarkField"
-                  checked={selectedFieldType === "skewMarkField"}
-                  onChange={handleRadioChange}
-                  className=" field-label"
-                />
-              </Col>
-              <Col md={2} className="d-flex align-items-center">
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                  <div>
-                    <label htmlFor="idField" className="mr-2 mb-0 field-label">
-                      ID Mark :
-                    </label>
-                    <input
-                      id="idField"
-                      type="radio"
-                      name="fieldType"
-                      value="idField"
-                      checked={selectedFieldType === "idField"}
-                      onChange={handleRadioChange}
-                      className="field-label"
-                      disabled={idSelectionCount > 0}
-                    />
-                  </div>
-                  {idSelectionCount > 0 && (
+                  htmlFor="example-text-input"
+                  className="col-md-2 col-form-label"
+                ></label>
+                <Col md={2} className="d-flex align-items-center">
+                  <label htmlFor="formField" className="mr-2 mb-0 field-label">
+                    Form :{" "}
+                  </label>
+                  <input
+                    id="formField"
+                    type="radio"
+                    name="fieldType"
+                    value="formField"
+                    checked={selectedFieldType === "formField"}
+                    onChange={handleRadioChange}
+                    className=" field-label"
+                  />
+                </Col>
+                <Col md={2} className="d-flex align-items-center">
+                  <label htmlFor="fieldType" className="mr-2 mb-0 field-label">
+                    Question :{" "}
+                  </label>
+                  <input
+                    id="fieldType"
+                    type="radio"
+                    name="fieldType"
+                    value="questionField"
+                    checked={selectedFieldType === "questionField"}
+                    onChange={handleRadioChange}
+                    className=" field-label"
+                  />
+                </Col>
+                <Col md={3} className="d-flex align-items-center">
+                  <label
+                    htmlFor="skewMarkField"
+                    className="mr-2 mb-0 field-label"
+                  >
+                    Skew Mark:
+                  </label>
+                  <input
+                    id="skewMarkField"
+                    type="radio"
+                    name="fieldType"
+                    value="skewMarkField"
+                    checked={selectedFieldType === "skewMarkField"}
+                    onChange={handleRadioChange}
+                    className=" field-label"
+                  />
+                </Col>
+                <Col md={2} className="d-flex align-items-center">
+                  <div style={{ display: "flex", flexDirection: "column" }}>
                     <div>
-                      <small style={{ color: "orangered" }}>
-                        already selected
-                      </small>
+                      <label
+                        htmlFor="idField"
+                        className="mr-2 mb-0 field-label"
+                      >
+                        ID Mark :
+                      </label>
+                      <input
+                        id="idField"
+                        type="radio"
+                        name="fieldType"
+                        value="idField"
+                        checked={selectedFieldType === "idField"}
+                        onChange={handleRadioChange}
+                        className="field-label"
+                        disabled={idSelectionCount > 0}
+                      />
                     </div>
-                  )}
-                </div>
-              </Col>
-            </Row>
+                    {idSelectionCount > 0 && (
+                      <div>
+                        <small style={{ color: "orangered" }}>
+                          already selected
+                        </small>
+                      </div>
+                    )}
+                  </div>
+                </Col>
+              </Row>
             )}
           </Modal.Title>
         </Modal.Header>
