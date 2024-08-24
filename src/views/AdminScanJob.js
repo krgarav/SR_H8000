@@ -17,26 +17,21 @@ import {
   Inject,
   Toolbar,
   ExcelExport,
-  PdfExport,
-  ToolbarItems,
-  Page,
-  FilterSettingsModel,
-  EditSettingsModel,
   Filter,
-  Edit,
 } from "@syncfusion/ej2-react-grids";
 
-import { fetchAllTemplate } from "helper/TemplateHelper";
-// import Select, { components } from "react-select";
 import { jwtDecode } from "jwt-decode";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cancelScan } from "helper/TemplateHelper";
 import { finishJob } from "helper/job_helper";
 import axios from "axios";
-import { GET_PROCESS_32_PAG_DATA } from "helper/url_helper";
-import { GENERATE_EXCEL } from "helper/url_helper";
 import { getUrls } from "helper/url_helper";
-
+function emptyMessageTemplate() {
+  return (<div className='text-center'>
+          <img src={"https://ej2.syncfusion.com/react/demos/src/grid/images/emptyRecordTemplate_light.svg"} className="d-block mx-auto my-2" alt="No record"/>
+          <span>There is no data available to display at the moment.</span>
+      </div>);
+}
 const AdminScanJob = () => {
   const [count, setCount] = useState(true);
   const [processedData, setProcessedData] = useState([]);
@@ -50,19 +45,18 @@ const AdminScanJob = () => {
     allowDeleting: true,
   };
   const [items, setItems] = useState([]);
-  const [templateOptions, setTemplateOptions] = useState([]);
   const [selectedValue, setSelectedValue] = useState();
   const [toolbar, setToolbar] = useState(["ExcelExport", "CsvExport"]);
   const [services, setServices] = useState([
     Sort,
     Toolbar,
-    ExcelExport,
     Filter,
   ]);
   const [gridHeight, setGridHeight] = useState("350px");
   const [starting, setStarting] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 576);
   const [proccessUrl, setProcessURL] = useState("");
+  const template = emptyMessageTemplate;
 
   const gridRef = useRef();
 
@@ -71,16 +65,13 @@ const AdminScanJob = () => {
   useEffect(() => {
     const fetchData = async () => {
       const response = await getUrls();
-
-      console.log(response);
       const GetDataURL = response.GET_PROCESS_32_PAGE_DATA;
-
       setProcessURL(GetDataURL);
     };
     fetchData();
   }, []);
   useEffect(() => {
-    const handleResize = () => setIsSmallScreen(window.innerWidth < 576);
+    const handleResize = () => setIsSmallScreen(window.innerWidth < 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -104,7 +95,7 @@ const AdminScanJob = () => {
   }, []);
   useEffect(() => {
     if (!location.state) {
-      navigate("/admin/icons", { replace: true });
+      navigate("/admin/job-queue", { replace: true });
       return;
     }
     const { templateId } = location?.state;
@@ -211,17 +202,6 @@ const AdminScanJob = () => {
       // setScanning(false);
     }
   };
-  console.log(scanning);
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const template = await fetchAllTemplate();
-  //     const optionObject = template?.map((item) => {
-  //       return { id: item.id, value: item.layoutName };
-  //     });
-  //     setTemplateOptions(optionObject);
-  //   };
-  //   fetchData();
-  // }, []);
   useEffect(() => {
     if (!scanning) return;
 
@@ -260,11 +240,6 @@ const AdminScanJob = () => {
     if (token) {
       const userInfo = jwtDecode(token);
       const userId = userInfo.UserId;
-
-      // if (scanning) {
-      //   setScanning(false);
-      //   return;
-      // }
       setStarting(true);
       setTimeout(async () => {
         setStarting(false);
@@ -273,12 +248,9 @@ const AdminScanJob = () => {
       setTimeout(async () => {
         setScanning(true);
       }, 6000);
-      const respons = await getUrls();
-
       const response = await scanFiles(selectedValue, userId);
       const response2 = await getUrls();
       const GetDataURL = response2?.GENERATE_EXCEL;
-      console.log(GetDataURL);
       const excelgenerate = await axios.get(
         GetDataURL + `?Id=${selectedValue}&UserId=${userId}`
       );
@@ -397,7 +369,7 @@ const AdminScanJob = () => {
     if (res?.success) {
       toast.success("Completed the job!!!");
     }
-    navigate("/admin/icons", { replace: true });
+    navigate("/admin/job-queue", { replace: true });
   };
   return (
     <>
@@ -429,11 +401,12 @@ const AdminScanJob = () => {
               editSettings={editSettings}
               allowFiltering={false}
               filterSettings={filterSettings}
-              toolbar={toolbar}
+              // toolbar={toolbar}
               toolbarClick={handleToolbarClick}
               allowExcelExport={true}
-              allowPdfExport={true}
+              allowPdfExport={false}
               allowEditing={false}
+              emptyRecordTemplate={template.bind(this)}
             >
               <ColumnsDirective>{columnsDirective}</ColumnsDirective>
               <Inject services={services} />
@@ -450,10 +423,8 @@ const AdminScanJob = () => {
                 {!starting && !scanning && "Start"}
                 {scanning && "Scanning"}
               </Button>
-              {/* <Button className="" color="danger" type="button" onClick={handleRefresh} >Refresh</Button> */}
               {scanning && (
                 <Button
-                  className=""
                   color="danger"
                   type="button"
                   onClick={handleStop}

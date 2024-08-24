@@ -47,9 +47,7 @@ const Template = () => {
   const [templateLoading, setTemplateLoading] = useState(false);
   const navigate = useNavigate();
   const dataCtx = useContext(DataContext);
-  // useEffect(() => {
-  //   sessionStorage.clear();
-  // }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       setTemplateLoading(true);
@@ -67,14 +65,14 @@ const Template = () => {
     };
     fetchData();
   }, [toggle]);
+
   const showHandler = (arr) => {
     setShowDetailModal(true);
     setTemplateDetail(arr);
   };
 
   const handleRowClick = (rowData, index) => {
-    console.log("Row clicked:", rowData, index);
-    // Add your logic for handling the row click here
+
   };
   const editHandler = async (arr, index) => {
     setLoading(true);
@@ -113,9 +111,8 @@ const Template = () => {
       setLoading(false);
       return;
     }
-    console.log(res2.data);
-    const csvContent = Papa.unparse(res2.data);
 
+    const csvContent = Papa.unparse(res2.data);
     // Create a Blob from the CSV content
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
 
@@ -124,7 +121,7 @@ const Template = () => {
     setLoading(false);
 
 
-    navigate("/admin/edit-template", {
+    navigate("/admin/template/edit-template", {
       state: {
         templateIndex: index,
         timingMarks: +tempdata.timingMarks,

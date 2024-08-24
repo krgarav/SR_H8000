@@ -83,12 +83,11 @@ const Admin = (props) => {
         <Routes>
           {getRoutes(routes)}
           <Route path="*" element={<Navigate to="/admin/index" replace />} />
-          <Route path="/design-template" element={<DesignTemplate />} />
-          <Route path="/server-folder" element={<FolderStructure />} />
-          <Route path="/edit-template" element={<EditDesignTemplate />} />
-          <Route path="/adminscanjob" element={<AdminScanJob />} />
+          <Route path="/template/design-template" element={<DesignTemplate />} />
+          <Route path="/template/edit-template" element={<EditDesignTemplate />} />
+          <Route path="/job-queue/adminscanjob" element={<AdminScanJob />} />
         </Routes>
-        {/* <Container fluid>
+        {/* <Container fluid >
           <AdminFooter />
         </Container> */}
       </div>

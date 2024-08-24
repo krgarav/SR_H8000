@@ -19,18 +19,7 @@ import { getUrls } from "helper/url_helper";
 const useTokenRedirect = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  // useEffect(() => {
-  //     console.log(location.pathname)
-  //     if (location.pathname !== "/admin/design-template") {
-  //         sessionStorage.clear();
-  //     }
-  // }, [location])
-  // useEffect(() => {
-  //   const backendIP = localStorage.getItem("backendIP");
-  //   if (backendIP) {
 
-  //   }
-  // }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -61,7 +50,6 @@ const useTokenRedirect = () => {
         navigate("/auth/login", { replace: true });
       }
     } else {
-      // navigate("/", { replace: true });
       navigate("/auth/login", { replace: true });
     }
   }, []);
@@ -122,7 +110,6 @@ const App = () => {
       />
 
       <Routes>
-        {/* <Route path="/" element={<MainLogin />} /> */}
         <Route path="/admin/*" element={<AdminLayout />} />
         <Route path="/operator/*" element={<Operator />} />
         <Route path="/moderator/*" element={<Moderator />} />

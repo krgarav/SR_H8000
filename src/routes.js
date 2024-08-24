@@ -8,20 +8,14 @@ import Icons from "views/examples/Icons.js";
 import UserManagment from "views/UserManagment";
 import Jobs from "views/Jobs";
 import Template from "views/Template";
-import Settings from "views/Settings";
-import DesignTemplate from "views/DesignTemplate";
-import Booklet32Page from "views/Booklet32Page";
-import Booklet24Page from "views/Booklet24Page";
-import ImageGrid from "views/Imagegrid";
+
 import FolderStructure from "views/FolderStructure";
-import ReactFile from "views/ReactFile";
-import FolderPicker from "views/FolderPicker";
-import FolderPickerDirectory from "views/FolderPickerDirectory";
+
 import AdminJobQueue from "views/AdminJobQueue";
 import AppManagement from "views/AppManagement";
 
 var routes = [
- 
+
   {
     path: "/index",
     name: "Dashboard",
@@ -54,7 +48,7 @@ var routes = [
   },
 
   {
-    path: "/icons",
+    path: "/job-queue",
     name: "Admin Job Queue",
     icon: "ni ni-money-coins text-yellow",
     component: <AdminJobQueue />,
