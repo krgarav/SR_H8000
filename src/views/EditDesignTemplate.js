@@ -526,13 +526,13 @@ const EditDesignTemplate = () => {
     selectedCoordinates.forEach((item) => {
       const isQuestionField = item?.fieldType === "questionField";
       const isFormField = item?.fieldType === "formField";
-  
+
       if (isQuestionField || isFormField) {
         const template = dataCtx.allTemplates[data.templateIndex];
         const parameters = isQuestionField
           ? template[0].questionsWindowParameters
           : template[0].formFieldWindowParameters;
-  
+
         // Format the selected file for comparison
         const formattedSelectedFile = {
           "End Col": item.endCol,
@@ -541,16 +541,18 @@ const EditDesignTemplate = () => {
           "Start Row": item.startRow + 1,
           fieldType: item.fieldType,
           name: item.name,
+
         };
-  
+
         // Find the index of the matched object
         const index = parameters.findIndex(param =>
           isEqual(param.Coordinate, formattedSelectedFile)
         );
-  
+
+
         // Get the matched object
         const data2 = index !== -1 ? parameters[index] : null;
-  
+
         if (data2) {
           // Determine the reading direction
           const directionMapping = {
@@ -564,15 +566,21 @@ const EditDesignTemplate = () => {
             7: "rightToLeft",
           };
           const readingDirection = directionMapping[data2.iDirection] || "rightToLeft";
-  
+          console.log(data2)
+          const type = data2.numericOrAlphabets
           // Process the data with the determined direction
+          const stepInRow = data2.rowStep;
+          const stepInCol = data2.columnStep;
           processDirection(
             readingDirection,
             item.startRow,
             item.endRow,
             item.startCol,
             item.endCol,
-            data.numberedExcelJsonFile
+            data.numberedExcelJsonFile,
+            type,
+            stepInRow,
+            stepInCol
           );
         }
       }
@@ -1804,12 +1812,12 @@ const EditDesignTemplate = () => {
                                   justifyContent: "center",
                                   fontSize: "10px",
                                   color:
-                                  rowIndex < result.length &&
-                                  colIndex < result[rowIndex].length &&
-                                  result[rowIndex][colIndex] != 0 &&
-                                  result[rowIndex][colIndex] !== undefined
-                                    ? "lightgray"
-                                    : "black",
+                                    rowIndex < result.length &&
+                                      colIndex < result[rowIndex].length &&
+                                      result[rowIndex][colIndex] != 0 &&
+                                      result[rowIndex][colIndex] !== undefined
+                                      ? "lightgray"
+                                      : "black",
                                   userSelect: "none"
                                 }}
                                 className={`${data.bubbleType} ${selected[`${rowIndex},${colIndex}`]

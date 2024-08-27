@@ -1,64 +1,143 @@
 
 
-const processDirection = (direction, startRow, endRow, startCol, endCol, data) => {
-    let counter = 0;
+const processDirection = (direction, startRow, endRow, startCol, endCol, data, type, stepInRow, stepInCol) => {
+    if (type === "numeric") {
 
-    switch (direction) {
-        case "rightToLeft":
 
-            // Top to bottom, left to right
-            for (let i = startRow; i <= endRow; i++) {
-                for (let j = endCol; j >= startCol; j--) { // Iterate from endCol to startCol
-                    if (i < data.length && j >= 0 && j < Object.keys(data[i]).length) {
-                        data[i][j] = counter++;
+        let counter = 0;
+
+        switch (direction) {
+            case "rightToLeft":
+
+                // Top to bottom, left to right
+                for (let i = startRow; i <= endRow;  i += stepInRow) {
+                    for (let j = endCol; j >= startCol; j -= stepInCol) { // Iterate from endCol to startCol
+                        if (i < data.length && j >= 0 && j < Object.keys(data[i]).length) {
+                            data[i][j] = counter++;
+                        }
+                    }
+                    counter = 0;
+                }
+                break;
+
+            case "bottomToTop":
+                // Bottom to top, left to right
+
+                counter = -1;
+                for (let i = endRow; i >= startRow;  i -= stepInRow) {
+                    counter = counter + 1;
+                    for (let j = startCol; j <= endCol; j += stepInCol) {
+                        if (i < data.length && j < Object.keys(data[i]).length) {
+                            data[i][j] = counter;
+                        }
+                    }
+
+                }
+                break;
+
+            case "leftToRight":
+                // Left to right, top to bottom
+                for (let i = startRow; i <= endRow;  i += stepInRow) {
+                    let counter = 0; // Initialize counter at the start of each row
+                    for (let j = startCol; j <= endCol; j += stepInCol) {
+                        if (i < data.length && j < Object.keys(data[i]).length) {
+                            data[i][j] = counter++;
+                        }
                     }
                 }
-                counter = 0;
-            }
-            break;
+                break;
 
-        case "bottomToTop":
-            // Bottom to top, left to right
+            case "topToBottom":
+                // Right to left, top to bottom
+                for (let i = endCol; i >= startCol;  i -= stepInRow) {
+                    for (let j = startRow; j <= endRow; j += stepInCol) {
+                        if (j < data.length && i < Object.keys(data[j]).length) {
+                            data[j][i] = counter++;
+                        }
+                    }
+                    counter = 0; // Reset counter for next row
+                }
+                break;
 
-            counter = -1;
-            for (let i = endRow; i >= startRow; i--) {
-                counter = counter + 1;
-                for (let j = startCol; j <= endCol; j++) {
-                    if (i < data.length && j < Object.keys(data[i]).length) {
-                        data[i][j] = counter;
+            default:
+                console.warn(`Unknown direction: ${direction}`);
+        }
+    } else {
+        let counter = 'A'; // Start from 'A'
+
+        function nextChar(char) {
+            return String.fromCharCode(char.charCodeAt(0) + 1);
+        }
+
+        function resetCounter(start) {
+            return start;
+        }
+
+        switch (direction) {
+            case "leftToRight":
+                // Left to right, top to bottom
+
+                for (let i = startRow; i <= endRow; i += stepInRow) {
+                    counter = 'A'; // Initialize counter at the start of each row
+                    for (let j = startCol; j <= endCol; j += stepInCol) {
+                        if (i < data.length && j < Object.keys(data[i]).length) {
+                            data[i][j] = counter;
+                            counter = nextChar(counter); // Move to the next letter
+                            if (counter > 'Z') counter = 'A'; // Wrap around after 'Z'
+                        }
                     }
                 }
+                break;
+            case "rightToLeft":
+                // Top to bottom, right to left
+                for (let i = startRow; i <= endRow; i += stepInRow) {
+                    for (let j = endCol; j >= startCol; j -= stepInCol) {
+                        if (i < data.length && j >= 0 && j < Object.keys(data[i]).length) {
+                            data[i][j] = counter;
+                            counter = nextChar(counter); // Move to the next letter
+                            if (counter > 'Z') counter = 'A'; // Wrap around after 'Z'
+                        }
+                    }
+                    counter = resetCounter('A'); // Reset to 'A' for next row
+                }
+                break;
 
-            }
-            break;
+            case "bottomToTop":
+                // Bottom to top, left to right
+                counter = 'A'; // Reset counter
+                for (let i = endRow; i >= startRow; i -= stepInRow) {
+                    for (let j = startCol; j <= endCol; j += stepInCol) {
+                        if (i < data.length && j < Object.keys(data[i]).length) {
+                            data[i][j] = counter;
+                            counter = nextChar(counter); // Move to the next letter
+                            if (counter > 'Z') counter = 'A'; // Wrap around after 'Z'
+                        }
+                    }
+                    counter = resetCounter('A'); // Reset to 'A' for next column
+                }
+                break;
 
-        case "leftToRight":
-            // Left to right, top to bottom
-            for (let i = startRow; i <= endRow; i++) {
-                let counter = 0; // Initialize counter at the start of each row
-                for (let j = startCol; j <= endCol; j++) {
-                    if (i < data.length && j < Object.keys(data[i]).length) {
-                        data[i][j] = counter++;
+
+
+            case "topToBottom":
+                // Top to bottom, right to left
+                for (let i = endCol; i >= startCol;  i -= stepInRow) {
+                    counter = 'A'; // Reset counter for each column
+                    for (let j = startRow; j <= endRow; j += stepInCol) {
+                        if (j < data.length && i < Object.keys(data[j]).length) {
+                            data[j][i] = counter;
+                            counter = nextChar(counter); // Move to the next letter
+                            if (counter > 'Z') counter = 'A'; // Wrap around after 'Z'
+                        }
                     }
                 }
-            }
-            break;
+                break;
 
-        case "topToBottom":
-            // Right to left, top to bottom
-            for (let i = endCol; i >= startCol; i--) {
-                for (let j = startRow; j <= endRow; j++) {
-                    if (j < data.length && i < Object.keys(data[j]).length) {
-                        data[j][i] = counter++;
-                    }
-                }
-                counter = 0; // Reset counter for next row
-            }
-            break;
-
-        default:
-            console.warn(`Unknown direction: ${direction}`);
+            default:
+                console.warn(`Unknown direction: ${direction}`);
+        }
     }
+
 };
 
 export default processDirection;
