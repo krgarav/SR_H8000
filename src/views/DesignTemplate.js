@@ -1387,9 +1387,11 @@ const DesignTemplate = () => {
                   style={{
                     border: "2px solid black",
                     paddingTop: "1rem",
-                    paddingRight: "0.9rem",
+                    paddingRight:  "1.2rem",
                     paddingLeft: "1rem",
                     overflowY: "auto",
+                    // marginRight: "1rem"
+                    width:"max-content"
                   }}
                 >
                   <div
