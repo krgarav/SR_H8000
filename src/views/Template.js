@@ -47,7 +47,7 @@ const Template = () => {
   const [templateLoading, setTemplateLoading] = useState(false);
   const navigate = useNavigate();
   const dataCtx = useContext(DataContext);
-
+  useEffect(() => { sessionStorage.clear() }, [])
   useEffect(() => {
     const fetchData = async () => {
       setTemplateLoading(true);
