@@ -1,33 +1,22 @@
 
 
-const processDirection = (direction, startRow, endRow, startCol, endCol, data, type, stepInRow, stepInCol) => {
+const resetJson = (direction, startRow, endRow, startCol, endCol, data, type, stepInRow, stepInCol) => {
     if (type === "numeric") {
-
-
-        let counter = 0;
-
+        
         switch (direction) {
             case "rightToLeft":
-                for (let i = startRow; i <= endRow;  i++) {
+                for (let i = startRow; i <= endRow; i++) {
                     for (let j = endCol; j >= startCol; j--) { // Iterate from endCol to startCol
                         if (i < data.length && j >= 0 && j < Object.keys(data[i]).length) {
                             data[i][j] = "";
                         }
                     }
                 }
-                // Top to bottom, left to right
-                for (let i = startRow; i <= endRow;  i += stepInRow) {
-                    for (let j = endCol; j >= startCol; j -= stepInCol) { // Iterate from endCol to startCol
-                        if (i < data.length && j >= 0 && j < Object.keys(data[i]).length) {
-                            data[i][j] = counter++;
-                        }
-                    }
-                    counter = 0;
-                }
+
                 break;
 
             case "bottomToTop":
-                for (let i = endRow; i >= startRow;  i--) {
+                for (let i = endRow; i >= startRow; i--) {
                     for (let j = startCol; j <= endCol; j++) {
                         if (i < data.length && j < Object.keys(data[i]).length) {
                             data[i][j] = "";
@@ -35,61 +24,36 @@ const processDirection = (direction, startRow, endRow, startCol, endCol, data, t
                     }
 
                 }
-                // Bottom to top, left to right
-                counter = -1;
-                for (let i = endRow; i >= startRow;  i -= stepInRow) {
-                    counter = counter + 1;
-                    for (let j = startCol; j <= endCol; j += stepInCol) {
-                        if (i < data.length && j < Object.keys(data[i]).length) {
-                            data[i][j] = counter;
-                        }
-                    }
 
-                }
+
                 break;
 
             case "leftToRight":
-                for (let i = startRow; i <= endRow;  i++) {
+                for (let i = startRow; i <= endRow; i++) {
                     for (let j = startCol; j <= endCol; j++) {
                         if (i < data.length && j < Object.keys(data[i]).length) {
                             data[i][j] = ""
                         }
                     }
                 }
-                // Left to right, top to bottom
-                for (let i = startRow; i <= endRow;  i += stepInRow) {
-                    let counter = 0; // Initialize counter at the start of each row
-                    for (let j = startCol; j <= endCol; j += stepInCol) {
-                        if (i < data.length && j < Object.keys(data[i]).length) {
-                            data[i][j] = counter++;
-                        }
-                    }
-                }
+
                 break;
 
             case "topToBottom":
-                for (let i = endCol; i >= startCol;  i--) {
+                for (let i = endCol; i >= startCol; i--) {
                     for (let j = startRow; j <= endRow; j++) {
                         if (j < data.length && i < Object.keys(data[j]).length) {
                             data[j][i] = "";
                         }
                     }
                 }
-                // Right to left, top to bottom
-                for (let i = endCol; i >= startCol;  i -= stepInRow) {
-                    for (let j = startRow; j <= endRow; j += stepInCol) {
-                        if (j < data.length && i < Object.keys(data[j]).length) {
-                            data[j][i] = counter++;
-                        }
-                    }
-                    counter = 0; // Reset counter for next row
-                }
+
                 break;
 
             default:
                 console.warn(`Unknown direction: ${direction}`);
         }
-        sessionStorage.setItem("numberedExcelJsonFile",JSON.stringify(data))
+        sessionStorage.setItem("numberedExcelJsonFile", JSON.stringify(data))
     } else {
         let counter = 'A'; // Start from 'A'
 
@@ -146,10 +110,9 @@ const processDirection = (direction, startRow, endRow, startCol, endCol, data, t
                 break;
 
 
-
             case "topToBottom":
                 // Top to bottom, right to left
-                for (let i = endCol; i >= startCol;  i -= stepInRow) {
+                for (let i = endCol; i >= startCol; i -= stepInRow) {
                     counter = 'A'; // Reset counter for each column
                     for (let j = startRow; j <= endRow; j += stepInCol) {
                         if (j < data.length && i < Object.keys(data[j]).length) {
@@ -163,11 +126,11 @@ const processDirection = (direction, startRow, endRow, startCol, endCol, data, t
 
             default:
                 console.warn(`Unknown direction: ${direction}`);
-               
+
         }
-        sessionStorage.setItem("numberedExcelJsonFile",JSON.stringify(data))
+        sessionStorage.setItem("numberedExcelJsonFile", JSON.stringify(data))
     }
 
 };
 
-export default processDirection;
+export default resetJson;

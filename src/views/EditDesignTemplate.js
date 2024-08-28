@@ -24,6 +24,7 @@ import LineLoader from "loaders/LineLoader";
 import TextLoader from "loaders/TextLoader";
 import { getUrls } from "../helper/url_helper";
 import processDirection from "data/processDirection";
+import resetJson from "data/resetJson";
 
 // Function to get values from sessionStorage or provide default
 const getSessionStorageOrDefault = (key, defaultValue) => {
@@ -159,6 +160,7 @@ const EditDesignTemplate = () => {
         ),
         bubbleType: JSON.parse(sessionStorage.getItem("bubbleType")),
         excelJsonFile: JSON.parse(sessionStorage.getItem("excelJsonFile")),
+        numberedExcelJsonFile: JSON.parse(sessionStorage.getItem("numberedExcelJsonFile")),
       };
     });
   };
@@ -585,7 +587,7 @@ const EditDesignTemplate = () => {
         }
       }
     });
-  }, [data.numberedExcelJsonFile, selectedCoordinates, dataCtx.allTemplates, data.templateIndex]);
+  }, [data.numberedExcelJsonFile, selectedCoordinates, dataCtx.allTemplates, data.templateIndex, modalUpdate]);
   useEffect(() => {
     const checkSizes = () => {
       const newSizes = {};
@@ -1426,6 +1428,7 @@ const EditDesignTemplate = () => {
       return copiedState;
     });
     dataCtx.deleteFieldTemplate(data.templateIndex, formattedSelectedFile);
+    resetJson(formattedSelectedFile["Start Row"],formattedSelectedFile["End Row"],formattedSelectedFile["Start Col"],formattedSelectedFile["End Col"])
   };
   const handleIconMouseUp = (event) => {
     event.stopPropagation();
