@@ -1428,7 +1428,7 @@ const EditDesignTemplate = () => {
       return copiedState;
     });
     dataCtx.deleteFieldTemplate(data.templateIndex, formattedSelectedFile);
-    resetJson(formattedSelectedFile["Start Row"],formattedSelectedFile["End Row"],formattedSelectedFile["Start Col"],formattedSelectedFile["End Col"])
+    resetJson(data.numberedExcelJsonFile,formattedSelectedFile["Start Row"]-1,formattedSelectedFile["End Row"]-1,formattedSelectedFile["Start Col"],formattedSelectedFile["End Col"])
   };
   const handleIconMouseUp = (event) => {
     event.stopPropagation();
