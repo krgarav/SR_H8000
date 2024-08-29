@@ -251,279 +251,6 @@ const EditDesignTemplate = () => {
     setEndColInput(selection?.endCol);
   }, [selection]);
 
-
-  // useEffect(() => {
-
-  //   selectedCoordinates.forEach((item) => {
-  //     if (item?.fieldType === "questionField") {
-  //       const template = dataCtx.allTemplates[data.templateIndex];
-  //       const parameters = template[0].questionsWindowParameters;
-  //       // Find the index of the matched object
-  //       const formattedSelectedFile = {
-  //         "End Col": item.endCol,
-  //         "End Row": item.endRow + 1,
-  //         "Start Col": item.startCol,
-  //         "Start Row": item.startRow + 1,
-  //         fieldType: item.fieldType,
-  //         name: item.name,
-  //       };
-  //       const index = parameters.findIndex((item) =>
-  //         isEqual(item.Coordinate, formattedSelectedFile)
-  //       );
-  //       console.log(index);
-  //       // Get the matched object
-  //       const data2 = index !== -1 ? parameters[index] : null;
-  //       let readingDirection;
-
-  //       switch (data2.iDirection) {
-  //         case 0:
-  //         case 1:
-  //           readingDirection = "topToBottom";
-  //           break;
-  //         case 2:
-  //         case 3:
-  //           readingDirection = "bottomToTop";
-  //           break;
-  //         case 4:
-  //         case 6:
-  //           readingDirection = "leftToRight";
-  //           break;
-  //         case 5:
-  //         case 7:
-  //           readingDirection = "rightToLeft";
-  //           break;
-  //         default:
-  //           readingDirection = "rightToLeft"; // Default case, in case iDirection is not matched
-  //           break;
-  //       }
-  //       const obj = { ...item, direction: readingDirection };
-  //       let counter = 0
-  //       if (obj.direction === "rightToLeft") {
-  //         // Top to bottom, left to right
-  //         for (let i = obj.startRow; i <= obj.endRow; i++) {
-  //           for (let j = obj.startCol; j <= obj.endCol; j++) {
-  //             if (
-  //               i < data.numberedExcelJsonFile.length &&
-  //               j < Object.keys(data.numberedExcelJsonFile[i]).length
-  //             ) {
-  //               data.numberedExcelJsonFile[i][j] = counter;
-  //               counter++;
-  //             }
-  //           }
-  //           counter = 0; // Reset counter for next column
-  //         }
-  //       } else if (obj.direction === "bottomToTop") {
-  //         // Bottom to top, left to right
-  //         for (let i = obj.endRow; i >= obj.startRow; i--) {
-  //           for (let j = obj.startCol; j <= obj.endCol; j++) {
-  //             if (
-  //               i < data.numberedExcelJsonFile.length &&
-  //               j < Object.keys(data.numberedExcelJsonFile[i]).length
-  //             ) {
-  //               data.numberedExcelJsonFile[i][j] = counter;
-  //               counter++;
-  //             }
-  //           }
-  //           counter = 0; // Reset counter for next column
-  //         }
-  //       } else if (obj.direction === "leftToRight") {
-  //         // Left to right, top to bottom
-  //         for (let i = obj.startCol; i <= obj.endCol; i++) {
-  //           for (let j = obj.startRow; j <= obj.endRow; j++) {
-  //             if (
-  //               j < data.numberedExcelJsonFile.length &&
-  //               i < Object.keys(data.numberedExcelJsonFile[j]).length
-  //             ) {
-  //               data.numberedExcelJsonFile[j][i] = counter;
-  //               counter++;
-  //             }
-  //           }
-  //           counter = 0; // Reset counter for next row
-  //         }
-  //       } else if (obj.direction === "topToBottom") {
-  //         // Right to left, top to bottom
-  //         for (let i = obj.endCol; i >= obj.startCol; i--) {
-  //           for (let j = obj.startRow; j <= obj.endRow; j++) {
-  //             if (
-  //               j < data.numberedExcelJsonFile.length &&
-  //               i < Object.keys(data.numberedExcelJsonFile[j]).length
-  //             ) {
-  //               data.numberedExcelJsonFile[j][i] = counter;
-  //               counter++;
-  //             }
-  //           }
-  //           counter = 0; // Reset counter for next row
-  //         }
-  //       }
-  //     } else if (item?.fieldType === "formField") {
-  //       const template = dataCtx.allTemplates[data.templateIndex];
-  //       const parameters = template[0].formFieldWindowParameters;
-  //       // Find the index of the matched object
-  //       const formattedSelectedFile = {
-  //         "End Col": item.endCol,
-  //         "End Row": item.endRow + 1,
-  //         "Start Col": item.startCol,
-  //         "Start Row": item.startRow + 1,
-  //         fieldType: item.fieldType,
-  //         name: item.name,
-  //       };
-  //       const index = parameters.findIndex((item) =>
-  //         isEqual(item.Coordinate, formattedSelectedFile)
-  //       );
-  //       const data2 = index !== -1 ? parameters[index] : null;
-  //       let readingDirection;
-
-  //       switch (data2.iDirection) {
-  //         case 0:
-  //         case 1:
-  //           readingDirection = "topToBottom";
-  //           break;
-  //         case 2:
-  //         case 3:
-  //           readingDirection = "bottomToTop";
-  //           break;
-  //         case 4:
-  //         case 6:
-  //           readingDirection = "leftToRight";
-  //           break;
-  //         case 5:
-  //         case 7:
-  //           readingDirection = "rightToLeft";
-  //           break;
-  //         default:
-  //           readingDirection = "rightToLeft"; // Default case, in case iDirection is not matched
-  //           break;
-  //       }
-  //       const obj = { ...item, direction: readingDirection };
-  //       let counter = 0
-  //       if (obj.direction === "rightToLeft") {
-  //         // Top to bottom, left to right
-  //         for (let i = obj.startRow; i <= obj.endRow; i++) {
-  //           for (let j = obj.startCol; j <= obj.endCol; j++) {
-  //             if (
-  //               i < data.numberedExcelJsonFile.length &&
-  //               j < Object.keys(data.numberedExcelJsonFile[i]).length
-  //             ) {
-  //               data.numberedExcelJsonFile[i][j] = counter;
-  //               counter++;
-  //             }
-  //           }
-  //           counter = 0; // Reset counter for next column
-  //         }
-  //       } else if (obj.direction === "bottomToTop") {
-  //         // Bottom to top, left to right
-  //         for (let i = obj.endRow; i >= obj.startRow; i--) {
-  //           for (let j = obj.startCol; j <= obj.endCol; j++) {
-  //             if (
-  //               i < data.numberedExcelJsonFile.length &&
-  //               j < Object.keys(data.numberedExcelJsonFile[i]).length
-  //             ) {
-  //               data.numberedExcelJsonFile[i][j] = counter;
-  //               counter++;
-  //             }
-  //           }
-  //           counter = 0; // Reset counter for next column
-  //         }
-  //       } else if (obj.direction === "leftToRight") {
-  //         // Left to right, top to bottom
-  //         for (let i = obj.startCol; i <= obj.endCol; i++) {
-  //           for (let j = obj.startRow; j <= obj.endRow; j++) {
-  //             if (
-  //               j < data.numberedExcelJsonFile.length &&
-  //               i < Object.keys(data.numberedExcelJsonFile[j]).length
-  //             ) {
-  //               data.numberedExcelJsonFile[j][i] = counter;
-  //               counter++;
-  //             }
-  //           }
-  //           counter = 0; // Reset counter for next row
-  //         }
-  //       } else if (obj.direction === "topToBottom") {
-  //         // Right to left, top to bottom
-  //         for (let i = obj.endCol; i >= obj.startCol; i--) {
-  //           for (let j = obj.startRow; j <= obj.endRow; j++) {
-  //             if (
-  //               j < data.numberedExcelJsonFile.length &&
-  //               i < Object.keys(data.numberedExcelJsonFile[j]).length
-  //             ) {
-  //               data.numberedExcelJsonFile[j][i] = counter;
-  //               counter++;
-  //             }
-  //           }
-  //           counter = 0; // Reset counter for next row
-  //         }
-  //       }
-  //     }
-  //   })
-  //   // const obj = {
-  //   //   startRow: 4,
-  //   //   startCol: 5,
-  //   //   endRow: 7,
-  //   //   endCol: 10,
-  //   //   direction: "topToBottom", // Can be "topToBottom", "bottomToTop", "leftToRight", or "rightToLeft"
-  //   // };
-
-  //   // let counter = 0;
-
-  //   // if (obj.direction === "rightToLeft") {
-  //   //   // Top to bottom, left to right
-  //   //   for (let i = obj.startRow; i <= obj.endRow; i++) {
-  //   //     for (let j = obj.startCol; j <= obj.endCol; j++) {
-  //   //       if (
-  //   //         i < data.numberedExcelJsonFile.length &&
-  //   //         j < Object.keys(data.numberedExcelJsonFile[i]).length
-  //   //       ) {
-  //   //         data.numberedExcelJsonFile[i][j] = counter;
-  //   //         counter++;
-  //   //       }
-  //   //     }
-  //   //     counter = 0; // Reset counter for next column
-  //   //   }
-  //   // } else if (obj.direction === "bottomToTop") {
-  //   //   // Bottom to top, left to right
-  //   //   for (let i = obj.endRow; i >= obj.startRow; i--) {
-  //   //     for (let j = obj.startCol; j <= obj.endCol; j++) {
-  //   //       if (
-  //   //         i < data.numberedExcelJsonFile.length &&
-  //   //         j < Object.keys(data.numberedExcelJsonFile[i]).length
-  //   //       ) {
-  //   //         data.numberedExcelJsonFile[i][j] = counter;
-  //   //         counter++;
-  //   //       }
-  //   //     }
-  //   //     counter = 0; // Reset counter for next column
-  //   //   }
-  //   // } else if (obj.direction === "leftToRight") {
-  //   //   // Left to right, top to bottom
-  //   //   for (let i = obj.startCol; i <= obj.endCol; i++) {
-  //   //     for (let j = obj.startRow; j <= obj.endRow; j++) {
-  //   //       if (
-  //   //         j < data.numberedExcelJsonFile.length &&
-  //   //         i < Object.keys(data.numberedExcelJsonFile[j]).length
-  //   //       ) {
-  //   //         data.numberedExcelJsonFile[j][i] = counter;
-  //   //         counter++;
-  //   //       }
-  //   //     }
-  //   //     counter = 0; // Reset counter for next row
-  //   //   }
-  //   // } else if (obj.direction === "topToBottom") {
-  //   //   // Right to left, top to bottom
-  //   //   for (let i = obj.endCol; i >= obj.startCol; i--) {
-  //   //     for (let j = obj.startRow; j <= obj.endRow; j++) {
-  //   //       if (
-  //   //         j < data.numberedExcelJsonFile.length &&
-  //   //         i < Object.keys(data.numberedExcelJsonFile[j]).length
-  //   //       ) {
-  //   //         data.numberedExcelJsonFile[j][i] = counter;
-  //   //         counter++;
-  //   //       }
-  //   //     }
-  //   //     counter = 0; // Reset counter for next row
-  //   //   }
-  //   // }
-  // }, [data.numberedExcelJsonFile, selectedCoordinates]);
-
   useEffect(() => {
     selectedCoordinates.forEach((item) => {
       const isQuestionField = item?.fieldType === "questionField";
@@ -568,7 +295,6 @@ const EditDesignTemplate = () => {
             7: "rightToLeft",
           };
           const readingDirection = directionMapping[data2.iDirection] || "rightToLeft";
-          console.log(data2)
           const type = data2.numericOrAlphabets
           // Process the data with the determined direction
           const stepInRow = data2.rowStep;
@@ -1244,9 +970,6 @@ const EditDesignTemplate = () => {
 
         return copiedSelectedField;
       });
-
-      //   console.log(templateIndex,selectedFieldType,coordinateIndex);
-      //   if(templateIndex,selectedFieldType,coordinateIndex)
       dataCtx.modifyWithRegion(
         data.templateIndex,
         newData,
@@ -1390,7 +1113,6 @@ const EditDesignTemplate = () => {
       const index = parameters.findIndex((item) =>
         isEqual(item?.Coordinate, formattedSelectedFile)
       );
-      console.log(index);
       // Get the matched object
       const data = index !== -1 ? parameters[index] : null;
 
@@ -1575,15 +1297,9 @@ const EditDesignTemplate = () => {
         formdata.append("FrontImageFile", imageFile);
         formdata.append("BackImageFile", backImageFile);
         formdata.append("ExcelFile", csvfile);
-        // Iterate over the FormData entries and log them
-        for (let [key, value] of formdata.entries()) {
-          console.log(`${key}: ${value}`);
-        }
         const res2 = await sendFile(formdata);
         setLoading(false);
-
         alert(`Response : ${JSON.stringify(res2?.message)}`);
-
         if (res2?.success) {
           // sessionStorage.clear();
           toast.success("Layout Saved");
@@ -1859,7 +1575,7 @@ const EditDesignTemplate = () => {
                             }px`,
                           height: `${(data.endRow - data.startRow + 1) *
                             (imageRef.current.getBoundingClientRect().height /
-                              numRows)
+                              numRows+0.42)
                             }px`,
                         }}
                         onClick={(e) => e.stopPropagation()}
