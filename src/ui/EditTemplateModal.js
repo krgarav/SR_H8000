@@ -203,7 +203,7 @@ const EditTemplateModal = (props) => {
   }, [props.show]);
   // *****************************************************************************************
   const comparewithId = (optiondata, optionvalue) => {
-    const filter = optiondata.find((item) => item.id === optionvalue);
+    const filter = optiondata.find((item) => item.id == optionvalue);
     return filter;
   };
   const comparewithName = (optiondata, optionvalue) => {
@@ -247,22 +247,39 @@ const EditTemplateModal = (props) => {
             setBarcodeTopPos(barcodeData.barcodeTopPos);
             setBarcodeLeftPos(barcodeData.barcodeLeftPos);
             setBarcodeRightPos(barcodeData.barcodeRightPos);
-            if (barcodeData.barcodeType === "0x1U") {
+            if(barcodeData.barcodeType === "0x1U") {
               setCheckDigit(comparewithId(code39OrItfCheckDigitData, barcodeData.barcodeCheckDigit));
             } else {
               setCheckDigit(comparewithId(nw7CheckDigitData, barcodeData.barcodeCheckDigit));
             }
-
           }
           setSelectedBubble(comparewithName(bubbleData, layout.bubbleType));
           setSensitivity(layout.iSensitivity);
           setDifference(layout.iDifference);
 
-          const file = base64ToFile(layout.templateImagePath, "image.png");
+          const file = base64ToFile(layout.templateImagePath, "image.jpg");
           setImageFile(file);
           setImage(layout.templateImagePath);
           setDirection(comparewithId(directionData, layout.dataReadDirection));
+          if(printData.printEnable){
+            setPrintEnable(printOptionData[0])
+            setStartPosition(printData.printStartPos);
+            setFontSpace(printData.printFontSpace);
+            setPrintDigit(printData.printDigit);
+            setPrintStartNumber(printData.printStartNumber);
+            setPrintOrientation(comparewithId(printOrientationOption,printData.printOrientation));
+            setPrintMode(comparewithId(printModeOption,printData.printMode));
+            setPrintCustom(comparewithId(printCustomOption,printData.customType))
+            setPrintCustomValue(printData.customValue);
+          }
+          if(imageData.imageEnable){
+            setColorType(comparewithId(colorTypeData,imageData.imageColor))
+          }
+
+
         }
+
+       
 
       }
       // dataCtx.addFieldToTemplate(res, data.templateIndex);
