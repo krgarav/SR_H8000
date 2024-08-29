@@ -180,7 +180,14 @@ export const imageColorTypeData = [
     { id: "grayscale", name: "Grayscale (Monochrome)" },
     { id: "blackandwhite", name: "Black and White (Binary)" },
 ]
-
+export const imageResoModeData = [
+    { id: "0", name: "600" },
+    { id: "1", name: "300" }
+]
+export const imageParamsData = [
+    { id: "2", name: "LZW compressed" },
+    { id: "6", name: "Non Compressed" }
+]
 export const imageDPIData = [
     { id: "100", name: "100" },
     { id: "150", name: "150" },

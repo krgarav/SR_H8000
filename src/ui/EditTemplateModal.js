@@ -80,6 +80,7 @@ const EditTemplateModal = (props) => {
   const [encoding, setEncoding] = useState();
   const [rotation, setRotation] = useState();
   const [resolution, setResolution] = useState();
+  const [imageParams,setImageParams]=useState();
   const [scannningSide, setScanningSide] = useState();
   const [imageStatus, setImageStatus] = useState(imageStatusData[0]);
   const [barcodeType, setBarcodeType] = useState({});
@@ -272,15 +273,15 @@ const EditTemplateModal = (props) => {
             setPrintCustom(comparewithId(printCustomOption,printData.customType))
             setPrintCustomValue(printData.customValue);
           }
+          setImageStatus(comparewithId(imageStatusData,imageData.imageEnable))
           if(imageData.imageEnable){
-            setColorType(comparewithId(colorTypeData,imageData.imageColor))
+            setColorType(comparewithId(colorTypeData,imageData.imageColor));
+            setEncoding(comparewithId(encodingOptionData,imageData.imageType));
+            setRotation(comparewithId(rotationOptionData,imageData.imageRotation));
+            setResolution(comparewithId(resolutionOptionData,imageData.imageResolution))
+            // setScanningSide(comparewithId(scanningSideData,imageData))
           }
-
-
         }
-
-       
-
       }
       // dataCtx.addFieldToTemplate(res, data.templateIndex);
     };

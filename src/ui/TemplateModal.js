@@ -51,29 +51,8 @@ import Papa from "papaparse";
 import { getSampleData } from "helper/TemplateHelper";
 import { v4 as uuidv4 } from "uuid";
 import base64ToFile from "services/Base64toFile";
+import { imageParamsData } from "data/helperData";
 
-// function base64ToFile(base64Url, filename) {
-//   // Extract base64 data and content type from URL
-//   const [header, base64Data] = base64Url.split(",");
-//   const mime = header.match(/:(.*?);/)[1];
-
-//   // Decode base64 data to binary
-//   const binaryString = window.atob(base64Data);
-
-//   // Create a Uint8Array to hold the binary data
-//   const len = binaryString.length;
-//   const bytes = new Uint8Array(len);
-
-//   for (let i = 0; i < len; i++) {
-//     bytes[i] = binaryString.charCodeAt(i);
-//   }
-
-//   // Create a Blob from the binary data
-//   const blob = new Blob([bytes], { type: mime });
-
-//   // Create a File from the Blob
-//   return new File([blob], filename, { type: mime });
-// }
 const TemplateModal = (props) => {
   const [modalShow, setModalShow] = useState(false);
   const [name, setName] = useState("");
@@ -103,6 +82,7 @@ const TemplateModal = (props) => {
   const [rotation, setRotation] = useState();
   const [resolution, setResolution] = useState();
   const [scannningSide, setScanningSide] = useState();
+  const [imageParams,setImageParams]=useState();
   const [imageStatus, setImageStatus] = useState(imageStatusData[0]);
   const [barcodeType, setBarcodeType] = useState({});
   const [barcodeCategory, setBarcodeCategory] = useState({});
@@ -2020,6 +2000,29 @@ const TemplateModal = (props) => {
                                 setScanningSide(selectedValue)
                               }
                               options={scanningSideData}
+                              getOptionLabel={(option) => option?.name || ""}
+                              getOptionValue={(option) =>
+                                option?.id?.toString() || ""
+                              }
+                              placeholder="Select rotation option..."
+                            />
+                          </div>
+                        </Row>
+                        <Row className="mb-3">
+                          <label
+                            htmlFor="example-text-input"
+                            className="col-md-3 "
+                            style={{ fontSize: ".9rem" }}
+                          >
+                            Image compression :
+                          </label>
+                          <div className="col-md-9">
+                            <Select
+                              value={imageParams}
+                              onChange={(selectedValue) =>
+                                setImageParams(selectedValue)
+                              }
+                              options={imageParamsData}
                               getOptionLabel={(option) => option?.name || ""}
                               getOptionValue={(option) =>
                                 option?.id?.toString() || ""
