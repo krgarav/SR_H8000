@@ -415,6 +415,7 @@ const DataProvider = (props) => {
         console.log(item);
         return item[0].layoutParameters?.key ?? "" === uuid;
       })[0];
+console.log(currentTemplate)
 
       switch (fieldType) {
         case "skewMarkField":
@@ -428,7 +429,7 @@ const DataProvider = (props) => {
           break;
         case "formField":
           const formparameters = currentTemplate?.formFieldWindowParameters;
-
+console.log(formparameters)
           const updatedForm = formparameters.filter(
             (item) => !isEqual(item.Coordinate, selectedFieldData)
           );

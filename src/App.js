@@ -86,7 +86,28 @@ const App = () => {
   const [templateLoading, setTemplateLoading] = useState(true); // State to manage loading
   const dataCtx = useContext(DataContext); // Assuming you are using context
   const toggle = true;
-  fetchTemplates(setTemplateLoading, dataCtx, toggle);
+  useEffect(() => {
+    if (dataCtx.allTemplates.length === 0) {
+      const fetchData = async () => {
+        setTemplateLoading(true);
+        try {
+          const templates = await fetchAllTemplate();
+          if (!templates) {
+            throw new Error("Error fetching templates");
+          }
+          const mpObj = templates.map((item) => {
+            return [{ layoutParameters: item }];
+          });
+          dataCtx.addToAllTemplate(mpObj);
+        } catch (error) {
+          toast.error(error.message || "Error fetching templates");
+        } finally {
+          setTemplateLoading(false);
+        }
+      };
+      fetchData();
+    }
+  }, []);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -115,17 +136,17 @@ const App = () => {
     };
 
     fetchData();
- 
-   
+
+
   }, []);
 
   const handleSaveIp = (ip, protocol) => {
-  
+
     const Obj = {
       backendUrl: ip,
     };
     const res2 = axios.post("http://localhost/api/config", Obj);
-    
+
     setTimeout(() => {
       window.location.reload(); // Reload the page
     }, 400);
@@ -133,10 +154,8 @@ const App = () => {
   useTokenRedirect();
 
   if (templateLoading) {
-    return  <TextLoader message={"Updating, Please wait..."} />; // Show loader while fetching templates
+    return <TextLoader message={"Updating, Please wait..."} />; // Show loader while fetching templates
   }
-console.log("logged")
-console.log(dataCtx.allTemplates)
   return (
     <>
       <IpModal

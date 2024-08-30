@@ -106,7 +106,10 @@ const EditDesignTemplate = () => {
   const navigate = useNavigate();
   const [sizes, setSizes] = useState({});
   const [detailLoader, setDetailLoader] = useState(false);
-  const emptyExcelJsonFile = state.excelJsonFile.map(row => {
+  const emptyExcelJsonFile = getSessionStorageOrDefault(
+    "excelJsonFile",
+    state.excelJsonFile
+  ).map(row => {
     return Object.keys(row).reduce((acc, key) => {
       acc[key] = ""; // Set each value to an empty string
       return acc;
@@ -1150,7 +1153,7 @@ const EditDesignTemplate = () => {
       return copiedState;
     });
     dataCtx.deleteFieldTemplate(data.templateIndex, formattedSelectedFile);
-    resetJson(data.numberedExcelJsonFile,formattedSelectedFile["Start Row"]-1,formattedSelectedFile["End Row"]-1,formattedSelectedFile["Start Col"],formattedSelectedFile["End Col"])
+    resetJson(data.numberedExcelJsonFile, formattedSelectedFile["Start Row"] - 1, formattedSelectedFile["End Row"] - 1, formattedSelectedFile["Start Col"], formattedSelectedFile["End Col"])
   };
   const handleIconMouseUp = (event) => {
     event.stopPropagation();
@@ -1282,7 +1285,7 @@ const EditDesignTemplate = () => {
       const response2 = await getUrls();
       const GetDataURL = response2.DELETE_TEMPLATE;
 
-      const deleteTemplat = axios.delete(`${GetDataURL}?Id=${data.templateId}`);
+      const deleteTemplat =await axios.delete(`${GetDataURL}?Id=${data.templateId}`);
     } catch (error) {
       console.log(error);
     }
@@ -1502,6 +1505,7 @@ const EditDesignTemplate = () => {
                     {Array.from({ length: numRows }).map((_, rowIndex) => {
                       const result = [...data.excelJsonFile.map(Object.values)];
                       const numberedJson = [...data.numberedExcelJsonFile.map(Object.values)]
+                      console.log(numberedJson)
                       return (
                         <div key={rowIndex} className="row">
                           <div
@@ -1543,7 +1547,7 @@ const EditDesignTemplate = () => {
                                   ? "selected"
                                   : ""
                                   }`}
-                              >{numberedJson[rowIndex][colIndex]}</div>
+                              >{(numberedJson[rowIndex] && numberedJson[rowIndex][colIndex]) !==undefined? numberedJson[rowIndex][colIndex] : null}</div>
                             )
                           )}
                         </div>
@@ -1575,7 +1579,7 @@ const EditDesignTemplate = () => {
                             }px`,
                           height: `${(data.endRow - data.startRow + 1) *
                             (imageRef.current.getBoundingClientRect().height /
-                              numRows+0.42)
+                              numRows + 0.42)
                             }px`,
                         }}
                         onClick={(e) => e.stopPropagation()}

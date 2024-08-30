@@ -23,6 +23,7 @@ import LayoutDetailModal from "ui/LayoutDetailModal";
 import TextLoader from "loaders/TextLoader";
 import processDirection from "data/processDirection";
 import deepcopy from 'deepcopy';
+import resetJson from "data/resetJson";
 
 // Function to get values from sessionStorage or provide default
 const getLocalStorageOrDefault = (key, defaultValue) => {
@@ -247,7 +248,6 @@ const DesignTemplate = () => {
     const template = dataCtx.allTemplates.find((item) => {
       return item[0].layoutParameters?.key ?? "" === templateIndex;
     });
-    console.log(template)
     selectedCoordinates.forEach((item) => {
       const isQuestionField = item?.fieldType === "questionField";
       const isFormField = item?.fieldType === "formField";
@@ -260,7 +260,6 @@ const DesignTemplate = () => {
         const parameters = isQuestionField
           ? template[0].questionsWindowParameters
           : template[0].formFieldWindowParameters;
-        console.log(parameters);
 
         // Format the selected file for comparison
         const formattedSelectedFile = {
@@ -313,13 +312,15 @@ const DesignTemplate = () => {
             );
             const copiedObject = deepcopy(localData[0]);
             copiedObject.layoutParameters = { ...copiedObject.layoutParameters, numberedExcelJsonFile: data }
-            dataCtx.replaceTemplate([copiedObject])
+            // dataCtx.replaceTemplate([copiedObject])
             localStorage.setItem("Template", JSON.stringify([copiedObject]));
           }
         }
       }
     });
   }, [selectedCoordinates, dataCtx]);
+
+
 
   useEffect(() => {
     if (arr) {
@@ -935,6 +936,7 @@ const DesignTemplate = () => {
       setSelection(null);
     }
   };
+  console.log(dataCtx.allTemplates)
   const handleSkewMarkOptionChange = (event) => {
     setSkewOption(event.target.value);
   };
@@ -1102,7 +1104,11 @@ const DesignTemplate = () => {
       copiedState.splice(index, 1); // Remove the item at the specified index
       return copiedState;
     });
+    const template = dataCtx.allTemplates.find((item) => {
+      return item[0].layoutParameters?.key ?? "" === templateIndex;
+    });
     dataCtx.deleteFieldTemplateWithUUID(templateIndex, formattedSelectedFile);
+    resetJson(template[0].layoutParameters.numberedExcelJsonFile, formattedSelectedFile["Start Row"] - 1, formattedSelectedFile["End Row"] - 1, formattedSelectedFile["Start Col"], formattedSelectedFile["End Col"])
   };
   const handleIconMouseUp = (event) => {
     event.stopPropagation();
@@ -1459,10 +1465,7 @@ const DesignTemplate = () => {
                       const template = dataCtx.allTemplates.find((item) => {
                         return item[0].layoutParameters?.key ?? "" === templateIndex;
                       });
-                      console.log(template);
-                      // console.log(dataCtx.allTemplates[templateIndex])
-                     
-                        const numberedJson = template ? [...template[0]?.layoutParameters?.numberedExcelJsonFile.map(Object.values)] : []
+                      const numberedJson = template ? [...template[0]?.layoutParameters?.numberedExcelJsonFile.map(Object.values)] : []
 
                       return (
                         <div key={rowIndex} className="row">
@@ -1508,7 +1511,7 @@ const DesignTemplate = () => {
                                   ? "selected"
                                   : ""
                                   }`}
-                              >{numberedJson.length>0 && numberedJson[rowIndex][colIndex]}</div>
+                              >{numberedJson.length > 0 && numberedJson[rowIndex][colIndex]}</div>
                             )
                           )}
                         </div>
