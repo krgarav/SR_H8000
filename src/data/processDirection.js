@@ -89,7 +89,9 @@ const processDirection = (direction, startRow, endRow, startCol, endCol, data, t
             default:
                 console.warn(`Unknown direction: ${direction}`);
         }
-        sessionStorage.setItem("numberedExcelJsonFile",JSON.stringify(data))
+        
+        sessionStorage.setItem("numberedExcelJsonFile",JSON.stringify(data));
+        return data
     } else {
         let counter = 'A'; // Start from 'A'
 
@@ -165,7 +167,8 @@ const processDirection = (direction, startRow, endRow, startCol, endCol, data, t
                 console.warn(`Unknown direction: ${direction}`);
                
         }
-        sessionStorage.setItem("numberedExcelJsonFile",JSON.stringify(data))
+        sessionStorage.setItem("numberedExcelJsonFile",JSON.stringify(data));
+        return JSON.stringify(data)
     }
 
 };

@@ -402,6 +402,12 @@ const TemplateModal = (props) => {
     }
     const key = uuidv4();
     try {
+      const emptyExcelJsonFile = excelJsonFile.map(row => {
+        return Object.keys(row).reduce((acc, key) => {
+          acc[key] = ""; // Set each value to an empty string
+          return acc;
+        }, {});
+      });
       const templateData = [
         {
           layoutParameters: {
@@ -421,6 +427,7 @@ const TemplateModal = (props) => {
             iReject: 0,
             idMarksPattern: "000000000000000000000000",
             excelJsonFile: excelJsonFile,
+            numberedExcelJsonFile: emptyExcelJsonFile
           },
           barcodeData: {
             barcodeSide: 0,
@@ -460,7 +467,7 @@ const TemplateModal = (props) => {
         },
       ];
       console.log(templateData);
-   
+  
       localStorage.setItem("Template", JSON.stringify(templateData));
       const index = dataCtx.setAllTemplates(templateData);
       setModalShow(false);

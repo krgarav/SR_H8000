@@ -21,6 +21,8 @@ import Cropper from "ui/RangeSelector";
 import EditTemplateModal from "ui/EditTemplateModal";
 import LayoutDetailModal from "ui/LayoutDetailModal";
 import TextLoader from "loaders/TextLoader";
+import processDirection from "data/processDirection";
+import deepcopy from 'deepcopy';
 
 // Function to get values from sessionStorage or provide default
 const getLocalStorageOrDefault = (key, defaultValue) => {
@@ -112,9 +114,9 @@ const DesignTemplate = () => {
     iReject,
     iFace,
     arr,
-    templateId,
     excelJsonFile,
     templateBackImagePath,
+    numberedExcelJsonFile
   } = localData[0].layoutParameters;
 
   const rndRef = useRef();
@@ -158,42 +160,10 @@ const DesignTemplate = () => {
       setIdSelectionCount(0);
     }
   }, [selectedCoordinates, selection]);
-  // useEffect(() => {
-  //     if (location.state) {
-  //         sessionStorage.setItem(
-  //             "totalColumns",
-  //             state.totalColumns
-  //         );
-  //         sessionStorage.setItem("timingMarks", JSON.stringify(state.timingMarks));
-  //         sessionStorage.setItem(
-  //             "templateImagePath",
-  //             JSON.stringify(state.templateImagePath)
-  //         );
-  //         sessionStorage.setItem("bubbleType", JSON.stringify(state.bubbleType));
-  //         sessionStorage.setItem(
-  //             "templateIndex",
-  //             state.templateIndex
-  //         );
-  //         sessionStorage.setItem(
-  //             "iSensitivity",
-  //             JSON.stringify(state.iSensitivity)
-  //         );
-  //         sessionStorage.setItem("iDifference", JSON.stringify(state.iDifference));
-  //         sessionStorage.setItem("iReject", JSON.stringify(state.iReject));
-  //         sessionStorage.setItem("iFace", JSON.stringify(state.iFace));
-  //         sessionStorage.setItem("arr", JSON.stringify(state.arr));
-  //         sessionStorage.setItem("templateId", JSON.stringify(state.templateId));
-  //         sessionStorage.setItem(
-  //             "excelJsonFile",
-  //             JSON.stringify(state.excelJsonFile)
-  //         );
-  //         sessionStorage.setItem(
-  //             "imageTempFile",
-  //             JSON.stringify(state.imageTempFile)
-  //         );
-  //         sessionStorage.setItem("excelFile", JSON.stringify(state.excelFile));
-  //     }
-  // }, [location.state]);
+
+
+
+
   useEffect(() => {
     const templateData = JSON.parse(localStorage.getItem("Template"));
     // Find the current template instead of filtering
@@ -272,6 +242,85 @@ const DesignTemplate = () => {
 
     return () => window.removeEventListener("resize", checkSizes);
   }, [selectedCoordinates, selection]);
+
+  useEffect(() => {
+    const template = dataCtx.allTemplates.find((item) => {
+      return item[0].layoutParameters?.key ?? "" === templateIndex;
+    });
+    console.log(template)
+    selectedCoordinates.forEach((item) => {
+      const isQuestionField = item?.fieldType === "questionField";
+      const isFormField = item?.fieldType === "formField";
+
+      if (isQuestionField || isFormField) {
+        const template = dataCtx.allTemplates.find((item) => {
+          return item[0].layoutParameters?.key ?? "" === templateIndex;
+        });
+        console.log(template)
+        const parameters = isQuestionField
+          ? template[0].questionsWindowParameters
+          : template[0].formFieldWindowParameters;
+        console.log(parameters);
+
+        // Format the selected file for comparison
+        const formattedSelectedFile = {
+          "End Col": item.endCol,
+          "End Row": item.endRow + 1,
+          "Start Col": item.startCol,
+          "Start Row": item.startRow + 1,
+          fieldType: item.fieldType,
+          name: item.name,
+
+        };
+        if (parameters) {
+          // Find the index of the matched object
+          const index = parameters.findIndex(param =>
+            isEqual(param.Coordinate, formattedSelectedFile)
+          );
+
+
+          // Get the matched object
+          const data2 = index !== -1 ? parameters[index] : null;
+
+          if (data2) {
+            // Determine the reading direction
+            const directionMapping = {
+              0: "topToBottom",
+              1: "topToBottom",
+              2: "bottomToTop",
+              3: "bottomToTop",
+              4: "leftToRight",
+              5: "rightToLeft",
+              6: "leftToRight",
+              7: "rightToLeft",
+            };
+            const readingDirection = directionMapping[data2.iDirection] || "rightToLeft";
+            const type = data2.numericOrAlphabets
+            // Process the data with the determined direction
+            const stepInRow = data2.rowStep;
+            const stepInCol = data2.columnStep;
+
+            const data = processDirection(
+              readingDirection,
+              item.startRow,
+              item.endRow,
+              item.startCol,
+              item.endCol,
+              template[0].layoutParameters.numberedExcelJsonFile,
+              type,
+              stepInRow,
+              stepInCol
+            );
+            const copiedObject = deepcopy(localData[0]);
+            copiedObject.layoutParameters = { ...copiedObject.layoutParameters, numberedExcelJsonFile: data }
+            dataCtx.templateReplaceHandler([copiedObject])
+            localStorage.setItem("Template", JSON.stringify([copiedObject]));
+          }
+        }
+      }
+    });
+  }, [selectedCoordinates, dataCtx]);
+
   useEffect(() => {
     if (arr) {
       // Extract parameters from the first element of the array (if it exists)
@@ -314,6 +363,8 @@ const DesignTemplate = () => {
       setPosition(idField?.imageStructureData);
     }
   }, []); // Run only once on component mount
+
+
   // *************************For Fetching the details and setting the coordinate******************
   // useEffect(() => {
   //   const fetchDetails = async () => {
@@ -388,11 +439,12 @@ const DesignTemplate = () => {
   // }, [layoutFieldData]);
   useEffect(() => {
     const template = dataCtx.allTemplates.find((item) => {
-      console.log(item);
       return item[0].layoutParameters?.key ?? "" === templateIndex;
     });
-    console.log(template);
-    setLayoutFieldData(template[0]);
+    console.log(template)
+    if (template) {
+      setLayoutFieldData(template[0]);
+    }
   }, [dataCtx.allTemplates]);
 
   useEffect(() => {
@@ -1121,13 +1173,13 @@ const DesignTemplate = () => {
         const { Coordinate, ...rest } = item;
         const questionWindowCoordinates = Coordinate
           ? {
-              right: Coordinate["End Col"],
-              end: Coordinate["End Row"],
-              left: Coordinate["Start Col"],
-              start: Coordinate["Start Row"],
-              name: Coordinate["name"],
-              fieldType: Coordinate["fieldType"],
-            }
+            right: Coordinate["End Col"],
+            end: Coordinate["End Row"],
+            left: Coordinate["Start Col"],
+            start: Coordinate["Start Row"],
+            name: Coordinate["name"],
+            fieldType: Coordinate["fieldType"],
+          }
           : {};
         return { ...rest, questionWindowCoordinates };
       });
@@ -1138,13 +1190,13 @@ const DesignTemplate = () => {
         const { Coordinate, ...rest } = item;
         const layoutWindowCoordinates = Coordinate
           ? {
-              right: Coordinate["End Col"],
-              end: Coordinate["End Row"],
-              left: Coordinate["Start Col"],
-              start: Coordinate["Start Row"],
-              name: Coordinate["name"],
-              fieldType: Coordinate["fieldType"],
-            }
+            right: Coordinate["End Col"],
+            end: Coordinate["End Row"],
+            left: Coordinate["Start Col"],
+            start: Coordinate["Start Row"],
+            name: Coordinate["name"],
+            fieldType: Coordinate["fieldType"],
+          }
           : {};
         return { ...rest, layoutWindowCoordinates };
       });
@@ -1155,13 +1207,13 @@ const DesignTemplate = () => {
         const { Coordinate, ...rest } = item;
         const formFieldCoordinates = Coordinate
           ? {
-              right: Coordinate["End Col"],
-              end: Coordinate["End Row"],
-              left: Coordinate["Start Col"],
-              start: Coordinate["Start Row"],
-              name: Coordinate["name"],
-              fieldType: Coordinate["fieldType"],
-            }
+            right: Coordinate["End Col"],
+            end: Coordinate["End Row"],
+            left: Coordinate["Start Col"],
+            start: Coordinate["Start Row"],
+            name: Coordinate["name"],
+            fieldType: Coordinate["fieldType"],
+          }
           : {};
         return { ...rest, formFieldCoordinates };
       });
@@ -1249,7 +1301,7 @@ const DesignTemplate = () => {
             pointerEvents: "auto", // Make the overlay not clickable
           }}
         >
-          <div style={{height:"50%"}}>
+          <div style={{ height: "50%" }}>
             <TextLoader message={"Saving, Please wait..."} />
           </div>
         </div>
@@ -1387,11 +1439,11 @@ const DesignTemplate = () => {
                   style={{
                     border: "2px solid black",
                     paddingTop: "1rem",
-                    paddingRight:  "1.2rem",
+                    paddingRight: "1.2rem",
                     paddingLeft: "1rem",
                     overflowY: "auto",
                     // marginRight: "1rem"
-                    width:"max-content"
+                    width: "max-content"
                   }}
                 >
                   <div
@@ -1403,6 +1455,14 @@ const DesignTemplate = () => {
                   >
                     {Array.from({ length: numRows }).map((_, rowIndex) => {
                       const result = [...excelJsonFile.map(Object.values)];
+
+                      const template = dataCtx.allTemplates.find((item) => {
+                        return item[0].layoutParameters?.key ?? "" === templateIndex;
+                      });
+                      console.log(template);
+                      // console.log(dataCtx.allTemplates[templateIndex])
+                     
+                        const numberedJson = template ? [...template[0]?.layoutParameters?.numberedExcelJsonFile.map(Object.values)] : []
 
                       return (
                         <div key={rowIndex} className="row">
@@ -1422,23 +1482,33 @@ const DesignTemplate = () => {
                                 style={{
                                   backgroundColor:
                                     rowIndex < result.length &&
-                                    colIndex < result[rowIndex].length &&
-                                    result[rowIndex][colIndex] != 0 &&
-                                    result[rowIndex][colIndex] !== undefined
+                                      colIndex < result[rowIndex].length &&
+                                      result[rowIndex][colIndex] != 0 &&
+                                      result[rowIndex][colIndex] !== undefined
                                       ? "black"
                                       : "",
-                                  overflow: "auto",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  fontSize: "10px",
+                                  color:
+                                    rowIndex < result.length &&
+                                      colIndex < result[rowIndex].length &&
+                                      result[rowIndex][colIndex] != 0 &&
+                                      result[rowIndex][colIndex] !== undefined
+                                      ? "lightgray"
+                                      : "black",
+                                  userSelect: "none"
                                 }}
                                 // style={{
                                 //     backgroundColor:
                                 //         result[rowIndex][colIndex] != 0 ? "black" : "",
                                 // }}
-                                className={`${bubbleType} ${
-                                  selected[`${rowIndex},${colIndex}`]
-                                    ? "selected"
-                                    : ""
-                                }`}
-                              ></div>
+                                className={`${bubbleType} ${selected[`${rowIndex},${colIndex}`]
+                                  ? "selected"
+                                  : ""
+                                  }`}
+                              >{numberedJson.length>0 && numberedJson[rowIndex][colIndex]}</div>
                             )
                           )}
                         </div>
@@ -1454,28 +1524,24 @@ const DesignTemplate = () => {
                           border: "3px solid #007bff",
                           position: "absolute",
                           overflow: "hidden",
-                          left: `${
-                            data.startCol *
-                              (imageRef.current.getBoundingClientRect().width /
-                                numCols) -
+                          left: `${data.startCol *
+                            (imageRef.current.getBoundingClientRect().width /
+                              numCols) -
                             4
-                          }px`,
-                          top: `${
-                            data.startRow *
-                              (imageRef.current.getBoundingClientRect().height /
-                                numRows) -
+                            }px`,
+                          top: `${data.startRow *
+                            (imageRef.current.getBoundingClientRect().height /
+                              numRows) -
                             3
-                          }px`,
-                          width: `${
-                            (data.endCol - data.startCol + 1) *
+                            }px`,
+                          width: `${(data.endCol - data.startCol + 1) *
                             (imageRef.current.getBoundingClientRect().width /
                               numCols)
-                          }px`,
-                          height: `${
-                            (data.endRow - data.startRow + 1) *
+                            }px`,
+                          height: `${(data.endRow - data.startRow + 1) *
                             (imageRef.current.getBoundingClientRect().height /
                               numRows)
-                          }px`,
+                            }px`,
                         }}
                         onClick={(e) => e.stopPropagation()}
                       >
@@ -1534,28 +1600,24 @@ const DesignTemplate = () => {
                         style={{
                           border: "2px solid green",
                           position: "absolute",
-                          left: `${
-                            selection.startCol *
-                              (imageRef.current.getBoundingClientRect().width /
-                                numCols) -
+                          left: `${selection.startCol *
+                            (imageRef.current.getBoundingClientRect().width /
+                              numCols) -
                             4
-                          }px`,
-                          top: `${
-                            selection.startRow *
-                              (imageRef.current.getBoundingClientRect().height /
-                                numRows) -
+                            }px`,
+                          top: `${selection.startRow *
+                            (imageRef.current.getBoundingClientRect().height /
+                              numRows) -
                             3
-                          }px`,
-                          width: `${
-                            (selection.endCol - selection.startCol + 1) *
+                            }px`,
+                          width: `${(selection.endCol - selection.startCol + 1) *
                             (imageRef.current.getBoundingClientRect().width /
                               numCols)
-                          }px`,
-                          height: `${
-                            (selection.endRow - selection.startRow + 1) *
+                            }px`,
+                          height: `${(selection.endRow - selection.startRow + 1) *
                             (imageRef.current.getBoundingClientRect().height /
                               numRows)
-                          }px`,
+                            }px`,
                           content: "question field",
                         }}
                       ></div>
@@ -1811,119 +1873,119 @@ const DesignTemplate = () => {
               )}
               {(selectedFieldType === "questionField" ||
                 selectedFieldType === "formField") && (
-                <Row className="mb-2">
-                  <label
-                    htmlFor="example-text-input"
-                    className="col-md-2 col-form-label"
-                  >
-                    Grid
-                  </label>
-                  <div
-                    className={multiple !== "allow" ? "col-md-4" : "col-md-10"}
-                  >
-                    <select
-                      className="form-control"
-                      value={multiple}
-                      onChange={(e) => {
-                        setMultiple(e.target.value);
-                      }}
-                      defaultValue={""}
+                  <Row className="mb-2">
+                    <label
+                      htmlFor="example-text-input"
+                      className="col-md-2 col-form-label"
                     >
-                      <option value="">Select an option</option>
-                      <option value="allow">Allow All</option>
-                      <option value="not allow">Allow None</option>
-                    </select>
-                  </div>
-                  {multiple !== "allow" && (
-                    <>
-                      <label htmlFor="example-text-input" className="col-md-2 ">
-                        Grid Value
-                      </label>
-                      <div className="col-md-4">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Character of Multiple"
-                          value={multipleValue}
-                          onChange={(e) => setMultipleValue(e.target.value)}
-                          required
-                        />
-                      </div>
-                    </>
-                  )}
-                </Row>
-              )}
+                      Grid
+                    </label>
+                    <div
+                      className={multiple !== "allow" ? "col-md-4" : "col-md-10"}
+                    >
+                      <select
+                        className="form-control"
+                        value={multiple}
+                        onChange={(e) => {
+                          setMultiple(e.target.value);
+                        }}
+                        defaultValue={""}
+                      >
+                        <option value="">Select an option</option>
+                        <option value="allow">Allow All</option>
+                        <option value="not allow">Allow None</option>
+                      </select>
+                    </div>
+                    {multiple !== "allow" && (
+                      <>
+                        <label htmlFor="example-text-input" className="col-md-2 ">
+                          Grid Value
+                        </label>
+                        <div className="col-md-4">
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Character of Multiple"
+                            value={multipleValue}
+                            onChange={(e) => setMultipleValue(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </>
+                    )}
+                  </Row>
+                )}
               {(selectedFieldType === "questionField" ||
                 selectedFieldType === "formField") && (
-                <Row className="mb-2">
-                  <label
-                    htmlFor="example-text-input"
-                    className="col-md-2 col-form-label"
-                  >
-                    Blanks
-                  </label>
-                  <div className={blank !== "allow" ? "col-md-4" : "col-md-10"}>
-                    <select
-                      className="form-control"
-                      value={blank}
-                      onChange={(e) => {
-                        setBlank(e.target.value);
-                      }}
-                      defaultValue={""}
+                  <Row className="mb-2">
+                    <label
+                      htmlFor="example-text-input"
+                      className="col-md-2 col-form-label"
                     >
-                      <option value="">Select an option</option>
-                      <option value="allow">Allow All</option>
-                      <option value="not allow">Allow None</option>
-                    </select>
-                  </div>
-                  {blank !== "allow" && (
-                    <>
-                      <label
-                        htmlFor="example-text-input"
-                        className="col-md-2 col-form-label"
+                      Blanks
+                    </label>
+                    <div className={blank !== "allow" ? "col-md-4" : "col-md-10"}>
+                      <select
+                        className="form-control"
+                        value={blank}
+                        onChange={(e) => {
+                          setBlank(e.target.value);
+                        }}
+                        defaultValue={""}
                       >
-                        Blank Value
-                      </label>
-                      <div className="col-md-4">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Character of Blank"
-                          value={blankValue}
-                          onChange={(e) => setBlankValue(e.target.value)}
-                          required
-                        />
-                      </div>
-                    </>
-                  )}
-                </Row>
-              )}
+                        <option value="">Select an option</option>
+                        <option value="allow">Allow All</option>
+                        <option value="not allow">Allow None</option>
+                      </select>
+                    </div>
+                    {blank !== "allow" && (
+                      <>
+                        <label
+                          htmlFor="example-text-input"
+                          className="col-md-2 col-form-label"
+                        >
+                          Blank Value
+                        </label>
+                        <div className="col-md-4">
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Character of Blank"
+                            value={blankValue}
+                            onChange={(e) => setBlankValue(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </>
+                    )}
+                  </Row>
+                )}
               {(selectedFieldType !== "idField" ||
                 selectedFieldType !== "skewMarkField") && (
-                <Row className="mb-2">
-                  <label
-                    htmlFor="example-text-input"
-                    className="col-md-2 col-form-label"
-                  >
-                    Window NG
-                  </label>
-                  <div className="col-md-10">
-                    <select
-                      className="form-control"
-                      value={windowNgOption}
-                      onChange={handleWindowNgOptionChange}
-                      defaultValue={""}
+                  <Row className="mb-2">
+                    <label
+                      htmlFor="example-text-input"
+                      className="col-md-2 col-form-label"
                     >
-                      <option value="">Select an option</option>
-                      <option value="0x00000001">
-                        Paper ejection to select stacker
-                      </option>
-                      <option value="0x00000002">Stop reading</option>
-                      <option value="0">No Action</option>
-                    </select>
-                  </div>
-                </Row>
-              )}
+                      Window NG
+                    </label>
+                    <div className="col-md-10">
+                      <select
+                        className="form-control"
+                        value={windowNgOption}
+                        onChange={handleWindowNgOptionChange}
+                        defaultValue={""}
+                      >
+                        <option value="">Select an option</option>
+                        <option value="0x00000001">
+                          Paper ejection to select stacker
+                        </option>
+                        <option value="0x00000002">Stop reading</option>
+                        <option value="0">No Action</option>
+                      </select>
+                    </div>
+                  </Row>
+                )}
               {selectedFieldType !== "idField" && (
                 <Row>
                   <label htmlFor="example-select-input" className="col-md-2">
@@ -2297,45 +2359,45 @@ const DesignTemplate = () => {
               )}
               {(selectedFieldType === "questionField" ||
                 selectedFieldType === "formField") && (
-                <Row className="mb-2">
-                  <label
-                    htmlFor="example-text-input"
-                    className="col-md-2 col-form-label "
-                  >
-                    Total Fields :
-                  </label>
-                  <div className="col-4 ">
-                    <input
-                      type="number"
-                      className="form-control"
-                      value={numberOfField}
-                      onChange={(e) => setNumberOfField(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <label
-                    htmlFor="example-text-input"
-                    className="col-md-2 col-form-label "
-                  >
-                    Field Type :
-                  </label>
-                  <div className="col-4 ">
-                    <select
-                      className="form-control"
-                      value={fieldType}
-                      onChange={(e) => {
-                        setFieldType(e.target.value);
-                      }}
-                      defaultValue={""}
+                  <Row className="mb-2">
+                    <label
+                      htmlFor="example-text-input"
+                      className="col-md-2 col-form-label "
                     >
-                      <option value="">Select field type... </option>
-                      <option value="numeric">Numeric </option>
-                      <option value="alphabet">Alphabet </option>
-                      <option value="custom">Custom </option>
-                    </select>
-                  </div>
-                </Row>
-              )}
+                      Total Fields :
+                    </label>
+                    <div className="col-4 ">
+                      <input
+                        type="number"
+                        className="form-control"
+                        value={numberOfField}
+                        onChange={(e) => setNumberOfField(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <label
+                      htmlFor="example-text-input"
+                      className="col-md-2 col-form-label "
+                    >
+                      Field Type :
+                    </label>
+                    <div className="col-4 ">
+                      <select
+                        className="form-control"
+                        value={fieldType}
+                        onChange={(e) => {
+                          setFieldType(e.target.value);
+                        }}
+                        defaultValue={""}
+                      >
+                        <option value="">Select field type... </option>
+                        <option value="numeric">Numeric </option>
+                        <option value="alphabet">Alphabet </option>
+                        <option value="custom">Custom </option>
+                      </select>
+                    </div>
+                  </Row>
+                )}
               {(selectedFieldType === "questionField" ||
                 selectedFieldType === "formField") &&
                 fieldType === "custom" && (

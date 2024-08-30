@@ -143,124 +143,8 @@ const DataProvider = (props) => {
       };
     });
   };
-  //   const addFieldToTemplateHandler = (regionData, index) => {
-  //     console.log("called")
-  //     const {
-  //       formFieldWindowParameters,
-  //       imageData,
-  //       printingData,
-  //       questionsWindowParameters,
-  //       skewMarksWindowParameters,
-  //       barcodeData,
-  //       layoutParameters,
-  //     } = regionData;
-
-  //     const imageCoordinates = layoutParameters.imageCoordinates;
-  //     const imageStructureData = {
-  //       height: imageCoordinates?.height,
-  //       x: imageCoordinates?.x,
-  //       y: imageCoordinates?.y,
-  //       width: imageCoordinates?.width,
-  //     };
-
-  //     const layoutCoordinates = layoutParameters.layoutCoordinates;
-  //     console.log(layoutCoordinates);
-  //     const Coordinate = {
-  //       "End Col": layoutCoordinates["right"],
-  //       "End Row": layoutCoordinates["end"],
-  //       "Start Col": layoutCoordinates["left"],
-  //       "Start Row": layoutCoordinates["start"],
-  //       name: layoutCoordinates["name"],
-  //       fieldType: layoutCoordinates["fieldType"],
-  //     };
-
-  //     const updatedLayoutParameter = {
-  //       ...layoutParameters,
-  //       Coordinate,
-  //       imageStructureData,
-  //     };
-  //     delete updatedLayoutParameter.imageCoordinates;
-  //     delete updatedLayoutParameter.layoutCoordinates;
-
-  //     //   console.log(formFieldWindowParameters);
-
-  //     const updatedFormField = formFieldWindowParameters?.map((item) => {
-  //       const { formFieldCoordinates, ...rest } = item;
-  //       const questionWindowCoordinates = formFieldCoordinates
-  //         ? {
-  //             "End Col": formFieldCoordinates["right"],
-  //             "End Row": formFieldCoordinates["end"],
-  //             "Start Col": formFieldCoordinates["left"],
-  //             "Start Row": formFieldCoordinates["start"],
-  //             name: formFieldCoordinates["name"],
-  //             fieldType: formFieldCoordinates["fieldType"],
-  //           }
-  //         : {};
-  //       return { ...rest, Coordinate: questionWindowCoordinates };
-  //     });
-  //     const updatedSkewField = skewMarksWindowParameters?.map((item) => {
-  //       const { layoutWindowCoordinates, ...rest } = item;
-  //       const questionWindowCoordinates = layoutWindowCoordinates
-  //         ? {
-  //             "End Col": layoutWindowCoordinates["right"],
-  //             "End Row": layoutWindowCoordinates["end"],
-  //             "Start Col": layoutWindowCoordinates["left"],
-  //             "Start Row": layoutWindowCoordinates["start"],
-  //             name: layoutWindowCoordinates["name"],
-  //             fieldType: layoutWindowCoordinates["fieldType"],
-  //           }
-  //         : {};
-  //       return { ...rest, Coordinate: questionWindowCoordinates };
-  //     });
-  //     const updatedQuestionField = questionsWindowParameters?.map((item) => {
-  //       const { questionWindowCoordinates, ...rest } = item;
-  //       const questionWindowCoordinates1 = questionWindowCoordinates
-  //         ? {
-  //             "End Col": questionWindowCoordinates["right"],
-  //             "End Row": questionWindowCoordinates["end"],
-  //             "Start Col": questionWindowCoordinates["left"],
-  //             "Start Row": questionWindowCoordinates["start"],
-  //             name: questionWindowCoordinates["name"],
-  //             fieldType: questionWindowCoordinates["fieldType"],
-  //           }
-  //         : {};
-  //       return { ...rest, Coordinate: questionWindowCoordinates1 };
-  //     });
-  //     // const Coordinate = {
-  //     //   "End Col": layoutCoordinates["right"],
-  //     //   "End Row": layoutCoordinates["end"],
-  //     //   "Start Col": layoutCoordinates["left"],
-  //     //   "Start Row": layoutCoordinates["start"],
-  //     // };
-
-  //     // const updatedLayoutParameter = {
-  //     //   ...layoutParameters,
-  //     //   Coordinate,
-  //     //   imageStructureData,
-  //     // };
-  //     // delete updatedLayoutParameter.imageCoordinates;
-  //     // delete updatedLayoutParameter.layoutCoordinates;
-  //     console.log(updatedQuestionField);
-  //     setDataState((prevState) => {
-  //       const copiedData = [...prevState.allTemplates];
-  //       const currentTemplate = copiedData[index];
-  //       currentTemplate[0].skewMarksWindowParameters = updatedSkewField;
-  //       currentTemplate[0].formFieldWindowParameters = updatedFormField;
-  //       currentTemplate[0].questionsWindowParameters = updatedQuestionField;
-  //       currentTemplate[0].imageData = imageData;
-  //       currentTemplate[0].printingData = printingData;
-  //       currentTemplate[0].barcodeData = barcodeData;
-  //       currentTemplate[0].layoutParameters = updatedLayoutParameter;
-  // console.log(copiedData)
-  //       return {
-  //         ...prevState,
-  //         allTemplates: copiedData,
-  //       };
-  //     });
-  //   };
 
   const addFieldToTemplateHandler = (regionData, index) => {
-    console.log(regionData);
     const {
       formFieldWindowParameters,
       imageData,
@@ -356,46 +240,6 @@ const DataProvider = (props) => {
     });
   };
 
-  // const modifyWithRegionHandler = (
-  //   templateIndex,
-  //   regionData,
-  //   fieldType,
-  //   coordinateIndex
-  // ) => {
-  //   if (coordinateIndex === -1) {
-  //     alert("cannot be -1");
-  //   }
-  //   setDataState((item) => {
-  //     const copiedData = [...item.allTemplates];
-  //     const currentTemplate = copiedData[templateIndex];
-
-  //     switch (fieldType) {
-  //       case "skewMarkField":
-  //         currentTemplate[0].skewMarksWindowParameters[coordinateIndex] =
-  //           regionData;
-  //         break;
-  //       case "formField":
-  //         currentTemplate[0].formFieldWindowParameters[coordinateIndex] =
-  //           regionData;
-  //         break;
-  //       case "questionField":
-  //         currentTemplate[0].questionsWindowParameters[coordinateIndex] =
-  //           regionData;
-
-  //         break;
-  //       default:
-  //         currentTemplate[0].layoutParameters = {
-  //           ...currentTemplate[0].layoutParameters,
-  //           ...regionData,
-  //         };
-  //         break;
-  //     }
-  //     return {
-  //       ...item,
-  //       allTemplates: copiedData,
-  //     };
-  //   });
-  // };
   const modifyRegionWithUUIDHandler = (
     uuid,
     regionData,
@@ -792,6 +636,32 @@ const DataProvider = (props) => {
       };
     });
   };
+  const templateReplaceHandler = (templateData) => {
+    setDataState((prevState) => {
+      // Clone the previous state's allTemplates array
+      const copiedData = [...prevState.allTemplates];
+
+      // Find the index of the template with the matching UUID
+      const templateIndex = prevState.allTemplates.findIndex(
+        (item) =>
+          item[0].layoutParameters?.key === copiedData[0].layoutParameters.key
+      );
+
+      // If the template is found, replace it with the new data
+      if (templateIndex !== -1) {
+        copiedData[templateIndex] = templateData;
+      } else {
+        console.warn(`Template with UUID ${uuid} not found.`);
+      }
+
+      // Return the new state object
+      return {
+        ...prevState,
+        allTemplates: copiedData,
+      };
+    });
+  };
+
   const dataContext = {
     allTemplates: dataState.allTemplates,
     setAllTemplates: templateHandler,
@@ -810,6 +680,7 @@ const DataProvider = (props) => {
     updateTemplateParameter: updateTemplateParameterHandler,
     addImageCoordinateWithIndex: addImageCoordinateWithIndexHandler,
     setBackendIP: setBackendIPHandler,
+    replaceTemplate: templateReplaceHandler,
   };
 
   return (

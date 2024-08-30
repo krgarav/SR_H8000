@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   BrowserRouter,
   Route,
@@ -16,6 +16,10 @@ import MainLogin from "views/examples/MainLogin";
 import IpModal from "ui/IpChange";
 import axios from "axios";
 import { getUrls } from "helper/url_helper";
+import DataContext from "store/DataContext";
+import { fetchAllTemplate } from "helper/TemplateHelper";
+import TextLoader from "loaders/TextLoader";
+import { toast } from "react-toastify";
 const useTokenRedirect = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -54,9 +58,35 @@ const useTokenRedirect = () => {
     }
   }, []);
 };
+
+const fetchTemplates = (setTemplateLoading, dataCtx, toggle) => {
+  useEffect(() => {
+    const fetchData = async () => {
+      setTemplateLoading(true);
+      try {
+        const templates = await fetchAllTemplate();
+        if (!templates) {
+          throw new Error("Error fetching templates");
+        }
+        const mpObj = templates.map((item) => {
+          return [{ layoutParameters: item }];
+        });
+        dataCtx.addToAllTemplate(mpObj);
+      } catch (error) {
+        toast.error(error.message || "Error fetching templates");
+      } finally {
+        setTemplateLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+}
 const App = () => {
   const [showIpModal, setShowIpModal] = useState(false);
-
+  const [templateLoading, setTemplateLoading] = useState(true); // State to manage loading
+  const dataCtx = useContext(DataContext); // Assuming you are using context
+  const toggle = true;
+  fetchTemplates(setTemplateLoading, dataCtx, toggle);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -101,6 +131,12 @@ const App = () => {
     }, 400);
   };
   useTokenRedirect();
+
+  if (templateLoading) {
+    return  <TextLoader message={"Updating, Please wait..."} />; // Show loader while fetching templates
+  }
+console.log("logged")
+console.log(dataCtx.allTemplates)
   return (
     <>
       <IpModal
