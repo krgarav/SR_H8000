@@ -313,7 +313,7 @@ const DesignTemplate = () => {
             );
             const copiedObject = deepcopy(localData[0]);
             copiedObject.layoutParameters = { ...copiedObject.layoutParameters, numberedExcelJsonFile: data }
-            dataCtx.templateReplaceHandler([copiedObject])
+            dataCtx.replaceTemplate([copiedObject])
             localStorage.setItem("Template", JSON.stringify([copiedObject]));
           }
         }

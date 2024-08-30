@@ -642,9 +642,9 @@ const DataProvider = (props) => {
       const copiedData = [...prevState.allTemplates];
 
       // Find the index of the template with the matching UUID
-      const templateIndex = prevState.allTemplates.findIndex(
+      const templateIndex = copiedData.findIndex(
         (item) =>
-          item[0].layoutParameters?.key === copiedData[0].layoutParameters.key
+          item[0]?.layoutParameters?.key === templateData[0]?.layoutParameters.key
       );
 
       // If the template is found, replace it with the new data
