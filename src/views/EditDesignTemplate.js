@@ -1284,8 +1284,8 @@ const EditDesignTemplate = () => {
     try {
       const response2 = await getUrls();
       const GetDataURL = response2.DELETE_TEMPLATE;
-
       const deleteTemplat =await axios.delete(`${GetDataURL}?Id=${data.templateId}`);
+      
     } catch (error) {
       console.log(error);
     }
@@ -1505,7 +1505,6 @@ const EditDesignTemplate = () => {
                     {Array.from({ length: numRows }).map((_, rowIndex) => {
                       const result = [...data.excelJsonFile.map(Object.values)];
                       const numberedJson = [...data.numberedExcelJsonFile.map(Object.values)]
-                      console.log(numberedJson)
                       return (
                         <div key={rowIndex} className="row">
                           <div

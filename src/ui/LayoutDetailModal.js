@@ -216,7 +216,10 @@ const LayoutDetailModal = (props) => {
       const layoutData = props.layoutData;
       if (layoutData) {
         const layout = layoutData?.layoutParameters;
-        console.log(layout);
+        const printData = layoutData?.printingData;
+        const barcodeData = layoutData?.barcodeData;
+        const imageData = layoutData?.imageData;
+      
         if (layout) {
           setName(layout.layoutName);
           setNumberOfLines(layout.timingMarks);
@@ -228,8 +231,25 @@ const LayoutDetailModal = (props) => {
           } else {
             const filter = IdOptionData[0];
             setIdPresent(filter);
+            setFace(comparewithId(faceData, layout.iFace))
+            setWindowNgOption(comparewithId(windowNgData, layout.ngAction));
           }
-
+          if (layout.barcodeCount !== 0) {
+            setBarcodeEnable(barcodeOptionData[0])
+            setBarCount(layout.barcodeCount);
+            setBarcodeCategory(comparewithId(barcodeCategoryData, barcodeData.readFrom));
+            // setBarcodeRejectStatus(comparewithId(barcodeRejectData,barcodeData.))
+            setBarcodeType(comparewithId(barcodeTypeData, barcodeData.barcodeType));
+            setBarcodeBottomPos(barcodeData.barcodeBottomPos)
+            setBarcodeTopPos(barcodeData.barcodeTopPos);
+            setBarcodeLeftPos(barcodeData.barcodeLeftPos);
+            setBarcodeRightPos(barcodeData.barcodeRightPos);
+            if(barcodeData.barcodeType === "0x1U") {
+              setCheckDigit(comparewithId(code39OrItfCheckDigitData, barcodeData.barcodeCheckDigit));
+            } else {
+              setCheckDigit(comparewithId(nw7CheckDigitData, barcodeData.barcodeCheckDigit));
+            }
+          }
           setSelectedBubble(comparewithName(bubbleData, layout.bubbleType));
           setSensitivity(layout.iSensitivity);
           setDifference(layout.iDifference);
@@ -238,6 +258,26 @@ const LayoutDetailModal = (props) => {
           setBackImageSrc(layout.templateBackImagePath);
           setImageSrc(layout.templateImagePath);
           setExcelJsonFile(layout.excelJsonFile);
+          if(printData.printEnable){
+            setPrintEnable(printOptionData[0])
+            setStartPosition(printData.printStartPos);
+            setFontSpace(printData.printFontSpace);
+            setPrintDigit(printData.printDigit);
+            setPrintStartNumber(printData.printStartNumber);
+            setPrintOrientation(comparewithId(printOrientationOption,printData.printOrientation));
+            setPrintMode(comparewithId(printModeOption,printData.printMode));
+            setPrintCustom(comparewithId(printCustomOption,printData.customType))
+            setPrintCustomValue(printData.customValue);
+            setImageStatus(comparewithId(imageStatusData,imageData.imageEnable))
+          }
+          
+          if(imageData.imageEnable){
+            setColorType(comparewithId(colorTypeData,imageData.imageColor));
+            setEncoding(comparewithId(encodingOptionData,imageData.imageType));
+            setRotation(comparewithId(rotationOptionData,imageData.imageRotation));
+            setResolution(comparewithId(resolutionOptionData,imageData.imageResolution))
+            // setScanningSide(comparewithId(scanningSideData,imageData))
+          }
         }
       }
       // dataCtx.addFieldToTemplate(res, data.templateIndex);
