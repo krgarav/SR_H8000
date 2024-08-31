@@ -24,7 +24,6 @@ const useTokenRedirect = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -56,31 +55,9 @@ const useTokenRedirect = () => {
     } else {
       navigate("/auth/login", { replace: true });
     }
-  }, []);
+  }, [location.pathname]);
 };
 
-const fetchTemplates = (setTemplateLoading, dataCtx, toggle) => {
-  useEffect(() => {
-    const fetchData = async () => {
-      setTemplateLoading(true);
-      try {
-        const templates = await fetchAllTemplate();
-        if (!templates) {
-          throw new Error("Error fetching templates");
-        }
-        const mpObj = templates.map((item) => {
-          return [{ layoutParameters: item }];
-        });
-        dataCtx.addToAllTemplate(mpObj);
-      } catch (error) {
-        toast.error(error.message || "Error fetching templates");
-      } finally {
-        setTemplateLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-}
 const App = () => {
   const [showIpModal, setShowIpModal] = useState(false);
   const [templateLoading, setTemplateLoading] = useState(true); // State to manage loading
@@ -151,7 +128,10 @@ const App = () => {
       window.location.reload(); // Reload the page
     }, 400);
   };
-  useTokenRedirect();
+
+    useTokenRedirect();
+
+ 
 
   if (templateLoading) {
     return <TextLoader message={"Updating, Please wait..."} />; // Show loader while fetching templates

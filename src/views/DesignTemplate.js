@@ -1396,22 +1396,6 @@ const DesignTemplate = () => {
           {!loading ? "Save" : "Saving"}
         </Button>
 
-        {/* <div
-          style={{
-            position: "fixed",
-            top: "50%", // Center vertically
-            transform: "translateY(-50%) rotate(90deg)", // Center vertically and rotate
-            zIndex: "999",
-          }}
-        >
-          <Button
-            onClick={() => {
-              setDetailPage(true);
-            }}
-          >
-            Layout details
-          </Button>
-        </div> */}
         <div className="main-container">
           <div className="containers">
             <div className="d-flex">

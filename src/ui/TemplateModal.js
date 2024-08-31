@@ -322,8 +322,7 @@ const TemplateModal = (props) => {
       barCount.length === 0 ||
       difference.length == 0 ||
       !direction ||
-      face.length === 0 ||
-      !imageFile
+      face.length === 0 
     ) {
       settoggle((prevData) => ({
         ...prevData,
@@ -390,10 +389,7 @@ const TemplateModal = (props) => {
         toast.error("Please Select Page Position");
         return;
       }
-      if (!imageFile) {
-        toast.error("Please Select Image");
-        return;
-      }
+      
       if (!excelJsonFile) {
         toast.error("Please Select Excel File");
         return;
@@ -533,12 +529,17 @@ const TemplateModal = (props) => {
     setFileModal(true);
   };
   const saveHandler = () => {
-    if (imageTempFile) {
-      setImageFile(imageTempFile);
-      setImageModal(false);
-    } else {
+    if(!image){
       alert("Please select image");
+    }else{
+      setImageModal(false);
     }
+    // if (imageTempFile) {
+    //   // setImageFile(imageTempFile);
+    //   setImageModal(false);
+    // } else {
+    //   alert("Please select image");
+    // }
   };
   const saveFileHandler = () => {
     if (!image) {
@@ -2182,7 +2183,7 @@ const TemplateModal = (props) => {
 
               <div>
                 {selectedUI &&
-                  (!imageFile ? (
+                  (!image ? (
                     <Button onClick={imageModalHandler}>Select Image</Button>
                   ) : (
                     <div>

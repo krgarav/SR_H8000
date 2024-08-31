@@ -257,6 +257,8 @@ const LayoutDetailModal = (props) => {
           setDirection(comparewithId(directionData, layout.dataReadDirection));
           setBackImageSrc(layout.templateBackImagePath);
           setImageSrc(layout.templateImagePath);
+          setImage(layout.templateImagePath);
+          
           setExcelJsonFile(layout.excelJsonFile);
           if(printData.printEnable){
             setPrintEnable(printOptionData[0])
@@ -2184,7 +2186,7 @@ const LayoutDetailModal = (props) => {
 
               <div>
                 {selectedUI &&
-                  (!imageFile ? (
+                  (!image ? (
                     <Button onClick={imageModalHandler}>Select Image</Button>
                   ) : (
                     <div>
