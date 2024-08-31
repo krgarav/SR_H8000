@@ -1541,28 +1541,36 @@ const EditDesignTemplate = () => {
                             <div className="timing-mark "></div>
                           </div>
                           {Array.from({ length: numCols }).map(
-                            (_, colIndex) => (
+                            (_, colIndex) => {
+                              const num =(numberedJson[rowIndex] &&
+                              numberedJson[rowIndex][colIndex]) !==
+                            undefined
+                              ? numberedJson[rowIndex][colIndex]
+                              : null;
+                              let bgColor =  (result[rowIndex][colIndex] != 0 &&
+                              result[rowIndex][colIndex] !== undefined)?"black":""
+                              console.log(num)
+                              if(num){
+                                bgColor="lightgreen"
+                              }
+
+
+                              return (
                               <div
                                 key={colIndex}
                                 style={{
-                                  backgroundColor:
-                                    rowIndex < result.length &&
-                                    colIndex < result[rowIndex].length &&
-                                    result[rowIndex][colIndex] != 0 &&
-                                    result[rowIndex][colIndex] !== undefined
-                                      ? "black"
-                                      : "",
+                                  backgroundColor: bgColor,
                                   display: "flex",
                                   alignItems: "center",
                                   justifyContent: "center",
                                   fontSize: "12px",
-                                  color:
-                                    rowIndex < result.length &&
-                                    colIndex < result[rowIndex].length &&
-                                    result[rowIndex][colIndex] != 0 &&
-                                    result[rowIndex][colIndex] !== undefined
-                                      ? "lightgray"
-                                      : "black",
+                                  color: "black",
+                                    // rowIndex < result.length &&
+                                    // colIndex < result[rowIndex].length &&
+                                    // result[rowIndex][colIndex] != 0 &&
+                                    // result[rowIndex][colIndex] !== undefined
+                                    //   ? "lightgray"
+                                    //   : "black",
                                   userSelect: "none",
                                 }}
                                 className={`${data.bubbleType} ${
@@ -1577,7 +1585,7 @@ const EditDesignTemplate = () => {
                                   ? numberedJson[rowIndex][colIndex]
                                   : null}
                               </div>
-                            )
+                            )}
                           )}
                         </div>
                       );
