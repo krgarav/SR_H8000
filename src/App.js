@@ -55,7 +55,7 @@ const useTokenRedirect = () => {
     } else {
       navigate("/auth/login", { replace: true });
     }
-  }, [location.pathname]);
+  }, []);
 };
 
 const App = () => {
@@ -118,7 +118,6 @@ const App = () => {
   }, []);
 
   const handleSaveIp = (ip, protocol) => {
-
     const Obj = {
       backendUrl: ip,
     };

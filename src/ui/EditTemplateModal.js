@@ -238,11 +238,13 @@ const EditTemplateModal = (props) => {
             setWindowNgOption(comparewithId(windowNgData, layout.ngAction));
 
           }
+          console.log(layout.barcodeCount)
           if (layout.barcodeCount !== 0) {
             setBarcodeEnable(barcodeOptionData[0])
             setBarCount(layout.barcodeCount);
-            setBarcodeCategory(comparewithId(barcodeCategoryData, barcodeData.readFrom));
-            // setBarcodeRejectStatus(comparewithId(barcodeRejectData,barcodeData.))
+            console.log(comparewithId(barcodeCategoryData, barcodeData.readFrom.toLowerCase()))
+            setBarcodeCategory(comparewithId(barcodeCategoryData, barcodeData.readFrom.toLowerCase()));
+          //   // setBarcodeRejectStatus(comparewithId(barcodeRejectData,barcodeData.))
             setBarcodeType(comparewithId(barcodeTypeData, barcodeData.barcodeType));
             setBarcodeBottomPos(barcodeData.barcodeBottomPos)
             setBarcodeTopPos(barcodeData.barcodeTopPos);
@@ -1634,7 +1636,7 @@ const EditTemplateModal = (props) => {
                             )}
                           </div>
                         </Row>
-                        {barcodeCategory.id === "hardware" && (
+                        {barcodeCategory?.id === "hardware" && (
                           <Row className="mb-3">
                             <label
                               htmlFor="example-text-input"
@@ -1770,7 +1772,7 @@ const EditTemplateModal = (props) => {
                                 </div>
                               </Row>
                             )}
-                          {barcodeCategory.id !== "software" && (
+                          {barcodeCategory?.id !== "software" && (
                             <Row className="mb-3">
                               <label
                                 htmlFor="example-text-input"
@@ -1825,7 +1827,7 @@ const EditTemplateModal = (props) => {
                                         </div>
 
                                     </Row> */}
-                          {barcodeCategory.id !== "software" && (
+                          {barcodeCategory?.id !== "software" && (
                             <Row className="mb-3 align-items-center">
                               <label
                                 htmlFor="top-input"
@@ -1876,7 +1878,7 @@ const EditTemplateModal = (props) => {
                             </Row>
                           )}
 
-                          {barcodeCategory.id !== "software" && (
+                          {barcodeCategory?.id !== "software" && (
                             <Row className="mb-3 align-items-center">
                               <label
                                 htmlFor="top-input"
