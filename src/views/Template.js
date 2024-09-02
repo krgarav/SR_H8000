@@ -80,12 +80,13 @@ const Template = () => {
     const temp = await CloneTemplateHandler(
       templateDatail[0].layoutParameters.id
     );
-
-    if ("Template Cloned Successfully") {
+  
+    if (temp==="Template Cloned Successfully") {
       toast.success(temp);
     } else {
       toast.error(temp);
     }
+    setToggle(tg=>!tg)
     setShowDetailModal(false);
   };
   const handleRowClick = (rowData, index) => {};

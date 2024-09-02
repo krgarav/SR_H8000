@@ -1572,9 +1572,9 @@ const EditDesignTemplate = () => {
                     onMouseDown={handleMouseDown}
                     onMouseUp={handleMouseUp}
                     onMouseMove={handleMouseMove}
-                    onTouchStart={handleMouseDown}
-                    onTouchEnd={handleMouseUp}
-                    onTouchMove={handleMouseMove}
+                    // onTouchStart={handleMouseDown}
+                    // onTouchEnd={handleMouseUp}
+                    // onTouchMove={handleMouseMove}
                   >
                     {Array.from({ length: numRows }).map((_, rowIndex) => {
                       const result = [...data.excelJsonFile.map(Object.values)];
