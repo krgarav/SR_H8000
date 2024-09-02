@@ -73,10 +73,11 @@ const CloneTemplateHandler = async (templateId, name) => {
       formdata.append("LayoutId", layoutId);
       formdata.append("FrontImageFile", frontImgfile);
       formdata.append("BackImageFile", backImgfile);
-    //   formdata.append("ExcelFile", csvfile);
+      formdata.append("ExcelFile", csvfile);
 
       // Send the files
       const res2 = await sendFile(formdata);
+      console.log(res2)
       if (res2.success) {
         return "Template Cloned Successfully";
       }else{
