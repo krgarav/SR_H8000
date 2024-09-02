@@ -1550,7 +1550,7 @@ const EditDesignTemplate = () => {
                               let bgColor =  (result[rowIndex][colIndex] != 0 &&
                               result[rowIndex][colIndex] !== undefined)?"black":""
                               console.log(num)
-                              if(num){
+                              if(num||num===0){
                                 bgColor="lightgreen"
                               }
 

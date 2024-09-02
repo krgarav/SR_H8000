@@ -133,7 +133,7 @@ const App = () => {
  
 
   if (templateLoading) {
-    return <TextLoader message={"Updating, Please wait..."} />; // Show loader while fetching templates
+    return <TextLoader message={"Loading, Please wait..."} />; // Show loader while fetching templates
   }
   return (
     <>
