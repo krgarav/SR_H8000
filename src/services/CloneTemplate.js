@@ -12,8 +12,7 @@ const CloneTemplateHandler = async (templateId, name) => {
     const templateFile = res.templateFiles.slice(-3);
 
     if (templateFile.length < 3) {
-      alert("No images found in this template. Cannot open the template.");
-      return;
+      return "No images found in this template. Cannot open the template.";
     }
 
     const csvpath = res?.templateFiles[2].excelPath;
@@ -27,15 +26,14 @@ const CloneTemplateHandler = async (templateId, name) => {
     ]);
 
     if (res3 === undefined) {
-      alert("No back image found in this template. Cannot open the template.");
-      return;
+      return "No back image found in this template. Cannot open the template.";
     }
 
     const backImgfile = base64ToFile(res3.image, "back.jpg");
 
     if (res1 === undefined) {
-      alert("No front image found in this template. Cannot open the template.");
-      return;
+    //   alert("No front image found in thi/s template. Cannot open the template.");
+      return "No front image found in this template. Cannot open the template.";
     }
 
     const frontImgfile = base64ToFile(res1.image, "front.jpg");

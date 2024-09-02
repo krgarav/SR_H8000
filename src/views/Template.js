@@ -80,11 +80,11 @@ const Template = () => {
     const temp = await CloneTemplateHandler(
       templateDatail[0].layoutParameters.id
     );
-  
+
     if ("Template Cloned Successfully") {
       toast.success(temp);
-    }else{
-      toast.error(temp)
+    } else {
+      toast.error(temp);
     }
     setShowDetailModal(false);
   };
