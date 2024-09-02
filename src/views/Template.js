@@ -27,6 +27,7 @@ import { getLayoutDataById } from "helper/TemplateHelper";
 import Papa from "papaparse";
 import { checkJobStatus } from "helper/TemplateHelper";
 import Placeholder from "ui/Placeholder";
+import CloneTemplateHandler from "services/CloneTemplate";
 const base64ToFile = (base64, filename) => {
   const byteString = atob(base64.split(",")[1]);
   const mimeString = base64.split(",")[0].split(":")[1].split(";")[0];
@@ -47,12 +48,14 @@ const Template = () => {
   const [templateLoading, setTemplateLoading] = useState(false);
   const navigate = useNavigate();
   const dataCtx = useContext(DataContext);
-  useEffect(() => { sessionStorage.clear() }, [])
+  useEffect(() => {
+    sessionStorage.clear();
+  }, []);
   useEffect(() => {
     const fetchData = async () => {
       setTemplateLoading(true);
       const templates = await fetchAllTemplate();
-      console.log(templates)
+      console.log(templates);
       if (templates === undefined) {
         toast.error("Error fetching templates");
         setTemplateLoading(false);
@@ -66,14 +69,26 @@ const Template = () => {
     fetchData();
   }, [toggle]);
 
-  const showHandler = (arr) => {
+  const duplicateHandler = (arr) => {
     setShowDetailModal(true);
+    console.log(arr);
     setTemplateDetail(arr);
   };
-
-  const handleRowClick = (rowData, index) => {
-
+  const cloneHandler = async (arr) => {
+    // setShowDetailModal(false);
+    console.log(templateDatail[0].layoutParameters.id);
+    const temp = await CloneTemplateHandler(
+      templateDatail[0].layoutParameters.id
+    );
+  
+    if ("Template Cloned Successfully") {
+      toast.success(temp);
+    }else{
+      toast.error(temp)
+    }
+    setShowDetailModal(false);
   };
+  const handleRowClick = (rowData, index) => {};
   const editHandler = async (arr, index) => {
     setLoading(true);
     const tempdata = arr[0].layoutParameters;
@@ -119,7 +134,6 @@ const Template = () => {
     // Create a File from the Blob
     const csvfile = new File([blob], "data.csv", { type: "text/csv" });
     setLoading(false);
-
 
     navigate("/admin/template/edit-template", {
       state: {
@@ -255,8 +269,10 @@ const Template = () => {
             <i className="fas fa-ellipsis-v" />
           </DropdownToggle>
           <DropdownMenu className="dropdown-menu-arrow" right>
-            {/* <DropdownItem onClick={() => showHandler(d)}>Show</DropdownItem> */}
             <DropdownItem onClick={() => editHandler(d, i)}>Edit</DropdownItem>
+            <DropdownItem onClick={() => duplicateHandler(d)}>
+              Duplicate
+            </DropdownItem>
             <DropdownItem
               style={{ color: "red" }}
               onClick={() => deleteHandler(d, i)}
@@ -348,7 +364,7 @@ const Template = () => {
         >
           <Modal.Header>
             <Modal.Title id="modal-custom-navbar">
-              Template Name : {templateDatail[0]["Template Name"]}
+              Template Name : {templateDatail[0].layoutParameters.layoutName}
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -365,8 +381,7 @@ const Template = () => {
                 <input
                   type="text"
                   className="form-control"
-                  value={templateDatail[0]["Template Name"]}
-                  readOnly
+                  value={templateDatail[0].layoutParameters.layoutName}
                 />
               </Col>
             </Row>
@@ -383,7 +398,7 @@ const Template = () => {
                 <input
                   type="text"
                   className="form-control"
-                  value={templateDatail[0]["Rows"]}
+                  value={templateDatail[0].layoutParameters.timingMarks}
                   readOnly
                 />
               </Col>
@@ -399,7 +414,7 @@ const Template = () => {
                 <input
                   type="text"
                   className="form-control"
-                  value={templateDatail[0]["Cols"]}
+                  value={templateDatail[0].layoutParameters.totalColumns}
                   readOnly
                 />
               </Col>
@@ -415,7 +430,7 @@ const Template = () => {
                 <input
                   type="text"
                   className="form-control"
-                  value={templateDatail[0]["Bubble Type"]}
+                  value={templateDatail[0].layoutParameters.bubbleType}
                   readOnly
                 />
               </Col>
@@ -508,6 +523,9 @@ const Template = () => {
               onClick={() => setShowDetailModal(false)}
             >
               Close
+            </Button>
+            <Button variant="success" onClick={cloneHandler}>
+              Clone Template
             </Button>
           </Modal.Footer>
         </Modal>

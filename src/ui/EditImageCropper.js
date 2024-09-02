@@ -3,6 +3,7 @@ import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import { Row } from "reactstrap";
 import { Modal, Button, Col } from "react-bootstrap";
+import Select, { components } from "react-select";
 import {
   Card,
   CardHeader,
@@ -17,7 +18,12 @@ import classes from "./ImageCropper.module.css";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 import DataContext from "store/DataContext";
-const EditImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
+const EditImageCropper = ({
+  imageSrc,
+  handleImage,
+  backImageSrc,
+  selectedCoordinateData,
+}) => {
   const dataCtx = useContext(DataContext);
   const cropperRef = useRef(null);
   const [cropData, setCropData] = useState(null);
@@ -27,15 +33,21 @@ const EditImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
   const [croppingSide, setCroppingSide] = useState("frontSide");
   const [currentImage, setCurrentImage] = useState(imageSrc);
   const [show, setShow] = useState(false);
+  const [options, setOptions] = useState([]);
+  const [prefix,setPrefix] = useState("");
 
+  useEffect(() => {
+    const coordinateOptns = selectedCoordinateData.map((item) => {
+      return { id: item.name, label: item.name };
+    });
+    setOptions(coordinateOptns);
+  }, [selectedCoordinateData]);
   useEffect(() => {
     const currentTemplate = sessionStorage.getItem("templateIndex");
     const imageCoordinate =
       dataCtx.allTemplates[currentTemplate][0]?.imageCroppingDTO ?? [];
     setAllImages(imageCoordinate);
   }, [dataCtx.allTemplates, imageSrc]);
-;
-
   useEffect(() => {
     const templateIndex = sessionStorage.getItem("templateIndex");
     if (allImages.length > 0) {
@@ -351,11 +363,19 @@ const EditImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
           <Table className="align-items-center table-flush mb-5" responsive>
             <thead className="thead-light">
               <tr>
-                <th scope="col" className="text-center">SL no.</th>
-                <th scope="col" className="text-center">Image Name</th>
-                <th scope="col" className="text-center">Cropping Area</th>
-                <th scope="col" className="text-center">Coordinate</th>
-                <th scope="col"className="text-center"></th>
+                <th scope="col" className="text-center">
+                  SL no.
+                </th>
+                <th scope="col" className="text-center">
+                  Image Name
+                </th>
+                <th scope="col" className="text-center">
+                  Cropping Area
+                </th>
+                <th scope="col" className="text-center">
+                  Coordinate
+                </th>
+                <th scope="col" className="text-center"></th>
               </tr>
             </thead>
             <tbody style={{ textAlign: "center" }}>
@@ -380,21 +400,44 @@ const EditImageCropper = ({ imageSrc, handleImage, backImageSrc }) => {
         onHide={() => setShow(false)}
       >
         <Modal.Header closeButton>
-          <Modal.Title>
-            <Row>
-              <label htmlFor="imageName" className="col-md-4 ">
-                Image Name:
-              </label>
-              <div className="col-md-8">
-                <input
-                  id="imageName"
-                  type="text"
-                  placeholder="Enter Image Name"
-                  className="form-control"
-                  onChange={(e) => setImageName(e.target.value)}
-                  autoComplete="off"
-                />
-              </div>
+          <Modal.Title
+            style={{
+              width: "80%",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Row md={12} style={{ width: "100%" }}>
+              <Col md={6}>
+                <div className="d-flex align-items-center">
+                  <label htmlFor="prefixName" className="form-label me-2">
+                    Prefix:
+                  </label>
+                  <Select
+                    value={prefix}
+                    onChange={(selectedValue) => setPrefix(selectedValue)}
+                    options={options}
+                    getOptionLabel={(option) => option?.label || ""}
+                    getOptionValue={(option) => option?.id?.toString() || ""}
+                    placeholder="Select Prefix..."
+                  />
+                </div>
+              </Col>
+              <Col md={6}>
+                <div className="d-flex align-items-center">
+                  <label htmlFor="imageName" className="form-label">
+                    Image Name :
+                  </label>
+                  <input
+                    id="imageName"
+                    type="text"
+                    placeholder="Enter Image Name"
+                    className="form-control"
+                    onChange={(e) => setImageName(e.target.value)}
+                    autoComplete="off"
+                  />
+                </div>
+              </Col>
             </Row>
           </Modal.Title>
         </Modal.Header>

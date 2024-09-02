@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Modal, Button, Col, Spinner, Badge } from "react-bootstrap";
+import { Modal, Button, Col, Spinner, Badge, Container } from "react-bootstrap";
 import { Row } from "reactstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import classes from "./DesignTemplate.module.css";
@@ -31,7 +31,7 @@ import TextLoader from "loaders/TextLoader";
 import { getUrls } from "../helper/url_helper";
 import processDirection from "data/processDirection";
 import resetJson from "data/resetJson";
-
+import { useWindowSize } from "react-use";
 // Function to get values from sessionStorage or provide default
 const getSessionStorageOrDefault = (key, defaultValue) => {
   const stored = sessionStorage.getItem(key);
@@ -153,7 +153,8 @@ const EditDesignTemplate = () => {
   const divRefs = useRef([]);
   const numRows = data.timingMarks;
   const numCols = data.totalColumns;
-
+  const { width } = useWindowSize();
+  const isWideScreen = width >= 994;
   // Function to fetch data from localStorage
   const fetchDataFromLocalStorage = () => {
     setData((item) => {
@@ -293,20 +294,20 @@ const EditDesignTemplate = () => {
 
         if (data2) {
           // Determine the reading direction
-            let readingDirection = "rightToLeft";
-            if(layoutDetails.dataReadDirection==="Top To Bottom"){
-              if(isQuestionField){
-                readingDirection="leftToRight";
-              }else{
-                readingDirection = "topToBottom";
-              }
-            }else{
-              if(isQuestionField){
-                readingDirection="rightToLeft";
-              }else{
-                readingDirection = "bottomToTop";
-              }
+          let readingDirection = "rightToLeft";
+          if (layoutDetails.dataReadDirection === "Top To Bottom") {
+            if (isQuestionField) {
+              readingDirection = "leftToRight";
+            } else {
+              readingDirection = "topToBottom";
             }
+          } else {
+            if (isQuestionField) {
+              readingDirection = "rightToLeft";
+            } else {
+              readingDirection = "bottomToTop";
+            }
+          }
           const type = data2.numericOrAlphabets;
           // Process the data with the determined direction
           const stepInRow = data2.rowStep;
@@ -1346,6 +1347,7 @@ const EditDesignTemplate = () => {
     setDragStart2({ x: e.clientX, y: e.clientY });
     setDragOffset({ left: e.clientX - rect.left, top: e.clientY - rect.top });
   }, []);
+  console.log(window.innerWidth);
   return (
     <>
       <div>
@@ -1394,7 +1396,7 @@ const EditDesignTemplate = () => {
           </div>
         </div>
       )}
-      <div
+      {/* <div
         style={{
           position: "absolute",
           top: "30px", // Adjust the top value as needed
@@ -1408,7 +1410,7 @@ const EditDesignTemplate = () => {
           onClick={() => {
             setImageModalShow(true);
           }}
-          style={{ position: "relative" }}
+          // style={{ position: "relative" }}
         >
           Image Area
           <Badge
@@ -1422,7 +1424,7 @@ const EditDesignTemplate = () => {
               zIndex: "1000",
             }}
           >
-            {imagesSelectedCount} {/* Replace this with your dynamic number */}
+            {imagesSelectedCount} 
           </Badge>
         </Button>
 
@@ -1434,6 +1436,53 @@ const EditDesignTemplate = () => {
         >
           Layout details
         </Button>
+      </div> */}
+      <div
+        style={{
+          position: "absolute",
+          top: "30px",
+          left: isWideScreen ? "50%" : "10%",
+          transform: isWideScreen ? "translateX(-50%)" : "none",
+          zIndex: "999",
+        }}
+      >
+        <Container fluid>
+          <Row className="justify-content-center">
+            <Col xs="auto">
+              <Button
+                variant="primary"
+                onClick={() => {
+                  setImageModalShow(true);
+                }}
+                className="position-relative"
+              >
+                Image Area
+                <Badge
+                  pill
+                  variant="light"
+                  className="position-absolute"
+                  style={{
+                    top: "-5px",
+                    right: "-5px",
+                    transform: "translate(50%, -50%)",
+                  }}
+                >
+                  {imagesSelectedCount}
+                </Badge>
+              </Button>
+            </Col>
+            <Col xs="auto">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setDetailPage(true);
+                }}
+              >
+                Layout details
+              </Button>
+            </Col>
+          </Row>
+        </Container>
       </div>
 
       {!modalShow && selection && (
@@ -1523,6 +1572,9 @@ const EditDesignTemplate = () => {
                     onMouseDown={handleMouseDown}
                     onMouseUp={handleMouseUp}
                     onMouseMove={handleMouseMove}
+                    onTouchStart={handleMouseDown}
+                    onTouchEnd={handleMouseUp}
+                    onTouchMove={handleMouseMove}
                   >
                     {Array.from({ length: numRows }).map((_, rowIndex) => {
                       const result = [...data.excelJsonFile.map(Object.values)];
@@ -1542,55 +1594,61 @@ const EditDesignTemplate = () => {
                           </div>
                           {Array.from({ length: numCols }).map(
                             (_, colIndex) => {
-                              const num =(numberedJson[rowIndex] &&
-                              numberedJson[rowIndex][colIndex]) !==
-                            undefined
-                              ? numberedJson[rowIndex][colIndex]
-                              : null;
-                              let bgColor =  (result[rowIndex][colIndex] != 0 &&
-                              result[rowIndex][colIndex] !== undefined)?"black":""
-                              console.log(num)
-                              if(num||num===0){
-                                bgColor="lightgreen"
+                              const num =
+                                (numberedJson[rowIndex] &&
+                                  numberedJson[rowIndex][colIndex]) !==
+                                undefined
+                                  ? numberedJson[rowIndex][colIndex]
+                                  : null;
+                              let bgColor =
+                                result[rowIndex][colIndex] != 0 &&
+                                result[rowIndex][colIndex] !== undefined
+                                  ? "black"
+                                  : "";
+                              console.log(num);
+                              if (num || num === 0) {
+                                bgColor = "lightgreen";
                               }
 
-
                               return (
-                              <div
-                                key={colIndex}
-                                style={{
-                                  backgroundColor: bgColor,
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  fontSize: "12px",
-                                  color: "black",
+                                <div
+                                  key={colIndex}
+                                  style={{
+                                    backgroundColor: bgColor,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    fontSize:
+                                      data.bubbleType === "circle"
+                                        ? "12px"
+                                        : "8px",
+                                    color: "black",
                                     // rowIndex < result.length &&
                                     // colIndex < result[rowIndex].length &&
                                     // result[rowIndex][colIndex] != 0 &&
                                     // result[rowIndex][colIndex] !== undefined
                                     //   ? "lightgray"
                                     //   : "black",
-                                  userSelect: "none",
-                                }}
-                                className={`${data.bubbleType} ${
-                                  selected[`${rowIndex},${colIndex}`]
-                                    ? "selected"
-                                    : ""
-                                }`}
-                              >
-                                {(numberedJson[rowIndex] &&
-                                  numberedJson[rowIndex][colIndex]) !==
-                                undefined
-                                  ? numberedJson[rowIndex][colIndex]
-                                  : null}
-                              </div>
-                            )}
+                                    userSelect: "none",
+                                  }}
+                                  className={`${data.bubbleType} ${
+                                    selected[`${rowIndex},${colIndex}`]
+                                      ? "selected"
+                                      : ""
+                                  }`}
+                                >
+                                  {(numberedJson[rowIndex] &&
+                                    numberedJson[rowIndex][colIndex]) !==
+                                  undefined
+                                    ? numberedJson[rowIndex][colIndex]
+                                    : null}
+                                </div>
+                              );
+                            }
                           )}
                         </div>
                       );
                     })}
-                    
 
                     {selectedCoordinates.map((data, index) => (
                       <div
@@ -2424,6 +2482,7 @@ const EditDesignTemplate = () => {
             handleImage={handleImage}
             imageSrc={data.templateImagePath?.image}
             backImageSrc={data.templateBackImagePath?.image}
+            selectedCoordinateData={selectedCoordinates}
           />
         </Modal.Body>
         <Modal.Footer>

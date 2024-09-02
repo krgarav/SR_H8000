@@ -82,7 +82,7 @@ const TemplateModal = (props) => {
   const [rotation, setRotation] = useState();
   const [resolution, setResolution] = useState();
   const [scannningSide, setScanningSide] = useState();
-  const [imageParams,setImageParams]=useState();
+  const [imageParams, setImageParams] = useState();
   const [imageStatus, setImageStatus] = useState(imageStatusData[0]);
   const [barcodeType, setBarcodeType] = useState({});
   const [barcodeCategory, setBarcodeCategory] = useState({});
@@ -322,7 +322,7 @@ const TemplateModal = (props) => {
       barCount.length === 0 ||
       difference.length == 0 ||
       !direction ||
-      face.length === 0 
+      face.length === 0
     ) {
       settoggle((prevData) => ({
         ...prevData,
@@ -389,7 +389,7 @@ const TemplateModal = (props) => {
         toast.error("Please Select Page Position");
         return;
       }
-      
+
       if (!excelJsonFile) {
         toast.error("Please Select Excel File");
         return;
@@ -398,7 +398,7 @@ const TemplateModal = (props) => {
     }
     const key = uuidv4();
     try {
-      const emptyExcelJsonFile = excelJsonFile.map(row => {
+      const emptyExcelJsonFile = excelJsonFile.map((row) => {
         return Object.keys(row).reduce((acc, key) => {
           acc[key] = ""; // Set each value to an empty string
           return acc;
@@ -420,10 +420,11 @@ const TemplateModal = (props) => {
             iDifference: +difference,
             ngAction: windowNgOption?.id,
             dataReadDirection: direction?.id,
+            idStatus: idPresent.id,
             iReject: 0,
             idMarksPattern: "000000000000000000000000",
             excelJsonFile: excelJsonFile,
-            numberedExcelJsonFile: emptyExcelJsonFile
+            numberedExcelJsonFile: emptyExcelJsonFile,
           },
           barcodeData: {
             barcodeSide: 0,
@@ -463,7 +464,7 @@ const TemplateModal = (props) => {
         },
       ];
       console.log(templateData);
-  
+
       localStorage.setItem("Template", JSON.stringify(templateData));
       const index = dataCtx.setAllTemplates(templateData);
       setModalShow(false);
@@ -529,9 +530,9 @@ const TemplateModal = (props) => {
     setFileModal(true);
   };
   const saveHandler = () => {
-    if(!image){
+    if (!image) {
       alert("Please select image");
-    }else{
+    } else {
       setImageModal(false);
     }
     // if (imageTempFile) {
@@ -1025,7 +1026,6 @@ const TemplateModal = (props) => {
                             getOptionValue={(option) =>
                               option?.id?.toString() || ""
                             }
-                           
                             components={{ Option, SingleValue }}
                           />
                           {!selectedBubble && (

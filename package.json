@@ -80,6 +80,7 @@
     "react-select": "^5.8.0",
     "react-sortable-tree": "^2.8.0",
     "react-toastify": "^10.0.5",
+    "react-use": "^17.5.1",
     "react-zoom-pan-pinch": "^3.4.4",
     "reactstrap": "8.10.0",
     "sass": "1.69.5",
