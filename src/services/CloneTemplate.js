@@ -49,7 +49,10 @@ const CloneTemplateHandler = async (templateId, name) => {
     const csv = Papa.unparse(res2.data);
     const blob = new Blob([csv], { type: "text/csv" });
     const csvfile = new File([blob], "data.csv", { type: "text/csv" });
-
+   // Prepare layout name
+   const layoutName = name || `${res.layoutParameters.layoutName}-copy`;
+   res.layoutParameters.layoutName = layoutName;
+ 
     const fullRequestData = {
       layoutParameters: res.layoutParameters,
       barcodeData: res.barcodeData,
