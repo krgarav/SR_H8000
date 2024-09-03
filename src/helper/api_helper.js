@@ -38,13 +38,15 @@ export async function postWithFormData(url, data, config = {}) {
         });
 }
 export async function post(url, data, config = {}) {
-    // console.log("from the post--->", data);
     return axiosApi
         .post(url, data, { ...config })
-        .then((response) => response.data).catch((error) => {
-            toast.error(error?.response?.data?.message)
+        .then((response) => response.data)
+        .catch((error) => {
+            toast.error(error?.response?.data?.message);
+            return Promise.reject(error); // Propagate the error
         });
 }
+
 
 export async function putWithFormData(url, data, config = {}) {
     return axiosApi

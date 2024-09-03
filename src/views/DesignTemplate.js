@@ -1251,6 +1251,9 @@ const DesignTemplate = () => {
       setLoading(true);
       const res = await createTemplate(fullRequestData);
       console.log(res);
+      if(res===undefined){
+        toast.error("Something went wrong ")
+      }
       if (res?.success === true) {
         const layoutId = res?.layoutId;
         const formdata = new FormData();
@@ -1278,7 +1281,10 @@ const DesignTemplate = () => {
       alert(`Error creating template`);
       console.error("Error sending POST request:", error);
       setLoading(false);
+    }finally{
+      setLoading(false);
     }
+  
   };
   const handleImage = (images) => {
     setImagesSelectedCount(images.length);

@@ -310,7 +310,8 @@ const TemplateModal = (props) => {
         return;
       }
     }
-
+    console.log(face)
+// return
     if (
       !name ||
       !numberOfLines ||
@@ -318,11 +319,10 @@ const TemplateModal = (props) => {
       !selectedBubble ||
       !idPresent ||
       !reject ||
-      !face ||
       barCount.length === 0 ||
       difference.length == 0 ||
       !direction ||
-      face.length === 0
+      !selectedBubble||!face
     ) {
       settoggle((prevData) => ({
         ...prevData,
@@ -333,10 +333,10 @@ const TemplateModal = (props) => {
         ID: !idPresent ? true : prevData.idPresent,
         numberOfLines: !numberOfLines ? true : prevData.numberOfLines,
         barcodeEnable: !barcodeEnable ? true : prevData.barcodeEnable,
-        bubbleVariant: Object.values(selectedBubble).length == 0 ? true : false,
+        bubbleVariant: !selectedBubble || Object.values(selectedBubble).length === 0 ? true : false,
         Rejected: !reject ? true : prevData.Rejected,
         difference: difference.length == 0 ? true : prevData.difference,
-        face: face.length == 0 ? true : prevData.face,
+        face: !face ||Object.values(face).length === 0 ? true : false,
         direction: !direction ? true : prevData.direction,
         windowNgOption:
           Object.values(windowNgOption).length == 0
@@ -347,24 +347,26 @@ const TemplateModal = (props) => {
         toast.error("Name Field can not be empty");
         return;
       }
-      if (!numberOfLines) {
-        toast.error("Row can not be empty");
-        return;
-      }
-      if (!numberOfFrontSideColumn) {
-        toast.error("Columns can not be empty");
-        return;
-      }
+   
 
       if (!idPresent) {
         toast.error("Please Select ID Field ");
         return;
       }
+      console.log(idPresent)
+      console.log(idPresent.id === "present")
+
+      if(idPresent && idPresent.id === "present"){
+        if(Object.values(face).length === 0){
+          toast.error("Please Select ID Mark ");
+          return 
+        }
+      }
       if (!face) {
         toast.error("Please Select Id Mark");
         return;
       }
-      if (Object.values(selectedBubble).length == 0) {
+      if (!selectedBubble || Object.values(selectedBubble).length === 0) {
         toast.error("Please Select Bubble Variant");
         return;
       }
@@ -394,8 +396,19 @@ const TemplateModal = (props) => {
         toast.error("Please Select Excel File");
         return;
       }
+      if (!numberOfLines) {
+        toast.error("Row can not be empty");
+        return;
+      }
+      if (!numberOfFrontSideColumn) {
+        toast.error("Columns can not be empty");
+        return;
+      }
       return;
     }
+
+    // console.log("called");
+    // return
     const key = uuidv4();
     try {
       const emptyExcelJsonFile = excelJsonFile.map((row) => {
@@ -851,7 +864,7 @@ const TemplateModal = (props) => {
                                 styles={{
                                   control: (provided, state) => ({
                                     ...provided,
-                                    border: toggle.numberOfLines
+                                    border: toggle.face
                                       ? "1px solid red !important"
                                       : provided.border,
                                   }),
