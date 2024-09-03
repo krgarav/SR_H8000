@@ -225,7 +225,7 @@ const LayoutDetailModal = (props) => {
           setNumberOfLines(layout.timingMarks);
           setNumberOfFrontSideColumn(layout.totalColumns);
 
-          if (layout.idMarksPattern === "000000000000000000000000") {
+          if (layout.idStatus=== "not present") {
             const filter = IdOptionData[1];
             setIdPresent(filter);
           } else {

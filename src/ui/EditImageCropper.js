@@ -34,7 +34,7 @@ const EditImageCropper = ({
   const [currentImage, setCurrentImage] = useState(imageSrc);
   const [show, setShow] = useState(false);
   const [options, setOptions] = useState([]);
-  const [prefix,setPrefix] = useState("");
+  const [prefix, setPrefix] = useState("");
 
   useEffect(() => {
     const coordinateOptns = selectedCoordinateData.map((item) => {
@@ -134,7 +134,7 @@ const EditImageCropper = ({
     });
     // setModalShow(false)
   };
-  const editHandler = () => {};
+  const editHandler = () => { };
 
   const deleteHandler = (index) => {
     console.log(index);
@@ -402,6 +402,7 @@ const EditImageCropper = ({
         <Modal.Header closeButton>
           <Modal.Title
             style={{
+              display: "flex",
               width: "80%",
               alignItems: "center",
               justifyContent: "center",
@@ -409,8 +410,8 @@ const EditImageCropper = ({
           >
             <Row md={12} style={{ width: "100%" }}>
               <Col md={6}>
-                <div className="d-flex align-items-center">
-                  <label htmlFor="prefixName" className="form-label me-2">
+                <div className="d-flex align-items-center w-100 ">
+                  <label htmlFor="prefixName" className="form-label mr-2">
                     Prefix:
                   </label>
                   <Select
@@ -420,6 +421,7 @@ const EditImageCropper = ({
                     getOptionLabel={(option) => option?.label || ""}
                     getOptionValue={(option) => option?.id?.toString() || ""}
                     placeholder="Select Prefix..."
+                    className="w-100"
                   />
                 </div>
               </Col>
