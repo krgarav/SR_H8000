@@ -40,6 +40,7 @@ console.log(baseUrl)
     START_JOB: `${baseUrl}StartJob`,
     FINISH_JOB: `${baseUrl}FinishJob`,
     UPDATE_JOB: `${baseUrl}UpdateJobs`,
+    CHECK_PRINT : `${baseUrl}CheckPrintOption`,
     MAIN_URL: baseUrl
   };
 };
