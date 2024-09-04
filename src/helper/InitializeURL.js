@@ -41,6 +41,7 @@ console.log(baseUrl)
     FINISH_JOB: `${baseUrl}FinishJob`,
     UPDATE_JOB: `${baseUrl}UpdateJobs`,
     CHECK_PRINT : `${baseUrl}CheckPrintOption`,
+    PRINT_DATA : `${baseUrl}PrintSetting`,
     MAIN_URL: baseUrl
   };
 };

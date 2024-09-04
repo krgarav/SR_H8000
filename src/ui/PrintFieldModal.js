@@ -8,6 +8,7 @@ import {
 } from "data/helperData";
 import Select, { components } from "react-select";
 import { toast } from "react-toastify";
+import { printData } from "helper/Booklet32Page_helper";
 const comparewithId = (optiondata, optionvalue) => {
   const filter = optiondata.find((item) => item.id == optionvalue);
   return filter;
@@ -24,7 +25,6 @@ const PrintFieldModal = (props) => {
   const [printCustomValue, setPrintCustomValue] = useState(null);
 
   useEffect(() => {
-    console.log(props.data);
     if (Object.values(props.data).length !== 0) {
       console.log("called");
       const pd = props.data;
@@ -67,7 +67,7 @@ const PrintFieldModal = (props) => {
     }
     const printObj = {
       layoutId: scantemplateId,
-      printEnable: +printEnable?.id ?? 0,
+      printEnable: 1,
       printStartPos: +startPosition ?? 0,
       printDigit: +printDigit ?? 0,
       printStartNumber: +printStartNumber ?? 0,
@@ -78,6 +78,14 @@ const PrintFieldModal = (props) => {
       customType: printCustom?.id === undefined ? "" : printCustom?.id,
       customValue: printCustomValue ? printCustomValue : "",
     };
+
+    try {
+      const res = await printData(printObj);
+      console.log(res);
+      props.onHide();
+    } catch (error) {
+      console.log(error);
+    }
     console.log(printObj);
   };
   return (

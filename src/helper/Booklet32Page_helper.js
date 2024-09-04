@@ -13,6 +13,11 @@ export const scanFiles = async (selectedValue, userId) => {
   const urls = await url.getUrls();
   return post(`${urls.SCAN_FILES}?Id=${selectedValue}&UserId=${userId}`);
 };
+export const printData = async (data) => {
+  const urls = await url.getUrls();
+  const endpoint = urls.PRINT_DATA;
+  return await post(endpoint, data);
+};
 
 export const refreshScanner = async () => {
   const urls = await url.getUrls();
