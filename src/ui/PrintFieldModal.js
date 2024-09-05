@@ -15,7 +15,7 @@ const comparewithId = (optiondata, optionvalue) => {
 };
 const PrintFieldModal = (props) => {
   const [printEnable, setPrintEnable] = useState(props.show);
-  const [printOrientation, setPrintOrientation] = useState();
+  const [printOrientation, setPrintOrientation] = useState(null);
   const [printMode, setPrintMode] = useState();
   const [printCustom, setPrintCustom] = useState({ id: "date", name: "Date" });
   const [startPosition, setStartPosition] = useState(null);
@@ -23,10 +23,9 @@ const PrintFieldModal = (props) => {
   const [printDigit, setPrintDigit] = useState(null);
   const [printStartNumber, setPrintStartNumber] = useState(null);
   const [printCustomValue, setPrintCustomValue] = useState(null);
-
+  console.log(printMode)
   useEffect(() => {
     if (Object.values(props.data).length !== 0) {
-      console.log("called");
       const pd = props.data;
       setStartPosition(pd.printStartPos);
       setFontSpace(pd.printFontSpace);
@@ -35,13 +34,14 @@ const PrintFieldModal = (props) => {
       setPrintOrientation(
         comparewithId(printOrientationOption, pd.printOrientation)
       );
-      setPrintMode(comparewithId(printModeOption, pd.printStartNumber));
+      setPrintMode(comparewithId(printModeOption, pd.printMode));
       setPrintCustom(comparewithId(printCustomOption, pd.customType));
       if (pd.customType === "custom") {
         setPrintCustomValue(pd.customValue);
       }
     }
   }, [props.data]);
+
   const validatePrintField = () => {
     const errors = {
       startPosition: "Printing start position cannot be empty",
@@ -81,10 +81,12 @@ const PrintFieldModal = (props) => {
 
     try {
       const res = await printData(printObj);
+      toast.success("Saved Printing Data");
       console.log(res);
       props.onHide();
     } catch (error) {
       console.log(error);
+      toast.error(error)
     }
     console.log(printObj);
   };

@@ -100,20 +100,19 @@ const AdminScanJob = () => {
     };
   }, []);
   useEffect(() => {
-    if (!location.state) {
-      navigate("/admin/job-queue", { replace: true });
-      return;
-    }
-    const { templateId } = location?.state;
-    const loacalTemplateId = localStorage.getItem("scantemplateId");
-    if (templateId) {
-      setSelectedValue(templateId);
-    }
-    if (loacalTemplateId) {
-      setSelectedValue(loacalTemplateId);
+    // if (!location.state) {
+    //   navigate("/admin/job-queue", { replace: true });
+    //   return;
+    // }
+    // const { templateId } = location?.state;
+    const localTemplateId = localStorage.getItem("scantemplateId");
+    // if (templateId) {
+    //   setSelectedValue(templateId);
+    // }
+    if (localTemplateId) {
+      setSelectedValue(localTemplateId);
     }
   }, [location]);
-  console.log(selectedValue);
   // useEffect(() => {
   //     const interval = setInterval(() => {
   //         setItems(prevItems => {
@@ -437,7 +436,7 @@ const AdminScanJob = () => {
           </div>
         </div>
       </Container>
-      {showPrintModal&&<PrintModal show={showPrintModal}/>}
+      {showPrintModal && <PrintModal show={showPrintModal} />}
     </>
   );
 };

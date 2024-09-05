@@ -36,6 +36,22 @@ import axios from "axios";
 import { GET_PROCESS_32_PAG_DATA } from "helper/url_helper";
 import { GENERATE_EXCEL } from "helper/url_helper";
 import { getUrls } from "helper/url_helper";
+import PrintModal from "ui/PrintModal";
+
+function emptyMessageTemplate() {
+  return (
+    <div className="text-center">
+      <img
+        src={
+          "https://ej2.syncfusion.com/react/demos/src/grid/images/emptyRecordTemplate_light.svg"
+        }
+        className="d-block mx-auto my-2"
+        alt="No record"
+      />
+      <span>There is no data available to display at the moment.</span>
+    </div>
+  );
+}
 
 const ScanJob = () => {
   const [count, setCount] = useState(true);
@@ -62,6 +78,8 @@ const ScanJob = () => {
   const gridRef = useRef();
   const [gridHeight, setGridHeight] = useState("350px");
   const [starting, setStarting] = useState(false);
+  const [showPrintModal, setShowPrintModal] = useState(true);
+  const template = emptyMessageTemplate;
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -83,19 +101,16 @@ const ScanJob = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  
+
   useEffect(() => {
-    if (!location.state) {
-      navigate("/admin/icons", { replace: true });
-      return;
-    }
-    const { templateId } = location?.state;
-    const loacalTemplateId = localStorage.getItem("scantemplateId");
-    if (templateId) {
-      setSelectedValue(templateId);
-    }
-    if (loacalTemplateId) {
-      setSelectedValue(loacalTemplateId);
+
+    // const { templateId } = location?.state;
+    const localTemplateId = localStorage.getItem("scantemplateId");
+    // if (templateId) {
+    //   setSelectedValue(templateId);
+    // }
+    if (localTemplateId) {
+      setSelectedValue(localTemplateId);
     }
   }, [location]);
   console.log(selectedValue);
@@ -221,45 +236,46 @@ const ScanJob = () => {
       alert("Choose Template");
       return;
     }
-try {
-  
+    try {
 
-    const token = localStorage.getItem("token");
-    if (token) {
-      const userInfo = jwtDecode(token);
-      const userId = userInfo.UserId;
 
-      setStarting(true);
-      setTimeout(async () => {
-        setStarting(false);
-      }, 6000);
-      setProcessedData([]);
-      setTimeout(async () => {
-        setScanning(true);
-      }, 6000);
-      const response = await scanFiles(selectedValue, userId);
-      const response2 = await getUrls();
-      const GetDataURL = response2?.GENERATE_EXCEL;
-      const excelgenerate = await axios.get(GetDataURL+ `?Id=${selectedValue}&UserId=${userId}`);
-      console.log(excelgenerate)
-      if (!response?.result?.success) {
-        toast.error(response?.result?.message);
-      } else {
-        toast.success(response?.result?.message);
-      }
-      if (response) {
-        if (!response?.success) {
-          toast.error(response?.message);
+      const token = localStorage.getItem("token");
+      if (token) {
+        const userInfo = jwtDecode(token);
+        const userId = userInfo.UserId;
+
+        setStarting(true);
+        setTimeout(async () => {
+          setStarting(false);
+        }, 6000);
+        setProcessedData([]);
+        setTimeout(async () => {
+          setScanning(true);
+        }, 6000);
+        const response = await scanFiles(selectedValue, userId);
+        const response2 = await getUrls();
+        const GetDataURL = response2?.GENERATE_EXCEL;
+        const excelgenerate = await axios.get(GetDataURL + `?Id=${selectedValue}&UserId=${userId}`);
+        console.log(excelgenerate)
+        if (!response?.result?.success) {
+          toast.error(response?.result?.message);
         } else {
-          toast.success(response?.message);
+          toast.success(response?.result?.message);
         }
-        setScanning(false);
+        if (response) {
+          if (!response?.success) {
+            toast.error(response?.message);
+          } else {
+            toast.success(response?.message);
+          }
+          setScanning(false);
+        }
+        if (response === undefined) {
+          // toast.error("Request Timeout");
+          setScanning(false);
+        }
       }
-      if (response === undefined) {
-        // toast.error("Request Timeout");
-        setScanning(false);
-      }
-    }} catch (error) {
+    } catch (error) {
       console.log(error);
     }
   };
@@ -324,7 +340,7 @@ try {
       setScanning(false);
       setStarting(false);
       const cancel = await cancelScan();
-    
+
       // setTimeout(() => {
       //   setScanning(false);
       // }, 5000);
@@ -409,6 +425,7 @@ try {
               allowExcelExport={true}
               allowPdfExport={true}
               allowEditing={false}
+              emptyRecordTemplate={template.bind(this)}
             >
               <ColumnsDirective>{columnsDirective}</ColumnsDirective>
               <Inject services={services} />
@@ -440,6 +457,7 @@ try {
           </div>
         </div>
       </Container>
+      {showPrintModal && <PrintModal show={showPrintModal} />}
     </>
   );
 };

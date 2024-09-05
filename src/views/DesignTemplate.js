@@ -1251,7 +1251,7 @@ const DesignTemplate = () => {
       setLoading(true);
       const res = await createTemplate(fullRequestData);
       console.log(res);
-      if(res===undefined){
+      if (res === undefined) {
         toast.error("Something went wrong ")
       }
       if (res?.success === true) {
@@ -1281,10 +1281,10 @@ const DesignTemplate = () => {
       alert(`Error creating template`);
       console.error("Error sending POST request:", error);
       setLoading(false);
-    }finally{
+    } finally {
       setLoading(false);
     }
-  
+
   };
   const handleImage = (images) => {
     setImagesSelectedCount(images.length);
@@ -1469,40 +1469,57 @@ const DesignTemplate = () => {
                             <div className="timing-mark "></div>
                           </div>
                           {Array.from({ length: numCols }).map(
-                            (_, colIndex) => (
-                              <div
-                                key={colIndex}
-                                style={{
-                                  backgroundColor:
-                                    rowIndex < result.length &&
-                                      colIndex < result[rowIndex].length &&
-                                      result[rowIndex][colIndex] != 0 &&
-                                      result[rowIndex][colIndex] !== undefined
-                                      ? "black"
-                                      : "",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  fontSize: "10px",
-                                  color:
-                                    rowIndex < result.length &&
-                                      colIndex < result[rowIndex].length &&
-                                      result[rowIndex][colIndex] != 0 &&
-                                      result[rowIndex][colIndex] !== undefined
-                                      ? "lightgray"
-                                      : "black",
-                                  userSelect: "none"
-                                }}
-                                // style={{
-                                //     backgroundColor:
-                                //         result[rowIndex][colIndex] != 0 ? "black" : "",
-                                // }}
-                                className={`${bubbleType} ${selected[`${rowIndex},${colIndex}`]
-                                  ? "selected"
-                                  : ""
-                                  }`}
-                              >{numberedJson.length > 0 && numberedJson[rowIndex][colIndex]}</div>
-                            )
+                            (_, colIndex) => {
+                              const num =
+                                (numberedJson[rowIndex] &&
+                                  numberedJson[rowIndex][colIndex]) !==
+                                  undefined
+                                  ? numberedJson[rowIndex][colIndex]
+                                  : null;
+                              let bgColor =
+                                result[rowIndex][colIndex] != 0 &&
+                                  result[rowIndex][colIndex] !== undefined
+                                  ? "black"
+                                  : "";
+                              console.log(num);
+                              if (num || num === 0) {
+                                bgColor = "lightgreen";
+                              }
+                              let fontColor = rowIndex < result.length &&
+                                colIndex < result[rowIndex].length &&
+                                result[rowIndex][colIndex] != 0 &&
+                                result[rowIndex][colIndex] !== undefined
+                                ? "lightgray"
+                                : "black"
+                              if (num || num === 0) {
+                                fontColor = "black";
+                              }
+                              return (
+                                <div
+                                  key={colIndex}
+                                  style={{
+                                    backgroundColor: bgColor,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    fontSize:
+                                      bubbleType === "circle"
+                                        ? "12px"
+                                        : "8px",
+                                    color: fontColor,
+                                    userSelect: "none"
+                                  }}
+                                  // style={{
+                                  //     backgroundColor:
+                                  //         result[rowIndex][colIndex] != 0 ? "black" : "",
+                                  // }}
+                                  className={`${bubbleType} ${selected[`${rowIndex},${colIndex}`]
+                                    ? "selected"
+                                    : ""
+                                    }`}
+                                >{numberedJson.length > 0 && numberedJson[rowIndex][colIndex]}</div>
+                              )
+                            }
                           )}
                         </div>
                       );

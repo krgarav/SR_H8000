@@ -93,6 +93,7 @@ const PrintModal = ({ show }) => {
             variant="success"
             onClick={() => {
               setShowPrintForm(true);
+              // setShowPrint(false)
             }}
           >
             Yes
@@ -111,7 +112,10 @@ const PrintModal = ({ show }) => {
         <PrintFieldModal
           show={showPrintForm}
           onHide={() => {
+            setShowPrint(false)
             setShowPrintForm(false);
+
+
           }}
           data={printData}
         />

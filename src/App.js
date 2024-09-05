@@ -29,6 +29,7 @@ const useTokenRedirect = () => {
     if (token) {
       try {
         const decoded = jwtDecode(token);
+        console.log(decoded)
         if (decoded.Role === "Operator") {
           if (location.pathname.includes("operator")) {
             navigate(location.pathname);
@@ -55,7 +56,7 @@ const useTokenRedirect = () => {
     } else {
       navigate("/auth/login", { replace: true });
     }
-  }, []);
+  }, [location.pathname]);
 };
 
 const App = () => {
