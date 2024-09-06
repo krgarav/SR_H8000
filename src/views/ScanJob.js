@@ -132,21 +132,23 @@ const ScanJob = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const decoded = jwtDecode(token);
-    if (decoded.Role === "Operator") {
-      setToolbar([
-        "Add",
-        "Edit",
-        "Delete",
-        "Update",
-        "Cancel",
-        "ExcelExport",
-        "CsvExport",
-      ]);
-      setServices([Sort, Toolbar, ExcelExport, Filter, Edit]);
-    } else {
-      setToolbar(["ExcelExport", "CsvExport"]);
-      setServices([Sort, Toolbar, ExcelExport, Filter]);
+    if (token) {
+      const decoded = jwtDecode(token);
+      if (decoded.Role === "Operator") {
+        setToolbar([
+          "Add",
+          "Edit",
+          "Delete",
+          "Update",
+          "Cancel",
+          "ExcelExport",
+          "CsvExport",
+        ]);
+        setServices([Sort, Toolbar, ExcelExport, Filter, Edit]);
+      } else {
+        setToolbar(["ExcelExport", "CsvExport"]);
+        setServices([Sort, Toolbar, ExcelExport, Filter]);
+      }
     }
   }, []);
   const getScanData = async () => {

@@ -34,6 +34,7 @@ const JobQueue = () => {
   const navigate = useNavigate();
   useEffect(() => {
     const token = localStorage.getItem("token");
+    if(token){
     const decoded = jwtDecode(token);
     const UserId = decoded.UserId;
     const fetchAssignedJobs = async () => {
@@ -43,6 +44,7 @@ const JobQueue = () => {
       }
     };
     fetchAssignedJobs();
+  }
   }, []);
   const startHandler = async (item) => {
     const { id, templateId } = item;
