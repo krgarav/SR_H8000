@@ -281,7 +281,7 @@ const EditTemplateModal = (props) => {
           setImageFile(file);
           setImage(layout.templateImagePath);
           setDirection(comparewithId(directionData, layout.dataReadDirection));
-          if (printData.printEnable) {
+          if (printData?.printEnable) {
             setPrintEnable(printOptionData[0]);
             setStartPosition(printData.printStartPos);
             setFontSpace(printData.printFontSpace);
@@ -297,7 +297,7 @@ const EditTemplateModal = (props) => {
             setPrintCustomValue(printData.customValue);
           }
           setImageStatus(comparewithId(imageStatusData, imageData.imageEnable));
-          if (imageData.imageEnable) {
+          if (imageData?.imageEnable) {
             setColorType(comparewithId(colorTypeData, imageData.imageColor));
             setEncoding(comparewithId(encodingOptionData, imageData.imageType));
             setRotation(

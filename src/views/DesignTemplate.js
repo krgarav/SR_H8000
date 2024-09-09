@@ -13,7 +13,7 @@ import SmallHeader from "components/Headers/SmallHeader";
 import { toast } from "react-toastify";
 import isEqual from "lodash/isEqual";
 import { sendFile } from "helper/TemplateHelper";
-import ImageCropper from "ui/ImageCropper";
+import ImageCropper from "modals/ImageCropper";
 import base64ToFile from "services/Base64toFile";
 import RegionSelector from "ui/RangeSelector";
 import ImageRegionSelector from "ui/RangeSelector";
@@ -449,26 +449,16 @@ const DesignTemplate = () => {
   }, [dataCtx.allTemplates]);
 
   useEffect(() => {
-    switch (bubbleType) {
-      case "rounded rectangle":
-        setSelectedClass("rounded-rectangle");
-        break;
-      case "rectangle":
-        setSelectedClass("rectangle");
-        break;
-      case "circle":
-        setSelectedClass("circle");
-        break;
-
-      case "oval":
-        setSelectedClass("oval");
-        break;
-
-      default:
-        setSelectedClass("circle");
-        break;
-    }
-  }, []);
+    const classMap = {
+      "rounded rectangle": "rounded-rectangle",
+      "rectangle": "rectangle",
+      "circle": "circle",
+      "oval": "oval",
+    };
+  
+    // Set the class, defaulting to "circle" if bubbleType is not found
+    setSelectedClass(classMap[bubbleType] || "circle");
+  }, [bubbleType]);
 
   useEffect(() => {
     // Create an array to hold the options
@@ -2481,6 +2471,7 @@ const DesignTemplate = () => {
             handleImage={handleImage}
             imageSrc={templateImagePath}
             backImageSrc={templateBackImagePath}
+            selectedCoordinateData={selectedCoordinates}
           />
         </Modal.Body>
         <Modal.Footer>

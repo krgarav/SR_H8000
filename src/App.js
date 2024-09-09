@@ -12,7 +12,6 @@ import AdminLayout from "layouts/Admin.js";
 import Operator from "layouts/Operator";
 import AuthLayout from "layouts/Auth.js";
 import Moderator from "layouts/Moderator";
-import MainLogin from "views/examples/MainLogin";
 import IpModal from "ui/IpChange";
 import axios from "axios";
 import { getUrls } from "helper/url_helper";
@@ -29,7 +28,16 @@ const useTokenRedirect = () => {
     if (token) {
       try {
         const decoded = jwtDecode(token);
-        console.log(decoded)
+        const tokenExp = decoded.exp * 1000; // Convert exp from seconds to milliseconds
+
+        // Get the current time in milliseconds
+        const currentTime = Date.now();
+        if (currentTime >= tokenExp) {
+          console.log('Token has expired');
+          alert('Token has expired');
+          localStorage.clear()
+          navigate("/auth/login", { replace: true });
+        }
         if (decoded.Role === "Operator") {
           if (location.pathname.includes("operator")) {
             navigate(location.pathname);
@@ -129,9 +137,9 @@ const App = () => {
     }, 400);
   };
 
-    useTokenRedirect();
+  useTokenRedirect();
 
- 
+
 
   if (templateLoading) {
     return <TextLoader message={"Loading, Please wait..."} />; // Show loader while fetching templates

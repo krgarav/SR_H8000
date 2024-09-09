@@ -5,11 +5,10 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Modal, Button, Col, Spinner, Badge, Container } from "react-bootstrap";
+import { Modal, Button, Col, Badge, Container } from "react-bootstrap";
 import { Row } from "reactstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import classes from "./DesignTemplate.module.css";
-import { Rnd } from "react-rnd";
 import DataContext from "store/DataContext";
 import { MultiSelect } from "react-multi-select-component";
 import { createTemplate } from "helper/TemplateHelper";
@@ -18,20 +17,17 @@ import SmallHeader from "components/Headers/SmallHeader";
 import { toast } from "react-toastify";
 import isEqual from "lodash/isEqual";
 import { sendFile } from "helper/TemplateHelper";
-import { fetchAllTemplate } from "helper/TemplateHelper";
 import EditTemplateModal from "ui/EditTemplateModal";
 import base64ToFile from "services/Base64toFile";
 import Papa from "papaparse";
-import { deleteTemplate } from "helper/TemplateHelper";
 import axios from "axios";
-import { DELETE_TEMPLATE } from "helper/url_helper";
-import EditImageCropper from "ui/EditImageCropper";
-import LineLoader from "loaders/LineLoader";
+import EditImageCropper from "modals/EditImageCropper";
 import TextLoader from "loaders/TextLoader";
 import { getUrls } from "../helper/url_helper";
 import processDirection from "data/processDirection";
 import resetJson from "data/resetJson";
 import { useWindowSize } from "react-use";
+
 // Function to get values from sessionStorage or provide default
 const getSessionStorageOrDefault = (key, defaultValue) => {
   const stored = sessionStorage.getItem(key);
@@ -155,6 +151,7 @@ const EditDesignTemplate = () => {
   const numCols = data.totalColumns;
   const { width } = useWindowSize();
   const isWideScreen = width >= 994;
+
   // Function to fetch data from localStorage
   const fetchDataFromLocalStorage = () => {
     setData((item) => {
@@ -273,7 +270,6 @@ const EditDesignTemplate = () => {
           ? template[0].questionsWindowParameters
           : template[0].formFieldWindowParameters;
         const layoutDetails = template[0].layoutParameters;
-        console.log(layoutDetails.dataReadDirection);
         // Format the selected file for comparison
         const formattedSelectedFile = {
           "End Col": item.endCol,
@@ -458,12 +454,6 @@ const EditDesignTemplate = () => {
     try {
       // Fetch layout data by template ID
       const response = await getLayoutDataById(data.templateId);
-      console.log(response);
-      if (response) {
-        // const layoutParameter = response.layoutParameter;
-        // set
-      }
-
       setLayoutFieldData(response);
       if (response) {
         // Extract data from the response
@@ -557,26 +547,18 @@ const EditDesignTemplate = () => {
     //     }
     // }
   }, []);
-  useEffect(() => {
-    switch (data.bubbleType) {
-      case "rounded rectangle":
-        setSelectedClass("rounded-rectangle");
-        break;
-      case "rectangle":
-        setSelectedClass("rectangle");
-        break;
-      case "circle":
-        setSelectedClass("circle");
-        break;
-      case "oval":
-        setSelectedClass("oval");
-        break;
 
-      default:
-        setSelectedClass("circle");
-        break;
-    }
-  }, []);
+  useEffect(() => {
+    const classMap = {
+      "rounded rectangle": "rounded-rectangle",
+      "rectangle": "rectangle",
+      "circle": "circle",
+      "oval": "oval",
+    };
+
+    // Set the class, defaulting to "circle" if bubbleType is not found
+    setSelectedClass(classMap[data.bubbleType] || "circle");
+  }, [data.bubbleType]);
 
   useEffect(() => {
     // Create an array to hold the options
@@ -1057,7 +1039,6 @@ const EditDesignTemplate = () => {
       console.log(index);
       // Get the matched object
       const data = index !== -1 ? parameters[index] : null;
-      console.log(data);
       setCoordinateIndex(index);
       setModalUpdate(true);
       setModalShow(true);
@@ -1085,22 +1066,13 @@ const EditDesignTemplate = () => {
       setNoOfStepInCol(data?.columnStep);
       setCustomValue(data?.customFieldValue);
     } else if (selectedField?.fieldType === "formField") {
-      // const data = template[0].formFieldWindowParameters.filter((item) => {
-
-      //     return isEqual(item.Coordinate, formattedSelectedFile);
-      // })[0];
-      console.log(template);
       const parameters = template[0].formFieldWindowParameters;
-      console.log(parameters);
+
       const index = parameters.findIndex((item) =>
         isEqual(item?.Coordinate, formattedSelectedFile)
       );
-      console.log(formattedSelectedFile);
-      console.log(parameters);
-      console.log(index);
+
       // Get the matched object
-      const data = index !== -1 ? parameters[index] : null;
-      console.log(data);
       setCoordinateIndex(index);
       setModalUpdate(true);
       setModalShow(true);
@@ -1184,7 +1156,6 @@ const EditDesignTemplate = () => {
   const sendHandler = async () => {
     // Retrieve the selected template
     const template = dataCtx.allTemplates[data.templateIndex];
-    console.log(template);
 
     // Extract layout parameters and its coordinates
     const layoutParameters = template[0].layoutParameters;
@@ -1347,7 +1318,6 @@ const EditDesignTemplate = () => {
     setDragStart2({ x: e.clientX, y: e.clientY });
     setDragOffset({ left: e.clientX - rect.left, top: e.clientY - rect.top });
   }, []);
-  console.log(window.innerWidth);
   return (
     <>
       <div>
@@ -1605,7 +1575,6 @@ const EditDesignTemplate = () => {
                                   result[rowIndex][colIndex] !== undefined
                                   ? "black"
                                   : "";
-                              console.log(num);
                               if (num || num === 0) {
                                 bgColor = "lightgreen";
                               }
