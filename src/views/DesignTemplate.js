@@ -1024,12 +1024,8 @@ const DesignTemplate = () => {
       const index = parameters.findIndex((item) =>
         isEqual(item.Coordinate, formattedSelectedFile)
       );
-      console.log(parameters);
-      console.log(formattedSelectedFile);
-      console.log(index);
       // Get the matched object
       const data = index !== -1 ? parameters[index] : null;
-      console.log(">>>>>", data);
       setCoordinateIndex(index);
 
       setModalUpdate(true);
