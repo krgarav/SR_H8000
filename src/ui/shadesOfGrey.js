@@ -15,7 +15,7 @@ const ShadesOfGrey = () => {
                     key={index}
                     style={{
                         backgroundColor: shade,
-                        width: "16px",
+                        width: "20px",
                         height: "20px",
                         marginLeft: "0",
                         padding: "0"

@@ -34,7 +34,7 @@ const useTokenRedirect = () => {
         const currentTime = Date.now();
         if (currentTime >= tokenExp) {
           console.log('Token has expired');
-          alert('Token has expired');
+          alert('Session has expired, Please login again.');
           localStorage.clear()
           navigate("/auth/login", { replace: true });
         }
