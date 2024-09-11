@@ -43,7 +43,9 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+// useEffect(()=>{
+//   localStorage.clear();
+// },[])
   const navigate = useNavigate();
 
   const signInHandler = async (e) => {

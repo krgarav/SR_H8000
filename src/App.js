@@ -33,10 +33,13 @@ const useTokenRedirect = () => {
         // Get the current time in milliseconds
         const currentTime = Date.now();
         if (currentTime >= tokenExp) {
-          console.log('Token has expired');
-          alert('Session has expired, Please login again.');
-          localStorage.clear()
-          navigate("/auth/login", { replace: true });
+          console.log("Token has expired");
+          alert("Session has expired, Please login again.");
+          localStorage.clear();
+          setTimeout(() => {
+            navigate("/auth/login", { replace: true });
+          }, 100);
+       
         }
         if (decoded.Role === "Operator") {
           if (location.pathname.includes("operator")) {
@@ -101,14 +104,14 @@ const App = () => {
         const getUserUrl = response2?.GET_USERS;
 
         if (!getUserUrl) {
-          throw new Error('GET_USERS URL is not defined in configuration');
+          throw new Error("GET_USERS URL is not defined in configuration");
         }
 
         // Perform the GET request to fetch user data
         const getUserResponse = await fetch(getUserUrl);
 
         if (!getUserResponse.ok) {
-          throw new Error('Failed to fetch user data');
+          throw new Error("Failed to fetch user data");
         }
 
         const userData = await getUserResponse.json();
@@ -116,14 +119,12 @@ const App = () => {
 
         // Handle successful fetch here
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
         setShowIpModal(true); // Show the modal or handle the error as needed
       }
     };
 
     fetchData();
-
-
   }, []);
 
   const handleSaveIp = (ip, protocol) => {
@@ -138,8 +139,6 @@ const App = () => {
   };
 
   useTokenRedirect();
-
-
 
   if (templateLoading) {
     return <TextLoader message={"Loading, Please wait..."} />; // Show loader while fetching templates

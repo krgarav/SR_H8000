@@ -63,7 +63,7 @@ const TemplateModal = (props) => {
   const [imageSrc, setImageSrc] = useState("");
   const [backImageSrc, setBackImageSrc] = useState("");
   const [sensitivity, setSensitivity] = useState(5);
-  const [difference, setDifference] = useState("");
+  const [difference, setDifference] = useState(6);
   const [barCount, setBarCount] = useState(0);
   const [selectedBubble, setSelectedBubble] = useState(null);
   const [reject, setReject] = useState({ id: 1, name: "0", showName: "False" });
@@ -125,7 +125,7 @@ const TemplateModal = (props) => {
   const [printStartNumber, setPrintStartNumber] = useState(null);
   const [printCustomValue, setPrintCustomValue] = useState(null);
   const [scannerLoading, setScannerLoading] = useState(false);
-  const [value, setValue] = React.useState([5, 16]);
+  const [value, setValue] = React.useState([5, 6]);
 
   const handleChange = (event, newValue, activeThumb) => {
     const minDistance = 1;
@@ -1242,7 +1242,7 @@ const TemplateModal = (props) => {
                                 max={16}
                                 disableSwap
                                 size="large"
-                                color="secondary"
+                                color="PRIMARY"
                                 slots={{
                                   ValueLabel: (props) => (
                                     <CustomTooltip
@@ -1256,7 +1256,7 @@ const TemplateModal = (props) => {
                           </div>
 
                           <input
-                            value={`${sensitivity} -  ${difference}`}
+                            value={`${sensitivity} - ${difference}`}
                             onChange={(e) => setSensitivity(e.target.value)}
                             style={{
                               width: "100%",
