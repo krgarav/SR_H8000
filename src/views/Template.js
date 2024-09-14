@@ -28,6 +28,7 @@ import Papa from "papaparse";
 import { checkJobStatus } from "helper/TemplateHelper";
 import Placeholder from "ui/Placeholder";
 import CloneTemplateHandler from "services/CloneTemplate";
+import BookletModal from "ui/BookletModal";
 const base64ToFile = (base64, filename) => {
   const byteString = atob(base64.split(",")[1]);
   const mimeString = base64.split(",")[0].split(":")[1].split(";")[0];
@@ -80,13 +81,13 @@ const Template = () => {
     const temp = await CloneTemplateHandler(
       templateDatail[0].layoutParameters.id
     );
-  
-    if (temp==="Template Cloned Successfully") {
+
+    if (temp === "Template Cloned Successfully") {
       toast.success(temp);
     } else {
       toast.error(temp);
     }
-    setToggle(tg=>!tg)
+    setToggle((tg) => !tg);
     setShowDetailModal(false);
   };
   const handleRowClick = (rowData, index) => {};
@@ -531,8 +532,9 @@ const Template = () => {
           </Modal.Footer>
         </Modal>
       )}
-      <TemplateModal show={modalShow} onHide={() => setModalShow(false)} />{" "}
+      {/* <TemplateModal show={modalShow} onHide={() => setModalShow(false)} />{" "} */}
       {/* Create Template modal */}
+      <BookletModal show={modalShow} onHide={() => setModalShow(false)} />
     </>
   );
 };

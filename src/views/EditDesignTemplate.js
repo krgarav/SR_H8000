@@ -683,7 +683,6 @@ const EditDesignTemplate = () => {
   const validateSkewField = () => {
     const errors = {
       name: "Name Field can not be empty",
-      windowNgOption: "Please select window Ng",
       minimumMark: "Minimum mark cannot be empty",
       maximumMark: "Maximum mark cannot be empty",
       skewoption: "Please select the skew mark position",

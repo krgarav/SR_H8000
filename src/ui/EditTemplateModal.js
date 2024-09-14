@@ -392,7 +392,6 @@ const EditTemplateModal = (props) => {
       startPosition: "Printing start position cannot be empty",
       fontSpace: "Font space cannot be empty",
       printDigit: "Printing digit cannot be empty",
-
       printStartNumber: "Printing start number cannot be empty",
       printOrientation: "Please select print orientation",
       printMode: "Please select printing mode",

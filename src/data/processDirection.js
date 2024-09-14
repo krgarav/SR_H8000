@@ -134,17 +134,21 @@ const processDirection = (direction, startRow, endRow, startCol, endCol, data, t
 
             case "bottomToTop":
                 // Bottom to top, left to right
+                console.log("Runned")
                 counter = 'A'; // Reset counter
                 for (let i = endRow; i >= startRow; i -= stepInRow) {
                     for (let j = startCol; j <= endCol; j += stepInCol) {
                         if (i < data.length && j < Object.keys(data[i]).length) {
                             data[i][j] = counter;
                             counter = nextChar(counter); // Move to the next letter
+                           
                             if (counter > 'Z') counter = 'A'; // Wrap around after 'Z'
                         }
                     }
-                    counter = resetCounter('A'); // Reset to 'A' for next column
+                    // counter = resetCounter('A'); // Reset to 'A' for next column
                 }
+                console.log(data)
+                sessionStorage.setItem("numberedExcelJsonFile",JSON.stringify(data));
                 break;
 
 
@@ -161,6 +165,7 @@ const processDirection = (direction, startRow, endRow, startCol, endCol, data, t
                         }
                     }
                 }
+               
                 break;
 
             default:

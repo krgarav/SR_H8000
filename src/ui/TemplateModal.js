@@ -1232,7 +1232,13 @@ const TemplateModal = (props) => {
                               title={sensitivity}
                               style={{ cursor: "pointer" }}
                             /> */}
-                            <Box>
+                            <Box
+                              sx={{
+                                width: "94%",
+                                justifyContent: "center",
+                                alignSelf: "center",
+                              }}
+                            >
                               <Slider
                                 getAriaLabel={() => "Sensitivity range"}
                                 value={value}

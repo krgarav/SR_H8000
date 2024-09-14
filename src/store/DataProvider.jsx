@@ -652,7 +652,7 @@ console.log(formparameters)
       if (templateIndex !== -1) {
         copiedData[templateIndex] = templateData;
       } else {
-        console.warn(`Template with UUID ${uuid} not found.`);
+        console.warn(`Template with UUID not found.`);
       }
 
       // Return the new state object
