@@ -55,7 +55,8 @@ import { imageParamsData } from "data/helperData";
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
 import CustomTooltip from "components/CustomTooltip";
-const TemplateModal = (props) => {
+
+const BookletTemplateModal = (props) => {
   const [modalShow, setModalShow] = useState(false);
   const [name, setName] = useState("");
   const [size, setSize] = useState({ id: 1, name: "A4" });
@@ -2461,4 +2462,4 @@ const TemplateModal = (props) => {
   );
 };
 
-export default TemplateModal;
+export default BookletTemplateModal;
