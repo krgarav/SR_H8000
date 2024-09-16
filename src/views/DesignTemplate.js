@@ -582,7 +582,7 @@ const DesignTemplate = () => {
       noOfStepInCol: "Total number of step in a col cannot be empty",
       readingDirectionOption: "Please select reading direction",
       type: "Please select type",
-      option: "Please select option",
+      // option: "Please select option",
       numberOfField: "Total field cannot be empty",
       fieldType: "Please select field type",
     };
@@ -609,7 +609,7 @@ const DesignTemplate = () => {
       noOfStepInCol: "Total number of step in a col cannot be empty",
       readingDirectionOption: "Please select reading direction",
       type: "Please select type",
-      option: "Please select option",
+      // option: "Please select option",
     };
 
     for (let [field, errorMsg] of Object.entries(errors)) {
@@ -699,7 +699,7 @@ const DesignTemplate = () => {
         rowStep: +noOfStepInRow,
         iSensitivity: +iSensitivity,
         iDifference: +iDifference,
-        iOption: +option,
+        // iOption: +option,
         iReject: +iReject,
         iDirection: +readingDirectionOption,
         windowName: name,
@@ -731,7 +731,7 @@ const DesignTemplate = () => {
         iDirection: +readingDirectionOption,
         iSensitivity: +iSensitivity,
         iDifference: +iDifference,
-        iOption: +option,
+        // iOption: +option,
         iMinimumMarks: +minimumMark,
         iMaximumMarks: +maximumMark,
         iType: type,
@@ -751,7 +751,6 @@ const DesignTemplate = () => {
         blankAllow: blank,
         blankValue: blankValue ? blankValue : "",
         customFieldValue: customValue ? customValue : "",
-        // imageStructureData: position,
       };
     }
     // }
@@ -1008,7 +1007,7 @@ const DesignTemplate = () => {
       setEndColInput(formattedSelectedFile["End Col"]);
       setReadingDirectionOption(data?.iDirection);
       setType(data?.iType);
-      setOption(data?.iOption);
+      // setOption(data?.iOption);
       setNumberOfField(data?.totalNumberOfFields);
       setFieldType(data?.numericOrAlphabets);
       setMultiple(data?.multipleAllow);
@@ -1044,7 +1043,7 @@ const DesignTemplate = () => {
       setEndColInput(formattedSelectedFile["End Col"]);
       setReadingDirectionOption(data?.iDirection);
       setType(data?.iType);
-      setOption(data?.iOption);
+      // setOption(data?.iOption);
       setNumberOfField(data?.totalNumberOfFields);
       setFieldType(data?.numericOrAlphabets);
       setMultiple(data?.multipleAllow);
@@ -2336,7 +2335,7 @@ const DesignTemplate = () => {
                       </option>
                     </select>
                   </div>
-                  <label
+                  {/* <label
                     htmlFor="example-text-input"
                     className="col-md-2 col-form-label "
                   >
@@ -2350,7 +2349,7 @@ const DesignTemplate = () => {
                       onChange={(e) => setOption(e.target.value)}
                       required
                     />
-                  </div>
+                  </div> */}
                 </Row>
               )}
               {(selectedFieldType === "questionField" ||
@@ -2389,6 +2388,7 @@ const DesignTemplate = () => {
                         <option value="">Select field type... </option>
                         <option value="numeric">Numeric </option>
                         <option value="alphabet">Alphabet </option>
+                        <option value="binary">Litho Code</option>
                         <option value="custom">Custom </option>
                       </select>
                     </div>
