@@ -1609,7 +1609,7 @@ const EditTemplateModal = (props) => {
                             />
                           </div>
                         </Row>
-                        {printCustom.id === "custom" && (
+                        {printCustom?.id === "custom" && (
                           <Row className="mb-2">
                             <label
                               htmlFor="example-text-input"

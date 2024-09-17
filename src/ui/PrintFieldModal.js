@@ -17,16 +17,16 @@ const PrintFieldModal = (props) => {
   const [printEnable, setPrintEnable] = useState(props.show);
   const [printOrientation, setPrintOrientation] = useState(null);
   const [printMode, setPrintMode] = useState();
-  const [printCustom, setPrintCustom] = useState({ id: "date", name: "Date" });
+  const [printCustom, setPrintCustom] = useState(printCustomOption[0]);
   const [startPosition, setStartPosition] = useState(null);
   const [fontSpace, setFontSpace] = useState(null);
   const [printDigit, setPrintDigit] = useState(null);
   const [printStartNumber, setPrintStartNumber] = useState(null);
   const [printCustomValue, setPrintCustomValue] = useState(null);
-  console.log(printMode)
   useEffect(() => {
     if (Object.values(props.data).length !== 0) {
       const pd = props.data;
+      console.log(pd)
       setStartPosition(pd.printStartPos);
       setFontSpace(pd.printFontSpace);
       setPrintDigit(pd.printDigit);
@@ -36,7 +36,7 @@ const PrintFieldModal = (props) => {
       );
       setPrintMode(comparewithId(printModeOption, pd.printMode));
       setPrintCustom(comparewithId(printCustomOption, pd.customType));
-      if (pd.customType === "custom") {
+      if (pd?.customType === "custom") {
         setPrintCustomValue(pd.customValue);
       }
     }
@@ -241,7 +241,7 @@ const PrintFieldModal = (props) => {
             />
           </div>
         </Row>
-        {printCustom.id === "custom" && (
+        {printCustom?.id === "custom" && (
           <Row className="mb-2">
             <label
               htmlFor="example-text-input"

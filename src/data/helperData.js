@@ -214,8 +214,10 @@ export const printModeOption = [
 ];
 
 export const printCustomOption = [
+    { id: "", name: "Print Blank" },
     { id: "date", name: "Date" },
     { id: "time", name: "Time " },
     { id: "datetime", name: "Date and Time " },
     { id: "custom", name: "Custom " },
+    
 ];
