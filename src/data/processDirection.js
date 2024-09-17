@@ -145,19 +145,39 @@ const processDirection = (direction, startRow, endRow, startCol, endCol, data, t
 
             case "bottomToTop":
                 // Bottom to top, left to right
-                console.log("Runned")
-                counter = 'A'; // Reset counter
-                for (let i = endRow; i >= startRow; i -= stepInRow) {
-                    for (let j = startCol; j <= endCol; j += stepInCol) {
+                // console.log("Runned")
+                // counter = 'A'; // Reset counter
+                // for (let i = endRow; i >= startRow; i -= stepInRow) {
+                   
+                //     for (let j = startCol; j <= endCol; j += stepInCol) {
+                //         if (i < data.length && j < Object.keys(data[i]).length) {
+                //             data[i][j] = counter;
+                //              // Move to the next letter
+                //              counter = nextChar(counter);
+                //             if (counter > 'Z') counter = 'A'; // Wrap around after 'Z'
+                //         }
+                //     }
+                //     counter = resetCounter('A'); // Reset to 'A' for next column
+                // }
+                for (let i = endRow; i >= startRow;  i--) {
+                    for (let j = startCol; j <= endCol; j++) {
                         if (i < data.length && j < Object.keys(data[i]).length) {
-                            data[i][j] = counter;
+                            data[i][j] = "";
+                        }
+                    }
+
+                }
+                for (let i = endCol; i >= startCol; i -= stepInCol) {
+                    counter = 'A'; // Reset counter for each column
+                    for (let j = endRow; j >= startRow; j -= stepInRow) { // Go bottom to top
+                        if (j < data.length && i < Object.keys(data[j]).length) {
+                            data[j][i] = counter;
                             counter = nextChar(counter); // Move to the next letter
-                           
                             if (counter > 'Z') counter = 'A'; // Wrap around after 'Z'
                         }
                     }
-                    // counter = resetCounter('A'); // Reset to 'A' for next column
                 }
+                
                 console.log(data)
                 sessionStorage.setItem("numberedExcelJsonFile",JSON.stringify(data));
                 break;
