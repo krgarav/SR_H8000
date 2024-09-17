@@ -1,11 +1,9 @@
 
 
 const processDirection = (direction, startRow, endRow, startCol, endCol, data, type, stepInRow, stepInCol) => {
+    console.log(direction)
     if (type === "numeric") {
-
-
         let counter = 0;
-
         switch (direction) {
             case "rightToLeft":
                 for (let i = startRow; i <= endRow;  i++) {
@@ -76,8 +74,8 @@ const processDirection = (direction, startRow, endRow, startCol, endCol, data, t
                     }
                 }
                 // Right to left, top to bottom
-                for (let i = endCol; i >= startCol;  i -= stepInRow) {
-                    for (let j = startRow; j <= endRow; j += stepInCol) {
+                for (let i = endCol; i >= startCol;  i -= stepInCol) {
+                                     for (let j = startRow; j <= endRow; j +=stepInRow ) {
                         if (j < data.length && i < Object.keys(data[j]).length) {
                             data[j][i] = counter++;
                         }
@@ -106,7 +104,13 @@ const processDirection = (direction, startRow, endRow, startCol, endCol, data, t
         switch (direction) {
             case "leftToRight":
                 // Left to right, top to bottom
-
+                for (let i = startRow; i <= endRow;  i++) {
+                    for (let j = startCol; j <= endCol; j++) {
+                        if (i < data.length && j < Object.keys(data[i]).length) {
+                            data[i][j] = ""
+                        }
+                    }
+                }
                 for (let i = startRow; i <= endRow; i += stepInRow) {
                     counter = 'A'; // Initialize counter at the start of each row
                     for (let j = startCol; j <= endCol; j += stepInCol) {
@@ -119,6 +123,13 @@ const processDirection = (direction, startRow, endRow, startCol, endCol, data, t
                 }
                 break;
             case "rightToLeft":
+                for (let i = startRow; i <= endRow;  i++) {
+                    for (let j = endCol; j >= startCol; j--) { // Iterate from endCol to startCol
+                        if (i < data.length && j >= 0 && j < Object.keys(data[i]).length) {
+                            data[i][j] = "";
+                        }
+                    }
+                }
                 // Top to bottom, right to left
                 for (let i = startRow; i <= endRow; i += stepInRow) {
                     for (let j = endCol; j >= startCol; j -= stepInCol) {
@@ -154,10 +165,17 @@ const processDirection = (direction, startRow, endRow, startCol, endCol, data, t
 
 
             case "topToBottom":
+                for (let i = endCol; i >= startCol;  i--) {
+                    for (let j = startRow; j <= endRow; j++) {
+                        if (j < data.length && i < Object.keys(data[j]).length) {
+                            data[j][i] = "";
+                        }
+                    }
+                }
                 // Top to bottom, right to left
-                for (let i = endCol; i >= startCol;  i -= stepInRow) {
+                for (let i = endCol; i >= startCol;  i -= stepInCol) {
                     counter = 'A'; // Reset counter for each column
-                    for (let j = startRow; j <= endRow; j += stepInCol) {
+                    for (let j = startRow; j <= endRow; j += stepInRow) {
                         if (j < data.length && i < Object.keys(data[j]).length) {
                             data[j][i] = counter;
                             counter = nextChar(counter); // Move to the next letter

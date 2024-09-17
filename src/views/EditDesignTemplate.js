@@ -293,21 +293,33 @@ const EditDesignTemplate = () => {
         if (data2) {
           // Determine the reading direction
           let readingDirection = "rightToLeft";
-          if (layoutDetails.dataReadDirection === "Top To Bottom") {
-            if (isQuestionField) {
-              readingDirection = "leftToRight";
-            } else {
-              readingDirection = "topToBottom";
-            }
-          } else {
-            if (isQuestionField) {
-              readingDirection = "rightToLeft";
-            } else {
-              readingDirection = "bottomToTop";
-            }
-          }
+          const directionMapping = {
+            0: "topToBottom",
+            1: "topToBottom",
+            2: "bottomToTop",
+            3: "bottomToTop",
+            4: "leftToRight",
+            5: "rightToLeft",
+            6: "leftToRight",
+            7: "rightToLeft",
+          };
+          readingDirection = directionMapping[data2.iDirection] || "rightToLeft";
+          // if (layoutDetails.dataReadDirection === "Top To Bottom") {
+          //   if (isQuestionField) {
+          //     readingDirection = "leftToRight";
+          //   } else {
+          //     readingDirection = "topToBottom";
+          //   }
+          // } else {
+          //   if (isQuestionField) {
+          //     readingDirection = "rightToLeft";
+          //   } else {
+          //     readingDirection = "bottomToTop";
+          //   }
+          // }
           const type = data2.numericOrAlphabets;
           // Process the data with the determined direction
+
           const stepInRow = data2.rowStep;
           const stepInCol = data2.columnStep;
           processDirection(
@@ -1663,7 +1675,7 @@ const EditDesignTemplate = () => {
                             (data.endRow - data.startRow + 1) *
                             (imageRef.current.getBoundingClientRect().height /
                               numRows +
-                              0.42)
+                              0.1)
                           }px`,
                         }}
                         onClick={(e) => e.stopPropagation()}
@@ -1863,9 +1875,9 @@ const EditDesignTemplate = () => {
               <label
                 htmlFor="example-text-input"
                 className="col-md-2 col-form-label "
-                style={{ fontSize: "0.8rem" }}
+                style={{ fontSize: "1rem" }}
               >
-                Window Name
+                Name
               </label>
               <div className="col-md-10">
                 <input
