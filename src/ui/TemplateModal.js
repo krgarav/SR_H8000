@@ -118,7 +118,7 @@ const TemplateModal = (props) => {
   });
   const [printOrientation, setPrintOrientation] = useState();
   const [printMode, setPrintMode] = useState();
-  const [printCustom, setPrintCustom] = useState({ id: "date", name: "Date" });
+  const [printCustom, setPrintCustom] = useState(printCustomOption[0]);
   const [startPosition, setStartPosition] = useState(null);
   const [fontSpace, setFontSpace] = useState(null);
   const [printDigit, setPrintDigit] = useState(null);

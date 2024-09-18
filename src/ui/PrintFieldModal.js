@@ -26,7 +26,6 @@ const PrintFieldModal = (props) => {
   useEffect(() => {
     if (Object.values(props.data).length !== 0) {
       const pd = props.data;
-      console.log(pd)
       setStartPosition(pd.printStartPos);
       setFontSpace(pd.printFontSpace);
       setPrintDigit(pd.printDigit);

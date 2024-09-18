@@ -49,9 +49,10 @@ import Jobcard from "./Jobcard";
 import DuplexJob from "./DuplexJob";
 import Papa from "papaparse";
 import { getSampleData } from "helper/TemplateHelper";
-import { v4 as uuidv4 } from "uuid";
 import base64ToFile from "services/Base64toFile";
-
+import Box from "@mui/material/Box";
+import Slider from "@mui/material/Slider";
+import CustomTooltip from "components/CustomTooltip";
 const EditTemplateModal = (props) => {
   const [modalShow, setModalShow] = useState(false);
   const [name, setName] = useState("");
@@ -121,9 +122,25 @@ const EditTemplateModal = (props) => {
   const [printStartNumber, setPrintStartNumber] = useState(null);
   const [printCustomValue, setPrintCustomValue] = useState(null);
   const [scannerLoading, setScannerLoading] = useState(false);
-
+  const [value, setValue] = React.useState([5, 6]);
   const jobHandler = (e) => {
     setSelectedUI(e);
+  };
+  const handleChange = (event, newValue, activeThumb) => {
+    const minDistance = 1;
+    if (!Array.isArray(newValue)) {
+      return;
+    }
+
+    if (activeThumb === 0) {
+      setValue([Math.min(newValue[0], value[1] - minDistance), value[1]]);
+      setSensitivity(newValue[0]);
+      setDifference(newValue[1]);
+    } else {
+      setValue([value[0], Math.max(newValue[1], value[0] + minDistance)]);
+      setSensitivity(newValue[0]);
+      setDifference(newValue[1]);
+    }
   };
   const handleSelect = (selectedKey) => {
     console.log(selectedKey);
@@ -236,7 +253,7 @@ const EditTemplateModal = (props) => {
             setFace(comparewithId(faceData, layout.iFace));
             setWindowNgOption(comparewithId(windowNgData, layout.ngAction));
           }
-          console.log(layout.barcodeCount);
+
           if (layout.barcodeCount !== 0) {
             setBarcodeEnable(barcodeOptionData[0]);
             setBarCount(layout.barcodeCount);
@@ -276,7 +293,7 @@ const EditTemplateModal = (props) => {
           setSelectedBubble(comparewithName(bubbleData, layout.bubbleType));
           setSensitivity(layout.iSensitivity);
           setDifference(layout.iDifference);
-
+          setValue([layout.iSensitivity,layout.iDifference])
           const file = base64ToFile(layout.templateImagePath, "image.jpg");
           setImageFile(file);
           setImage(layout.templateImagePath);
@@ -386,6 +403,15 @@ const EditTemplateModal = (props) => {
       setImageBack(URL.createObjectURL(file));
       // setTempImageFile(file);
     }
+  };
+  const getShadeFromValue = (value) => {
+    // Example function to map slider value to a shade
+    const shades = Array.from({ length: 16 }, (_, i) => {
+      const greyValue = Math.floor(255 - i * (255 / 16));
+      return `rgb(${greyValue}, ${greyValue}, ${greyValue})`;
+    });
+    const index = Math.floor((value[0] / 16) * shades.length);
+    return shades[index] || shades[0];
   };
   const validatePrintField = () => {
     const errors = {
@@ -1211,121 +1237,147 @@ const EditTemplateModal = (props) => {
                                         </div>
                                     </Row> */}
 
-                        <Row className="mb-3">
-                          <label
-                            htmlFor="example-text-input"
-                            className="col-md-2 col-form-label  "
-                            style={{ fontSize: ".9rem" }}
-                          >
-                            Sensitivity
-                          </label>
+<Row className="mb-3">
+                        <label
+                          htmlFor="example-text-input"
+                          className="col-md-2 col-form-label  "
+                          style={{ fontSize: ".9rem" }}
+                        >
+                          Sensitivity
+                        </label>
+                        <div
+                          className="col-md-10"
+                          style={{
+                            display: "flex",
+                            gap: "5px",
+                            width: "100%",
+                          }}
+                        >
                           <div
-                            className="col-md-5"
                             style={{
                               display: "flex",
-                              gap: "5px",
+                              flexDirection: "column",
                               width: "100%",
                             }}
                           >
                             <div
                               style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                width: "100%",
+                                borderRadius: "6px",
+                                overflow: "hidden",
                               }}
                             >
-                              <div
-                                style={{
-                                  borderRadius: "6px",
-                                  overflow: "hidden",
-                                }}
-                              >
-                                <ShadesOfGrey />
-                              </div>
-
-                              <input
-                                type="range"
-                                id="sensitivityRange"
-                                min="1"
-                                max="16"
-                                value={sensitivity}
-                                onChange={(e) => setSensitivity(e.target.value)}
-                                title={sensitivity}
-                                style={{ cursor: "pointer" }}
-                              />
+                              <ShadesOfGrey />
                             </div>
 
-                            <input
+                            {/* <input
+                              type="range"
+                              id="sensitivityRange"
+                              min="1"
+                              max="16"
                               value={sensitivity}
                               onChange={(e) => setSensitivity(e.target.value)}
-                              style={{
-                                width: "100%",
-                                padding: "2px",
-                                textAlign: "center",
+                              title={sensitivity}
+                              style={{ cursor: "pointer" }}
+                            /> */}
+                            <Box
+                              sx={{
+                                width: "94%",
+                                justifyContent: "center",
+                                alignSelf: "center",
                               }}
-                              className="form-control"
-                              type="number"
-                              min={1}
-                              max={16}
-                            />
-
-                            {!sensitivity && (
-                              <span
-                                style={{ color: "red", display: spanDisplay }}
-                              >
-                                This feild is required
-                              </span>
-                            )}
+                            >
+                              <Slider
+                                getAriaLabel={() => "Sensitivity range"}
+                                value={value}
+                                onChange={handleChange}
+                                valueLabelDisplay="auto"
+                                min={0} // Ensure minimum value is 0
+                                max={16}
+                                disableSwap
+                                size="large"
+                                color="PRIMARY"
+                                slots={{
+                                  ValueLabel: (props) => (
+                                    <CustomTooltip
+                                      {...props}
+                                      shade={getShadeFromValue(value)} // Pass the shade based on the value
+                                    />
+                                  ),
+                                }}
+                              />
+                            </Box>
                           </div>
-                          <label
-                            htmlFor="example-text-input"
-                            className="col-md-2 col-form-label "
-                            style={{ fontSize: ".9rem", textAlign: "right" }}
-                          >
-                            Difference
-                          </label>
-                          <div className="col-md-3">
-                            <input
-                              style={{
-                                border: toggle.difference ? "1px solid red" : "",
-                              }}
-                              placeholder="Enter difference"
-                              type="number"
-                              className="form-control"
-                              value={difference}
-                              onBlur={(e) => {
-                                const inputValue = e.target.value;
 
-                                // Check if the input value is not empty and less than sensitivity
-                                if (
-                                  inputValue !== "" &&
-                                  +inputValue < +sensitivity
-                                ) {
-                                  alert(
-                                    "Entered value cannot be less than sensitivity"
-                                  );
-                                  setDifference("");
-                                  return;
-                                }
-                              }}
-                              onChange={(e) => {
-                                setDifference(e.target.value);
-                                settoggle((item) => ({
-                                  ...item,
-                                  difference: false,
-                                }));
-                              }}
-                            />
+                          <input
+                            value={`${sensitivity} - ${difference}`}
+                            onChange={(e) => setSensitivity(e.target.value)}
+                            style={{
+                              width: "100%",
+                              padding: "2px",
+                              textAlign: "center",
+                            }}
+                            className="form-control"
+                            type="text"
+                            disabled
+                          />
 
-                            {!difference && (
-                              <span
-                                style={{ color: "red", display: spanDisplay }}
-                              >
-                                This feild is required
-                              </span>
-                            )}
-                          </div>
-                        </Row>
+                          {!sensitivity && (
+                            <span
+                              style={{ color: "red", display: spanDisplay }}
+                            >
+                              This feild is required
+                            </span>
+                          )}
+                        </div>
+                        {/* <label
+                          htmlFor="example-text-input"
+                          className="col-md-2 col-form-label "
+                          style={{ fontSize: ".9rem", textAlign: "right" }}
+                        >
+                          Difference
+                        </label> */}
+                        {/* <div className="col-md-3">
+                          <input
+                            style={{
+                              border: toggle.difference ? "1px solid red" : "",
+                            }}
+                            placeholder="Enter difference"
+                            type="number"
+                            className="form-control"
+                            value={difference}
+                            onBlur={(e) => {
+                              const inputValue = e.target.value;
+
+                              // Check if the input value is not empty and less than sensitivity
+                              if (
+                                inputValue !== "" &&
+                                +inputValue < +sensitivity
+                              ) {
+                                alert(
+                                  "Entered value cannot be less than sensitivity"
+                                );
+                                setDifference("");
+                                return;
+                              }
+                            }}
+                            onChange={(e) => {
+                              setDifference(e.target.value);
+                              settoggle((item) => ({
+                                ...item,
+                                difference: false,
+                              }));
+                            }}
+                          />
+
+                          {!difference && (
+                            <span
+                              style={{ color: "red", display: spanDisplay }}
+                            >
+                              This feild is required
+                            </span>
+                          )}
+                        </div> */}
+                      </Row>
 
                         <Row className="mb-3">
                           <label

@@ -219,5 +219,4 @@ export const printCustomOption = [
     { id: "time", name: "Time " },
     { id: "datetime", name: "Date and Time " },
     { id: "custom", name: "Custom " },
-    
 ];
