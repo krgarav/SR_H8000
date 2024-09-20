@@ -1,7 +1,7 @@
 
 
 const processDirection = (direction, startRow, endRow, startCol, endCol, data, type, stepInRow, stepInCol) => {
-    console.log(direction)
+
     if (type === "numeric") {
         let counter = 0;
         switch (direction) {
@@ -178,7 +178,7 @@ const processDirection = (direction, startRow, endRow, startCol, endCol, data, t
                     }
                 }
                 
-                console.log(data)
+              
                 sessionStorage.setItem("numberedExcelJsonFile",JSON.stringify(data));
                 break;
 

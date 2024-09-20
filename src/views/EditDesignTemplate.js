@@ -27,9 +27,12 @@ import { getUrls } from "../helper/url_helper";
 import processDirection from "data/processDirection";
 import resetJson from "data/resetJson";
 import { useWindowSize } from "react-use";
-import { Button as Muibtn } from "@mui/material";
-
+import { Button as Muibtn, Tooltip } from "@mui/material";
+import IconButton from '@mui/material/IconButton';
 import DeleteIcon from "@mui/icons-material/Delete";
+
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import CopyModal from "modals/CopyModal/CopyModal";
 // Function to get values from sessionStorage or provide default
 const getSessionStorageOrDefault = (key, defaultValue) => {
   const stored = sessionStorage.getItem(key);
@@ -111,6 +114,7 @@ const EditDesignTemplate = () => {
   const [sizes, setSizes] = useState({});
   const [detailLoader, setDetailLoader] = useState(false);
   const [selectedField, setSelectedField] = useState();
+  const [showCopy, setShowCopy] = useState(false);
   const emptyExcelJsonFile = getSessionStorageOrDefault(
     "excelJsonFile",
     state.excelJsonFile
@@ -1629,8 +1633,8 @@ const EditDesignTemplate = () => {
                                     userSelect: "none",
                                   }}
                                   className={`${data.bubbleType} ${selected[`${rowIndex},${colIndex}`]
-                                      ? "selected"
-                                      : ""
+                                    ? "selected"
+                                    : ""
                                     }`}
                                 >
                                   {(numberedJson[rowIndex] &&
@@ -2434,10 +2438,20 @@ const EditDesignTemplate = () => {
             Hide Modal
           </Button>
 
-          {modalUpdate && (
-            <Muibtn variant="outlined" onClick={() => { handleCrossClick(selectedField, coordinateIndex); setModalShow(false); setSelection(null) }} startIcon={<DeleteIcon />}>
-              Delete
-            </Muibtn>
+          {modalUpdate && (<>
+            <Tooltip title="Delete" placement="top">
+              <IconButton aria-label="delete" onClick={() => { handleCrossClick(selectedField, coordinateIndex); setModalShow(false); setSelection(null) }} color="secondary">
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Copy Field" placement="top" onClick={() => { setShowCopy(true) }} >
+              <IconButton aria-label="copy" color="primary">
+                <ContentCopyIcon />
+              </IconButton>
+            </Tooltip>
+
+          </>
           )}
           <div style={{ display: "flex", gap: "10px" }}>
             <Button
@@ -2507,6 +2521,8 @@ const EditDesignTemplate = () => {
           onHide={() => setDetailPage(false)}
         />
       )}
+
+      {showCopy && <CopyModal show={showCopy} onHide={() => { setShowCopy(false) }} />}
     </>
   );
 };
