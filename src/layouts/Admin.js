@@ -76,15 +76,24 @@ const Admin = (props) => {
         }}
       />
       <div className="main-content" ref={mainContent}>
-        <AdminNavbar
-          {...props}
-          brandText={getBrandText(props?.location?.pathname)}
-        />
+        <div style={{ position: "sticky" ,top:0,zIndex: 999 }}>
+          <AdminNavbar
+            {...props}
+            brandText={getBrandText(props?.location?.pathname)}
+          />
+        </div>
+
         <Routes>
           {getRoutes(routes)}
           <Route path="*" element={<Navigate to="/admin/index" replace />} />
-          <Route path="/template/design-template" element={<DesignTemplate />} />
-          <Route path="/template/edit-template" element={<EditDesignTemplate />} />
+          <Route
+            path="/template/design-template"
+            element={<DesignTemplate />}
+          />
+          <Route
+            path="/template/edit-template"
+            element={<EditDesignTemplate />}
+          />
           <Route path="/job-queue/adminscanjob" element={<AdminScanJob />} />
         </Routes>
         {/* <Container fluid >

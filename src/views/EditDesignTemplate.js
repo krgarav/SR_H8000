@@ -1467,7 +1467,7 @@ const EditDesignTemplate = () => {
   }
   return (
     <>
-      <div>
+      <div style={{ position: "sticky", top: 0, zIndex: 99 }}>
         <SmallHeader />
       </div>
 
@@ -1556,7 +1556,7 @@ const EditDesignTemplate = () => {
       </div> */}
       <div
         style={{
-          position: "absolute",
+          position: "",
           top: "30px",
           left: isWideScreen ? "50%" : "10%",
           transform: isWideScreen ? "translateX(-50%)" : "none",
@@ -1663,7 +1663,7 @@ const EditDesignTemplate = () => {
                 ))}
               </div>
               <div>
-                <div className="top-row">
+                <div className="top-row"   style={{ position:"sticky"}}>
                   <div className="corner"></div>
                   {Array.from({ length: numCols }).map((_, index) => (
                     <div key={index} className="top-num">
@@ -1699,13 +1699,15 @@ const EditDesignTemplate = () => {
                         ...data.numberedExcelJsonFile.map(Object.values),
                       ];
                       return (
-                        <div key={rowIndex} className="row">
+                        <div key={rowIndex} className="row"  style={{ overflowX: "auto", position: "relative" }}>
                           <div
                             className={
                               data.bubbleType === "circle"
                                 ? "left-num-circle"
                                 : "left-num"
                             }
+                            
+                            style={{ position:"sticky",position:"-webkit-sticky"}}
                           >
                             <div className="timing-mark "></div>
                           </div>
@@ -1765,6 +1767,7 @@ const EditDesignTemplate = () => {
                                         : "8px",
                                     color: fontColor,
                                     userSelect: "none",
+                                  
                                   }}
                                   className={`${data.bubbleType} ${selected[`${rowIndex},${colIndex}`]
                                     ? "selected"
@@ -1874,10 +1877,11 @@ const EditDesignTemplate = () => {
                         <div
                           className="d-flex justify-content-between align-items-center bg-dark text-white p-1"
                           style={{
-                            opacity: 0.8,
+                            opacity: 0.6,
                             fontSize: "12px",
                             position: "relative",
                             overflow: "hidden",
+                       
                           }}
                           onClick={(e) => e.stopPropagation()}
                         >
@@ -1898,7 +1902,7 @@ const EditDesignTemplate = () => {
                             </span>
                           ) : (
                             <>
-                              <span className="user-select-none">
+                              <span className="user-select-none" style={{color:"white",fontWeight:"700"}}>
                                 {data.name}
                               </span>
                               <span className="d-flex align-items-center user-select-none gap-10">
