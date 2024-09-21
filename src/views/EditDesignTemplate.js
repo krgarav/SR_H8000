@@ -1556,7 +1556,7 @@ const EditDesignTemplate = () => {
       </div> */}
       <div
         style={{
-          position: "",
+          position: isWideScreen?"fixed":"absolute",
           top: "30px",
           left: isWideScreen ? "50%" : "10%",
           transform: isWideScreen ? "translateX(-50%)" : "none",
@@ -1645,8 +1645,8 @@ const EditDesignTemplate = () => {
         </Button>
         <div className="main-container">
           <div className="containers">
-            <div className="d-flex">
-              <div style={{ marginRight: "1rem" }}>
+            <div className="d-flex" style={{overflow:"auto"}}>
+              <div style={{ marginRight: "1rem",position:"sticky" }}>
                 <div className="top"></div>
                 {Array.from({ length: numRows }).map((_, rowIndex) => (
                   <div key={rowIndex} className="row">
@@ -1663,7 +1663,7 @@ const EditDesignTemplate = () => {
                 ))}
               </div>
               <div>
-                <div className="top-row"   style={{ position:"sticky"}}>
+                <div className="top-row"  style={{ position: "", top: 120, zIndex: 10, backgroundColor: "white" }}>
                   <div className="corner"></div>
                   {Array.from({ length: numCols }).map((_, index) => (
                     <div key={index} className="top-num">
