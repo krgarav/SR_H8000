@@ -14,7 +14,7 @@ const getBaseUrl = () => {
 
       // Extract configuration values
       const backendIP = await config.backendUrl
-  console.log(backendIP)
+
       // Return the base URL based on the config
       return `http://${backendIP}/`;
     } catch (error) {
