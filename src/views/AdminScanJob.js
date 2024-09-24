@@ -147,66 +147,131 @@ const AdminScanJob = () => {
   //       setServices([Sort, Toolbar, ExcelExport, Filter]);
   //     }
   //   }, []);
+  // const getScanData = async () => {
+  //   try {
+  //     const token = localStorage.getItem("token");
+
+  //     const userInfo = jwtDecode(token);
+  //     console.log(userInfo);
+
+  //     const userId = userInfo.UserId;
+  //     // Fetch data based on selected value ID
+  //     // const response = await getUrls();
+  //     // console.log(response)
+  //     // const GetDataURL =  response.GET_PROCESS_32_PAG_DATA;
+  //     // console.log(GetDataURL)
+  //     const res = await axios.get(
+  //       proccessUrl + `?Id=${selectedValue}&UserId=${userId}`
+  //     );
+
+  //     const data = res.data;
+  //     // fetchProcessData(selectedValue, userId);
+  //     console.log(data);
+
+  //     // Check if the data fetch was successful
+  //     if (data?.result?.success) {
+  //       // Extract keys from the first item in the data array
+  //       const newDataKeys = Object.keys(data.result.data[0]).map((key) => {
+  //         return key.endsWith(".") ? key.slice(0, -1) : key;
+  //       });
+
+  //       // Add a serial number to each entry
+  //       let num = 1;
+  //       const updatedData = data.result.data.map((item) => {
+  //         const newItem = {};
+
+  //         // Iterate over the keys of the item
+  //         for (const key in item) {
+  //           // Check if the key ends with a dot
+  //           const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+  //           // Assign the value to the new key in newItem
+  //           newItem[newKey] = item[key];
+  //         }
+
+  //         // Add the Serial No property
+  //         newItem["Serial No"] = num++;
+  //         return newItem;
+  //       });
+
+  //       // Set headData with the new keys, ensuring "Serial No" is included as a heading
+  //       setHeadData(["Serial No", ...newDataKeys]);
+
+  //       // Update the data state with the fetched data
+  //       setProcessedData(updatedData);
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     // toast.error("Something went wrong");
+
+  //     // Set scanning to false in case of error
+  //     // setScanning(false);
+  //   }
+  // };
   const getScanData = async () => {
     try {
       const token = localStorage.getItem("token");
-
       const userInfo = jwtDecode(token);
-      console.log(userInfo);
-
       const userId = userInfo.UserId;
-      // Fetch data based on selected value ID
-      // const response = await getUrls();
-      // console.log(response)
-      // const GetDataURL =  response.GET_PROCESS_32_PAG_DATA;
-      // console.log(GetDataURL)
+
       const res = await axios.get(
         proccessUrl + `?Id=${selectedValue}&UserId=${userId}`
       );
 
       const data = res.data;
-      // fetchProcessData(selectedValue, userId);
-      console.log(data);
 
-      // Check if the data fetch was successful
       if (data?.result?.success) {
-        // Extract keys from the first item in the data array
         const newDataKeys = Object.keys(data.result.data[0]).map((key) => {
           return key.endsWith(".") ? key.slice(0, -1) : key;
         });
+        let splicedData;
+        let updatedData = [];
+        let num;
+        if (processedData.length === 0) {
+          num = +processedData.length + 1;
+          updatedData = data.result.data.map((item) => {
+            const newItem = {};
+            for (const key in item) {
+              const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+              newItem[newKey] = item[key];
+            }
+            newItem["Serial No"] = num++;
+            return newItem;
+          });
+        } else {
+          let num = +processedData.length + 1;
+          splicedData = data.result.data.splice(0, processedData.length);
+          console.log(splicedData);
+          updatedData = splicedData.map((item) => {
+            const newItem = {};
+            for (const key in item) {
+              const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+              newItem[newKey] = item[key];
+            }
+            newItem["Serial No"] = num++;
+            return newItem;
+          });
+        }
 
-        // Add a serial number to each entry
-        let num = 1;
-        const updatedData = data.result.data.map((item) => {
-          const newItem = {};
-
-          // Iterate over the keys of the item
-          for (const key in item) {
-            // Check if the key ends with a dot
-            const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
-            // Assign the value to the new key in newItem
-            newItem[newKey] = item[key];
-          }
-
-          // Add the Serial No property
-          newItem["Serial No"] = num++;
-          return newItem;
-        });
-
-        // Set headData with the new keys, ensuring "Serial No" is included as a heading
         setHeadData(["Serial No", ...newDataKeys]);
 
-        // Update the data state with the fetched data
-        setProcessedData(updatedData);
+        const currentProcessedData = processedData; // Assuming you have this state
+        // Check the lengths of both datasets
+        if (currentProcessedData.length > 0) {
+          // If the length of updatedData is greater, concatenate
+
+          // Now, concatenate updatedData
+          setProcessedData(prev=>[...prev,...updatedData]);
+        } else {
+          // If processedData is empty, set it to updatedData
+          setProcessedData(updatedData);
+        }
       }
     } catch (error) {
       console.error(error);
-      // toast.error("Something went wrong");
-
-      // Set scanning to false in case of error
-      // setScanning(false);
+      // Handle error (e.g., toast.error("Something went wrong"))
     }
   };
+
   useEffect(() => {
     if (!scanning) return;
 
@@ -238,33 +303,35 @@ const AdminScanJob = () => {
   const handleStart = async () => {
     // setShowPrintModal(true);
     // return
+    let startingIntervalId;
+    let scanningTimeoutId;
     try {
+      setStarting(true);
       const token = localStorage.getItem("token");
+
       if (token) {
         const userInfo = jwtDecode(token);
         const userId = userInfo.UserId;
-        setStarting(true);
-        setTimeout(async () => {
+        startingIntervalId = setTimeout(() => {
           setStarting(false);
         }, 6000);
-        setProcessedData([]);
-        setTimeout(async () => {
+
+        scanningTimeoutId = setTimeout(() => {
           setScanning(true);
         }, 6000);
         const response = await scanFiles(selectedValue, userId);
-        // const response2 = await getUrls();
-        // const GetDataURL = response2?.GENERATE_EXCEL;
-        // const excelgenerate = await axios.get(
-        //   GetDataURL + `?Id=${selectedValue}&UserId=${userId}`
-        // );
-        console.log(response);
+        // Clear the timeouts after the response is received
+        clearTimeout(startingIntervalId);
+        clearTimeout(scanningTimeoutId);
         if (!response?.result?.success) {
+          await handleStop();
           toast.error(response?.result?.message);
         } else {
           toast.success(response?.result?.message);
         }
         if (response) {
           if (!response?.success) {
+
             toast.error(response?.message);
           } else {
             toast.success(response?.message);
@@ -272,11 +339,16 @@ const AdminScanJob = () => {
           setScanning(false);
         }
         if (response === undefined) {
-          // toast.error("Request Timeout");
+          toast.error("Request Timeout");
           setScanning(false);
         }
       }
     } catch (error) {
+      await handleStop();
+      setStarting(false);
+      // Clear the timeouts after the response is received
+      clearTimeout(startingIntervalId);
+      clearTimeout(scanningTimeoutId);
       console.log(error);
     }
   };
@@ -371,20 +443,19 @@ const AdminScanJob = () => {
     const res = await finishJob(obj);
     if (res?.success) {
       const token = localStorage.getItem("token");
-     
+
       if (token) {
         const userInfo = jwtDecode(token);
         const userId = userInfo.UserId;
         const response2 = await getUrls();
         const GetDataURL = response2?.GENERATE_EXCEL;
-        const excelgenerate =  axios.get(
+        const excelgenerate = axios.get(
           GetDataURL + `?Id=${selectedValue}&UserId=${userId}`
         );
       }
       toast.success("Completed the job!!!");
       navigate("/admin/job-queue", { replace: true });
     }
-   
   };
   return (
     <>
