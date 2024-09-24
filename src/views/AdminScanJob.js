@@ -252,12 +252,11 @@ const AdminScanJob = () => {
           setScanning(true);
         }, 6000);
         const response = await scanFiles(selectedValue, userId);
-        const response2 = await getUrls();
-        const GetDataURL = response2?.GENERATE_EXCEL;
-        const excelgenerate = await axios.get(
-          GetDataURL + `?Id=${selectedValue}&UserId=${userId}`
-        );
-        console.log(excelgenerate);
+        // const response2 = await getUrls();
+        // const GetDataURL = response2?.GENERATE_EXCEL;
+        // const excelgenerate = await axios.get(
+        //   GetDataURL + `?Id=${selectedValue}&UserId=${userId}`
+        // );
         console.log(response);
         if (!response?.result?.success) {
           toast.error(response?.result?.message);
@@ -371,9 +370,21 @@ const AdminScanJob = () => {
     };
     const res = await finishJob(obj);
     if (res?.success) {
+      const token = localStorage.getItem("token");
+     
+      if (token) {
+        const userInfo = jwtDecode(token);
+        const userId = userInfo.UserId;
+        const response2 = await getUrls();
+        const GetDataURL = response2?.GENERATE_EXCEL;
+        const excelgenerate =  axios.get(
+          GetDataURL + `?Id=${selectedValue}&UserId=${userId}`
+        );
+      }
       toast.success("Completed the job!!!");
+      navigate("/admin/job-queue", { replace: true });
     }
-    navigate("/admin/job-queue", { replace: true });
+   
   };
   return (
     <>
