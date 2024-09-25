@@ -223,55 +223,29 @@ const AdminScanJob = () => {
         const newDataKeys = Object.keys(data.result.data[0]).map((key) => {
           return key.endsWith(".") ? key.slice(0, -1) : key;
         });
+        setHeadData(["Serial No", ...newDataKeys]);
         let splicedData;
         let updatedData = [];
-        let num;
-        if (processedData.length === 0) {
-          num = +processedData.length + 1;
-          updatedData = data.result.data.map((item) => {
-            const newItem = {};
-            for (const key in item) {
-              const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
-              newItem[newKey] = item[key];
-            }
-            newItem["Serial No"] = num++;
-            return newItem;
-          });
-        } else {
-          let num = +processedData.length + 1;
-          splicedData = data.result.data.splice(0, processedData.length);
-          console.log(splicedData);
-          updatedData = splicedData.map((item) => {
-            const newItem = {};
-            for (const key in item) {
-              const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
-              newItem[newKey] = item[key];
-            }
-            newItem["Serial No"] = num++;
-            return newItem;
-          });
-        }
+        let num = 1;
+        updatedData = data.result.data.map((item) => {
+          const newItem = {};
+          for (const key in item) {
+            const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+            newItem[newKey] = item[key];
+          }
+          newItem["Serial No"] = num++;
+          return newItem;
+        });
 
-        setHeadData(["Serial No", ...newDataKeys]);
+        setProcessedData(updatedData);
 
-        const currentProcessedData = processedData; // Assuming you have this state
-        // Check the lengths of both datasets
-        if (currentProcessedData.length > 0) {
-          // If the length of updatedData is greater, concatenate
-
-          // Now, concatenate updatedData
-          setProcessedData(prev=>[...prev,...updatedData]);
-        } else {
-          // If processedData is empty, set it to updatedData
-          setProcessedData(updatedData);
-        }
+        gridRef.current.refresh();
       }
     } catch (error) {
       console.error(error);
       // Handle error (e.g., toast.error("Something went wrong"))
     }
   };
-
   useEffect(() => {
     if (!scanning) return;
 
@@ -331,7 +305,6 @@ const AdminScanJob = () => {
         }
         if (response) {
           if (!response?.success) {
-
             toast.error(response?.message);
           } else {
             toast.success(response?.message);
@@ -457,6 +430,20 @@ const AdminScanJob = () => {
       navigate("/admin/job-queue", { replace: true });
     }
   };
+  const rowDataBound = (args) => {
+    const cells = args.data; // Access the data for the current row
+    Object.keys(cells).forEach((key) => {
+      if (cells[key] === null || cells[key] === "") {
+        // Apply yellow background color to the cell
+        const cellIndex = args.row.cells.findIndex(
+          (cell) => cell.column.field === key
+        );
+        if (cellIndex !== -1) {
+          args.row.cells[cellIndex].style.backgroundColor = "yellow";
+        }
+      }
+    });
+  };
   return (
     <>
       <NormalHeader />
@@ -492,7 +479,9 @@ const AdminScanJob = () => {
               allowExcelExport={true}
               allowPdfExport={false}
               allowEditing={false}
+             
               emptyRecordTemplate={template.bind(this)}
+              // rowDataBound={rowDataBound}
             >
               <ColumnsDirective>{columnsDirective}</ColumnsDirective>
               <Inject services={services} />
