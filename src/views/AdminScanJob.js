@@ -479,7 +479,6 @@ const AdminScanJob = () => {
               allowExcelExport={true}
               allowPdfExport={false}
               allowEditing={false}
-             
               emptyRecordTemplate={template.bind(this)}
               // rowDataBound={rowDataBound}
             >

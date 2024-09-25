@@ -65,6 +65,7 @@ const ScanJob = () => {
     allowAdding: true,
     allowDeleting: true,
   };
+  const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 576);
   const [items, setItems] = useState([]);
   const [templateOptions, setTemplateOptions] = useState([]);
   const [selectedValue, setSelectedValue] = useState();
@@ -79,10 +80,23 @@ const ScanJob = () => {
   const [gridHeight, setGridHeight] = useState("350px");
   const [starting, setStarting] = useState(false);
   const [showPrintModal, setShowPrintModal] = useState(true);
+  const [proccessUrl, setProcessURL] = useState("");
   const template = emptyMessageTemplate;
   const location = useLocation();
   const navigate = useNavigate();
-
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await getUrls();
+      const GetDataURL = response.GET_PROCESS_32_PAGE_DATA;
+      setProcessURL(GetDataURL);
+    };
+    fetchData();
+  }, []);
+  useEffect(() => {
+    const handleResize = () => setIsSmallScreen(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   useEffect(() => {
     // Calculate 60% of the viewport height
     const handleResize = () => {
@@ -113,7 +127,7 @@ const ScanJob = () => {
       setSelectedValue(localTemplateId);
     }
   }, [location]);
-  console.log(selectedValue);
+
   // useEffect(() => {
   //     const interval = setInterval(() => {
   //         setItems(prevItems => {
@@ -130,78 +144,64 @@ const ScanJob = () => {
   //     return () => clearInterval(interval); // Cleanup on unmount
   // }, [data]);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decoded = jwtDecode(token);
-      if (decoded.Role === "Operator") {
-        setToolbar([
-          "Add",
-          "Edit",
-          "Delete",
-          "Update",
-          "Cancel",
-          "ExcelExport",
-          "CsvExport",
-        ]);
-        setServices([Sort, Toolbar, ExcelExport, Filter, Edit]);
-      } else {
-        setToolbar(["ExcelExport", "CsvExport"]);
-        setServices([Sort, Toolbar, ExcelExport, Filter]);
-      }
-    }
-  }, []);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (token) {
+  //     const decoded = jwtDecode(token);
+  //     if (decoded.Role === "Operator") {
+  //       setToolbar([
+  //         "Add",
+  //         "Edit",
+  //         "Delete",
+  //         "Update",
+  //         "Cancel",
+  //         "ExcelExport",
+  //         "CsvExport",
+  //       ]);
+  //       setServices([Sort, Toolbar, ExcelExport, Filter, Edit]);
+  //     } else {
+  //       setToolbar(["ExcelExport", "CsvExport"]);
+  //       setServices([Sort, Toolbar, ExcelExport, Filter]);
+  //     }
+  //   }
+  // }, []);
   const getScanData = async () => {
     try {
-      // Fetch data based on selected value ID
       const token = localStorage.getItem("token");
-
       const userInfo = jwtDecode(token);
-
       const userId = userInfo.UserId;
-      const response = await getUrls();
-      const GetDataURL = await response?.GET_PROCESS_32_PAGE_DATA;
+
       const res = await axios.get(
-        GetDataURL + `?Id=${selectedValue}&UserId=${userId}`
+        proccessUrl + `?Id=${selectedValue}&UserId=${userId}`
       );
+
       const data = res.data;
-      // Check if the data fetch was successful
+
       if (data?.result?.success) {
-        // Extract keys from the first item in the data array
         const newDataKeys = Object.keys(data.result.data[0]).map((key) => {
           return key.endsWith(".") ? key.slice(0, -1) : key;
         });
-
-        // Add a serial number to each entry
+        setHeadData(["Serial No", ...newDataKeys]);
+        let splicedData;
+        let updatedData = [];
         let num = 1;
-        const updatedData = data.result.data.map((item) => {
+        updatedData = data.result.data.map((item) => {
           const newItem = {};
-
-          // Iterate over the keys of the item
           for (const key in item) {
-            // Check if the key ends with a dot
             const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
-            // Assign the value to the new key in newItem
             newItem[newKey] = item[key];
           }
-
-          // Add the Serial No property
           newItem["Serial No"] = num++;
           return newItem;
         });
 
-        // Set headData with the new keys, ensuring "Serial No" is included as a heading
-        setHeadData(["Serial No", ...newDataKeys]);
-
-        // Update the data state with the fetched data
         setProcessedData(updatedData);
+
+        gridRef.current.refresh();
       }
     } catch (error) {
       console.error(error);
-      // toast.error("Something went wrong");
-
-      // Set scanning to false in case of error
-      // setScanning(false);
+      // Handle error (e.g., toast.error("Something went wrong"))
     }
   };
 
@@ -234,32 +234,30 @@ const ScanJob = () => {
   };
 
   const handleStart = async () => {
-    if (!selectedValue) {
-      alert("Choose Template");
-      return;
-    }
+    // setShowPrintModal(true);
+    // return
+    let startingIntervalId;
+    let scanningTimeoutId;
     try {
-
-
+      setStarting(true);
       const token = localStorage.getItem("token");
+
       if (token) {
         const userInfo = jwtDecode(token);
         const userId = userInfo.UserId;
-
-        setStarting(true);
-        setTimeout(async () => {
+        startingIntervalId = setTimeout(() => {
           setStarting(false);
         }, 6000);
-        setProcessedData([]);
-        setTimeout(async () => {
+
+        scanningTimeoutId = setTimeout(() => {
           setScanning(true);
         }, 6000);
         const response = await scanFiles(selectedValue, userId);
-        const response2 = await getUrls();
-        const GetDataURL = response2?.GENERATE_EXCEL;
-        const excelgenerate = await axios.get(GetDataURL + `?Id=${selectedValue}&UserId=${userId}`);
-        console.log(excelgenerate)
+        // Clear the timeouts after the response is received
+        clearTimeout(startingIntervalId);
+        clearTimeout(scanningTimeoutId);
         if (!response?.result?.success) {
+          await handleStop();
           toast.error(response?.result?.message);
         } else {
           toast.success(response?.result?.message);
@@ -273,11 +271,16 @@ const ScanJob = () => {
           setScanning(false);
         }
         if (response === undefined) {
-          // toast.error("Request Timeout");
+          toast.error("Request Timeout");
           setScanning(false);
         }
       }
     } catch (error) {
+      await handleStop();
+      setStarting(false);
+      // Clear the timeouts after the response is received
+      clearTimeout(startingIntervalId);
+      clearTimeout(scanningTimeoutId);
       console.log(error);
     }
   };
@@ -342,10 +345,6 @@ const ScanJob = () => {
       setScanning(false);
       setStarting(false);
       const cancel = await cancelScan();
-
-      // setTimeout(() => {
-      //   setScanning(false);
-      // }, 5000);
     } catch (error) {
       console.log(error);
     }
@@ -395,8 +394,8 @@ const ScanJob = () => {
       <div
         style={{
           position: "absolute",
-          left: "40%",
-          top: "20px",
+          left: isSmallScreen ? "30%" : "40%",
+          top: isSmallScreen ? "10px" : "20px",
           zIndex: "999",
         }}
       >
@@ -408,7 +407,7 @@ const ScanJob = () => {
           Complete Job
         </Button>
       </div>
-      <Container className="mt--7" fluid>
+      <Container className={isSmallScreen ? "mt--6" : "mt--7"} fluid>
         <br />
         <div className="control-pane">
           <div className="control-section">
@@ -422,7 +421,7 @@ const ScanJob = () => {
               editSettings={editSettings}
               allowFiltering={false}
               filterSettings={filterSettings}
-              toolbar={toolbar}
+              // toolbar={toolbar}
               toolbarClick={handleToolbarClick}
               allowExcelExport={true}
               allowPdfExport={true}
@@ -444,7 +443,6 @@ const ScanJob = () => {
                 {!starting && !scanning && "Start"}
                 {scanning && "Scanning"}
               </Button>
-              {/* <Button className="" color="danger" type="button" onClick={handleRefresh} >Refresh</Button> */}
               {scanning && (
                 <Button
                   className=""
