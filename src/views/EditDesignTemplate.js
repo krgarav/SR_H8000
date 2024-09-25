@@ -2129,7 +2129,7 @@ const EditDesignTemplate = () => {
               </div>
               {multiple !== "allow" && (
                 <>
-                  <label htmlFor="example-text-input" className="col-md-2 ">
+                  <label htmlFor="example-text-input" className="col-md-2 col-form-label">
                     Grid Value
                   </label>
                   <div className="col-md-4">
@@ -2229,6 +2229,8 @@ const EditDesignTemplate = () => {
                   placeholder="Enter the minimum mark"
                   value={minimumMark}
                   onChange={(e) => setMinimumMark(e.target.value)}
+                  onWheel={(e) => e.preventDefault()}
+                  min={0}
                   required
                 />
               </div>

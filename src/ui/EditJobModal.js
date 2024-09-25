@@ -23,7 +23,7 @@ import { jwtDecode } from "jwt-decode";
 import DirectoryPicker from "views/DirectoryPicker";
 import { getJobDetail } from "helper/job_helper";
 import { updateJob } from "helper/job_helper";
-
+import TextLoader from "loaders/TextLoader";
 
 const comparewithId = (optiondata, optionvalue) => {
   const filter = optiondata.find((item) => item.id === optionvalue);
@@ -47,6 +47,8 @@ const EditJobModal = (props) => {
   const [dataName, setDataName] = useState("");
   const [imageName, setImageName] = useState("");
   const [currentDirState, setCurrentDirState] = useState("data");
+  const [loading, setLoading] = useState(false);
+
   const changeHandler = (val) => {
     // if (!selectedDataDirectory && val === true) {
     //   toast.error("Please select data directory first");
@@ -63,18 +65,18 @@ const EditJobModal = (props) => {
     }
   }, [props.show]);
 
-  useEffect(() => {
-    const getTemplates = async () => {
-      const template = await fetchAllTemplate();
-      const structuredTemplate = template?.map((item) => ({
-        id: item.id,
-        name: item.layoutName,
-      }));
+  // useEffect(() => {
+  //   const getTemplates = async () => {
+  //     const template = await fetchAllTemplate();
+  //     const structuredTemplate = template?.map((item) => ({
+  //       id: item.id,
+  //       name: item.layoutName,
+  //     }));
 
-      setAllTemplateOptions(structuredTemplate);
-    };
-    getTemplates();
-  }, []);
+  //     setAllTemplateOptions(structuredTemplate);
+  //   };
+  //   getTemplates();
+  // }, []);
 
   useEffect(() => {
     const getUsers = async () => {
@@ -93,24 +95,43 @@ const EditJobModal = (props) => {
   }, []);
   useEffect(() => {
     const getData = async () => {
-      const res = await getJobDetail(props.jobId);
-      console.log(res);
-      const jobData = res.result[0];
-      setJobName(jobData.jobName);
-      setSelectedTemplate(
-        comparewithId(allTemplateOptions, jobData.templateId)
-      );
-      setDataName(jobData.dataFileName);
-      setSelectedDataDirectory(jobData.dataPath);
-      setDataType(comparewithId(fileType, jobData.dataType));
-      const input = document.getElementById("image-enable-input");
-      if(input){
-      if (jobData.imageColor || jobData.imagePath || jobData.imageType) {
-        input.click();
-        setImageName(jobData.imageName);
-        setSelectedImageDirectory(jobData.imagePath);
+      try {
+        setLoading(true);
+        const res = await getJobDetail(props.jobId);
+        const template = await fetchAllTemplate();
+        const structuredTemplate = template?.map((item) => ({
+          id: item.id,
+          name: item.layoutName,
+        }));
+        console.log(res);
+        const jobData = res?.result[0];
+        setJobName(jobData.jobName);
+        setSelectedTemplate(
+          comparewithId(structuredTemplate, jobData.templateId)
+        );
+        setAllTemplateOptions(structuredTemplate);
+        setDataName(jobData.dataFileName);
+        setSelectedDataDirectory(jobData.dataPath);
+        setDataType(comparewithId(fileType, jobData.dataType));
+        const input = document.getElementById("image-enable-input");
+        if (input) {
+          if (jobData.imageColor || jobData.imagePath || jobData.imageType) {
+            input.click();
+            setImageName(jobData.imageName);
+            setSelectedImageDirectory(jobData.imagePath);
+            setImageType(comparewithId(imageTypeData, jobData.imageType));
+            setImageDpi(comparewithId(imageDPIData, jobData.imageDpi));
+            setImageColor(
+              comparewithId(imageColorTypeData, jobData.imageColor)
+            );
+          }
+        }
+      } catch (err) {
+        toast.warning("Cannot load the data");
+      } finally {
+        setLoading(false);
       }
-    }};
+    };
     getData();
   }, []);
   const createTemplateHandler = async () => {
@@ -194,7 +215,6 @@ const EditJobModal = (props) => {
 
   const directoryChangeHandler = (directory) => {
     directory = directory.substring(1);
-    console.log(directory);
     // if (imageEnable) {
     //   setSelectedImageDirectory(directory);
     //   return;
@@ -223,6 +243,27 @@ const EditJobModal = (props) => {
         </Modal.Header>
 
         <Modal.Body style={{ height: "65dvh", overflow: "auto" }}>
+          {loading && (
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                backgroundColor: "rgba(0, 0, 0, 0.9)", // Slightly opaque background
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 9999,
+                pointerEvents: "auto", // Make the overlay not clickable
+              }}
+            >
+              <div style={{ height: "50%" }}>
+                <TextLoader message={"Loading Data, Please wait..."} />
+              </div>
+            </div>
+          )}
           <Row className="mb-2">
             <label
               htmlFor="example-text-input"
