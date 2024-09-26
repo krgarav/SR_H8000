@@ -69,7 +69,7 @@ const DataProvider = (props) => {
       };
     });
   };
-
+console.log(dataState)
   const modifyTemplateWithUUIDHandler = (uuid, regionData, fieldType) => {
     setDataState((prevState) => {
       const copiedData = [...prevState.allTemplates];
