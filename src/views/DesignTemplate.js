@@ -24,7 +24,7 @@ import TextLoader from "loaders/TextLoader";
 import processDirection from "data/processDirection";
 import deepcopy from 'deepcopy';
 import resetJson from "data/resetJson";
-
+import { useWindowSize } from "react-use";
 // Function to get values from sessionStorage or provide default
 const getLocalStorageOrDefault = (key, defaultValue) => {
   const stored = localStorage.getItem(key);
@@ -125,6 +125,8 @@ const DesignTemplate = () => {
   const numRows = timingMarks;
   const numCols = totalColumns;
   const divRefs = useRef([]);
+  const { width } = useWindowSize();
+  const isWideScreen = width >= 994;
   const handleDragStop = (e, d) => {
     setPosition((prev) => ({ ...prev, x: d.x, y: d.y }));
   };
@@ -1279,7 +1281,7 @@ const DesignTemplate = () => {
   };
   return (
     <>
-      <div>
+      <div style={{ position: "sticky", top: 0, zIndex: 99 }}>
         <SmallHeader />
       </div>
       {loading && (
@@ -1290,7 +1292,7 @@ const DesignTemplate = () => {
             left: 0,
             width: "100%",
             height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.9)", // Slightly opaque background
+            backgroundColor: "rgba(0, 0, 0, 0.8)", // Slightly opaque background
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
@@ -1306,10 +1308,10 @@ const DesignTemplate = () => {
 
       <div
         style={{
-          position: "absolute",
-          top: "30px", // Adjust the top value as needed
-          left: "50%",
-          transform: "translateX(-50%)",
+          position: isWideScreen ? "fixed" : "absolute",
+          top: "30px",
+          left: isWideScreen ? "50%" : "10%",
+          transform: isWideScreen ? "translateX(-50%)" : "none",
           zIndex: "999",
         }}
       >
@@ -1988,11 +1990,15 @@ const DesignTemplate = () => {
                   </label>
                   <div className="col-md-4">
                     <input
-                      type="number"
+                      type="text"
                       className="form-control"
                       placeholder="Enter the minimum mark"
                       value={minimumMark}
-                      onChange={(e) => setMinimumMark(e.target.value)}
+                      onChange={(e) => {
+                        // Allow only numeric input (including empty input)
+                        const numericValue = e.target.value.replace(/[^0-9]/g, '');
+                        setMinimumMark(numericValue);
+                      }}
                       required
                     />
                   </div>

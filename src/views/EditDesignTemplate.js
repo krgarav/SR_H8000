@@ -1192,6 +1192,7 @@ const EditDesignTemplate = () => {
   };
 
   const sendHandler = async () => {
+    setLoading(true);
     // Retrieve the selected template
     const template = dataCtx.allTemplates[data.templateIndex];
 
@@ -1323,7 +1324,7 @@ const EditDesignTemplate = () => {
     }
 
     try {
-      setLoading(true);
+
       const res = await createTemplate(fullRequestData);
       if (res.success === true) {
         const layoutId = res?.layoutId;
@@ -1368,16 +1369,8 @@ const EditDesignTemplate = () => {
       if (!pitchValue) {
         alert("Pitch value cannot be blank.");
       }
-      const obj = {
-        startRow: 3,
-        startCol: 4,
-        endRow: 42,
-        endCol: 10,
-        name: "Q121-160",
-        fieldType: "questionField",
-      };
       let object = { ...selectedField };
-      console.log(">>>", object);
+      
       const stCol = object.startCol;
       const stRow = object.startRow;
       const edCol = object.endCol;

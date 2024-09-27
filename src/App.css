@@ -221,8 +221,16 @@ html, body {
 }
 
 
-input[type='number']::-webkit-inner-spin-button,
-input[type='number']::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+
+/* Default style for input */
+.form-control {
+  border: 3px solid #ccc;
+  transition: border-color 0.3s ease;
+}
+
+/* When the input is focused */
+.form-control:focus {
+  border: 2px solid #0843b1; /* Clean, darker blue border */
+  outline: none; /* Removes the default outline */
+  box-shadow: 0 0 8px rgba(8, 67, 177, 0.5); /* Soft, subtle shadow on focus */
 }
