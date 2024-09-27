@@ -1370,7 +1370,7 @@ const EditDesignTemplate = () => {
         alert("Pitch value cannot be blank.");
       }
       let object = { ...selectedField };
-      
+
       const stCol = object.startCol;
       const stRow = object.startRow;
       const edCol = object.endCol;
@@ -1867,8 +1867,8 @@ const EditDesignTemplate = () => {
                                     userSelect: "none",
                                   }}
                                   className={`${data.bubbleType} ${selected[`${rowIndex},${colIndex}`]
-                                      ? "selected"
-                                      : ""
+                                    ? "selected"
+                                    : ""
                                     }`}
                                 >
                                   {(numberedJson[rowIndex] &&
@@ -2268,8 +2268,8 @@ const EditDesignTemplate = () => {
                 )}
               </Row>
             )}
-          {(selectedFieldType === "questionField" ||
-            selectedFieldType === "formField") && (
+          {(selectedFieldType !== "idField" ||
+            selectedFieldType !== "skewMarkField") && (
               <Row className="mb-2">
                 <label
                   htmlFor="example-text-input"
