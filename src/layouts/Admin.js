@@ -25,10 +25,12 @@ import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 
 import routes from "routes.js";
-import DesignTemplate from "views/DesignTemplate";
+
 import FolderStructure from "views/FolderStructure";
-import EditDesignTemplate from "views/EditDesignTemplate";
+
 import AdminScanJob from "views/AdminScanJob";
+import DesignTemplate from "views/simplex/DesignTemplate";
+import EditDesignTemplate from "views/simplex/EditDesignTemplate";
 
 const Admin = (props) => {
   const mainContent = React.useRef(null);

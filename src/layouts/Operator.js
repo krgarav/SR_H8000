@@ -8,7 +8,7 @@ import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 
 import operatorRoute from "operatorRoute.js";
-import DesignTemplate from "views/DesignTemplate";
+
 import FolderStructure from "views/FolderStructure";
 import ScanJob from 'views/ScanJob';
 
