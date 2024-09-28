@@ -1,6 +1,6 @@
 {
   "name": "sekonicscanner8000",
-  "version": "1.2.4",
+  "version": "2.1.1",
   "description": "Scanner project",
   "main": "index.js",
   "repository": {
@@ -9,7 +9,7 @@
   },
   "author": "Kumar Gaurav",
   "license": "IOS",
-  "scripts": {
+     "scripts": {
     "start": "react-scripts start --port 3002",
     "build": "react-scripts build",
     "test": "react-scripts test",

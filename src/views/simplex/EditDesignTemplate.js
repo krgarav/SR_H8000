@@ -33,6 +33,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CopyModal from "modals/CopyModal/CopyModal";
+import FieldDetails from "modals/FieldDetails";
 // Function to get values from sessionStorage or provide default
 const getSessionStorageOrDefault = (key, defaultValue) => {
   const stored = sessionStorage.getItem(key);
@@ -116,6 +117,7 @@ const EditDesignTemplate = () => {
   const [selectedField, setSelectedField] = useState();
   const [showCopy, setShowCopy] = useState(false);
   const [sensitivity, setSensitivity] = useState(5);
+  const [showFieldDetails, setShowFieldDetails] = useState(false)
   const emptyExcelJsonFile = getSessionStorageOrDefault(
     "excelJsonFile",
     state.excelJsonFile
@@ -1358,7 +1360,6 @@ const EditDesignTemplate = () => {
     setDragStart2({ x: e.clientX, y: e.clientY });
     setDragOffset({ left: e.clientX - rect.left, top: e.clientY - rect.top });
   }, []);
-  console.log();
   const sensitivityHandler = (num) => {
     console.log(num);
   };
@@ -1683,6 +1684,16 @@ const EditDesignTemplate = () => {
                 Layout details
               </Button>
             </Col>
+            <Col xs="auto">
+              <Button
+                variant="success"
+                onClick={() => {
+                  setShowFieldDetails(true)
+                }}
+              >
+                Field Details
+              </Button>
+            </Col>
           </Row>
         </Container>
       </div>
@@ -1706,7 +1717,7 @@ const EditDesignTemplate = () => {
       )}
 
       <div style={{ overflow: "auto" }}>
-        <Button
+        {!selection && <Button
           onClick={sendHandler}
           disabled={loading}
           style={{
@@ -1727,7 +1738,7 @@ const EditDesignTemplate = () => {
           }}
         >
           {!loading ? "Update" : "Updating"}
-        </Button>
+        </Button>}
         <div className="main-container">
           <div className="containers">
             <div className="d-flex" style={{ overflow: "auto" }}>
@@ -2827,6 +2838,12 @@ const EditDesignTemplate = () => {
           }}
           saveRegion={saveRegion}
         />
+      )}
+      {showFieldDetails && (
+        <FieldDetails show={showFieldDetails}
+          onHide={() => {
+            setShowFieldDetails(false)
+          }} />
       )}
     </>
   );

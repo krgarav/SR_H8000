@@ -13,6 +13,7 @@ import FolderStructure from "views/FolderStructure";
 
 import AdminJobQueue from "views/AdminJobQueue";
 import AppManagement from "views/AppManagement";
+import About from "views/About";
 
 var routes = [
 
@@ -69,7 +70,7 @@ var routes = [
     component: <AppManagement />,
     layout: "/admin",
   },
-  
+
   // {
   //   path: "/maps",
   //   name: "Maps",
@@ -77,6 +78,15 @@ var routes = [
   //   component: <Maps />,
   //   layout: "/admin",
   // },
+
+
+  {
+    path: "/user-profile",
+    name: "About",
+    icon: "ni ni-support-16 text-black",
+    component: <About />,
+    layout: "/admin",
+  },
   // {
   //   path: "/user-profile",
   //   name: "User Profile",
