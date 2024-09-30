@@ -20,7 +20,7 @@ import { sendFile } from "helper/TemplateHelper";
 import EditTemplateModal from "ui/EditTemplateModal";
 import base64ToFile from "services/Base64toFile";
 import Papa from "papaparse";
-import axios from "axios";
+import axios from "axios";    
 import EditImageCropper from "modals/EditImageCropper";
 import TextLoader from "loaders/TextLoader";
 import { getUrls } from "../../helper/url_helper";
@@ -2843,7 +2843,9 @@ const EditDesignTemplate = () => {
         <FieldDetails show={showFieldDetails}
           onHide={() => {
             setShowFieldDetails(false)
-          }} />
+          }} 
+          selected = {selectedCoordinates}
+          />
       )}
     </>
   );
