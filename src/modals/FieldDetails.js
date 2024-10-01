@@ -28,7 +28,7 @@ const FieldDetails = (props) => {
   const moveUp = (index) => {
     if (index > 0) {
       setAnimatingIndex(index);
-      setDirection('up');
+      setDirection("up");
       setTimeout(() => {
         const newFields = [...fields];
         [newFields[index], newFields[index - 1]] = [
@@ -46,7 +46,7 @@ const FieldDetails = (props) => {
   const moveDown = (index) => {
     if (index < fields.length - 1) {
       setAnimatingIndex(index);
-      setDirection('down');
+      setDirection("down");
       setTimeout(() => {
         const newFields = [...fields];
         [newFields[index], newFields[index + 1]] = [
@@ -66,18 +66,26 @@ const FieldDetails = (props) => {
   };
   const LoadedTemplates = fields?.map((item, i) => {
     const isAnimating = animatingIndex === i;
-    const slno = isAnimating ? (direction === 'up' ? i + 1 : i - 1) : i + 1;
-
+    const slno = isAnimating ? (direction === "up" ? i + 1 : i - 1) : i + 1;
     return (
       <tr
         key={i}
         style={{
-          backgroundColor: isAnimating ? (direction === 'up' ? "#f0f0f0" : "#d9d9d9") : "transparent",
-          transition: "background-color 0.3s ease-in-out, transform 0.3s ease-in-out",
-          transform: isAnimating ? (direction === 'up' ? "translateY(-50px)" : "translateY(50px)") : "none",
+          backgroundColor: isAnimating
+            ? direction === "up"
+              ? "#f0f0f0"
+              : "#d9d9d9"
+            : "transparent",
+          transition:
+            "background-color 0.3s ease-in-out, transform 0.3s ease-in-out",
+          transform: isAnimating
+            ? direction === "up"
+              ? "translateY(-50px)"
+              : "translateY(50px)"
+            : "none",
         }}
       >
-        <td>{ slno}</td> {/* Serial number */}
+        <td>{slno}</td> {/* Serial number */}
         <td>{item.name}</td>
         <td>{item.fieldType}</td>
         <td>
@@ -91,7 +99,7 @@ const FieldDetails = (props) => {
         <td>
           <UncontrolledDropdown>
             <DropdownToggle
-              className="btn-icon-only text-light"
+              className="btn-icon-only "
               href="#pablo"
               role="button"
               size="sm"
@@ -100,7 +108,14 @@ const FieldDetails = (props) => {
               <i className="fas fa-ellipsis-v" />
             </DropdownToggle>
             <DropdownMenu className="dropdown-menu-arrow" right>
-              <DropdownItem>Edit</DropdownItem>
+              <DropdownItem 
+              onClick={() =>{ 
+              
+              console.log(item, i)
+                props.editHandler(item, i)
+                }
+              }
+                >Edit</DropdownItem>
               <DropdownItem style={{ color: "red" }}>Delete</DropdownItem>
             </DropdownMenu>
           </UncontrolledDropdown>
@@ -109,15 +124,26 @@ const FieldDetails = (props) => {
     );
   });
 
-
   const placeHolderJobs = new Array(8).fill(null).map((_, index) => (
     <tr key={index}>
-      <td><Placeholder width="20%" height="1.5em" /></td>
-      <td><Placeholder width="60%" height="1.5em" /></td>
-      <td><Placeholder width="60%" height="1.5em" /></td>
-      <td><Placeholder width="60%" height="1.5em" /></td>
-      <td><Placeholder width="60%" height="1.5em" /></td>
-      <td><Placeholder width="15%" height="1.5em" /></td>
+      <td>
+        <Placeholder width="20%" height="1.5em" />
+      </td>
+      <td>
+        <Placeholder width="60%" height="1.5em" />
+      </td>
+      <td>
+        <Placeholder width="60%" height="1.5em" />
+      </td>
+      <td>
+        <Placeholder width="60%" height="1.5em" />
+      </td>
+      <td>
+        <Placeholder width="60%" height="1.5em" />
+      </td>
+      <td>
+        <Placeholder width="15%" height="1.5em" />
+      </td>
     </tr>
   ));
 
@@ -132,7 +158,10 @@ const FieldDetails = (props) => {
         <Modal.Title id="contained-modal-title-vcenter">All Fields</Modal.Title>
       </Modal.Header>
       <Modal.Body style={{ height: "60vh", overflow: "auto" }}>
-        <Table className="align-items-center table-flush mb-5 table-hover" responsive>
+        <Table
+          className="align-items-center table-flush mb-5 table-hover"
+          responsive
+        >
           <thead className="thead-light">
             <tr>
               <th scope="col">SL no.</th>

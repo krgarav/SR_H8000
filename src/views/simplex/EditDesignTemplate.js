@@ -2845,6 +2845,7 @@ const EditDesignTemplate = () => {
             setShowFieldDetails(false)
           }} 
           selected = {selectedCoordinates}
+          editHandler = {(item,i)=> handleEyeClick(item,i)}
           />
       )}
     </>
