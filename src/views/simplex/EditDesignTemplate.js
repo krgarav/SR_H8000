@@ -1546,7 +1546,6 @@ const EditDesignTemplate = () => {
       });
       console.log(newData);
       setSelection(null);
-      // console.log(selectedCoordinates)
     } catch (err) {
       console.log(err);
     }

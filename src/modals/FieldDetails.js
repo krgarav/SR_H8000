@@ -58,7 +58,7 @@ const FieldDetails = (props) => {
         setDirection(null);
         resetAnimation();
       }, 300);
-    }
+    } 
   };
   const resetAnimation = () => {
     setAnimatingIndex(null);
