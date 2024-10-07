@@ -234,3 +234,14 @@ html, body {
   outline: none; /* Removes the default outline */
   box-shadow: 0 0 8px rgba(8, 67, 177, 0.5); /* Soft, subtle shadow on focus */
 }
+/* When the input is focused */
+.primary-btn-fcs:focus {
+  border: 2px solid #225ece; /* Clean, darker blue border */
+  outline:none; /* Removes the default outline */
+  box-shadow: 0 0 15px rgba(134, 174, 247, 0.753); /* Soft, subtle shadow on focus */
+}
+.secondary-btn-fcs:focus {
+  border: 2px solid #f35134; /* Clean, darker blue border */
+  outline:none; /* Removes the default outline */
+  box-shadow: 0 0 8px rgba(7, 14, 26, 0.753); /* Soft, subtle shadow on focus */
+}
