@@ -1099,7 +1099,7 @@ const EditDesignTemplate = () => {
       setEndRowInput(formattedSelectedFile["End Row"]);
       setStartColInput(formattedSelectedFile["Start Col"]);
       setEndColInput(formattedSelectedFile["End Col"]);
-      setReadingDirectionOption(data?.iDirection);
+      setReadingDirectionOption((data?.iDirection).toString());
       setType(data?.iType);
       // setOption(data?.iOption);
       setNumberOfField(data?.totalNumberOfFields);
@@ -1135,7 +1135,7 @@ const EditDesignTemplate = () => {
       setEndRowInput(formattedSelectedFile["End Row"] - 2);
       setStartColInput(formattedSelectedFile["Start Col"]);
       setEndColInput(formattedSelectedFile["End Col"]);
-      setReadingDirectionOption(data?.iDirection);
+      setReadingDirectionOption((data?.iDirection).toString());
       setType(data?.iType);
       // setOption(data?.iOption);
       setNumberOfField(data?.totalNumberOfFields);
@@ -1160,7 +1160,7 @@ const EditDesignTemplate = () => {
       setMaximumMark(data?.iMinimumMarks);
       setNoInRow(data?.rowNumber);
       setNoInCol(data?.columnNumber);
-      setReadingDirectionOption(data?.iDirection);
+      setReadingDirectionOption((data?.iDirection).toString());
       setType(data?.iType);
       // setOption(data?.iOption);
       setCoordinateIndex(index);
@@ -2346,12 +2346,15 @@ const EditDesignTemplate = () => {
               </label>
               <div className="col-md-4">
                 <input
-                  type="number"
+                  type="text"
                   className="form-control"
                   placeholder="Enter the minimum mark"
                   value={minimumMark}
-                  onChange={(e) => setMinimumMark(e.target.value)}
-                  onWheel={(e) => e.preventDefault()}
+                  onChange={(e) => {
+                    // Allow only numeric input (including empty input)
+                    const numericValue = e.target.value.replace(/[^0-9]/g, "");
+                    setMinimumMark(numericValue);
+                  }}
                   min={0}
                   required
                 />
@@ -2365,7 +2368,11 @@ const EditDesignTemplate = () => {
                   className="form-control"
                   placeholder="Enter the maximum mark"
                   value={maximumMark}
-                  onChange={(e) => setMaximumMark(e.target.value)}
+                  onChange={(e) => {
+                    // Allow only numeric input (including empty input)
+                    const numericValue = e.target.value.replace(/[^0-9]/g, "");
+                    setMaximumMark(numericValue);
+                  }}
                   required
                 />
               </div>
@@ -2435,7 +2442,7 @@ const EditDesignTemplate = () => {
             <div className="col-2 ">
               <input
                 id="startRow"
-                type="number"
+                type="text"
                 disabled={modalUpdate}
                 value={startRowInput}
                 onBlur={(e) => {
@@ -2450,9 +2457,8 @@ const EditDesignTemplate = () => {
                   }
                 }}
                 onChange={(e) => {
-                  setStartRowInput(
-                    e.target.valueAsNumber >= 0 ? e.target.value : ""
-                  );
+                  const numericValue = e.target.value.replace(/[^0-9]/g, "");
+                  setStartRowInput(numericValue >= 0 ? numericValue : "");
                 }}
                 className="form-control"
               />
@@ -2465,7 +2471,7 @@ const EditDesignTemplate = () => {
             </label>
             <div className="col-2">
               <input
-                type="number"
+                type="text"
                 value={endRowInput}
                 disabled={modalUpdate}
                 onBlur={(e) => {
@@ -2480,9 +2486,9 @@ const EditDesignTemplate = () => {
                   }
                 }}
                 onChange={(e) => {
-                  setEndRowInput(
-                    e.target.valueAsNumber >= 0 ? e.target.value : ""
-                  );
+                  // Allow only numeric input (including empty input)
+                  const numericValue = e.target.value.replace(/[^0-9]/g, "");
+                  setEndRowInput(numericValue >= 0 ? numericValue : "");
                 }}
                 className="form-control"
               />
@@ -2503,10 +2509,14 @@ const EditDesignTemplate = () => {
             </label>
             <div className="col-4">
               <input
-                type="number"
+                type="text"
                 className="form-control"
                 value={noInRow}
-                onChange={(e) => setNoInRow(e.target.value)}
+                onChange={(e) => {
+                  // Allow only numeric input (including empty input)
+                  const numericValue = e.target.value.replace(/[^0-9]/g, "");
+                  setNoInRow(numericValue);
+                }}
                 required
               />
             </div>
@@ -2515,10 +2525,14 @@ const EditDesignTemplate = () => {
             </label>
             <div className="col-4">
               <input
-                type="number"
+                type="text"
                 className="form-control"
                 value={noOfStepInRow}
-                onChange={(e) => setNoOfStepInRow(e.target.value)}
+                onChange={(e) => {
+                  // Allow only numeric input (including empty input)
+                  const numericValue = e.target.value.replace(/[^0-9]/g, "");
+                  setNoOfStepInRow(numericValue);
+                }}
                 required
               />
             </div>
@@ -2568,7 +2582,7 @@ const EditDesignTemplate = () => {
             </label>
             <div className="col-2">
               <input
-                type="number"
+                type="text"
                 value={endColInput}
                 disabled={modalUpdate}
                 onBlur={(e) => {
@@ -2583,10 +2597,17 @@ const EditDesignTemplate = () => {
                   }
                 }}
                 onChange={(e) => {
+                  // Allow only numeric input (including empty input)
+                  const numericValue = e.target.value.replace(
+                    /[^0-9]/g,
+                    ""
+                  );
+                  setMaximumMark(numericValue);
                   setEndColInput(
-                    e.target.valueAsNumber >= 0 ? e.target.value : ""
+                    numericValue >= 0 ? numericValue : ""
                   );
                 }}
+               
                 className="form-control"
               />
               {/* <input
@@ -2608,10 +2629,18 @@ const EditDesignTemplate = () => {
             </label>
             <div className="col-4">
               <input
-                type="number"
+                type="text"
                 className="form-control"
                 value={noInCol}
-                onChange={(e) => setNoInCol(e.target.value)}
+                onChange={(e) => {
+                  // Allow only numeric input (including empty input)
+                  const numericValue = e.target.value.replace(
+                    /[^0-9]/g,
+                    ""
+                  );
+                  setNoInCol(numericValue);
+                }}
+               
                 required
               />
             </div>
@@ -2620,10 +2649,17 @@ const EditDesignTemplate = () => {
             </label>
             <div className="col-4">
               <input
-                type="number"
+                type="text"
                 className="form-control"
                 value={noOfStepInCol}
-                onChange={(e) => setNoOfStepInCol(e.target.value)}
+                onChange={(e) => {
+                  // Allow only numeric input (including empty input)
+                  const numericValue = e.target.value.replace(
+                    /[^0-9]/g,
+                    ""
+                  );
+                  setNoOfStepInCol(numericValue);
+                }}
                 required
               />
             </div>
@@ -2698,10 +2734,18 @@ const EditDesignTemplate = () => {
               </label>
               <div className="col-4 ">
                 <input
-                  type="number"
+                  type="text"
                   className="form-control"
                   value={numberOfField}
-                  onChange={(e) => setNumberOfField(e.target.value)}
+                  onChange={(e) => {
+                    // Allow only numeric input (including empty input)
+                    const numericValue = e.target.value.replace(
+                      /[^0-9]/g,
+                      ""
+                    );
+                    setNumberOfField(numericValue);
+                  }}
+             
                   required
                 />
               </div>
