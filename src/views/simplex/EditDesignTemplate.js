@@ -2364,7 +2364,7 @@ const EditDesignTemplate = () => {
               </label>
               <div className="col-md-4">
                 <input
-                  type="number"
+                  type="text"
                   className="form-control"
                   placeholder="Enter the maximum mark"
                   value={maximumMark}
@@ -2546,7 +2546,7 @@ const EditDesignTemplate = () => {
             </label>
             <div className="col-2">
               <input
-                type="number"
+                type="text"
                 value={startColInput}
                 disabled={modalUpdate}
                 onBlur={(e) => {
