@@ -2030,7 +2030,7 @@ const DesignTemplate = () => {
                   </label>
                   <div className="col-md-4">
                     <input
-                      type="number"
+                      type="text"
                       className="form-control"
                       placeholder="Enter the maximum mark"
                       value={maximumMark}
@@ -2287,7 +2287,7 @@ const DesignTemplate = () => {
                 </label>
                 <div className="col-4">
                   <input
-                    type="number"
+                    type="text"
                     className="form-control"
                     value={noInCol}
                     onChange={(e) => setNoInCol(e.target.value)}
@@ -2299,7 +2299,7 @@ const DesignTemplate = () => {
                 </label>
                 <div className="col-4">
                   <input
-                    type="number"
+                    type="text"
                     className="form-control"
                     value={noOfStepInCol}
                     onChange={(e) => setNoOfStepInCol(e.target.value)}
@@ -2399,7 +2399,7 @@ const DesignTemplate = () => {
                   </label>
                   <div className="col-4 ">
                     <input
-                      type="number"
+                      type="text"
                       className="form-control"
                       value={numberOfField}
                       onChange={(e) => setNumberOfField(e.target.value)}
