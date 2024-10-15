@@ -2290,7 +2290,14 @@ const DesignTemplate = () => {
                     type="text"
                     className="form-control"
                     value={noInCol}
-                    onChange={(e) => setNoInCol(e.target.value)}
+                    onChange={(e) => {
+                      // Allow only numeric input (including empty input)
+                      const numericValue = e.target.value.replace(
+                        /[^0-9]/g,
+                        ""
+                      );
+                      setNoInCol(numericValue);
+                    }}
                     required
                   />
                 </div>
