@@ -162,7 +162,9 @@ const FieldDetails = (props) => {
           className="align-items-center table-flush mb-5 table-hover"
           responsive
         >
-          <thead className="thead-light">
+          <thead className="thead-light"
+             style={{ position: 'sticky', top: 0, zIndex: 1,backgroundColor: 'white' }}
+          >
             <tr>
               <th scope="col">SL no.</th>
               <th scope="col">Field Name</th>
