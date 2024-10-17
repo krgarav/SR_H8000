@@ -19,7 +19,7 @@ import {
   ExcelExport,
   Filter,
 } from "@syncfusion/ej2-react-grids";
-
+import { Link } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cancelScan } from "helper/TemplateHelper";
@@ -62,18 +62,17 @@ const AdminScanJob = () => {
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 576);
   const [proccessUrl, setProcessURL] = useState("");
   const [showPrintModal, setShowPrintModal] = useState(true);
+  const [templateName,setTemplateName] = useState("")
   const template = emptyMessageTemplate;
-  
-const grht = "850px"
-console.log(gridHeight,grht)  
-const gridRef = useRef();
+
+  const gridRef = useRef();
 
   const location = useLocation();
   const navigate = useNavigate();
   useEffect(() => {
     // Function to calculate 80% of the viewport height
     const calculateGridHeight = () => {
-      const height = window.innerHeight * 0.70; // 80% of viewport height
+      const height = window.innerHeight * 0.7; // 80% of viewport height
       setGridHeight(`${height}px`);
     };
 
@@ -81,11 +80,11 @@ const gridRef = useRef();
     calculateGridHeight();
 
     // Update height when the window is resized
-    window.addEventListener('resize', calculateGridHeight);
+    window.addEventListener("resize", calculateGridHeight);
 
     // Cleanup event listener on component unmount
     return () => {
-      window.removeEventListener('resize', calculateGridHeight);
+      window.removeEventListener("resize", calculateGridHeight);
     };
   }, []); // Empty dependency array to run only once and on resize
   useEffect(() => {
@@ -126,11 +125,13 @@ const gridRef = useRef();
     // }
     // const { templateId } = location?.state;
     const localTemplateId = localStorage.getItem("scantemplateId");
+    const templateName = localStorage.getItem("templateName");
     // if (templateId) {
     //   setSelectedValue(templateId);
     // }
     if (localTemplateId) {
       setSelectedValue(localTemplateId);
+      setTemplateName(templateName);
     }
   }, [location]);
   // useEffect(() => {
@@ -464,9 +465,32 @@ const gridRef = useRef();
       }
     });
   };
+  // console.log(location.state)
   return (
     <>
       <NormalHeader />
+      <div
+        style={{
+          position:   "absolute",
+          top: "20px",
+          padding: "10px",
+          zIndex: "999",
+        }}
+      >
+        <nav
+          style={{ "--bs-breadcrumb-divider": "'>'" }}
+          aria-label="breadcrumb"
+        >
+          <ol className="breadcrumb" style={{ fontSize: "0.8rem" }}>
+            <li className="breadcrumb-item">
+              <Link to="/admin/job-queue">Job queue</Link>
+            </li>
+            <li className="breadcrumb-item active" aria-current="page">
+              {templateName}
+            </li>
+          </ol>
+        </nav>
+      </div>
       <div
         style={{
           position: "absolute",
@@ -483,46 +507,46 @@ const gridRef = useRef();
         <br />
 
         {/* <div className="control-pane"> */}
-          <div className="control-section">
-            <GridComponent
-              ref={gridRef}
-              dataBound={dataBound}
-              actionComplete={handleSave}
-              dataSource={processedData}
-              height={gridHeight}
-              allowSorting={false}
-              editSettings={editSettings}
-              allowFiltering={false}
-              filterSettings={filterSettings}
-              // toolbar={toolbar}
-              toolbarClick={handleToolbarClick}
-              allowExcelExport={true}
-              allowPdfExport={false}
-              allowEditing={false}
-              emptyRecordTemplate={template.bind(this)}
-              // rowDataBound={rowDataBound}
+        <div className="control-section">
+          <GridComponent
+            ref={gridRef}
+            dataBound={dataBound}
+            actionComplete={handleSave}
+            dataSource={processedData}
+            height={gridHeight}
+            allowSorting={false}
+            editSettings={editSettings}
+            allowFiltering={false}
+            filterSettings={filterSettings}
+            // toolbar={toolbar}
+            toolbarClick={handleToolbarClick}
+            allowExcelExport={true}
+            allowPdfExport={false}
+            allowEditing={false}
+            emptyRecordTemplate={template.bind(this)}
+            // rowDataBound={rowDataBound}
+          >
+            <ColumnsDirective>{columnsDirective}</ColumnsDirective>
+            <Inject services={services} />
+          </GridComponent>
+          <div className="m-2" style={{ float: "right" }}>
+            <Button
+              className=""
+              color={"success"}
+              type="button"
+              onClick={handleStart}
+              disabled={scanning || starting ? true : false}
             >
-              <ColumnsDirective>{columnsDirective}</ColumnsDirective>
-              <Inject services={services} />
-            </GridComponent>
-            <div className="m-2" style={{ float: "right" }}>
-              <Button
-                className=""
-                color={"success"}
-                type="button"
-                onClick={handleStart}
-                disabled={scanning || starting ? true : false}
-              >
-                {starting && !scanning && "Starting"}
-                {!starting && !scanning && "Start"}
-                {scanning && "Scanning"}
+              {starting && !scanning && "Starting"}
+              {!starting && !scanning && "Start"}
+              {scanning && "Scanning"}
+            </Button>
+            {scanning && (
+              <Button color="danger" type="button" onClick={handleStop}>
+                Cancel Scanning
               </Button>
-              {scanning && (
-                <Button color="danger" type="button" onClick={handleStop}>
-                  Cancel Scanning
-                </Button>
-              )}
-            </div>
+            )}
+          </div>
           {/* </div> */}
         </div>
       </Container>

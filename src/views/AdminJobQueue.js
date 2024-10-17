@@ -51,7 +51,7 @@ const AdminJobQueue = () => {
     }
   }, []);
   const startHandler = async (item) => {
-    const { id, templateId } = item;
+    const { id, templateId, templateName } = item;
 
     const obj = {
       id: id,
@@ -61,14 +61,19 @@ const AdminJobQueue = () => {
 
     localStorage.setItem("scantemplateId", templateId);
     localStorage.setItem("jobId", id);
-    navigate("/admin/job-queue/adminscanjob", { state: { templateId: templateId } });
+    localStorage.setItem("templateName", templateName);
+    navigate("/admin/job-queue/adminscanjob", {
+      state: { templateId: templateId, templateName },
+    });
   };
   const continueHandler = (item) => {
-    const { id, templateId } = item;
+    const { id, templateId, templateName } = item;
     localStorage.setItem("scantemplateId", templateId);
     localStorage.setItem("jobId", id);
-
-    navigate("/admin/job-queue/adminscanjob", { state: { templateId: templateId } });
+    localStorage.setItem("templateName", templateName);
+    navigate("/admin/job-queue/adminscanjob", {
+      state: { templateId: templateId, templateName },
+    });
   };
   const ALLJOBS = allJob.map((item, index) => {
     let assignuser = "Not Assigned";

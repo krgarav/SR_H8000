@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { Modal, Button, Col, Badge, Container } from "react-bootstrap";
 import { Row } from "reactstrap";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import classes from "./DesignTemplate.module.css";
 import DataContext from "store/DataContext";
 import { MultiSelect } from "react-multi-select-component";
@@ -1682,7 +1682,6 @@ const EditDesignTemplate = () => {
       </div> */}
 
       <div
-        // className="shadow mx-2 px-3 mb-5 "
         style={{
           position: isWideScreen ? "fixed" : "absolute",
           top: "20px",
@@ -1696,7 +1695,7 @@ const EditDesignTemplate = () => {
         >
           <ol className="breadcrumb" style={{ fontSize: "0.8rem" }}>
             <li className="breadcrumb-item">
-              <a href="#">All Templates</a>
+              <Link to="/admin/template">All Templates</Link>
             </li>
             <li className="breadcrumb-item active" aria-current="page">
               {
