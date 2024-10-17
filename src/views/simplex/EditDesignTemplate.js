@@ -118,6 +118,7 @@ const EditDesignTemplate = () => {
   const [showCopy, setShowCopy] = useState(false);
   const [sensitivity, setSensitivity] = useState(5);
   const [showFieldDetails, setShowFieldDetails] = useState(false);
+  const [fontSize, setFontSize] = useState("0.6rem"); // Default font size
   const emptyExcelJsonFile = getSessionStorageOrDefault(
     "excelJsonFile",
     state.excelJsonFile
@@ -237,6 +238,26 @@ const EditDesignTemplate = () => {
   //     document.removeEventListener("keydown", trapFocus);
   //   };
   // }, []);
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 576) {
+        setFontSize("0.3rem");
+      } else if (window.innerWidth < 768) {
+        setFontSize("0.6rem");
+      } else {
+        setFontSize("0.8rem");
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    // Call handler on mount to set initial font size
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
   useEffect(() => {
     const idFieldCount = selectedCoordinates.filter(
       (item) => item.fieldType === "idField"
@@ -1175,7 +1196,9 @@ const EditDesignTemplate = () => {
       setNoOfStepInCol(data?.columnStep);
     }
   };
-
+  console.log(
+    dataCtx.allTemplates[data.templateIndex][0].layoutParameters.layoutName
+  );
   const handleCrossClick = (selectedField, index) => {
     const response = window.confirm(
       "Are you sure you want to delete the selected field ?"
@@ -1571,7 +1594,7 @@ const EditDesignTemplate = () => {
   return (
     <>
       <div style={{ position: "sticky", top: 0, zIndex: 99 }}>
-        <SmallHeader />
+        <SmallHeader text={"template 1"} />
       </div>
 
       {detailLoader && (
@@ -1657,6 +1680,34 @@ const EditDesignTemplate = () => {
           Layout details
         </Button>
       </div> */}
+
+      <div
+        // className="shadow mx-2 px-3 mb-5 "
+        style={{
+          position: isWideScreen ? "fixed" : "absolute",
+          top: "20px",
+          padding: "10px",
+          zIndex: "999",
+        }}
+      >
+        <nav
+          style={{ "--bs-breadcrumb-divider": "'>'" }}
+          aria-label="breadcrumb"
+        >
+          <ol className="breadcrumb" style={{ fontSize: "0.8rem" }}>
+            <li className="breadcrumb-item">
+              <a href="#">All Templates</a>
+            </li>
+            <li className="breadcrumb-item active" aria-current="page">
+              {
+                dataCtx.allTemplates[data.templateIndex][0].layoutParameters
+                  .layoutName
+              }
+            </li>
+          </ol>
+        </nav>
+      </div>
+
       <div
         style={{
           position: isWideScreen ? "fixed" : "absolute",
@@ -2598,16 +2649,10 @@ const EditDesignTemplate = () => {
                 }}
                 onChange={(e) => {
                   // Allow only numeric input (including empty input)
-                  const numericValue = e.target.value.replace(
-                    /[^0-9]/g,
-                    ""
-                  );
+                  const numericValue = e.target.value.replace(/[^0-9]/g, "");
                   setMaximumMark(numericValue);
-                  setEndColInput(
-                    numericValue >= 0 ? numericValue : ""
-                  );
+                  setEndColInput(numericValue >= 0 ? numericValue : "");
                 }}
-               
                 className="form-control"
               />
               {/* <input
@@ -2634,13 +2679,9 @@ const EditDesignTemplate = () => {
                 value={noInCol}
                 onChange={(e) => {
                   // Allow only numeric input (including empty input)
-                  const numericValue = e.target.value.replace(
-                    /[^0-9]/g,
-                    ""
-                  );
+                  const numericValue = e.target.value.replace(/[^0-9]/g, "");
                   setNoInCol(numericValue);
                 }}
-               
                 required
               />
             </div>
@@ -2654,10 +2695,7 @@ const EditDesignTemplate = () => {
                 value={noOfStepInCol}
                 onChange={(e) => {
                   // Allow only numeric input (including empty input)
-                  const numericValue = e.target.value.replace(
-                    /[^0-9]/g,
-                    ""
-                  );
+                  const numericValue = e.target.value.replace(/[^0-9]/g, "");
                   setNoOfStepInCol(numericValue);
                 }}
                 required
@@ -2739,13 +2777,9 @@ const EditDesignTemplate = () => {
                   value={numberOfField}
                   onChange={(e) => {
                     // Allow only numeric input (including empty input)
-                    const numericValue = e.target.value.replace(
-                      /[^0-9]/g,
-                      ""
-                    );
+                    const numericValue = e.target.value.replace(/[^0-9]/g, "");
                     setNumberOfField(numericValue);
                   }}
-             
                   required
                 />
               </div>

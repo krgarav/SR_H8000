@@ -57,17 +57,37 @@ const AdminScanJob = () => {
   const [selectedValue, setSelectedValue] = useState();
   const [toolbar, setToolbar] = useState(["ExcelExport", "CsvExport"]);
   const [services, setServices] = useState([Sort, Toolbar, Filter]);
-  const [gridHeight, setGridHeight] = useState("350px");
+  const [gridHeight, setGridHeight] = useState("850px");
   const [starting, setStarting] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 576);
   const [proccessUrl, setProcessURL] = useState("");
   const [showPrintModal, setShowPrintModal] = useState(true);
   const template = emptyMessageTemplate;
-
-  const gridRef = useRef();
+  
+const grht = "850px"
+console.log(gridHeight,grht)  
+const gridRef = useRef();
 
   const location = useLocation();
   const navigate = useNavigate();
+  useEffect(() => {
+    // Function to calculate 80% of the viewport height
+    const calculateGridHeight = () => {
+      const height = window.innerHeight * 0.70; // 80% of viewport height
+      setGridHeight(`${height}px`);
+    };
+
+    // Call the function to set initial height
+    calculateGridHeight();
+
+    // Update height when the window is resized
+    window.addEventListener('resize', calculateGridHeight);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', calculateGridHeight);
+    };
+  }, []); // Empty dependency array to run only once and on resize
   useEffect(() => {
     const fetchData = async () => {
       const response = await getUrls();
@@ -81,24 +101,24 @@ const AdminScanJob = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  useEffect(() => {
-    // Calculate 60% of the viewport height
-    const handleResize = () => {
-      const height = `${window.innerHeight * 0.5}px`;
-      setGridHeight(height);
-    };
+  // useEffect(() => {
+  //   // Calculate 60% of the viewport height
+  //   const handleResize = () => {
+  //     const height = `${window.innerHeight * 0.5}px`;
+  //     setGridHeight(height);
+  //   };
 
-    // Set the initial height
-    handleResize();
+  //   // Set the initial height
+  //   handleResize();
 
-    // Add event listener to update height on window resize
-    window.addEventListener("resize", handleResize);
+  //   // Add event listener to update height on window resize
+  //   window.addEventListener("resize", handleResize);
 
-    // Cleanup the event listener on component unmount
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+  //   // Cleanup the event listener on component unmount
+  //   return () => {
+  //     window.removeEventListener("resize", handleResize);
+  //   };
+  // }, []);
   useEffect(() => {
     // if (!location.state) {
     //   navigate("/admin/job-queue", { replace: true });
@@ -462,7 +482,7 @@ const AdminScanJob = () => {
       <Container className={isSmallScreen ? "mt--6" : "mt--7"} fluid>
         <br />
 
-        <div className="control-pane">
+        {/* <div className="control-pane"> */}
           <div className="control-section">
             <GridComponent
               ref={gridRef}
@@ -503,7 +523,7 @@ const AdminScanJob = () => {
                 </Button>
               )}
             </div>
-          </div>
+          {/* </div> */}
         </div>
       </Container>
       {showPrintModal && <PrintModal show={showPrintModal} />}
