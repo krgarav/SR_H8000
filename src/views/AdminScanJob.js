@@ -72,7 +72,7 @@ const AdminScanJob = () => {
   useEffect(() => {
     // Function to calculate 80% of the viewport height
     const calculateGridHeight = () => {
-      const height = window.innerHeight * 0.7; // 80% of viewport height
+      const height = window.innerHeight * 0.65; // 80% of viewport height
       setGridHeight(`${height}px`);
     };
 

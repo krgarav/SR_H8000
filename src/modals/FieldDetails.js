@@ -157,10 +157,10 @@ const FieldDetails = (props) => {
       <Modal.Header>
         <Modal.Title id="contained-modal-title-vcenter">All Fields</Modal.Title>
       </Modal.Header>
-      <Modal.Body style={{ height: "60vh", overflow: "auto" }}>
+      <Modal.Body style={{ height: "60vh", overflow: "auto", paddingTop:"0",marginTop:"10px" }}>
         <Table
           className="align-items-center table-flush mb-5 table-hover"
-          responsive
+          // responsive
         >
           <thead className="thead-light"
              style={{ position: 'sticky', top: 0, zIndex: 1,backgroundColor: 'white' }}
