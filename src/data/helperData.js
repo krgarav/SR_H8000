@@ -69,19 +69,19 @@ export const directionData = [
     { id: "Bottom To Top", name: "Bottom To Top" },
 ];
 export const barcodeTypeData = [
-    { id: "0x1U", name: "CODE-39" },
-    { id: "0x2U", name: "Interleaved 2 of 5 (ITF)" },
-    { id: "0x4U", name: "NW-7" },
-    { id: "0x8U", name: "JAN,EAN,UPC" },
-    { id: "0x10U", name: "Code-128" },
-    { id: "0x20U", name: "Industrial 2 of 5" },
-    { id: "0x40U", name: "COOP 2 of 5" },
-    { id: "0x80U", name: "CODE-93" },
-    { id: "0x100U", name: "JAN,EAN 8" },
-    { id: "0x200U", name: "JAN,EAN 13" },
-    { id: "0x400U", name: " UPC-A" },
-    { id: "0x800U", name: "UPC-E" },
-    { id: "0x1000000U", name: "QR Code" },
+    { id: "1", name: "CODE-39" },
+    { id: "2", name: "Interleaved 2 of 5 (ITF)" },
+    { id: "4", name: "NW-7" },
+    { id: "8", name: "JAN,EAN,UPC" },
+    { id: "16", name: "Code-128" },
+    { id: "32", name: "Industrial 2 of 5" },
+    { id: "64", name: "COOP 2 of 5" },
+    { id: "128", name: "CODE-93" },
+    { id: "256", name: "JAN,EAN 8" },
+    { id: "512", name: "JAN,EAN 13" },
+    { id: "1024", name: " UPC-A" },
+    { id: "2048", name: "UPC-E" },
+    { id: "16777216", name: "QR Code" },
 ];
 
 export const colorTypeData = [
