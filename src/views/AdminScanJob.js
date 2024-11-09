@@ -423,6 +423,7 @@ const AdminScanJob = () => {
     );
   });
   const completeJobHandler = async () => {
+    try{
     const result = window.confirm("Are you sure to finish the job ?");
     if (!result) {
       return;
@@ -443,13 +444,17 @@ const AdminScanJob = () => {
         const userId = userInfo.UserId;
         const response2 = await getUrls();
         const GetDataURL = response2?.GENERATE_EXCEL;
-        const excelgenerate = axios.get(
+        const excelgenerate = await axios.get(
           GetDataURL + `?Id=${selectedValue}&UserId=${userId}`
         );
       }
-      toast.success("Completed the job!!!");
+      toast.success("Completed the job!!");
       navigate("/admin/job-queue", { replace: true });
     }
+  }catch(err){
+    console.log("Error Occured",err);
+    toast.error("Error Occured during saving the job!");
+  }
   };
   const rowDataBound = (args) => {
     const cells = args.data; // Access the data for the current row
