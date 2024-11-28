@@ -19,7 +19,7 @@ import {
   ExcelExport,
   Filter,
 } from "@syncfusion/ej2-react-grids";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cancelScan } from "helper/TemplateHelper";
@@ -62,7 +62,7 @@ const AdminScanJob = () => {
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 576);
   const [proccessUrl, setProcessURL] = useState("");
   const [showPrintModal, setShowPrintModal] = useState(true);
-  const [templateName,setTemplateName] = useState("")
+  const [templateName, setTemplateName] = useState("");
   const template = emptyMessageTemplate;
 
   const gridRef = useRef();
@@ -239,7 +239,7 @@ const AdminScanJob = () => {
       );
 
       const data = res.data;
-
+      console.log(data);
       if (data?.result?.success) {
         const newDataKeys = Object.keys(data.result.data[0]).map((key) => {
           return key.endsWith(".") ? key.slice(0, -1) : key;
@@ -261,9 +261,16 @@ const AdminScanJob = () => {
         setProcessedData(updatedData);
 
         gridRef.current.refresh();
+        return res;
       }
+      return {
+        success: false,
+        data: res?.data?.result,
+        message: "The API response did not indicate success.",
+      };
     } catch (error) {
       console.error(error);
+      return error;
       // Handle error (e.g., toast.error("Something went wrong"))
     }
   };
@@ -422,40 +429,86 @@ const AdminScanJob = () => {
       ></ColumnDirective>
     );
   });
+  // const completeJobHandler = async () => {
+  //   try{
+  //   const result = window.confirm("Are you sure to finish the job ?");
+  //   if (!result) {
+  //     return;
+  //   }
+  //   const id = localStorage.getItem("jobId");
+  //   const templateId = localStorage.getItem("scantemplateId");
+
+  //   const obj = {
+  //     id: id,
+  //     templateId: templateId,
+  //   };
+  //   const res = await finishJob(obj);
+  //   if (res?.success) {
+  //     const token = localStorage.getItem("token");
+
+  //     if (token) {
+  //       const userInfo = jwtDecode(token);
+  //       const userId = userInfo.UserId;
+  //       const response2 = await getUrls();
+  //       const GetDataURL = response2?.GENERATE_EXCEL;
+  //       const excelgenerate =  axios.get(
+  //         GetDataURL + `?Id=${selectedValue}&UserId=${userId}`
+  //       );
+  //     }
+  //     toast.success("Completed the job!!");
+  //     navigate("/admin/job-queue", { replace: true });
+  //   }
+  // }catch(err){
+  //   console.log("Error Occured",err);
+  //   toast.error("Error Occured during saving the job!");
+  // }
+  // };
+
   const completeJobHandler = async () => {
-    try{
-    const result = window.confirm("Are you sure to finish the job ?");
-    if (!result) {
-      return;
-    }
-    const id = localStorage.getItem("jobId");
-    const templateId = localStorage.getItem("scantemplateId");
-
-    const obj = {
-      id: id,
-      templateId: templateId,
-    };
-    const res = await finishJob(obj);
-    if (res?.success) {
-      const token = localStorage.getItem("token");
-
-      if (token) {
-        const userInfo = jwtDecode(token);
-        const userId = userInfo.UserId;
-        const response2 = await getUrls();
-        const GetDataURL = response2?.GENERATE_EXCEL;
-        const excelgenerate = await axios.get(
-          GetDataURL + `?Id=${selectedValue}&UserId=${userId}`
-        );
+    try {
+      const result = window.confirm("Are you sure to finish the job?");
+      if (!result) {
+        return;
       }
-      toast.success("Completed the job!!");
-      navigate("/admin/job-queue", { replace: true });
+
+      const id = localStorage.getItem("jobId");
+      const templateId = localStorage.getItem("scantemplateId");
+
+      if (!id || !templateId) {
+        toast.error("Required data is missing!");
+        return;
+      }
+
+      const obj = { id, templateId };
+      const res = await finishJob(obj);
+
+      if (res?.success) {
+        const token = localStorage.getItem("token");
+
+        if (token) {
+          const userInfo = jwtDecode(token);
+          const userId = userInfo.UserId;
+
+          const response2 = await getUrls();
+          const GetDataURL = response2?.GENERATE_EXCEL;
+
+          try {
+            // Fire and forget
+            axios.get(`${GetDataURL}?Id=${selectedValue}&UserId=${userId}`);
+          } catch (error) {
+            console.error("Excel generation failed", error);
+          }
+        }
+
+        toast.success("Completed the job!");
+        setTimeout(() => navigate("/admin/job-queue", { replace: true }), 500); // Delay for toast visibility
+      }
+    } catch (err) {
+      console.error("Error occurred", err);
+      toast.error("Error occurred during saving the job!");
     }
-  }catch(err){
-    console.log("Error Occured",err);
-    toast.error("Error Occured during saving the job!");
-  }
   };
+
   const rowDataBound = (args) => {
     const cells = args.data; // Access the data for the current row
     Object.keys(cells).forEach((key) => {
@@ -470,13 +523,28 @@ const AdminScanJob = () => {
       }
     });
   };
+  const handleRefreshData = async () => {
+    try {
+      const res = await getScanData();
+
+      if (res?.success === false) {
+        console.log(res);
+        toast.error(res?.data?.message,{ toastId: "uniqueErrorToast" });
+        return;
+      }
+      toast.success("Refreshed Data.");
+    } catch (error) {
+      toast.error("Could not get data");
+      console.log(error);
+    }
+  };
   // console.log(location.state)
   return (
     <>
       <NormalHeader />
       <div
         style={{
-          position:   "absolute",
+          position: "absolute",
           top: "20px",
           padding: "10px",
           zIndex: "999",
@@ -524,6 +592,7 @@ const AdminScanJob = () => {
             allowFiltering={false}
             filterSettings={filterSettings}
             // toolbar={toolbar}
+            enableVirtualization={true}                                 
             toolbarClick={handleToolbarClick}
             allowExcelExport={true}
             allowPdfExport={false}
@@ -534,23 +603,28 @@ const AdminScanJob = () => {
             <ColumnsDirective>{columnsDirective}</ColumnsDirective>
             <Inject services={services} />
           </GridComponent>
-          <div className="m-2" style={{ float: "right" }}>
-            <Button
-              className=""
-              color={"success"}
-              type="button"
-              onClick={handleStart}
-              disabled={scanning || starting ? true : false}
-            >
-              {starting && !scanning && "Starting"}
-              {!starting && !scanning && "Start"}
-              {scanning && "Scanning"}
+          <div>
+            <Button className="mt-2" color={"info"} onClick={handleRefreshData}>
+              Refresh Data
             </Button>
-            {scanning && (
-              <Button color="danger" type="button" onClick={handleStop}>
-                Cancel Scanning
+            <div className="m-2" style={{ float: "right" }}>
+              <Button
+                className=""
+                color={"success"}
+                type="button"
+                onClick={handleStart}
+                disabled={scanning || starting ? true : false}
+              >
+                {starting && !scanning && "Starting"}
+                {!starting && !scanning && "Start"}
+                {scanning && "Scanning"}
               </Button>
-            )}
+              {scanning && (
+                <Button color="danger" type="button" onClick={handleStop}>
+                  Cancel Scanning
+                </Button>
+              )}
+            </div>
           </div>
           {/* </div> */}
         </div>
