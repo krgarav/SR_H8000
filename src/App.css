@@ -30,13 +30,12 @@ input[type="number"] {
   padding: 0.5rem;
   width: 20vw;
 }
-.main-container{
+.main-container {
   display: flex;
   /* width:80vw; */
-    justify-content: center; 
-    align-items: center;
-    overflow: auto;
-   
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
 }
 .containers {
   display: flex;
@@ -91,9 +90,8 @@ input[type="number"] {
 
 .row {
   display: flex;
-  
 }
-.row2{
+.row2 {
   display: flex;
 }
 /* .circle {
@@ -103,7 +101,7 @@ input[type="number"] {
     border-radius: 50%;
     margin: 2px;
 } */
-.left-num-circle{
+.left-num-circle {
   /* margin-bottom: 0.6rem; */
   padding-top: 7px;
   width: 30px;
@@ -133,7 +131,7 @@ input[type="number"] {
   font-size: 0.4rem;
   margin-left: 0.9rem;
 }
-.left-nums-circle{
+.left-nums-circle {
   height: 20px;
   font-size: 0.6rem;
   width: 30px;
@@ -153,8 +151,7 @@ input[type="number"] {
   align-items: center;
   justify-content: right;
   padding-right: 5px;
- 
- 
+
   /* padding-top: px; */
   /* Space before the grid starts */
 }
@@ -208,19 +205,18 @@ input[type="number"] {
   cursor: pointer;
 }
 
-
 /* In your CSS file or a style block */
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0;
 }
 
-#root, .full-height-container {
+#root,
+.full-height-container {
   height: 100%;
 }
-
-
 
 /* Default style for input */
 .form-control {
@@ -237,11 +233,29 @@ html, body {
 /* When the input is focused */
 .primary-btn-fcs:focus {
   border: 2px solid #225ece; /* Clean, darker blue border */
-  outline:none; /* Removes the default outline */
+  outline: none; /* Removes the default outline */
   box-shadow: 0 0 15px rgba(134, 174, 247, 0.753); /* Soft, subtle shadow on focus */
 }
 .secondary-btn-fcs:focus {
   border: 2px solid #f35134; /* Clean, darker blue border */
-  outline:none; /* Removes the default outline */
+  outline: none; /* Removes the default outline */
   box-shadow: 0 0 8px rgba(7, 14, 26, 0.753); /* Soft, subtle shadow on focus */
+}
+
+.custom-switch .custom-control-label::before {
+  cursor: pointer;
+  background-color: #fdfdfd;
+  border-radius: 1rem;
+  height: 1.3rem;
+  width: 6rem;
+}
+.custom-switch .custom-control-label::after {
+  cursor: pointer;
+  border-radius: 50%;
+  height: 1.2rem;
+  width: 1.2rem;
+  top: 0.15rem;
+}
+.custom-control-label {
+  color: antiquewhite;
 }

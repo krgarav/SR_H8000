@@ -27,6 +27,9 @@ import { finishJob } from "helper/job_helper";
 import axios from "axios";
 import { getUrls } from "helper/url_helper";
 import PrintModal from "ui/PrintModal";
+import jsonData from "data/jsonDataTest";
+import { headerData } from "data/jsonDataTest";
+import { VirtualScroll } from "@syncfusion/ej2-grids";
 function emptyMessageTemplate() {
   return (
     <div className="text-center">
@@ -45,7 +48,7 @@ const AdminScanJob = () => {
   const [count, setCount] = useState(true);
   const [processedData, setProcessedData] = useState([]);
   const [scanning, setScanning] = useState(false);
-  const [headData, setHeadData] = useState(["OrderID"]);
+  const [headData, setHeadData] = useState(Object.keys(headerData[0]));
   const filterSettings = { type: "Excel" };
   // const toolbar = ['Add', 'Edit', 'Delete', 'Update', 'Cancel', 'ExcelExport', 'CsvExport'];
   const editSettings = {
@@ -63,12 +66,19 @@ const AdminScanJob = () => {
   const [proccessUrl, setProcessURL] = useState("");
   const [showPrintModal, setShowPrintModal] = useState(true);
   const [templateName, setTemplateName] = useState("");
+  const [scrollState, setScrollState] = useState(false);
+  const [isAutoScrollEnabled, setIsAutoScrollEnabled] = useState(false);
   const template = emptyMessageTemplate;
 
   const gridRef = useRef();
 
   const location = useLocation();
   const navigate = useNavigate();
+  useEffect(() => {
+    // Concatenate jsonData 100 times
+    const largeData = Array(10).fill(jsonData).flat();
+    setProcessedData(largeData);
+  }, []);
   useEffect(() => {
     // Function to calculate 80% of the viewport height
     const calculateGridHeight = () => {
@@ -237,15 +247,13 @@ const AdminScanJob = () => {
       const res = await axios.get(
         proccessUrl + `?Id=${selectedValue}&UserId=${userId}`
       );
-
       const data = res.data;
-      console.log(data);
+
       if (data?.result?.success) {
         const newDataKeys = Object.keys(data.result.data[0]).map((key) => {
           return key.endsWith(".") ? key.slice(0, -1) : key;
         });
         setHeadData(["Serial No", ...newDataKeys]);
-        let splicedData;
         let updatedData = [];
         let num = 1;
         updatedData = data.result.data.map((item) => {
@@ -258,7 +266,14 @@ const AdminScanJob = () => {
           return newItem;
         });
 
-        setProcessedData(updatedData);
+        // setProcessedData(updatedData);
+        setProcessedData((prevData) => {
+          const combinedData = [...prevData, ...updatedData]; // Add new data to the rear
+          if (combinedData.length > 100) {
+            return combinedData.slice(-100); // Keep only the last 100 items
+          }
+          return combinedData;
+        });
 
         gridRef.current.refresh();
         return res;
@@ -270,8 +285,9 @@ const AdminScanJob = () => {
       };
     } catch (error) {
       console.error(error);
+      await handleStop();
+      toast.error("Unable to fetch data");
       return error;
-      // Handle error (e.g., toast.error("Something went wrong"))
     }
   };
   useEffect(() => {
@@ -378,23 +394,23 @@ const AdminScanJob = () => {
     }
   };
 
-  const dataBound = () => {
-    if (gridRef.current) {
-      const grid = gridRef.current;
-      const lastIndex = grid.dataSource.length - 1;
+  // const dataBound = () => {
+  //   if (gridRef.current) {
+  //     const grid = gridRef.current;
+  //     const lastIndex = grid.dataSource.length - 1;
 
-      // Ensure data source is not empty
-      if (lastIndex >= 0) {
-        setTimeout(() => {
-          const gridContent = grid?.getContent()?.firstElementChild;
-          gridContent.scrollTo({
-            top: gridContent.scrollHeight,
-            behavior: "smooth",
-          });
-        }, 500); // Delay to ensure the grid is fully rendered before scrolling
-      }
-    }
-  };
+  //     // Ensure data source is not empty
+  //     if (lastIndex >= 0) {
+  //       setTimeout(() => {
+  //         const gridContent = grid?.getContent()?.firstElementChild;
+  //         gridContent.scrollTo({
+  //           top: gridContent.scrollHeight,
+  //           behavior: "smooth",
+  //         });
+  //       }, 500); // Delay to ensure the grid is fully rendered before scrolling
+  //     }
+  //   }
+  // };
   const handleToolbarClick = (args) => {
     if (args.item.id.includes("excelexport")) {
       gridRef.current.refresh(); // Ensure the grid data is refreshed
@@ -485,20 +501,20 @@ const AdminScanJob = () => {
       if (res?.success) {
         const token = localStorage.getItem("token");
 
-        if (token) {
-          const userInfo = jwtDecode(token);
-          const userId = userInfo.UserId;
+        // if (token) {
+        //   // const userInfo = jwtDecode(token);
+        //   // const userId = userInfo.UserId;
 
-          const response2 = await getUrls();
-          const GetDataURL = response2?.GENERATE_EXCEL;
+        //   // const response2 = await getUrls();
+        //   // const GetDataURL = response2?.GENERATE_EXCEL;
 
-          try {
-            // Fire and forget
-            axios.get(`${GetDataURL}?Id=${selectedValue}&UserId=${userId}`);
-          } catch (error) {
-            console.error("Excel generation failed", error);
-          }
-        }
+        //   try {
+        //     // Fire and forget
+        //     // axios.get(`${GetDataURL}?Id=${selectedValue}&UserId=${userId}`);
+        //   } catch (error) {
+        //     console.error("Excel generation failed", error);
+        //   }
+        // }
 
         toast.success("Completed the job!");
         setTimeout(() => navigate("/admin/job-queue", { replace: true }), 500); // Delay for toast visibility
@@ -529,13 +545,27 @@ const AdminScanJob = () => {
 
       if (res?.success === false) {
         console.log(res);
-        toast.error(res?.data?.message,{ toastId: "uniqueErrorToast" });
+        toast.error(res?.data?.message, { toastId: "uniqueErrorToast" });
         return;
       }
       toast.success("Refreshed Data.");
     } catch (error) {
       toast.error("Could not get data");
       console.log(error);
+    }
+  };
+
+  // Handle the toggle switch
+  const handleToggle = (event) => {
+    setIsAutoScrollEnabled(event.target.checked);
+
+    if (event.target.checked) {
+      console.log("Auto Scroll Enabled");
+      gridRef.current.refresh();
+      // Add functionality to enable auto-scroll here
+    } else {
+      console.log("Auto Scroll Disabled");
+      // Add functionality to disable auto-scroll here
     }
   };
   // console.log(location.state)
@@ -580,10 +610,24 @@ const AdminScanJob = () => {
         <br />
 
         {/* <div className="control-pane"> */}
+        <div className="w-100 d-flex justify-end justify-content-end">
+          <div className="custom-control custom-switch">
+            <input
+              type="checkbox"
+              className="custom-control-input"
+              id="customSwitch1"
+              checked={isAutoScrollEnabled}
+              onChange={handleToggle}
+            />
+            <label className="custom-control-label" htmlFor="customSwitch1">
+              Auto Scroll
+            </label>
+          </div>
+        </div>
         <div className="control-section">
           <GridComponent
             ref={gridRef}
-            dataBound={dataBound}
+            // dataBound={dataBound}
             actionComplete={handleSave}
             dataSource={processedData}
             height={gridHeight}
@@ -592,7 +636,7 @@ const AdminScanJob = () => {
             allowFiltering={false}
             filterSettings={filterSettings}
             // toolbar={toolbar}
-            enableVirtualization={true}                                 
+            enableVirtualization={isAutoScrollEnabled}
             toolbarClick={handleToolbarClick}
             allowExcelExport={true}
             allowPdfExport={false}
@@ -601,12 +645,13 @@ const AdminScanJob = () => {
             // rowDataBound={rowDataBound}
           >
             <ColumnsDirective>{columnsDirective}</ColumnsDirective>
-            <Inject services={services} />
+            <Inject services={[VirtualScroll]} />
           </GridComponent>
           <div>
             <Button className="mt-2" color={"info"} onClick={handleRefreshData}>
               Refresh Data
             </Button>
+
             <div className="m-2" style={{ float: "right" }}>
               <Button
                 className=""
