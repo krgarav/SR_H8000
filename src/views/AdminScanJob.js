@@ -394,23 +394,26 @@ const AdminScanJob = () => {
     }
   };
 
-  // const dataBound = () => {
-  //   if (gridRef.current) {
-  //     const grid = gridRef.current;
-  //     const lastIndex = grid.dataSource.length - 1;
+  const dataBound = () => {
+    // if(!isAutoScrollEnabled){
+    if (gridRef.current) {
+      const grid = gridRef.current;
+      const lastIndex = grid.dataSource.length - 1;
 
-  //     // Ensure data source is not empty
-  //     if (lastIndex >= 0) {
-  //       setTimeout(() => {
-  //         const gridContent = grid?.getContent()?.firstElementChild;
-  //         gridContent.scrollTo({
-  //           top: gridContent.scrollHeight,
-  //           behavior: "smooth",
-  //         });
-  //       }, 500); // Delay to ensure the grid is fully rendered before scrolling
-  //     }
-  //   }
-  // };
+      // Ensure data source is not empty
+      if (lastIndex >= 0) {
+        setTimeout(() => {
+          const gridContent = grid?.getContent()?.firstElementChild;
+          gridContent.scrollTo({
+            top: gridContent.scrollHeight,
+            behavior: "smooth",
+          });
+        }, 500); // Delay to ensure the grid is fully rendered before scrolling
+      }
+    }
+    // gridRef.current.refresh();
+  // }
+  };
   const handleToolbarClick = (args) => {
     if (args.item.id.includes("excelexport")) {
       gridRef.current.refresh(); // Ensure the grid data is refreshed
@@ -627,7 +630,7 @@ const AdminScanJob = () => {
         <div className="control-section">
           <GridComponent
             ref={gridRef}
-            // dataBound={dataBound}
+            dataBound={dataBound}
             actionComplete={handleSave}
             dataSource={processedData}
             height={gridHeight}
