@@ -28,3 +28,8 @@ export const checkPrintData = async (layoutId) => {
   const urls = await url.getUrls();
   return get(`${urls.CHECK_PRINT}?LayoutId=${layoutId}`);
 };
+
+export const getDataByRowRange = async (startRow,endRow,LayoutId,UserId) => {
+  const urls = await url.getUrls();
+  return get(`${urls.GET_ROW_DATA}?startRow=${startRow}&endRow=${endRow}&LayoutId=${LayoutId}&UserId=${UserId}`);
+};

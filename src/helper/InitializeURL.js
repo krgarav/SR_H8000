@@ -42,6 +42,7 @@ console.log(baseUrl)
     UPDATE_JOB: `${baseUrl}UpdateJobs`,
     CHECK_PRINT : `${baseUrl}CheckPrintOption`,
     PRINT_DATA : `${baseUrl}PrintSetting`,
+    GET_ROW_DATA : `${baseUrl}GetDataByRowRange`,
     MAIN_URL: baseUrl
   };
 };
