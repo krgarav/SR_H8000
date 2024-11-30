@@ -71,17 +71,28 @@ const AdminScanJob = () => {
   const [scrollState, setScrollState] = useState(false);
   const [isAutoScrollEnabled, setIsAutoScrollEnabled] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastSerialNo, setLastSerialNo] = useState(0);
   const template = emptyMessageTemplate;
 
   const gridRef = useRef();
 
   const location = useLocation();
   const navigate = useNavigate();
-  // useEffect(() => {
-  //   // Concatenate jsonData 100 times
-  //   const largeData = Array(10).fill(jsonData).flat();
-  //   setProcessedData(largeData);
-  // }, []);
+  useEffect(() => {
+    const gridContainer = gridRef.current?.element?.querySelector(".e-content");
+
+    console.log("Grid container:", gridContainer); // Check if this logs a valid DOM element
+    // setIsRunning(prev=>!prev )
+    if (gridContainer) {
+      console.log("Attaching scroll listener");
+      gridContainer.addEventListener("scroll", handleScroll);
+      console.log(gridContainer);
+      // return () => {
+      // console.log("Removing scroll listener");
+      // gridContainer.removeEventListener("scroll", handleScroll);
+      // };
+    }
+  }, [gridRef]);
   useEffect(() => {
     // Function to calculate 80% of the viewport height
     const calculateGridHeight = () => {
@@ -241,25 +252,43 @@ const AdminScanJob = () => {
   //     // setScanning(false);
   //   }
   // };
+  const handleScroll = async(e) => {
+    const scrollTop = e.target.scrollTop;
+    console.log("Scroll event triggered. ScrollTop:", scrollTop);
+    if (scrollTop === 0) {
+      console.log("Scrolled to top!");
+      const token = localStorage.getItem("token");
+      const userInfo = jwtDecode(token);
+      const userId = userInfo.UserId;
+      const templateId = localStorage.getItem("scantemplateId");
+      const res = await getTotalExcellRow(templateId, userId);
+      const totalRow = res?.totalRows;
+      console.log(totalRow)
+      // Add logic for fetching older data
+    }
+  };
+
+
   const getScanData = async () => {
+    let num = lastSerialNo + 1; // Start numbering from the last serial number
+  
     try {
       const token = localStorage.getItem("token");
       const userInfo = jwtDecode(token);
       const userId = userInfo.UserId;
-
+  
       const res = await axios.get(
         proccessUrl + `?Id=${selectedValue}&UserId=${userId}`
       );
       const data = res.data;
-
+  
       if (data?.result?.success) {
         const newDataKeys = Object.keys(data.result.data[0]).map((key) => {
           return key.endsWith(".") ? key.slice(0, -1) : key;
         });
         setHeadData(["Serial No", ...newDataKeys]);
-        let updatedData = [];
-        let num = 1;
-        updatedData = data.result.data.map((item) => {
+  
+        let updatedData = data.result.data.map((item) => {
           const newItem = {};
           for (const key in item) {
             const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
@@ -268,19 +297,20 @@ const AdminScanJob = () => {
           newItem["Serial No"] = num++;
           return newItem;
         });
-
-        // setProcessedData(updatedData);
+  
         setProcessedData((prevData) => {
-          const combinedData = [...prevData, ...updatedData]; // Add new data to the rear
+          const combinedData = [...prevData, ...updatedData];
           if (combinedData.length > 100) {
-            return combinedData.slice(-100); // Keep only the last 100 items
+            return combinedData.slice(-100);
           }
           return combinedData;
         });
-
+  
+        setLastSerialNo(num - 1); // Update the last serial number
         gridRef.current.refresh();
         return res;
       }
+  
       return {
         success: false,
         data: res?.data?.result,
@@ -293,6 +323,59 @@ const AdminScanJob = () => {
       return error;
     }
   };
+  // const getScanData = async () => {
+  //   let num = 1;
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     const userInfo = jwtDecode(token);
+  //     const userId = userInfo.UserId;
+
+  //     const res = await axios.get(
+  //       proccessUrl + ?Id=${selectedValue}&UserId=${userId}
+  //     );
+  //     const data = res.data;
+
+  //     if (data?.result?.success) {
+  //       const newDataKeys = Object.keys(data.result.data[0]).map((key) => {
+  //         return key.endsWith(".") ? key.slice(0, -1) : key;
+  //       });
+  //       setHeadData(["Serial No", ...newDataKeys]);
+  //       let updatedData = [];
+       
+  //       updatedData = data.result.data.map((item) => {
+  //         const newItem = {};
+  //         for (const key in item) {
+  //           const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+  //           newItem[newKey] = item[key];
+  //         }
+  //         newItem["Serial No"] = num++;
+  //         return newItem;
+  //       });
+
+  //       // setProcessedData(updatedData);
+  //       setProcessedData((prevData) => {
+  //         const combinedData = [...prevData, ...updatedData]; // Add new data to the rear
+  //         if (combinedData.length > 100) {
+  //           return combinedData.slice(-100); // Keep only the last 100 items
+  //         }
+  //         return combinedData;
+  //       });
+
+  //       gridRef.current.refresh();
+  //       return res;
+  //     }
+  //     return {
+  //       success: false,
+  //       data: res?.data?.result,
+  //       message: "The API response did not indicate success.",
+  //     };
+  //   } catch (error) {
+  //     console.error(error);
+  //     await handleStop();
+  //     toast.error("Unable to fetch data");
+  //     return error;
+  //   }
+  // };
   useEffect(() => {
     if (!scanning) return;
 
@@ -572,7 +655,7 @@ const AdminScanJob = () => {
             const newDataKeys = Object.keys(filterData[0]).map((key) => {
               return key.endsWith(".") ? key.slice(0, -1) : key;
             });
-            setHeadData(["Serial No", ...newDataKeys]);
+            setHeadData([ ...newDataKeys]);
             setProcessedData(filterData);
           }
         }
@@ -678,7 +761,12 @@ const AdminScanJob = () => {
             <Inject services={[VirtualScroll]} />
           </GridComponent>
           <div>
-            <Button className="mt-2" color={"info"} disabled={isRefreshing} onClick={handleRefreshData}>
+            <Button
+              className="mt-2"
+              color={"info"}
+              disabled={isRefreshing}
+              onClick={handleRefreshData}
+            >
               {isRefreshing ? " Refreshing Latest Data" : "Refresh Latest Data"}
             </Button>
 
