@@ -4,7 +4,7 @@ import getBaseUrl from "services/BackendApi";
 
 const initializeUrls = async () => {
   const baseUrl = await getBaseUrl();
-console.log(baseUrl)
+  console.log(baseUrl);
   return {
     CREATE_USER: `${baseUrl}UserRegistration`,
     UPDATE_USER: `${baseUrl}UpdateUser`,
@@ -40,10 +40,11 @@ console.log(baseUrl)
     START_JOB: `${baseUrl}StartJob`,
     FINISH_JOB: `${baseUrl}FinishJob`,
     UPDATE_JOB: `${baseUrl}UpdateJobs`,
-    CHECK_PRINT : `${baseUrl}CheckPrintOption`,
-    PRINT_DATA : `${baseUrl}PrintSetting`,
-    GET_ROW_DATA : `${baseUrl}GetDataByRowRange`,
-    MAIN_URL: baseUrl
+    CHECK_PRINT: `${baseUrl}CheckPrintOption`,
+    PRINT_DATA: `${baseUrl}PrintSetting`,
+    GET_ROW_DATA: `${baseUrl}GetDataByRowRange`,
+    GET_TOTAL_EXCEL_ROW: `${baseUrl}GetTotalExcelRow`,
+    MAIN_URL: baseUrl,
   };
 };
 

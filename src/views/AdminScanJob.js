@@ -30,6 +30,8 @@ import PrintModal from "ui/PrintModal";
 import jsonData from "data/jsonDataTest";
 import { headerData } from "data/jsonDataTest";
 import { VirtualScroll } from "@syncfusion/ej2-grids";
+import { getTotalExcellRow } from "helper/Booklet32Page_helper";
+import { getDataByRowRange } from "helper/Booklet32Page_helper";
 function emptyMessageTemplate() {
   return (
     <div className="text-center">
@@ -48,7 +50,7 @@ const AdminScanJob = () => {
   const [count, setCount] = useState(true);
   const [processedData, setProcessedData] = useState([]);
   const [scanning, setScanning] = useState(false);
-  const [headData, setHeadData] = useState(Object.keys(headerData[0]));
+  const [headData, setHeadData] = useState(["Student Data"]);
   const filterSettings = { type: "Excel" };
   // const toolbar = ['Add', 'Edit', 'Delete', 'Update', 'Cancel', 'ExcelExport', 'CsvExport'];
   const editSettings = {
@@ -68,17 +70,18 @@ const AdminScanJob = () => {
   const [templateName, setTemplateName] = useState("");
   const [scrollState, setScrollState] = useState(false);
   const [isAutoScrollEnabled, setIsAutoScrollEnabled] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const template = emptyMessageTemplate;
 
   const gridRef = useRef();
 
   const location = useLocation();
   const navigate = useNavigate();
-  useEffect(() => {
-    // Concatenate jsonData 100 times
-    const largeData = Array(10).fill(jsonData).flat();
-    setProcessedData(largeData);
-  }, []);
+  // useEffect(() => {
+  //   // Concatenate jsonData 100 times
+  //   const largeData = Array(10).fill(jsonData).flat();
+  //   setProcessedData(largeData);
+  // }, []);
   useEffect(() => {
     // Function to calculate 80% of the viewport height
     const calculateGridHeight = () => {
@@ -412,7 +415,7 @@ const AdminScanJob = () => {
       }
     }
     // gridRef.current.refresh();
-  // }
+    // }
   };
   const handleToolbarClick = (args) => {
     if (args.item.id.includes("excelexport")) {
@@ -544,17 +547,41 @@ const AdminScanJob = () => {
   };
   const handleRefreshData = async () => {
     try {
-      const res = await getScanData();
+      setIsRefreshing(true);
+      const token = localStorage.getItem("token");
 
-      if (res?.success === false) {
-        console.log(res);
-        toast.error(res?.data?.message, { toastId: "uniqueErrorToast" });
-        return;
+      if (token) {
+        const userInfo = jwtDecode(token);
+        const userId = userInfo.UserId;
+        const templateId = localStorage.getItem("scantemplateId");
+        const res = await getTotalExcellRow(templateId, userId);
+        const totalRow = res?.totalRows;
+        if (totalRow) {
+          const startRow = +totalRow - 100;
+          const endRow = +totalRow + 1;
+          const response = await getDataByRowRange(
+            startRow,
+            endRow,
+            templateId,
+            userId
+          );
+          if (response) {
+            const filterData = response.map((item) => {
+              return item.data;
+            });
+            const newDataKeys = Object.keys(filterData[0]).map((key) => {
+              return key.endsWith(".") ? key.slice(0, -1) : key;
+            });
+            setHeadData(["Serial No", ...newDataKeys]);
+            setProcessedData(filterData);
+          }
+        }
       }
-      toast.success("Refreshed Data.");
     } catch (error) {
       toast.error("Could not get data");
       console.log(error);
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
@@ -651,8 +678,8 @@ const AdminScanJob = () => {
             <Inject services={[VirtualScroll]} />
           </GridComponent>
           <div>
-            <Button className="mt-2" color={"info"} onClick={handleRefreshData}>
-              Refresh Data
+            <Button className="mt-2" color={"info"} disabled={isRefreshing} onClick={handleRefreshData}>
+              {isRefreshing ? " Refreshing Latest Data" : "Refresh Latest Data"}
             </Button>
 
             <div className="m-2" style={{ float: "right" }}>

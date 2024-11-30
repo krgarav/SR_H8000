@@ -33,3 +33,8 @@ export const getDataByRowRange = async (startRow,endRow,LayoutId,UserId) => {
   const urls = await url.getUrls();
   return get(`${urls.GET_ROW_DATA}?startRow=${startRow}&endRow=${endRow}&LayoutId=${LayoutId}&UserId=${UserId}`);
 };
+
+export const getTotalExcellRow = async (LayoutId,UserId) => {
+  const urls = await url.getUrls();
+  return get(`${urls.GET_TOTAL_EXCEL_ROW}?LayoutId=${LayoutId}&UserId=${UserId}`);
+};
