@@ -790,18 +790,18 @@ const AdminScanJob = () => {
           className="w-100  m-1"
           style={{ overflowY: "auto", backgroundColor: "green", zIndex: "999" }}
         >
-          <div
+          {/* <div
             className="w-100 d-flex"
             style={{ zIndex: "999", width: "8%", height: "80%" }}
           >
-            {/* <label>Start Serial Number:</label> */}
+          \
             <input
               type="number"
-              // className="w-16 form-control"
+            
               ref={serialRef}
               style={{ zIndex: "999", width: "8%" }}
             />
-          </div>
+          </div> */}
 
           <div className="d-flex justify-content-end  custom-control custom-switch">
             <input
