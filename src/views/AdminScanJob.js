@@ -406,7 +406,7 @@ const AdminScanJob = () => {
       } else {
         clearInterval(intervalId);
       }
-    }, 1000);
+    }, 2000);
 
     return () => clearInterval(intervalId);
   }, [scanning]);
