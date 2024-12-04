@@ -468,7 +468,10 @@ const AdminScanJob = () => {
         }
       }
     } catch (error) {
-      await handleStop();
+      setTimeout(() => {
+        handleStop();
+      }, 1000);
+
       setStarting(false);
       // Clear the timeouts after the response is received
       clearTimeout(startingIntervalId);
