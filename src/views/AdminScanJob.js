@@ -803,7 +803,7 @@ const AdminScanJob = () => {
             />
           </div> */}
 
-          <div className="d-flex justify-content-end  custom-control custom-switch">
+          {/* <div className="d-flex justify-content-end  custom-control custom-switch">
             <input
               type="checkbox"
               className="custom-control-input"
@@ -814,7 +814,7 @@ const AdminScanJob = () => {
             <label className="custom-control-label" htmlFor="customSwitch1">
               Auto Scroll
             </label>
-          </div>
+          </div> */}
         </div>
         <div className="control-section">
           <GridComponent
