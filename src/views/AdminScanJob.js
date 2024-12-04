@@ -339,7 +339,9 @@ const AdminScanJob = () => {
       };
     } catch (error) {
       console.error(error);
-      await handleStop();
+      setTimeout(() => {
+        handleStop();
+      }, 1000);
       toast.error("Unable to fetch data!!!");
       return error;
     }
@@ -468,10 +470,7 @@ const AdminScanJob = () => {
         }
       }
     } catch (error) {
-      setTimeout(() => {
-        handleStop();
-      }, 1000);
-
+      await handleStop();
       setStarting(false);
       // Clear the timeouts after the response is received
       clearTimeout(startingIntervalId);
