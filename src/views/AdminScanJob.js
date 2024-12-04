@@ -46,7 +46,7 @@ function emptyMessageTemplate() {
     </div>
   );
 }
-// let num = 1;
+let num = JSON.parse(localStorage.getItem("lastSerialNo"), 10) || 1;
 const AdminScanJob = () => {
   const [count, setCount] = useState(true);
   const [processedData, setProcessedData] = useState([]);
@@ -81,6 +81,21 @@ const AdminScanJob = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const serialRef = useRef();
+  // useEffect(() => {
+  //   let num = JSON.parse(localStorage.getItem("lastSerialNo"), 10) || 1;
+  //   setLastSerialNo(num);
+  // }, []);
+  // useEffect(() => {
+  //   // let num = JSON.parse(localStorage.getItem("lastSerialNo"), 10) || 1;
+  //   const lastSlNo = processedData[processedData.length - 1];
+
+  //   console.log(lastSlNo);
+  //   if (lastSlNo) {
+  //     const lastSerialNo = lastSlNo["Serial No"];
+  //     localStorage.setItem("lastSerialNo", JSON.stringify(lastSerialNo));
+  //   }
+  //   // setLastSerialNo(num)
+  // }, [processedData]);
   useEffect(() => {
     const gridContainer = gridRef.current?.element?.querySelector(".e-content");
 
@@ -276,7 +291,6 @@ const AdminScanJob = () => {
 
   const getScanData = async () => {
     // Start numbering from the last serial number
-    let num = JSON.parse(localStorage.getItem("lastSerialNo"), 10) || 1;
     try {
       const token = localStorage.getItem("token");
       const userInfo = jwtDecode(token);
@@ -326,7 +340,7 @@ const AdminScanJob = () => {
     } catch (error) {
       console.error(error);
       await handleStop();
-      toast.error("Unable to fetch data");
+      toast.error("Unable to fetch data!!!");
       return error;
     }
   };
@@ -688,6 +702,48 @@ const AdminScanJob = () => {
       // Add functionality to disable auto-scroll here
     }
   };
+  const handleOldRefreshData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const userInfo = jwtDecode(token);
+      const userId = userInfo.UserId;
+
+      const res = await axios.get(
+        proccessUrl + `?Id=${selectedValue}&UserId=${userId}`
+      );
+      const data = res.data;
+
+      if (data?.result?.success) {
+        const newDataKeys = Object.keys(data.result.data[0]).map((key) => {
+          return key.endsWith(".") ? key.slice(0, -1) : key;
+        });
+        setHeadData(["Serial No", ...newDataKeys]);
+
+        let updatedData = data.result.data.map((item) => {
+          const newItem = {};
+          for (const key in item) {
+            const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+            newItem[newKey] = item[key];
+          }
+          newItem["Serial No"] = num++;
+          return newItem;
+        });
+
+        setProcessedData((prevData) => {
+          const combinedData = [...prevData, ...updatedData];
+          const lastSlNo = combinedData[combinedData.length - 1]["Serial No"];
+          localStorage.setItem("lastSerialNo", JSON.stringify(lastSlNo));
+          if (combinedData.length > 100) {
+            return combinedData.slice(-100);
+          }
+          return combinedData;
+        });
+      }
+      gridRef.current.refresh();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   // console.log(location.state)
   return (
     <>
@@ -790,7 +846,14 @@ const AdminScanJob = () => {
               disabled={isRefreshing}
               onClick={handleRefreshData}
             >
-              {isRefreshing ? " Refreshing Latest Data" : "Refresh Latest Data"}
+              {isRefreshing ? " Refreshing Old Data" : "Refresh Old Data"}
+            </Button>
+            <Button
+              className="mt-2"
+              color={"warning"}
+              onClick={handleOldRefreshData}
+            >
+              Refresh Latest Data
             </Button>
 
             <div className="m-2" style={{ float: "right" }}>
