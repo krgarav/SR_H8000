@@ -46,11 +46,13 @@ function emptyMessageTemplate() {
     </div>
   );
 }
+// let num = 1;
 const AdminScanJob = () => {
   const [count, setCount] = useState(true);
   const [processedData, setProcessedData] = useState([]);
   const [scanning, setScanning] = useState(false);
   const [headData, setHeadData] = useState(["Student Data"]);
+  // const [headData, setHeadData] = useState(Object.keys(jsonData[0]));
   const filterSettings = { type: "Excel" };
   // const toolbar = ['Add', 'Edit', 'Delete', 'Update', 'Cancel', 'ExcelExport', 'CsvExport'];
   const editSettings = {
@@ -78,6 +80,7 @@ const AdminScanJob = () => {
 
   const location = useLocation();
   const navigate = useNavigate();
+  const serialRef = useRef();
   useEffect(() => {
     const gridContainer = gridRef.current?.element?.querySelector(".e-content");
 
@@ -93,6 +96,9 @@ const AdminScanJob = () => {
       // };
     }
   }, [gridRef]);
+  useEffect(() => {
+    // serialRef.current.value = num;
+  }, [serialRef]);
   useEffect(() => {
     // Function to calculate 80% of the viewport height
     const calculateGridHeight = () => {
@@ -252,7 +258,7 @@ const AdminScanJob = () => {
   //     // setScanning(false);
   //   }
   // };
-  const handleScroll = async(e) => {
+  const handleScroll = async (e) => {
     const scrollTop = e.target.scrollTop;
     console.log("Scroll event triggered. ScrollTop:", scrollTop);
     if (scrollTop === 0) {
@@ -263,31 +269,30 @@ const AdminScanJob = () => {
       const templateId = localStorage.getItem("scantemplateId");
       const res = await getTotalExcellRow(templateId, userId);
       const totalRow = res?.totalRows;
-      console.log(totalRow)
+      console.log(totalRow);
       // Add logic for fetching older data
     }
   };
 
-
   const getScanData = async () => {
-    let num = lastSerialNo + 1; // Start numbering from the last serial number
-  
+    // Start numbering from the last serial number
+    let num = JSON.parse(localStorage.getItem("lastSerialNo"), 10) || 1;
     try {
       const token = localStorage.getItem("token");
       const userInfo = jwtDecode(token);
       const userId = userInfo.UserId;
-  
+
       const res = await axios.get(
         proccessUrl + `?Id=${selectedValue}&UserId=${userId}`
       );
       const data = res.data;
-  
+
       if (data?.result?.success) {
         const newDataKeys = Object.keys(data.result.data[0]).map((key) => {
           return key.endsWith(".") ? key.slice(0, -1) : key;
         });
         setHeadData(["Serial No", ...newDataKeys]);
-  
+
         let updatedData = data.result.data.map((item) => {
           const newItem = {};
           for (const key in item) {
@@ -297,20 +302,22 @@ const AdminScanJob = () => {
           newItem["Serial No"] = num++;
           return newItem;
         });
-  
+
         setProcessedData((prevData) => {
           const combinedData = [...prevData, ...updatedData];
+          const lastSlNo = combinedData[combinedData.length - 1]["Serial No"];
+          localStorage.setItem("lastSerialNo", JSON.stringify(lastSlNo));
           if (combinedData.length > 100) {
             return combinedData.slice(-100);
           }
           return combinedData;
         });
-  
-        setLastSerialNo(num - 1); // Update the last serial number
+
+        // setLastSerialNo(num - 1); // Update the last serial number
         gridRef.current.refresh();
         return res;
       }
-  
+
       return {
         success: false,
         data: res?.data?.result,
@@ -341,7 +348,7 @@ const AdminScanJob = () => {
   //       });
   //       setHeadData(["Serial No", ...newDataKeys]);
   //       let updatedData = [];
-       
+
   //       updatedData = data.result.data.map((item) => {
   //         const newItem = {};
   //         for (const key in item) {
@@ -655,7 +662,7 @@ const AdminScanJob = () => {
             const newDataKeys = Object.keys(filterData[0]).map((key) => {
               return key.endsWith(".") ? key.slice(0, -1) : key;
             });
-            setHeadData([ ...newDataKeys]);
+            setHeadData([...newDataKeys]);
             setProcessedData(filterData);
           }
         }
@@ -719,12 +726,28 @@ const AdminScanJob = () => {
           Complete Job
         </Button>
       </div>
-      <Container className={isSmallScreen ? "mt--6" : "mt--7"} fluid>
+      <Container className={isSmallScreen ? "mt--6" : "mt--8"} fluid>
         <br />
 
         {/* <div className="control-pane"> */}
-        <div className="w-100 d-flex justify-end justify-content-end">
-          <div className="custom-control custom-switch">
+        <div
+          className="w-100  m-1"
+          style={{ overflowY: "auto", backgroundColor: "green", zIndex: "999" }}
+        >
+          <div
+            className="w-100 d-flex"
+            style={{ zIndex: "999", width: "8%", height: "80%" }}
+          >
+            {/* <label>Start Serial Number:</label> */}
+            <input
+              type="number"
+              // className="w-16 form-control"
+              ref={serialRef}
+              style={{ zIndex: "999", width: "8%" }}
+            />
+          </div>
+
+          <div className="d-flex justify-content-end  custom-control custom-switch">
             <input
               type="checkbox"
               className="custom-control-input"
