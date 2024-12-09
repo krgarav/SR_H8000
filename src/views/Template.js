@@ -29,6 +29,7 @@ import { checkJobStatus } from "helper/TemplateHelper";
 import Placeholder from "ui/Placeholder";
 import CloneTemplateHandler from "services/CloneTemplate";
 import BookletModal from "ui/BookletModal";
+
 const base64ToFile = (base64, filename) => {
   const byteString = atob(base64.split(",")[1]);
   const mimeString = base64.split(",")[0].split(":")[1].split(";")[0];

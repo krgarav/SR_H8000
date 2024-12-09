@@ -81,6 +81,41 @@ const AdminScanJob = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const serialRef = useRef();
+
+  useEffect(() => {
+    // Create a WebSocket connection
+    const socket = new WebSocket(
+      "wss://3gzd7ks7-5289.inc1.devtunnels.ms/ProcessData?id=4035&userId=7c9b0978-85d8-40c4-b3d5-60fbdd329ef3"
+    );
+
+    // Event listener for when the WebSocket connection is open
+    socket.onopen = () => {
+      console.log("WebSocket connection established.");
+    };
+
+    // Event listener for when a message is received
+    socket.onmessage = (event) => {
+      console.log("Received message:", event.data);
+      // setMessage(event.data); // Update state with the received message
+    };
+
+    // Event listener for errors
+    socket.onerror = (err) => {
+      console.error("WebSocket error:", err);
+      // setError("An error occurred with the WebSocket connection.");
+    };
+
+    // Event listener for when the WebSocket connection is closed
+    socket.onclose = () => {
+      console.log("WebSocket connection closed.");
+    };
+
+    // Cleanup the WebSocket connection when the component unmounts
+    return () => {
+      socket.close();
+      console.log("WebSocket connection closed on component unmount.");
+    };
+  }, []);
   // useEffect(() => {
   //   let num = JSON.parse(localStorage.getItem("lastSerialNo"), 10) || 1;
   //   setLastSerialNo(num);
