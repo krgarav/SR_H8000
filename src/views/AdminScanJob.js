@@ -84,10 +84,14 @@ const AdminScanJob = () => {
 
   useEffect(() => {
     // Create a WebSocket connection
+    const token = localStorage.getItem("token");
+    const userInfo = jwtDecode(token);
+    const userId = userInfo.UserId;
+    const localTemplateId = localStorage.getItem("scantemplateId");
     const socket = new WebSocket(
-      "wss://3gzd7ks7-5289.inc1.devtunnels.ms/ProcessData?id=4035&userId=7c9b0978-85d8-40c4-b3d5-60fbdd329ef3"
+      `ws://192.168.1.49:81/ProcessData?id=${localTemplateId}&userId=${userId}`
     );
-
+    console.log(socket);
     // Event listener for when the WebSocket connection is open
     socket.onopen = () => {
       console.log("WebSocket connection established.");
@@ -95,7 +99,44 @@ const AdminScanJob = () => {
 
     // Event listener for when a message is received
     socket.onmessage = (event) => {
-      console.log("Received message:", event.data);
+      console.log(event.data);
+      if (event.data) {
+        const data = JSON.parse(event.data);
+
+        if (data?.Data) {
+          if (data.Data.length !== 0) {
+            const newDataKeys = Object.keys(data.Data[0]).map((key) => {
+              return key.endsWith(".") ? key.slice(0, -1) : key;
+            });
+            setHeadData(["Serial No", ...newDataKeys]);
+
+            let updatedData = data.Data.map((item) => {
+              const newItem = {};
+              for (const key in item) {
+                const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+                newItem[newKey] = item[key];
+              }
+              newItem["Serial No"] = num++;
+              return newItem;
+            });
+
+            setProcessedData((prevData) => {
+              const combinedData = [...prevData, ...updatedData];
+              const lastSlNo =
+                combinedData[combinedData.length - 1]["Serial No"];
+              localStorage.setItem("lastSerialNo", JSON.stringify(lastSlNo));
+              if (combinedData.length > 100) {
+                return combinedData.slice(-100);
+              }
+              return combinedData;
+            });
+            if(gridRef){
+              gridRef?.current?.refresh();
+
+            }
+          }
+        }
+      }
       // setMessage(event.data); // Update state with the received message
     };
 

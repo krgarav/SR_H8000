@@ -19,6 +19,7 @@ import {
   imageTypeData,
   imageColorTypeData,
   imageDPIData,
+  sensitivityType
 } from "data/helperData";
 import { jwtDecode } from "jwt-decode";
 import { v4 as uuidv4 } from "uuid";
@@ -35,6 +36,7 @@ const JobModal = (props) => {
   const [selectedOperator, setSelectedOperator] = useState("");
   const [dataPath, setDataPath] = useState("");
   const [dataType, setDataType] = useState("");
+  const [sensitivityValue, setSensitivityValue] = useState("");
   const [imagePath, setImagePath] = useState("");
   const [imageType, setImageType] = useState("");
   const [imageDpi, setImageDpi] = useState("");
@@ -106,6 +108,10 @@ const JobModal = (props) => {
       toast.error("Please select template");
       return;
     }
+    if(!sensitivityValue){
+      toast.error("Please select secondary sensitivity");
+      return;
+    }
     // if (!selectedDataDirectory) {
     //   toast.error("Please select data directory");
     //   return;
@@ -153,6 +159,7 @@ const JobModal = (props) => {
       jobName: jobName,
       imageName: imageName,
       dataFileName: dataName,
+      sensitivityValue: +sensitivityValue?.id,
       entryAt: new Date().toISOString(),
     };
 
@@ -242,6 +249,43 @@ const JobModal = (props) => {
                 placeholder="Select template..."
               />
             </div>
+          </Row>
+          <Row className="mb-2">
+            <label
+              htmlFor="example-text-input"
+              className="col-md-2"
+              style={{ fontSize: ".9rem" }}
+            >
+              Secondary Sensitivity:
+            </label>
+            <div className="col-md-10">
+              <Select
+                value={sensitivityValue}
+                onChange={(selectedValue) => setSensitivityValue(selectedValue)}
+                options={sensitivityType}
+                getOptionLabel={(option) => option?.name || ""}
+                getOptionValue={(option) => option?.id?.toString() || ""}
+                placeholder="Select secondary sensitivity..."
+              />
+            </div>
+
+            {/* <label
+              htmlFor="example-text-input"
+              className="col-md-2"
+              style={{ fontSize: ".9rem" }}
+            >
+              Enter Sensitivity:
+            </label>
+            <div className="col-md-4">
+              <Select
+                value={dataType}
+                onChange={(selectedValue) => setDataType(selectedValue)}
+                options={fileType}
+                getOptionLabel={(option) => option?.name || ""}
+                getOptionValue={(option) => option?.id?.toString() || ""}
+                placeholder="Select file type..."
+              />
+            </div> */}
           </Row>
           <Row className="mb-2">
             <label
@@ -497,7 +541,7 @@ const JobModal = (props) => {
                             </div>
                         </Row>} */}
         </Modal.Body>
-        <Modal.Footer>  
+        <Modal.Footer>
           <Button variant="secondary" onClick={props.onHide}>
             Close
           </Button>
