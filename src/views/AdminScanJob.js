@@ -179,8 +179,8 @@ const AdminScanJob = () => {
     // setIsRunning(prev=>!prev )
     if (gridContainer) {
       console.log("Attaching scroll listener");
-      gridContainer.addEventListener("scroll", handleScroll);
-      console.log(gridContainer);
+      // gridContainer.addEventListener("scroll", handleScroll);
+      // console.log(gridContainer);
       // return () => {
       // console.log("Removing scroll listener");
       // gridContainer.removeEventListener("scroll", handleScroll);
@@ -912,7 +912,7 @@ const AdminScanJob = () => {
             allowPdfExport={false}
             allowEditing={false}
             emptyRecordTemplate={template.bind(this)}
-            // rowDataBound={rowDataBound}
+            rowDataBound={rowDataBound}
           >
             <ColumnsDirective>{columnsDirective}</ColumnsDirective>
             <Inject services={[VirtualScroll]} />

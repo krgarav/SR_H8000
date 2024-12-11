@@ -268,24 +268,6 @@ const JobModal = (props) => {
                 placeholder="Select secondary sensitivity..."
               />
             </div>
-
-            {/* <label
-              htmlFor="example-text-input"
-              className="col-md-2"
-              style={{ fontSize: ".9rem" }}
-            >
-              Enter Sensitivity:
-            </label>
-            <div className="col-md-4">
-              <Select
-                value={dataType}
-                onChange={(selectedValue) => setDataType(selectedValue)}
-                options={fileType}
-                getOptionLabel={(option) => option?.name || ""}
-                getOptionValue={(option) => option?.id?.toString() || ""}
-                placeholder="Select file type..."
-              />
-            </div> */}
           </Row>
           <Row className="mb-2">
             <label

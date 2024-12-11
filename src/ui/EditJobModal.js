@@ -18,6 +18,7 @@ import {
   imageTypeData,
   imageColorTypeData,
   imageDPIData,
+  sensitivityType,
 } from "data/helperData";
 import { jwtDecode } from "jwt-decode";
 import DirectoryPicker from "views/DirectoryPicker";
@@ -48,6 +49,7 @@ const EditJobModal = (props) => {
   const [imageName, setImageName] = useState("");
   const [currentDirState, setCurrentDirState] = useState("data");
   const [loading, setLoading] = useState(false);
+  const [sensitivityValue, setSensitivityValue] = useState("");
 
   const changeHandler = (val) => {
     // if (!selectedDataDirectory && val === true) {
@@ -126,6 +128,12 @@ const EditJobModal = (props) => {
             );
           }
         }
+        console.log(
+          comparewithId(sensitivityType, jobData.secondSensitivity.toString())
+        );
+        setSensitivityValue(
+          comparewithId(sensitivityType, jobData.secondSensitivity.toString())
+        );
       } catch (err) {
         toast.warning("Cannot load the data");
       } finally {
@@ -191,6 +199,7 @@ const EditJobModal = (props) => {
       jobName: jobName,
       imageName: imageName,
       dataFileName: dataName,
+      sensitivityValue: +sensitivityValue?.id,
       entryAt: new Date().toISOString(),
     };
 
@@ -298,6 +307,25 @@ const EditJobModal = (props) => {
                 getOptionLabel={(option) => option?.name || ""}
                 getOptionValue={(option) => option?.id?.toString() || ""}
                 placeholder="Select template..."
+              />
+            </div>
+          </Row>
+          <Row className="mb-2">
+            <label
+              htmlFor="example-text-input"
+              className="col-md-2"
+              style={{ fontSize: ".9rem" }}
+            >
+              Secondary Sensitivity:
+            </label>
+            <div className="col-md-10">
+              <Select
+                value={sensitivityValue}
+                onChange={(selectedValue) => setSensitivityValue(selectedValue)}
+                options={sensitivityType}
+                getOptionLabel={(option) => option?.name || ""}
+                getOptionValue={(option) => option?.id?.toString() || ""}
+                placeholder="Select secondary sensitivity..."
               />
             </div>
           </Row>
