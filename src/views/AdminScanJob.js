@@ -27,7 +27,7 @@ import { finishJob } from "helper/job_helper";
 import axios from "axios";
 import { getUrls } from "helper/url_helper";
 import PrintModal from "ui/PrintModal";
-import jsonData from "data/jsonDataTest";
+import jsonDataProcessed from "data/jsondata";
 import { headerData } from "data/jsonDataTest";
 import { VirtualScroll } from "@syncfusion/ej2-grids";
 import { getTotalExcellRow } from "helper/Booklet32Page_helper";
@@ -74,6 +74,7 @@ const AdminScanJob = () => {
   const [isAutoScrollEnabled, setIsAutoScrollEnabled] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastSerialNo, setLastSerialNo] = useState(0);
+  const [originalData, setOriginalData] = useState([]);
   const template = emptyMessageTemplate;
 
   const gridRef = useRef();
@@ -88,6 +89,7 @@ const AdminScanJob = () => {
     const userInfo = jwtDecode(token);
     const userId = userInfo.UserId;
     const localTemplateId = localStorage.getItem("scantemplateId");
+    const secondSensitivity = localStorage.getItem("secondSensitivity");
     const socket = new WebSocket(
       `ws://192.168.1.49:81/ProcessData?id=${localTemplateId}&userId=${userId}`
     );
@@ -99,41 +101,90 @@ const AdminScanJob = () => {
 
     // Event listener for when a message is received
     socket.onmessage = (event) => {
-      console.log(event.data);
-      if (event.data) {
-        const data = JSON.parse(event.data);
+      // console.log(event.data);
+      // console.log(typeof secondSensitivity);
+      if (secondSensitivity === "0") {
+        console.log(event.data);
+        if (event.data) {
+          const data = JSON.parse(event.data);
 
-        if (data?.Data) {
-          if (data.Data.length !== 0) {
-            const newDataKeys = Object.keys(data.Data[0]).map((key) => {
-              return key.endsWith(".") ? key.slice(0, -1) : key;
-            });
-            setHeadData(["Serial No", ...newDataKeys]);
+          if (data?.Data) {
+            if (data.Data.length !== 0) {
+              const newDataKeys = Object.keys(data.Data[0]).map((key) => {
+                return key.endsWith(".") ? key.slice(0, -1) : key;
+              });
+              setHeadData(["Serial No", ...newDataKeys]);
 
-            let updatedData = data.Data.map((item) => {
-              const newItem = {};
-              for (const key in item) {
-                const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
-                newItem[newKey] = item[key];
+              let updatedData = data.Data.map((item) => {
+                const newItem = {};
+                for (const key in item) {
+                  const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+                  newItem[newKey] = item[key];
+                }
+                newItem["Serial No"] = num++;
+                return newItem;
+              });
+
+              setProcessedData((prevData) => {
+                const combinedData = [...prevData, ...updatedData];
+                const lastSlNo =
+                  combinedData[combinedData.length - 1]["Serial No"];
+                localStorage.setItem("lastSerialNo", JSON.stringify(lastSlNo));
+                if (combinedData.length > 100) {
+                  return combinedData.slice(-100);
+                }
+                return combinedData;
+              });
+              if (gridRef) {
+                gridRef?.current?.refresh();
               }
-              newItem["Serial No"] = num++;
-              return newItem;
-            });
-
-            setProcessedData((prevData) => {
-              const combinedData = [...prevData, ...updatedData];
-              const lastSlNo =
-                combinedData[combinedData.length - 1]["Serial No"];
-              localStorage.setItem("lastSerialNo", JSON.stringify(lastSlNo));
-              if (combinedData.length > 100) {
-                return combinedData.slice(-100);
-              }
-              return combinedData;
-            });
-            if(gridRef){
-              gridRef?.current?.refresh();
-
             }
+          }
+        }
+      } else {
+        const data = event.data;
+        const updatedDatas = data.map((row) => {
+          const flattenedRow = {};
+          const mismatchData = {};
+
+          Object.keys(row).forEach((key) => {
+            flattenedRow[key] = row[key].Value; // Add the value to the flattened row
+            mismatchData[key] = row[key].Mismatch; // Keep mismatch information
+          });
+
+          flattenedRow.MismatchData = mismatchData; // Add mismatch info as a separate field
+          return flattenedRow;
+        });
+        if (updatedDatas.length !== 0) {
+          const newDataKeys = Object.keys(updatedDatas[0])
+            .filter((key) => key !== "MismatchData") // Exclude 'MismatchData' key
+            .map((key) => {
+              return key.endsWith(".") ? key.slice(0, -1) : key; // Remove trailing '.'
+            });
+          console.log(newDataKeys);
+          setHeadData(["Serial No", ...newDataKeys]);
+
+          let updatedData = updatedDatas.map((item) => {
+            const newItem = {};
+            for (const key in item) {
+              const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+              newItem[newKey] = item[key];
+            }
+            newItem["Serial No"] = num++;
+            return newItem;
+          });
+
+          setProcessedData((prevData) => {
+            const combinedData = [...prevData, ...updatedData];
+            const lastSlNo = combinedData[combinedData.length - 1]["Serial No"];
+            localStorage.setItem("lastSerialNo", JSON.stringify(lastSlNo));
+            if (combinedData.length > 100) {
+              return combinedData.slice(-100);
+            }
+            return combinedData;
+          });
+          if (gridRef) {
+            gridRef?.current?.refresh();
           }
         }
       }
@@ -157,21 +208,6 @@ const AdminScanJob = () => {
       console.log("WebSocket connection closed on component unmount.");
     };
   }, []);
-  // useEffect(() => {
-  //   let num = JSON.parse(localStorage.getItem("lastSerialNo"), 10) || 1;
-  //   setLastSerialNo(num);
-  // }, []);
-  // useEffect(() => {
-  //   // let num = JSON.parse(localStorage.getItem("lastSerialNo"), 10) || 1;
-  //   const lastSlNo = processedData[processedData.length - 1];
-
-  //   console.log(lastSlNo);
-  //   if (lastSlNo) {
-  //     const lastSerialNo = lastSlNo["Serial No"];
-  //     localStorage.setItem("lastSerialNo", JSON.stringify(lastSerialNo));
-  //   }
-  //   // setLastSerialNo(num)
-  // }, [processedData]);
   useEffect(() => {
     const gridContainer = gridRef.current?.element?.querySelector(".e-content");
 
@@ -221,24 +257,7 @@ const AdminScanJob = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  // useEffect(() => {
-  //   // Calculate 60% of the viewport height
-  //   const handleResize = () => {
-  //     const height = `${window.innerHeight * 0.5}px`;
-  //     setGridHeight(height);
-  //   };
 
-  //   // Set the initial height
-  //   handleResize();
-
-  //   // Add event listener to update height on window resize
-  //   window.addEventListener("resize", handleResize);
-
-  //   // Cleanup the event listener on component unmount
-  //   return () => {
-  //     window.removeEventListener("resize", handleResize);
-  //   };
-  // }, []);
   useEffect(() => {
     // if (!location.state) {
     //   navigate("/admin/job-queue", { replace: true });
@@ -349,6 +368,57 @@ const AdminScanJob = () => {
   //     // setScanning(false);
   //   }
   // };
+  console.log(headData);
+  useEffect(() => {
+    // console.log(jsonDataProcessed.Data);
+    const data = jsonDataProcessed.Data;
+    // setOriginalData(data);
+    const updatedDatas = data.map((row) => {
+      const flattenedRow = {};
+      const mismatchData = {};
+
+      Object.keys(row).forEach((key) => {
+        flattenedRow[key] = row[key].Value; // Add the value to the flattened row
+        mismatchData[key] = row[key].Mismatch; // Keep mismatch information
+      });
+
+      flattenedRow.MismatchData = mismatchData; // Add mismatch info as a separate field
+      return flattenedRow;
+    });
+    if (updatedDatas.length !== 0) {
+      const newDataKeys = Object.keys(updatedDatas[0])
+        .filter((key) => key !== "MismatchData") // Exclude 'MismatchData' key
+        .map((key) => {
+          return key.endsWith(".") ? key.slice(0, -1) : key; // Remove trailing '.'
+        });
+      console.log(newDataKeys);
+      setHeadData(["Serial No", ...newDataKeys]);
+
+      let updatedData = updatedDatas.map((item) => {
+        const newItem = {};
+        for (const key in item) {
+          const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+          newItem[newKey] = item[key];
+        }
+        newItem["Serial No"] = num++;
+        return newItem;
+      });
+
+      setProcessedData((prevData) => {
+        const combinedData = [...prevData, ...updatedData];
+        const lastSlNo = combinedData[combinedData.length - 1]["Serial No"];
+        localStorage.setItem("lastSerialNo", JSON.stringify(lastSlNo));
+        if (combinedData.length > 100) {
+          return combinedData.slice(-100);
+        }
+        return combinedData;
+      });
+      if (gridRef) {
+        gridRef?.current?.refresh();
+      }
+    }
+    // jsonDataProcessed;
+  }, []);
   const handleScroll = async (e) => {
     const scrollTop = e.target.scrollTop;
     console.log("Scroll event triggered. ScrollTop:", scrollTop);
@@ -360,7 +430,6 @@ const AdminScanJob = () => {
       const templateId = localStorage.getItem("scantemplateId");
       const res = await getTotalExcellRow(templateId, userId);
       const totalRow = res?.totalRows;
-      console.log(totalRow);
       // Add logic for fetching older data
     }
   };
@@ -622,10 +691,11 @@ const AdminScanJob = () => {
       console.log(error);
     }
   };
+  console.log(processedData);
   const columnsDirective = headData.map((item, index) => {
     return (
       <ColumnDirective
-        field={item}
+        field={`${item}`}
         key={index}
         headerText={item}
         width="120"
@@ -712,20 +782,30 @@ const AdminScanJob = () => {
       toast.error("Error occurred during saving the job!");
     }
   };
+  const queryCellInfo = (args) => {
+    const field = args.column.field;
+    const rowData = args.data;
 
+    if (rowData.MismatchData && rowData.MismatchData[field]) {
+      args.cell.style.backgroundColor = "#f28b82"; // Light red background
+      args.cell.style.color = "#ffffff"; // White font
+    }
+  };
   const rowDataBound = (args) => {
-    const cells = args.data; // Access the data for the current row
-    Object.keys(cells).forEach((key) => {
-      if (cells[key] === null || cells[key] === "") {
-        // Apply yellow background color to the cell
-        const cellIndex = args.row.cells.findIndex(
-          (cell) => cell.column.field === key
-        );
-        if (cellIndex !== -1) {
-          args.row.cells[cellIndex].style.backgroundColor = "yellow";
-        }
-      }
-    });
+    console.log(args.row);
+    // Loop through each column's data
+    console.log(originalData);
+    const originalItem = originalData[args.row]; // Match the row index to original data
+    console.log(originalItem);
+    // Object.keys(originalItem).forEach((key) => {
+    //   // console.log(key)
+    //   // if (originalItem[key]?.Mismatch) {
+    //   //   const cell = args.row.querySelector(`[aria-label*="${key}"]`); // Locate the cell
+    //   //   if (cell) {
+    //   //     cell.style.backgroundColor = "red"; // Highlight mismatched cell
+    //   //   }
+    //   // }
+    // });
   };
   const handleRefreshData = async () => {
     try {
@@ -913,6 +993,7 @@ const AdminScanJob = () => {
             allowEditing={false}
             emptyRecordTemplate={template.bind(this)}
             rowDataBound={rowDataBound}
+            queryCellInfo={queryCellInfo}
           >
             <ColumnsDirective>{columnsDirective}</ColumnsDirective>
             <Inject services={[VirtualScroll]} />

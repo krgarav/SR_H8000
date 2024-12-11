@@ -67,12 +67,14 @@ const AdminJobQueue = () => {
     });
   };
   const continueHandler = (item) => {
-    const { id, templateId, templateName } = item;
+    const { id, templateId, templateName, secondSensitivity } = item;
     localStorage.setItem("scantemplateId", templateId);
     localStorage.setItem("jobId", id);
     localStorage.setItem("templateName", templateName);
+    localStorage.setItem("secondSensitivity", secondSensitivity);
+
     navigate("/admin/job-queue/adminscanjob", {
-      state: { templateId: templateId, templateName },
+      state: { templateId: templateId, templateName, secondSensitivity },
     });
   };
   const ALLJOBS = allJob.map((item, index) => {
