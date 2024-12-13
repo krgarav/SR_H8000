@@ -70,7 +70,7 @@ const AdminScanJob = () => {
   const [isAutoScrollEnabled, setIsAutoScrollEnabled] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [originalData, setOriginalData] = useState([]);
-
+  const [lastSerialNo, setLastSerialNo] = useState(null);
   const [socketBaseUrl, setSocketBaseUrl] = useState(null);
   const template = emptyMessageTemplate;
 
@@ -81,6 +81,11 @@ const AdminScanJob = () => {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (lastSerialNo) {
+      localStorage.setItem("lastSerialNo", JSON.stringify(lastSerialNo));
+    }
+  }, [lastSerialNo]);
   useEffect(() => {
     const response = async () => {
       const urls = await getSocketBaseUrl();
@@ -134,10 +139,7 @@ const AdminScanJob = () => {
                   const combinedData = [...prevData, ...updatedData];
                   const lastSlNo =
                     combinedData[combinedData.length - 1]["Serial No"];
-                  localStorage.setItem(
-                    "lastSerialNo",
-                    JSON.stringify(lastSlNo)
-                  );
+                  setLastSerialNo(lastSlNo);
                   if (combinedData.length > 100) {
                     return combinedData.slice(-100);
                   }
@@ -150,50 +152,56 @@ const AdminScanJob = () => {
             }
           }
         } else {
-          const data = event.data;
-          const updatedDatas = data.map((row) => {
-            const flattenedRow = {};
-            const mismatchData = {};
+          if (event.data) {
+            const data = JSON.parse(event.data);
 
-            Object.keys(row).forEach((key) => {
-              flattenedRow[key] = row[key].Value; // Add the value to the flattened row
-              mismatchData[key] = row[key].Mismatch; // Keep mismatch information
-            });
+            if (data?.Data) {
+              if (data.Data.length !== 0) {
+                const updatedDatas = data.Data.map((row) => {
+                  const flattenedRow = {};
+                  const mismatchData = {};
 
-            flattenedRow.MismatchData = mismatchData; // Add mismatch info as a separate field
-            return flattenedRow;
-          });
-          if (updatedDatas.length !== 0) {
-            const newDataKeys = Object.keys(updatedDatas[0])
-              .filter((key) => key !== "MismatchData") // Exclude 'MismatchData' key
-              .map((key) => {
-                return key.endsWith(".") ? key.slice(0, -1) : key; // Remove trailing '.'
-              });
-            console.log(newDataKeys);
-            setHeadData(["Serial No", ...newDataKeys]);
+                  Object.keys(row).forEach((key) => {
+                    flattenedRow[key] = row[key].Value; // Add the value to the flattened row
+                    mismatchData[key] = row[key].Mismatch; // Keep mismatch information
+                  });
 
-            let updatedData = updatedDatas.map((item) => {
-              const newItem = {};
-              for (const key in item) {
-                const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
-                newItem[newKey] = item[key];
+                  flattenedRow.MismatchData = mismatchData; // Add mismatch info as a separate field
+                  return flattenedRow;
+                });
+                if (updatedDatas.length !== 0) {
+                  const newDataKeys = Object.keys(updatedDatas[0])
+                    .filter((key) => key !== "MismatchData") // Exclude 'MismatchData' key
+                    .map((key) => {
+                      return key.endsWith(".") ? key.slice(0, -1) : key; // Remove trailing '.'
+                    });
+                  setHeadData(["Serial No", ...newDataKeys]);
+
+                  let updatedData = updatedDatas.map((item) => {
+                    const newItem = {};
+                    for (const key in item) {
+                      const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+                      newItem[newKey] = item[key];
+                    }
+                    newItem["Serial No"] = num++;
+                    return newItem;
+                  });
+
+                  setProcessedData((prevData) => {
+                    const combinedData = [...prevData, ...updatedData];
+                    const lastSlNo =
+                      combinedData[combinedData.length - 1]["Serial No"];
+                    setLastSerialNo(lastSlNo);
+                    if (combinedData.length > 100) {
+                      return combinedData.slice(-100);
+                    }
+                    return combinedData;
+                  });
+                  if (gridRef) {
+                    gridRef?.current?.refresh();
+                  }
+                }
               }
-              newItem["Serial No"] = num++;
-              return newItem;
-            });
-
-            setProcessedData((prevData) => {
-              const combinedData = [...prevData, ...updatedData];
-              const lastSlNo =
-                combinedData[combinedData.length - 1]["Serial No"];
-              localStorage.setItem("lastSerialNo", JSON.stringify(lastSlNo));
-              if (combinedData.length > 100) {
-                return combinedData.slice(-100);
-              }
-              return combinedData;
-            });
-            if (gridRef) {
-              gridRef?.current?.refresh();
             }
           }
         }
