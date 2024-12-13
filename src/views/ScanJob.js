@@ -33,8 +33,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { cancelScan } from "helper/TemplateHelper";
 import { finishJob } from "helper/job_helper";
 import axios from "axios";
-import { GET_PROCESS_32_PAG_DATA } from "helper/url_helper";
-import { GENERATE_EXCEL } from "helper/url_helper";
 import { getUrls } from "helper/url_helper";
 import PrintModal from "ui/PrintModal";
 
@@ -42,9 +40,7 @@ function emptyMessageTemplate() {
   return (
     <div className="text-center">
       <img
-        src={
-          "https://ej2.syncfusion.com/react/demos/src/grid/images/emptyRecordTemplate_light.svg"
-        }
+        src={"/emptyRecordTemplate_light.svg"}
         className="d-block mx-auto my-2"
         alt="No record"
       />
@@ -52,12 +48,12 @@ function emptyMessageTemplate() {
     </div>
   );
 }
-
+let num = JSON.parse(localStorage.getItem("lastSerialNo"), 10) || 1;
 const ScanJob = () => {
   const [count, setCount] = useState(true);
   const [processedData, setProcessedData] = useState([]);
   const [scanning, setScanning] = useState(false);
-  const [headData, setHeadData] = useState(["OrderID"]);
+  const [headData, setHeadData] = useState(["Student Data"]);
   const filterSettings = { type: "Excel" };
   // const toolbar = ['Add', 'Edit', 'Delete', 'Update', 'Cancel', 'ExcelExport', 'CsvExport'];
   const editSettings = {
@@ -84,6 +80,132 @@ const ScanJob = () => {
   const template = emptyMessageTemplate;
   const location = useLocation();
   const navigate = useNavigate();
+  useEffect(() => {
+    
+    // Create a WebSocket connection
+    const token = localStorage.getItem("token");
+    const userInfo = jwtDecode(token);
+    const userId = userInfo.UserId;
+    const localTemplateId = localStorage.getItem("scantemplateId");
+    const secondSensitivity = localStorage.getItem("secondSensitivity");
+    const socket = new WebSocket(
+      `ws://192.168.1.49:81/ProcessData?id=${localTemplateId}&userId=${userId}`
+    );
+    console.log(socket);
+    // Event listener for when the WebSocket connection is open
+    socket.onopen = () => {
+      console.log("WebSocket connection established.");
+    };
+
+    // Event listener for when a message is received
+    socket.onmessage = (event) => {
+      // console.log(event.data);
+      // console.log(typeof secondSensitivity);
+      if (secondSensitivity === "0") {
+        console.log(event.data);
+        if (event.data) {
+          const data = JSON.parse(event.data);
+
+          if (data?.Data) {
+            if (data.Data.length !== 0) {
+              const newDataKeys = Object.keys(data.Data[0]).map((key) => {
+                return key.endsWith(".") ? key.slice(0, -1) : key;
+              });
+              setHeadData(["Serial No", ...newDataKeys]);
+
+              let updatedData = data.Data.map((item) => {
+                const newItem = {};
+                for (const key in item) {
+                  const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+                  newItem[newKey] = item[key];
+                }
+                newItem["Serial No"] = num++;
+                return newItem;
+              });
+
+              setProcessedData((prevData) => {
+                const combinedData = [...prevData, ...updatedData];
+                const lastSlNo =
+                  combinedData[combinedData.length - 1]["Serial No"];
+                localStorage.setItem("lastSerialNo", JSON.stringify(lastSlNo));
+                if (combinedData.length > 100) {
+                  return combinedData.slice(-100);
+                }
+                return combinedData;
+              });
+              if (gridRef) {
+                gridRef?.current?.refresh();
+              }
+            }
+          }
+        }
+      } else {
+        const data = event.data;
+        const updatedDatas = data.map((row) => {
+          const flattenedRow = {};
+          const mismatchData = {};
+
+          Object.keys(row).forEach((key) => {
+            flattenedRow[key] = row[key].Value; // Add the value to the flattened row
+            mismatchData[key] = row[key].Mismatch; // Keep mismatch information
+          });
+
+          flattenedRow.MismatchData = mismatchData; // Add mismatch info as a separate field
+          return flattenedRow;
+        });
+        if (updatedDatas.length !== 0) {
+          const newDataKeys = Object.keys(updatedDatas[0])
+            .filter((key) => key !== "MismatchData") // Exclude 'MismatchData' key
+            .map((key) => {
+              return key.endsWith(".") ? key.slice(0, -1) : key; // Remove trailing '.'
+            });
+          console.log(newDataKeys);
+          setHeadData(["Serial No", ...newDataKeys]);
+
+          let updatedData = updatedDatas.map((item) => {
+            const newItem = {};
+            for (const key in item) {
+              const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+              newItem[newKey] = item[key];
+            }
+            newItem["Serial No"] = num++;
+            return newItem;
+          });
+
+          setProcessedData((prevData) => {
+            const combinedData = [...prevData, ...updatedData];
+            const lastSlNo = combinedData[combinedData.length - 1]["Serial No"];
+            localStorage.setItem("lastSerialNo", JSON.stringify(lastSlNo));
+            if (combinedData.length > 100) {
+              return combinedData.slice(-100);
+            }
+            return combinedData;
+          });
+          if (gridRef) {
+            gridRef?.current?.refresh();
+          }
+        }
+      }
+      // setMessage(event.data); // Update state with the received message
+    };
+
+    // Event listener for errors
+    socket.onerror = (err) => {
+      console.error("WebSocket error:", err);
+      // setError("An error occurred with the WebSocket connection.");
+    };
+
+    // Event listener for when the WebSocket connection is closed
+    socket.onclose = () => {
+      console.log("WebSocket connection closed.");
+    };
+
+    // Cleanup the WebSocket connection when the component unmounts
+    return () => {
+      socket.close();
+      console.log("WebSocket connection closed on component unmount.");
+    };
+  }, []);
   useEffect(() => {
     const fetchData = async () => {
       const response = await getUrls();
@@ -117,7 +239,6 @@ const ScanJob = () => {
   }, []);
 
   useEffect(() => {
-
     // const { templateId } = location?.state;
     const localTemplateId = localStorage.getItem("scantemplateId");
     // if (templateId) {
@@ -128,43 +249,6 @@ const ScanJob = () => {
     }
   }, [location]);
 
-  // useEffect(() => {
-  //     const interval = setInterval(() => {
-  //         setItems(prevItems => {
-  //             const nextIndex = prevItems.length;
-  //             if (nextIndex < data.length) {
-  //                 return [...prevItems, data[nextIndex]];
-  //             } else {
-  //                 clearInterval(interval);
-  //                 return prevItems;
-  //             }
-  //         });
-  //     }, 1000);
-
-  //     return () => clearInterval(interval); // Cleanup on unmount
-  // }, [data]);
-
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   if (token) {
-  //     const decoded = jwtDecode(token);
-  //     if (decoded.Role === "Operator") {
-  //       setToolbar([
-  //         "Add",
-  //         "Edit",
-  //         "Delete",
-  //         "Update",
-  //         "Cancel",
-  //         "ExcelExport",
-  //         "CsvExport",
-  //       ]);
-  //       setServices([Sort, Toolbar, ExcelExport, Filter, Edit]);
-  //     } else {
-  //       setToolbar(["ExcelExport", "CsvExport"]);
-  //       setServices([Sort, Toolbar, ExcelExport, Filter]);
-  //     }
-  //   }
-  // }, []);
   const getScanData = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -429,7 +513,7 @@ const ScanJob = () => {
               emptyRecordTemplate={template.bind(this)}
             >
               <ColumnsDirective>{columnsDirective}</ColumnsDirective>
-              <Inject services={services} />
+              {/* <Inject services={services} /> */}
             </GridComponent>
             <div className="m-2" style={{ float: "right" }}>
               <Button

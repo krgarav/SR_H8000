@@ -19,7 +19,7 @@ import {
   imageTypeData,
   imageColorTypeData,
   imageDPIData,
-  sensitivityType
+  sensitivityType,
 } from "data/helperData";
 import { jwtDecode } from "jwt-decode";
 import { v4 as uuidv4 } from "uuid";
@@ -48,6 +48,7 @@ const JobModal = (props) => {
   const [dataName, setDataName] = useState("");
   const [imageName, setImageName] = useState("");
   const [currentDirState, setCurrentDirState] = useState("data");
+  const [showSecondSensitivity, setShowSeconodSensitivity] = useState(false);
   const generateUUID = () => {
     return uuidv4();
   };
@@ -108,10 +109,10 @@ const JobModal = (props) => {
       toast.error("Please select template");
       return;
     }
-    if(!sensitivityValue){
-      toast.error("Please select secondary sensitivity");
-      return;
-    }
+    // if (!sensitivityValue) {
+    //   toast.error("Please select secondary sensitivity");
+    //   return;
+    // }
     // if (!selectedDataDirectory) {
     //   toast.error("Please select data directory");
     //   return;
@@ -159,21 +160,14 @@ const JobModal = (props) => {
       jobName: jobName,
       imageName: imageName,
       dataFileName: dataName,
-      sensitivityValue: +sensitivityValue?.id,
+      sensitivityValue: +sensitivityValue?.id || 0,
       entryAt: new Date().toISOString(),
     };
-
-    // console.log(jobObj);
-    // return;
     const response = await createJob(jobObj);
-    console.log(response);
     if (response?.success) {
-      // alert(response.message)
       toast.success(response.message);
       props.onHide();
     }
-
-    console.log(response);
   };
   const handleFileChange2 = (event) => {
     const files = Array.from(event.target.files);
@@ -195,7 +189,9 @@ const JobModal = (props) => {
       setSelectedDataDirectory(directory);
     }
   };
-
+  const secondarySensitivityHandler = (event) => {
+    setShowSeconodSensitivity(event.target.checked);
+  };
   return (
     <>
       <Modal
@@ -213,7 +209,7 @@ const JobModal = (props) => {
         </Modal.Header>
 
         <Modal.Body style={{ height: "65dvh", overflow: "auto" }}>
-          <Row className="mb-2">
+          <Row className="mb-3">
             <label
               htmlFor="example-text-input"
               className="col-md-2  col-form-label"
@@ -231,7 +227,7 @@ const JobModal = (props) => {
               />
             </div>
           </Row>
-          <Row className="mb-3">
+          <Row className="mb-1">
             <label
               htmlFor="example-text-input"
               className="col-md-2 "
@@ -239,7 +235,7 @@ const JobModal = (props) => {
             >
               Select Template:
             </label>
-            <div className="col-md-10">
+            <div className="col-md-6 ">
               <Select
                 value={selectedTemplate}
                 onChange={(selectedValue) => setSelectedTemplate(selectedValue)}
@@ -247,28 +243,63 @@ const JobModal = (props) => {
                 getOptionLabel={(option) => option?.name || ""}
                 getOptionValue={(option) => option?.id?.toString() || ""}
                 placeholder="Select template..."
+                className="mt-1"
               />
             </div>
-          </Row>
-          <Row className="mb-2">
+            {/* <div className="col-md-10"> */}
             <label
               htmlFor="example-text-input"
-              className="col-md-2"
+              className="col-md-2 "
               style={{ fontSize: ".9rem" }}
             >
               Secondary Sensitivity:
             </label>
-            <div className="col-md-10">
-              <Select
-                value={sensitivityValue}
-                onChange={(selectedValue) => setSensitivityValue(selectedValue)}
-                options={sensitivityType}
-                getOptionLabel={(option) => option?.name || ""}
-                getOptionValue={(option) => option?.id?.toString() || ""}
-                placeholder="Select secondary sensitivity..."
-              />
+            <div className="col-md-2 d-flex col-form-label ">
+              <label className="custom-toggle  ">
+                <input type="checkbox" onClick={secondarySensitivityHandler} />
+                <span
+                  className="custom-toggle-slider rounded-circle"
+                  data-label-off="No"
+                  data-label-on="Yes"
+                ></span>
+              </label>
             </div>
+            {/* </div> */}
+            {/* <div className="col-md-10">
+              <label className="custom-toggle">
+                <input type="checkbox" onClick={secondarySensitivityHandler} />
+                <span
+                  className="custom-toggle-slider rounded-circle"
+                  data-label-off="No"
+                  data-label-on="Yes"
+                ></span>
+              </label>
+            </div> */}
           </Row>
+
+          {showSecondSensitivity && (
+            <Row className="mb-2">
+              <label
+                htmlFor="example-text-input"
+                className="col-md-2"
+                style={{ fontSize: ".9rem" }}
+              >
+                Sensitivity Value:
+              </label>
+              <div className="col-md-10">
+                <Select
+                  value={sensitivityValue}
+                  onChange={(selectedValue) =>
+                    setSensitivityValue(selectedValue)
+                  }
+                  options={sensitivityType}
+                  getOptionLabel={(option) => option?.name || ""}
+                  getOptionValue={(option) => option?.id?.toString() || ""}
+                  placeholder="Select secondary sensitivity..."
+                />
+              </div>
+            </Row>
+          )}
           <Row className="mb-2">
             <label
               htmlFor="example-text-input"

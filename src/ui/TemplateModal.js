@@ -144,10 +144,7 @@ const TemplateModal = (props) => {
     }
   };
 
-
-  const handleAdditionalSensitivity = ()=>{
-    
-  }
+  const handleAdditionalSensitivity = () => {};
   const navigate = useNavigate();
 
   const jobHandler = (e) => {
@@ -1325,136 +1322,7 @@ const TemplateModal = (props) => {
                           )}
                         </div> */}
                       </Row>
-                      <Row className="mb-3">
-                        <label
-                          htmlFor="example-text-input"
-                          className="col-md-2  "
-                          style={{ fontSize: ".9rem" }}
-                        >
-                         Additional Sensitivity
-                        </label>
-                        <div
-                          className="col-md-10"
-                          style={{
-                            display: "flex",
-                            gap: "5px",
-                            width: "100%",
-                          }}
-                        >
-                          <div
-                            style={{
-                              display: "flex",
-                              flexDirection: "column",
-                              width: "100%",
-                            }}
-                          >
-                            <div
-                              style={{
-                                borderRadius: "6px",
-                                overflow: "hidden",
-                              }}
-                            >
-                              <ShadesOfGrey />
-                            </div>
-                            <Box
-                              sx={{
-                                width: "94%",
-                                justifyContent: "center",
-                                alignSelf: "center",
-                              }}
-                            >
-                              <Slider
-                                getAriaLabel={() => "Sensitivity range"}
-                                value={value}
-                                onChange={handleChange}
-                                valueLabelDisplay="auto"
-                                min={0} // Ensure minimum value is 0
-                                max={16}
-                                disableSwap
-                                size="large"
-                                color="PRIMARY"
-                                slots={{
-                                  ValueLabel: (props) => (
-                                    <CustomTooltip
-                                      {...props}
-                                      shade={getShadeFromValue(value)} // Pass the shade based on the value
-                                    />
-                                  ),
-                                }}
-                              />
-                            </Box>
-                          </div>
 
-                          <input
-                            value={`${sensitivity} - ${difference}`}
-                            onChange={(e) => setSensitivity(e.target.value)}
-                            style={{
-                              width: "100%",
-                              padding: "2px",
-                              textAlign: "center",
-                            }}
-                            className="form-control"
-                            type="text"
-                            disabled
-                          />
-
-                          {!sensitivity && (
-                            <span
-                              style={{ color: "red", display: spanDisplay }}
-                            >
-                              This feild is required
-                            </span>
-                          )}
-                        </div>
-                        {/* <label
-                          htmlFor="example-text-input"
-                          className="col-md-2 col-form-label "
-                          style={{ fontSize: ".9rem", textAlign: "right" }}
-                        >
-                          Difference
-                        </label> */}
-                        {/* <div className="col-md-3">
-                          <input
-                            style={{
-                              border: toggle.difference ? "1px solid red" : "",
-                            }}
-                            placeholder="Enter difference"
-                            type="number"
-                            className="form-control"
-                            value={difference}
-                            onBlur={(e) => {
-                              const inputValue = e.target.value;
-
-                              // Check if the input value is not empty and less than sensitivity
-                              if (
-                                inputValue !== "" &&
-                                +inputValue < +sensitivity
-                              ) {
-                                alert(
-                                  "Entered value cannot be less than sensitivity"
-                                );
-                                setDifference("");
-                                return;
-                              }
-                            }}
-                            onChange={(e) => {
-                              setDifference(e.target.value);
-                              settoggle((item) => ({
-                                ...item,
-                                difference: false,
-                              }));
-                            }}
-                          />
-
-                          {!difference && (
-                            <span
-                              style={{ color: "red", display: spanDisplay }}
-                            >
-                              This feild is required
-                            </span>
-                          )}
-                        </div> */}
-                      </Row>
                       <Row className="mb-3">
                         <label
                           htmlFor="example-text-input"

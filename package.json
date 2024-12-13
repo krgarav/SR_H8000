@@ -1,17 +1,18 @@
 {
   "name": "sekonicscanner8000",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Scanner project",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/creativetimofficial/argon-dashboard-react.git"
   },
-  "author": "Kumar Gaurav",
+  "author": "OMR INDIA OUTSOURCES",
   "license": "IOS",
      "scripts": {
     "start": "react-scripts start --port 3002",
-    "build": "react-scripts build",
+      "update-config": "node scripts/updateConfig.js",
+    "build": "npm run update-config && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start",

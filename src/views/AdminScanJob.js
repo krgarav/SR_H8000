@@ -16,7 +16,6 @@ import {
   Sort,
   Inject,
   Toolbar,
-  ExcelExport,
   Filter,
 } from "@syncfusion/ej2-react-grids";
 import { Link } from "react-router-dom";
@@ -27,18 +26,15 @@ import { finishJob } from "helper/job_helper";
 import axios from "axios";
 import { getUrls } from "helper/url_helper";
 import PrintModal from "ui/PrintModal";
-import jsonDataProcessed from "data/jsondata";
-import { headerData } from "data/jsonDataTest";
 import { VirtualScroll } from "@syncfusion/ej2-grids";
 import { getTotalExcellRow } from "helper/Booklet32Page_helper";
 import { getDataByRowRange } from "helper/Booklet32Page_helper";
+import getSocketBaseUrl from "services/getSocketApi";
 function emptyMessageTemplate() {
   return (
     <div className="text-center">
       <img
-        src={
-          "https://ej2.syncfusion.com/react/demos/src/grid/images/emptyRecordTemplate_light.svg"
-        }
+        src={"/emptyRecordTemplate_light.svg"}
         className="d-block mx-auto my-2"
         alt="No record"
       />
@@ -73,141 +69,156 @@ const AdminScanJob = () => {
   const [scrollState, setScrollState] = useState(false);
   const [isAutoScrollEnabled, setIsAutoScrollEnabled] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [lastSerialNo, setLastSerialNo] = useState(0);
   const [originalData, setOriginalData] = useState([]);
+
+  const [socketBaseUrl, setSocketBaseUrl] = useState(null);
   const template = emptyMessageTemplate;
 
+  const location = useLocation();
+
+  const serialRef = useRef();
   const gridRef = useRef();
 
-  const location = useLocation();
   const navigate = useNavigate();
-  const serialRef = useRef();
 
   useEffect(() => {
-    // Create a WebSocket connection
-    const token = localStorage.getItem("token");
-    const userInfo = jwtDecode(token);
-    const userId = userInfo.UserId;
-    const localTemplateId = localStorage.getItem("scantemplateId");
-    const secondSensitivity = localStorage.getItem("secondSensitivity");
-    const socket = new WebSocket(
-      `ws://192.168.1.49:81/ProcessData?id=${localTemplateId}&userId=${userId}`
-    );
-    console.log(socket);
-    // Event listener for when the WebSocket connection is open
-    socket.onopen = () => {
-      console.log("WebSocket connection established.");
+    const response = async () => {
+      const urls = await getSocketBaseUrl();
+      setSocketBaseUrl(urls);
     };
+    response();
+  }, []);
+  useEffect(() => {
+    if (socketBaseUrl) {
+      // Create a WebSocket connection
+      const token = localStorage.getItem("token");
+      const userInfo = jwtDecode(token);
+      const userId = userInfo.UserId;
+      const localTemplateId = localStorage.getItem("scantemplateId");
+      const secondSensitivity = localStorage.getItem("secondSensitivity");
+      const socket = new WebSocket(
+        `${socketBaseUrl}ProcessData?id=${localTemplateId}&userId=${userId}`
+      );
+      // Event listener for when the WebSocket connection is open
+      socket.onopen = () => {
+        console.log("WebSocket connection established.");
+      };
 
-    // Event listener for when a message is received
-    socket.onmessage = (event) => {
-      // console.log(event.data);
-      // console.log(typeof secondSensitivity);
-      if (secondSensitivity === "0") {
-        console.log(event.data);
-        if (event.data) {
-          const data = JSON.parse(event.data);
+      // Event listener for when a message is received
+      socket.onmessage = (event) => {
+        // console.log(event.data);
+        // console.log(typeof secondSensitivity);
+        if (secondSensitivity === "0") {
+          console.log(event.data);
+          if (event.data) {
+            const data = JSON.parse(event.data);
 
-          if (data?.Data) {
-            if (data.Data.length !== 0) {
-              const newDataKeys = Object.keys(data.Data[0]).map((key) => {
-                return key.endsWith(".") ? key.slice(0, -1) : key;
-              });
-              setHeadData(["Serial No", ...newDataKeys]);
+            if (data?.Data) {
+              if (data.Data.length !== 0) {
+                const newDataKeys = Object.keys(data.Data[0]).map((key) => {
+                  return key.endsWith(".") ? key.slice(0, -1) : key;
+                });
+                setHeadData(["Serial No", ...newDataKeys]);
 
-              let updatedData = data.Data.map((item) => {
-                const newItem = {};
-                for (const key in item) {
-                  const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
-                  newItem[newKey] = item[key];
+                let updatedData = data.Data.map((item) => {
+                  const newItem = {};
+                  for (const key in item) {
+                    const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+                    newItem[newKey] = item[key];
+                  }
+                  newItem["Serial No"] = num++;
+                  return newItem;
+                });
+
+                setProcessedData((prevData) => {
+                  const combinedData = [...prevData, ...updatedData];
+                  const lastSlNo =
+                    combinedData[combinedData.length - 1]["Serial No"];
+                  localStorage.setItem(
+                    "lastSerialNo",
+                    JSON.stringify(lastSlNo)
+                  );
+                  if (combinedData.length > 100) {
+                    return combinedData.slice(-100);
+                  }
+                  return combinedData;
+                });
+                if (gridRef) {
+                  gridRef?.current?.refresh();
                 }
-                newItem["Serial No"] = num++;
-                return newItem;
-              });
-
-              setProcessedData((prevData) => {
-                const combinedData = [...prevData, ...updatedData];
-                const lastSlNo =
-                  combinedData[combinedData.length - 1]["Serial No"];
-                localStorage.setItem("lastSerialNo", JSON.stringify(lastSlNo));
-                if (combinedData.length > 100) {
-                  return combinedData.slice(-100);
-                }
-                return combinedData;
-              });
-              if (gridRef) {
-                gridRef?.current?.refresh();
               }
             }
           }
-        }
-      } else {
-        const data = event.data;
-        const updatedDatas = data.map((row) => {
-          const flattenedRow = {};
-          const mismatchData = {};
+        } else {
+          const data = event.data;
+          const updatedDatas = data.map((row) => {
+            const flattenedRow = {};
+            const mismatchData = {};
 
-          Object.keys(row).forEach((key) => {
-            flattenedRow[key] = row[key].Value; // Add the value to the flattened row
-            mismatchData[key] = row[key].Mismatch; // Keep mismatch information
-          });
-
-          flattenedRow.MismatchData = mismatchData; // Add mismatch info as a separate field
-          return flattenedRow;
-        });
-        if (updatedDatas.length !== 0) {
-          const newDataKeys = Object.keys(updatedDatas[0])
-            .filter((key) => key !== "MismatchData") // Exclude 'MismatchData' key
-            .map((key) => {
-              return key.endsWith(".") ? key.slice(0, -1) : key; // Remove trailing '.'
+            Object.keys(row).forEach((key) => {
+              flattenedRow[key] = row[key].Value; // Add the value to the flattened row
+              mismatchData[key] = row[key].Mismatch; // Keep mismatch information
             });
-          console.log(newDataKeys);
-          setHeadData(["Serial No", ...newDataKeys]);
 
-          let updatedData = updatedDatas.map((item) => {
-            const newItem = {};
-            for (const key in item) {
-              const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
-              newItem[newKey] = item[key];
-            }
-            newItem["Serial No"] = num++;
-            return newItem;
+            flattenedRow.MismatchData = mismatchData; // Add mismatch info as a separate field
+            return flattenedRow;
           });
+          if (updatedDatas.length !== 0) {
+            const newDataKeys = Object.keys(updatedDatas[0])
+              .filter((key) => key !== "MismatchData") // Exclude 'MismatchData' key
+              .map((key) => {
+                return key.endsWith(".") ? key.slice(0, -1) : key; // Remove trailing '.'
+              });
+            console.log(newDataKeys);
+            setHeadData(["Serial No", ...newDataKeys]);
 
-          setProcessedData((prevData) => {
-            const combinedData = [...prevData, ...updatedData];
-            const lastSlNo = combinedData[combinedData.length - 1]["Serial No"];
-            localStorage.setItem("lastSerialNo", JSON.stringify(lastSlNo));
-            if (combinedData.length > 100) {
-              return combinedData.slice(-100);
+            let updatedData = updatedDatas.map((item) => {
+              const newItem = {};
+              for (const key in item) {
+                const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+                newItem[newKey] = item[key];
+              }
+              newItem["Serial No"] = num++;
+              return newItem;
+            });
+
+            setProcessedData((prevData) => {
+              const combinedData = [...prevData, ...updatedData];
+              const lastSlNo =
+                combinedData[combinedData.length - 1]["Serial No"];
+              localStorage.setItem("lastSerialNo", JSON.stringify(lastSlNo));
+              if (combinedData.length > 100) {
+                return combinedData.slice(-100);
+              }
+              return combinedData;
+            });
+            if (gridRef) {
+              gridRef?.current?.refresh();
             }
-            return combinedData;
-          });
-          if (gridRef) {
-            gridRef?.current?.refresh();
           }
         }
-      }
-      // setMessage(event.data); // Update state with the received message
-    };
+        // setMessage(event.data); // Update state with the received message
+      };
 
-    // Event listener for errors
-    socket.onerror = (err) => {
-      console.error("WebSocket error:", err);
-      // setError("An error occurred with the WebSocket connection.");
-    };
+      // Event listener for errors
+      socket.onerror = (err) => {
+        console.error("WebSocket error:", err);
+        // setError("An error occurred with the WebSocket connection.");
+      };
 
-    // Event listener for when the WebSocket connection is closed
-    socket.onclose = () => {
-      console.log("WebSocket connection closed.");
-    };
+      // Event listener for when the WebSocket connection is closed
+      socket.onclose = () => {
+        console.log("WebSocket connection closed.");
+      };
 
-    // Cleanup the WebSocket connection when the component unmounts
-    return () => {
-      socket.close();
-      console.log("WebSocket connection closed on component unmount.");
-    };
-  }, []);
+      // Cleanup the WebSocket connection when the component unmounts
+      return () => {
+        socket.close();
+        console.log("WebSocket connection closed on component unmount.");
+      };
+    }
+  }, [socketBaseUrl]);
+
   useEffect(() => {
     const gridContainer = gridRef.current?.element?.querySelector(".e-content");
 
@@ -223,6 +234,7 @@ const AdminScanJob = () => {
       // };
     }
   }, [gridRef]);
+
   useEffect(() => {
     // serialRef.current.value = num;
   }, [serialRef]);
@@ -259,166 +271,15 @@ const AdminScanJob = () => {
   }, []);
 
   useEffect(() => {
-    // if (!location.state) {
-    //   navigate("/admin/job-queue", { replace: true });
-    //   return;
-    // }
-    // const { templateId } = location?.state;
     const localTemplateId = localStorage.getItem("scantemplateId");
     const templateName = localStorage.getItem("templateName");
-    // if (templateId) {
-    //   setSelectedValue(templateId);
-    // }
+
     if (localTemplateId) {
       setSelectedValue(localTemplateId);
       setTemplateName(templateName);
     }
   }, [location]);
-  // useEffect(() => {
-  //     const interval = setInterval(() => {
-  //         setItems(prevItems => {
-  //             const nextIndex = prevItems.length;
-  //             if (nextIndex < data.length) {
-  //                 return [...prevItems, data[nextIndex]];
-  //             } else {
-  //                 clearInterval(interval);
-  //                 return prevItems;
-  //             }
-  //         });
-  //     }, 1000);
 
-  //     return () => clearInterval(interval); // Cleanup on unmount
-  // }, [data]);
-
-  //
-  //     const decoded = jwtDecode(token);
-  //     if (decoded.Role === "Operator") {
-  //       setToolbar([
-  //         "Add",
-  //         "Edit",
-  //         "Delete",
-  //         "Update",
-  //         "Cancel",
-  //         "ExcelExport",
-  //         "CsvExport",
-  //       ]);
-  //       setServices([Sort, Toolbar, ExcelExport, Filter, Edit]);
-  //     } else {
-  //       setToolbar(["ExcelExport", "CsvExport"]);
-  //       setServices([Sort, Toolbar, ExcelExport, Filter]);
-  //     }
-  //   }, []);
-  // const getScanData = async () => {
-  //   try {
-  //     const token = localStorage.getItem("token");
-
-  //     const userInfo = jwtDecode(token);
-  //     console.log(userInfo);
-
-  //     const userId = userInfo.UserId;
-  //     // Fetch data based on selected value ID
-  //     // const response = await getUrls();
-  //     // console.log(response)
-  //     // const GetDataURL =  response.GET_PROCESS_32_PAG_DATA;
-  //     // console.log(GetDataURL)
-  //     const res = await axios.get(
-  //       proccessUrl + `?Id=${selectedValue}&UserId=${userId}`
-  //     );
-
-  //     const data = res.data;
-  //     // fetchProcessData(selectedValue, userId);
-  //     console.log(data);
-
-  //     // Check if the data fetch was successful
-  //     if (data?.result?.success) {
-  //       // Extract keys from the first item in the data array
-  //       const newDataKeys = Object.keys(data.result.data[0]).map((key) => {
-  //         return key.endsWith(".") ? key.slice(0, -1) : key;
-  //       });
-
-  //       // Add a serial number to each entry
-  //       let num = 1;
-  //       const updatedData = data.result.data.map((item) => {
-  //         const newItem = {};
-
-  //         // Iterate over the keys of the item
-  //         for (const key in item) {
-  //           // Check if the key ends with a dot
-  //           const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
-  //           // Assign the value to the new key in newItem
-  //           newItem[newKey] = item[key];
-  //         }
-
-  //         // Add the Serial No property
-  //         newItem["Serial No"] = num++;
-  //         return newItem;
-  //       });
-
-  //       // Set headData with the new keys, ensuring "Serial No" is included as a heading
-  //       setHeadData(["Serial No", ...newDataKeys]);
-
-  //       // Update the data state with the fetched data
-  //       setProcessedData(updatedData);
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     // toast.error("Something went wrong");
-
-  //     // Set scanning to false in case of error
-  //     // setScanning(false);
-  //   }
-  // };
-  console.log(headData);
-  useEffect(() => {
-    // console.log(jsonDataProcessed.Data);
-    const data = jsonDataProcessed.Data;
-    // setOriginalData(data);
-    const updatedDatas = data.map((row) => {
-      const flattenedRow = {};
-      const mismatchData = {};
-
-      Object.keys(row).forEach((key) => {
-        flattenedRow[key] = row[key].Value; // Add the value to the flattened row
-        mismatchData[key] = row[key].Mismatch; // Keep mismatch information
-      });
-
-      flattenedRow.MismatchData = mismatchData; // Add mismatch info as a separate field
-      return flattenedRow;
-    });
-    if (updatedDatas.length !== 0) {
-      const newDataKeys = Object.keys(updatedDatas[0])
-        .filter((key) => key !== "MismatchData") // Exclude 'MismatchData' key
-        .map((key) => {
-          return key.endsWith(".") ? key.slice(0, -1) : key; // Remove trailing '.'
-        });
-      console.log(newDataKeys);
-      setHeadData(["Serial No", ...newDataKeys]);
-
-      let updatedData = updatedDatas.map((item) => {
-        const newItem = {};
-        for (const key in item) {
-          const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
-          newItem[newKey] = item[key];
-        }
-        newItem["Serial No"] = num++;
-        return newItem;
-      });
-
-      setProcessedData((prevData) => {
-        const combinedData = [...prevData, ...updatedData];
-        const lastSlNo = combinedData[combinedData.length - 1]["Serial No"];
-        localStorage.setItem("lastSerialNo", JSON.stringify(lastSlNo));
-        if (combinedData.length > 100) {
-          return combinedData.slice(-100);
-        }
-        return combinedData;
-      });
-      if (gridRef) {
-        gridRef?.current?.refresh();
-      }
-    }
-    // jsonDataProcessed;
-  }, []);
   const handleScroll = async (e) => {
     const scrollTop = e.target.scrollTop;
     console.log("Scroll event triggered. ScrollTop:", scrollTop);
