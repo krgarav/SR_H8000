@@ -1,4 +1,3 @@
-
 import {
   Card,
   CardHeader,
@@ -56,8 +55,8 @@ const Jobs = () => {
         if (response.result !== null) {
           setAllJobs(response.result);
         }
-        if(response.result === null){
-          setAllJobs([])
+        if (response.result === null) {
+          setAllJobs([]);
         }
         setLoading(false);
       }
@@ -192,7 +191,7 @@ const Jobs = () => {
               <div style={{ height: "70vh", overflow: "auto" }}>
                 <Table
                   className="align-items-center table-flush mb-5"
-                  responsive
+                  // responsive
                 >
                   <thead className="thead-light">
                     <tr>
@@ -204,11 +203,7 @@ const Jobs = () => {
                       <th scope="col"></th>
                     </tr>
                   </thead>
-                  <tbody
-                    style={{
-                      overflow: "auto",
-                    }}
-                  >
+                  <tbody>
                     {loading ? placeHolderJobs : ALLJOBS}
 
                     {ALLJOBS.length === 0 && (

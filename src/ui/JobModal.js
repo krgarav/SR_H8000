@@ -42,16 +42,17 @@ const JobModal = (props) => {
   const [imageDpi, setImageDpi] = useState("");
   const [imageColor, setImageColor] = useState("");
   const [selectedDataDirectory, setSelectedDataDirectory] = useState("");
+  const [selectedSecondDataDirectory, setSelectedSecondDataDirectory] =
+    useState("");
   const [selectedImageDirectory, setSelectedImageDirectory] = useState("");
   const [directoryPickerModal, setDirectoryPickerModal] = useState(false);
   const [jobName, setJobName] = useState("");
   const [dataName, setDataName] = useState("");
+  const [secondDataName, setSecondDataName] = useState("");
   const [imageName, setImageName] = useState("");
   const [currentDirState, setCurrentDirState] = useState("data");
   const [showSecondSensitivity, setShowSeconodSensitivity] = useState(false);
-  const generateUUID = () => {
-    return uuidv4();
-  };
+
   const changeHandler = (val) => {
     // if (!selectedDataDirectory && val === true) {
     //   toast.error("Please select data directory first");
@@ -185,6 +186,8 @@ const JobModal = (props) => {
     // }
     if (currentDirState === "image") {
       setSelectedImageDirectory(directory);
+    } else if (currentDirState === "data2") {
+      setSelectedSecondDataDirectory(directory);
     } else {
       setSelectedDataDirectory(directory);
     }
@@ -197,7 +200,7 @@ const JobModal = (props) => {
       <Modal
         show={modalShow}
         onHide={props.onHide}
-        size="lg"
+        size="xl"
         aria-labelledby="modal-custom-navbar"
         centered
         dialogClassName="modal-90w"
@@ -230,7 +233,7 @@ const JobModal = (props) => {
           <Row className="mb-1">
             <label
               htmlFor="example-text-input"
-              className="col-md-2 "
+              className="col-md-2 col-form-label "
               style={{ fontSize: ".9rem" }}
             >
               Select Template:
@@ -249,7 +252,7 @@ const JobModal = (props) => {
             {/* <div className="col-md-10"> */}
             <label
               htmlFor="example-text-input"
-              className="col-md-2 "
+              className="col-md-2 col-form-label"
               style={{ fontSize: ".9rem" }}
             >
               Secondary Sensitivity:
@@ -300,56 +303,281 @@ const JobModal = (props) => {
               </div>
             </Row>
           )}
-          <Row className="mb-2">
-            <label
-              htmlFor="example-text-input"
-              className="col-md-2  "
-              style={{ fontSize: ".9rem" }}
+
+          {showSecondSensitivity && (
+            <>
+              <Row className="mb-2">
+                <label
+                  htmlFor="example-text-input"
+                  className="col-md-2 col-form-label  "
+                  style={{ fontSize: ".9rem" }}
+                >
+                  First Data File Name:
+                </label>
+                <div className="col-md-4">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter the name of data file"
+                    value={dataName}
+                    onChange={(e) => setDataName(e.target.value)}
+                  />
+                </div>
+                <label
+                  htmlFor="example-text-input"
+                  className="col-md-2  "
+                  style={{ fontSize: ".9rem" }}
+                >
+                  Second Data File Name:
+                </label>
+                <div className="col-md-4">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter the name of data file"
+                    value={secondDataName}
+                    onChange={(e) => setSecondDataName(e.target.value)}
+                  />
+                </div>
+              </Row>
+              <Row className="mb-3">
+                <label
+                  htmlFor="example-text-input"
+                  className="col-md-2  col-form-label"
+                  style={{ fontSize: ".9rem" }}
+                >
+                  First Data Path:
+                </label>
+
+                {/* {selectedDataDirectory && ( */}
+                <div className="col-md-4 d-flex ">
+                  <input
+                    type="text"
+                    disabled
+                    value={selectedDataDirectory}
+                    className="form-control"
+                    placeholder="No data path selected"
+                    onChange={(e) => setDataPath(e.target.value)}
+                  />
+                  <Button
+                    variant="info"
+                    onClick={() => {
+                      setCurrentDirState("data");
+                      setDirectoryPickerModal(true);
+                    }}
+                    // style={{ height: "70%" }}
+                  >
+                    Directory
+                  </Button>
+                </div>
+                {/* )} */}
+
+                <label
+                  htmlFor="example-text-input"
+                  className="col-md-2  col-form-label"
+                  style={{ fontSize: ".9rem" }}
+                >
+                  Second Data Path:
+                </label>
+                {/* {selectedDataDirectory && ( */}
+                <div className="col-md-4 d-flex">
+                  <input
+                    style={{ width: "70%" }}
+                    type="text"
+                    disabled
+                    value={selectedSecondDataDirectory}
+                    className="form-control"
+                    placeholder="No data path selected"
+                    ref={(input) => {
+                      if (input) {
+                        input.scrollLeft = input.scrollWidth; // Scroll to the end of the input
+                      }
+                    }}
+                    // onChange={(e) => setDataPath(e.target.value)}
+                  />
+                  <Button
+                    variant="info"
+                    onClick={() => {
+                      setCurrentDirState("data2");
+                      setDirectoryPickerModal(true);
+                    }}
+                    // style={{ height: "70%" }}
+                  >
+                    Directory
+                  </Button>
+
+                  {/* <button
+                    onClick={() => {
+                      setCurrentDirState("data2");
+                      setDirectoryPickerModal(true);
+                    }}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      padding: "0.1rem 0.4rem",
+                      backgroundColor: "#e5e7eb", // Tailwind's bg-gray-200
+                      color: "#111827", // Tailwind's text-gray-900
+                      borderRadius: "0.375rem", // Tailwind's rounded-md
+                      border: "1px solid #d1d5db", // Tailwind's border-gray-300
+                      boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)", // Tailwind's shadow-sm
+                      cursor: "pointer",
+                      fontSize: "0.775rem", // Tailwind's text-sm
+                      fontWeight: "500",
+                      width:"30%",
+                      transition: "all 0.2s ease-in-out",
+                    }}
+                    onMouseOver={(e) => {
+                      e.target.style.backgroundColor = "#d1d5db"; // Tailwind's hover:bg-gray-300
+                      e.target.style.borderColor = "#9ca3af"; // Tailwind's hover:border-gray-400
+                    }}
+                    onMouseOut={(e) => {
+                      e.target.style.backgroundColor = "#e5e7eb"; // Reset to bg-gray-200
+                      e.target.style.borderColor = "#d1d5db"; // Reset to border-gray-300
+                    }}
+                  >
+                    Choose Directory
+                  </button> */}
+                </div>
+                {/* )} */}
+                {/* <div
+                  className={selectedDataDirectory ? "col-md-3" : "col-md-4"}
+                >
+                  <Button
+                    variant="info"
+                    onClick={() => {
+                      setCurrentDirState("data");
+                      setDirectoryPickerModal(true);
+                    }}
+                  >
+                    Choose Directory
+                  </Button>
+                </div> */}
+              </Row>
+            </>
+          )}
+          {/* <Row>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: ".5rem",
+              }}
             >
-              Data File Name :
-            </label>
-            <div className="col-md-10">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Enter the name of data file"
-                value={dataName}
-                onChange={(e) => setDataName(e.target.value)}
-              />
-            </div>
-          </Row>
-          <Row className="mb-3">
-            <label
-              htmlFor="example-text-input"
-              className="col-md-2  col-form-label"
-              style={{ fontSize: ".9rem" }}
-            >
-              Data Path:
-            </label>
-            {selectedDataDirectory && (
-              <div className="col-md-7">
-                <input
-                  type="text"
-                  disabled
-                  value={selectedDataDirectory}
-                  className="form-control"
-                  placeholder="Enter the data path"
-                  onChange={(e) => setDataPath(e.target.value)}
-                />
-              </div>
-            )}
-            <div className={selectedDataDirectory ? "col-md-3" : "col-md-4"}>
-              <Button
-                variant="info"
-                onClick={() => {
-                  setCurrentDirState("data");
-                  setDirectoryPickerModal(true);
+              <button
+                // onClick={handleDirectoryChange}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  padding: "0.5rem 1rem",
+                  backgroundColor: "#e5e7eb", // Tailwind's bg-gray-200
+                  color: "#111827", // Tailwind's text-gray-900
+                  borderRadius: "0.375rem", // Tailwind's rounded-md
+                  border: "1px solid #d1d5db", // Tailwind's border-gray-300
+                  boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)", // Tailwind's shadow-sm
+                  cursor: "pointer",
+                  fontSize: "0.875rem", // Tailwind's text-sm
+                  fontWeight: "500",
+                  transition: "all 0.2s ease-in-out",
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = "#d1d5db"; // Tailwind's hover:bg-gray-300
+                  e.target.style.borderColor = "#9ca3af"; // Tailwind's hover:border-gray-400
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = "#e5e7eb"; // Reset to bg-gray-200
+                  e.target.style.borderColor = "#d1d5db"; // Reset to border-gray-300
                 }}
               >
-                Select Directory
-              </Button>
+                Choose Directory
+              </button>
+              <input
+                // value={directoryPath}
+                readOnly
+                style={{
+                  flex: "1",
+                  padding: "0.5rem",
+                  border: "1px solid #d1d5db", // Tailwind's border-gray-300
+                  borderRadius: "0.5rem",
+                  boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)", // Tailwind's shadow-sm
+                  outline: "none",
+                  transition: "border-color 0.2s, box-shadow 0.2s",
+                }}
+                placeholder="Selected directory will appear here"
+                onFocus={(e) => {
+                  e.target.style.borderColor = "#3b82f6"; // Tailwind's focus:border-blue-500
+                  e.target.style.boxShadow =
+                    "0 0 0 2px rgba(59, 130, 246, 0.5)"; // Tailwind's focus:ring-2 focus:ring-blue-300
+                }}
+              />
             </div>
-          </Row>
+          </Row> */}
+          {!showSecondSensitivity && (
+            <>
+              <Row className="mb-2">
+                <label
+                  htmlFor="example-text-input"
+                  className="col-md-2  "
+                  style={{ fontSize: ".9rem" }}
+                >
+                  Data File Name :
+                </label>
+                <div className="col-md-10">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter the name of data file"
+                    value={dataName}
+                    onChange={(e) => setDataName(e.target.value)}
+                  />
+                </div>
+              </Row>
+              <Row className="mb-3">
+                <label
+                  htmlFor="example-text-input"
+                  className="col-md-2  col-form-label"
+                  style={{ fontSize: ".9rem" }}
+                >
+                  Data Path:
+                </label>
+                {/* {selectedDataDirectory && ( */}
+                <div className="d-flex gap-2 col-md-10">
+                  <input
+                    style={{ width: "80%", marginRight: "2px" }}
+                    type="text"
+                    disabled
+                    value={selectedDataDirectory}
+                    className="form-control"
+                    placeholder="No data path selected"
+                    onChange={(e) => setDataPath(e.target.value)}
+                  />
+                  <Button
+                    style={{ width: "20%" }}
+                    variant="info"
+                    onClick={() => {
+                      setCurrentDirState("data");
+                      setDirectoryPickerModal(true);
+                    }}
+                  >
+                    Choose Directory
+                  </Button>
+                </div>
+                {/* )} */}
+                {/* <div
+                  className={selectedDataDirectory ? "col-md-3" : "col-md-4"}
+                >
+                  <Button
+                    variant="info"
+                    onClick={() => {
+                      setCurrentDirState("data");
+                      setDirectoryPickerModal(true);
+                    }}
+                  >
+                    Choose Directory
+                  </Button>
+                </div> */}
+              </Row>
+            </>
+          )}
           <Row className="mb-2">
             <label
               htmlFor="example-text-input"
@@ -429,7 +657,7 @@ const JobModal = (props) => {
                       setDirectoryPickerModal(true);
                     }}
                   >
-                    Select Directory
+                    Choose Directory
                   </Button>
                 </div>
               </Row>
@@ -575,7 +803,7 @@ const JobModal = (props) => {
         keyboard={false}
       >
         <Modal.Header>
-          <Modal.Title id="modal-custom-navbar">Select Directory</Modal.Title>
+          <Modal.Title id="modal-custom-navbar">Choose Directory</Modal.Title>
         </Modal.Header>
 
         <Modal.Body style={{ height: "65dvh" }}>
