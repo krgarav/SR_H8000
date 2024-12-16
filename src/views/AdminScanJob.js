@@ -72,8 +72,9 @@ const AdminScanJob = () => {
   const [originalData, setOriginalData] = useState([]);
   const [lastSerialNo, setLastSerialNo] = useState(null);
   const [socketBaseUrl, setSocketBaseUrl] = useState(null);
+  const [isSecondSensitivity, setIsSecondSensitivity] = useState(false);
   const template = emptyMessageTemplate;
-
+  console.log(isSecondSensitivity);
   const location = useLocation();
 
   const serialRef = useRef();
@@ -228,6 +229,17 @@ const AdminScanJob = () => {
   }, [socketBaseUrl]);
 
   useEffect(() => {
+    const secondSensitivity = localStorage.getItem("secondSensitivity");
+    if (secondSensitivity === 0) {
+      console.log("else called");
+      setIsSecondSensitivity(false);
+    } else if (secondSensitivity > 0) {
+      setIsSecondSensitivity(true);
+      console.log("else called");
+    }
+  }, []);
+
+  useEffect(() => {
     const gridContainer = gridRef.current?.element?.querySelector(".e-content");
 
     console.log("Grid container:", gridContainer); // Check if this logs a valid DOM element
@@ -244,17 +256,21 @@ const AdminScanJob = () => {
   }, [gridRef]);
 
   useEffect(() => {
-    // serialRef.current.value = num;
-  }, [serialRef]);
-  useEffect(() => {
     // Function to calculate 80% of the viewport height
     const calculateGridHeight = () => {
-      const height = window.innerHeight * 0.65; // 80% of viewport height
+      const height = window.innerHeight * 0.65;
       setGridHeight(`${height}px`);
     };
-
-    // Call the function to set initial height
-    calculateGridHeight();
+    const calculateDoubleGridHeight = () => {
+      const height = window.innerHeight * 0.35;
+      setGridHeight(`${height}px`);
+    };
+    const secondSensitivity = localStorage.getItem("secondSensitivity");
+    if (secondSensitivity === "0") {
+      calculateGridHeight();
+    } else {
+      calculateDoubleGridHeight();
+    }
 
     // Update height when the window is resized
     window.addEventListener("resize", calculateGridHeight);
@@ -263,7 +279,7 @@ const AdminScanJob = () => {
     return () => {
       window.removeEventListener("resize", calculateGridHeight);
     };
-  }, []); // Empty dependency array to run only once and on resize
+  }, [isSecondSensitivity]); // Empty dependency array to run only once and on resize
   useEffect(() => {
     const fetchData = async () => {
       const response = await getUrls();
@@ -867,6 +883,33 @@ const AdminScanJob = () => {
             <ColumnsDirective>{columnsDirective}</ColumnsDirective>
             <Inject services={[VirtualScroll]} />
           </GridComponent>
+
+          {isSecondSensitivity && (
+            <GridComponent
+              // ref={gridRef}
+              dataBound={dataBound}
+              actionComplete={handleSave}
+              dataSource={processedData}
+              height={gridHeight}
+              allowSorting={false}
+              editSettings={editSettings}
+              allowFiltering={false}
+              filterSettings={filterSettings}
+              // toolbar={toolbar}
+              enableVirtualization={isAutoScrollEnabled}
+              toolbarClick={handleToolbarClick}
+              allowExcelExport={true}
+              allowPdfExport={false}
+              allowEditing={false}
+              emptyRecordTemplate={template.bind(this)}
+              rowDataBound={rowDataBound}
+              queryCellInfo={queryCellInfo}
+            >
+              <ColumnsDirective>{columnsDirective}</ColumnsDirective>
+              <Inject services={[VirtualScroll]} />
+            </GridComponent>
+          )}
+
           <div>
             <Button
               className="mt-2"

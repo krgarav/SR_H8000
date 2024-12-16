@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Modal, Button, Nav, Form, Tab, Row, Col } from "react-bootstrap";
-import TemplateModal from "./TemplateModal";
+import TemplateModal from "../modals/TemplateModal";
 import Jobcard from "./Jobcard";
-import BookletTemplateModal from "./BookletTemplateModal";
+import BookletTemplateModal from "../modals/BookletModal/BookletTemplateModal";
 
 const BookletModal = (props) => {
   const [modalShow, setModalShow] = useState(false);
   const [bookletModalShow, setBookletModalShow] = useState(false);
   const [simplexModalShow, setSimplexModalShow] = useState(false);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
   useEffect(() => {
     if (props.show) {
       setModalShow(true);
@@ -16,11 +17,12 @@ const BookletModal = (props) => {
     }
   }, [props.show]);
   const handleJob = (text) => {
-    if (text === "Simplex") {
-      setSimplexModalShow(true);
-    } else if (text === "Booklet") {
-      setBookletModalShow(true);
-    }
+    // if (text === "Simplex") {
+    //   setSimplexModalShow(true);
+    // } else if (text === "Booklet") {
+    //   setBookletModalShow(true);
+    // }
+    setShowTemplateModal(true);
   };
   return (
     <>
@@ -64,21 +66,21 @@ const BookletModal = (props) => {
           </Button>
         </Modal.Footer>
       </Modal>
-      {simplexModalShow && (
+      {showTemplateModal && (
         <TemplateModal
-          show={simplexModalShow}
-          onHide={() => setSimplexModalShow(false)}
-           title = "SIMPLEX"
+          show={showTemplateModal}
+          onHide={() => setShowTemplateModal(false)}
+          title={simplexModalShow ? "SIMPLEX" : "BOOKLET"}
         />
       )}
 
-      {bookletModalShow && (
+      {/* {bookletModalShow && (
         <BookletTemplateModal
           show={bookletModalShow}
           onHide={() => setBookletModalShow(false)}
-          title = "BOOKLET"
+          title="BOOKLET"
         />
-      )}
+      )} */}
     </>
   );
 };

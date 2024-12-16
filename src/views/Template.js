@@ -16,7 +16,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DataContext from "store/DataContext";
 import axios from "axios";
-import TemplateModal from "../ui/TemplateModal";
+import TemplateModal from "../modals/TemplateModal";
 import { fetchAllTemplate } from "helper/TemplateHelper";
 import { deleteTemplate } from "helper/TemplateHelper";
 import CryptoJS from "crypto-js";
@@ -30,17 +30,6 @@ import Placeholder from "ui/Placeholder";
 import CloneTemplateHandler from "services/CloneTemplate";
 import BookletModal from "ui/BookletModal";
 
-const base64ToFile = (base64, filename) => {
-  const byteString = atob(base64.split(",")[1]);
-  const mimeString = base64.split(",")[0].split(":")[1].split(";")[0];
-  const ab = new ArrayBuffer(byteString.length);
-  const ia = new Uint8Array(ab);
-  for (let i = 0; i < byteString.length; i++) {
-    ia[i] = byteString.charCodeAt(i);
-  }
-  const blob = new Blob([ab], { type: mimeString });
-  return new File([blob], filename, { type: mimeString });
-};
 const Template = () => {
   const [modalShow, setModalShow] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -48,32 +37,45 @@ const Template = () => {
   const [toggle, setToggle] = useState(false);
   const [loading, setLoading] = useState(false);
   const [templateLoading, setTemplateLoading] = useState(false);
+
   const navigate = useNavigate();
   const dataCtx = useContext(DataContext);
+
   useEffect(() => {
     sessionStorage.clear();
   }, []);
+
   useEffect(() => {
-    const fetchData = async () => {
-      setTemplateLoading(true);
-      const templates = await fetchAllTemplate();
-      console.log(templates);
-      if (templates === undefined) {
-        toast.error("Error fetching templates");
-        setTemplateLoading(false);
+    const fetchTemplates = async () => {
+      try {
+        setTemplateLoading(true);
+
+        // Fetch all templates
+        const templates = await fetchAllTemplate();
+        if (!templates) {
+          throw new Error("Error fetching templates");
+        }
+
+        // Transform the templates into the desired format
+        const formattedTemplates = templates.map((item) => [
+          { layoutParameters: item },
+        ]);
+
+        // Update the context with the formatted templates
+        dataCtx.addToAllTemplate(formattedTemplates);
+      } catch (error) {
+        // Display an error toast if fetching templates fails
+        toast.error(error.message || "Failed to fetch templates.");
+      } finally {
+        setTemplateLoading(false); // Ensure loading state is reset
       }
-      const mpObj = templates?.map((item) => {
-        return [{ layoutParameters: item }];
-      });
-      dataCtx.addToAllTemplate(mpObj);
-      setTemplateLoading(false);
     };
-    fetchData();
-  }, [toggle]);
+
+    fetchTemplates();
+  }, [toggle]); // Re-run the effect when `toggle` changes
 
   const duplicateHandler = (arr) => {
     setShowDetailModal(true);
-    console.log(arr);
     setTemplateDetail(arr);
   };
   const cloneHandler = async (arr) => {
@@ -92,65 +94,64 @@ const Template = () => {
     setShowDetailModal(false);
   };
   const handleRowClick = (rowData, index) => {};
+
   const editHandler = async (arr, index) => {
-    setLoading(true);
-    const tempdata = arr[0].layoutParameters;
-    const templateId = tempdata.id;
-    const res = await getLayoutDataById(templateId);
-    const templateFile = res.templateFiles.slice(-3);
+    try {
+      setLoading(true);
 
-    if (templateFile.length < 3) {
-      alert("No images found in this template.Cannot Open the template.");
+      const tempData = arr[0]?.layoutParameters;
+      if (!tempData) {
+        throw new Error("Invalid template data. Cannot proceed.");
+      }
+
+      const templateId = tempData.id;
+      const res = await getLayoutDataById(templateId);
+
+      if (!res?.templateFiles || res.templateFiles.length < 3) {
+        toast.error(
+          "No images found in this template. Cannot open the template."
+        );
+        return;
+      }
+
+      const [frontImgFile, backImgFile, csvFile] = res.templateFiles.slice(
+        0,
+        3
+      );
+      const csvPath = csvFile?.excelPath;
+      const frontImgPath = frontImgFile?.imagePath;
+      const backImgPath = backImgFile?.imagePath;
+
+      if (!frontImgPath || !backImgPath || !csvPath) {
+        toast.error(
+          "Required files are missing in this template. Cannot open the template."
+        );
+        return;
+      }
+
+      const [frontImg, backImg, csvData] = await Promise.all([
+        getTemplateImage(frontImgPath),
+        getTemplateImage(backImgPath),
+        getTemplateCsv(csvPath),
+      ]);
+
+      navigate("/admin/template/edit-template", {
+        state: {
+          templateIndex: index,
+          timingMarks: +tempData.timingMarks,
+          totalColumns: +tempData.totalColumns,
+          templateImagePath: frontImg,
+          templateBackImagePath: backImg,
+          bubbleType: tempData.bubbleType,
+          templateId: tempData.id,
+          excelJsonFile: csvData.data,
+        },
+      });
+    } catch (error) {
+      // toast.error("An error occurred. Cannot open the template.");
+    } finally {
       setLoading(false);
-      return;
     }
-    const csvpath = res?.templateFiles[2].excelPath;
-    const frontImgpath = res?.templateFiles[0].imagePath;
-    const backImgpath = res?.templateFiles[1].imagePath;
-    const res1 = await getTemplateImage(frontImgpath);
-    const res3 = await getTemplateImage(backImgpath);
-
-    if (res3 === undefined) {
-      alert("No back image found in this template.Cannot Open the template. ");
-      setLoading(false);
-      return;
-    }
-    if (res1 === undefined) {
-      alert("No front image found in this template.Cannot Open the template. ");
-      setLoading(false);
-      return;
-    }
-
-    const imgfile = base64ToFile(res1.image, "front.jpg");
-
-    const res2 = await getTemplateCsv(csvpath);
-    if (res2 === undefined) {
-      alert("No CSV found in this template.Cannot Open the template. ");
-      setLoading(false);
-      return;
-    }
-
-    const csvContent = Papa.unparse(res2.data);
-    // Create a Blob from the CSV content
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-
-    // Create a File from the Blob
-    const csvfile = new File([blob], "data.csv", { type: "text/csv" });
-    setLoading(false);
-
-    navigate("/admin/template/edit-template", {
-      state: {
-        templateIndex: index,
-        timingMarks: +tempdata.timingMarks,
-        totalColumns: +tempdata.totalColumns,
-        templateImagePath: res1,
-        templateBackImagePath: res3,
-        bubbleType: tempdata.bubbleType,
-        templateId: tempdata.id,
-        excelJsonFile: res2.data,
-      },
-    });
-    setLoading(false);
   };
 
   const deleteImage = async (imageUrl) => {
@@ -259,6 +260,7 @@ const Template = () => {
       <td>{d[0].layoutParameters.timingMarks}</td>
       <td>{d[0].layoutParameters.totalColumns}</td>
       <td>{d[0].layoutParameters["bubbleType"]}</td>
+      <td>{d[0].layoutParameters["isBooklet"] ? "Duplex" : "Simplex"}</td>
       <td className="text-right">
         <UncontrolledDropdown>
           <DropdownToggle
@@ -332,14 +334,15 @@ const Template = () => {
                     <Spinner />
                   </div>
                 )}
-
-                <Table
-                  className="align-items-center table-flush mb-5 table-hover"
-                  // style={{ width: '100%', tableLayout: 'fixed' }}
-                  // responsive
-                >
-                  <thead className="thead-light" 
-                  style={{ position: 'sticky', top: 0, zIndex: 1,backgroundColor: 'white' }}
+                <Table className="align-items-center table-flush mb-5 table-hover">
+                  <thead
+                    className="thead-light"
+                    style={{
+                      position: "sticky",
+                      top: 0,
+                      zIndex: 1,
+                      backgroundColor: "white",
+                    }}
                   >
                     <tr>
                       <th scope="col">SL no.</th>
@@ -347,7 +350,8 @@ const Template = () => {
                       <th scope="col">Row</th>
                       <th scope="col">Col</th>
                       <th scope="col">Bubble Type</th>
-                      <th scope="col"></th>
+                      <th scope="col">Template Type</th>
+                      <th scope="col">Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -432,6 +436,7 @@ const Template = () => {
                   Bubble Type:
                 </label>
               </Col>
+
               <Col xs={12} md={2}>
                 <input
                   type="text"

@@ -30,9 +30,9 @@ import { useWindowSize } from "react-use";
 import { Button as Muibtn, Tooltip } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
-
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CopyModal from "modals/CopyModal/CopyModal";
+
 // Function to get values from sessionStorage or provide default
 const getSessionStorageOrDefault = (key, defaultValue) => {
   const stored = sessionStorage.getItem(key);
@@ -131,14 +131,14 @@ const EditDesignTemplate = () => {
       state.totalColumns
     ),
     timingMarks: getSessionStorageOrDefault("timingMarks", state.timingMarks),
-    templateImagePath: getSessionStorageOrDefault(
-      "templateImagePath",
-      state.templateImagePath
-    ),
-    templateBackImagePath: getSessionStorageOrDefault(
-      "templateBackImagePath",
-      state.templateBackImagePath
-    ),
+    // templateImagePath: getSessionStorageOrDefault(
+    //   "templateImagePath",
+    //   state.templateImagePath
+    // ),
+    // templateBackImagePath: getSessionStorageOrDefault(
+    //   "templateBackImagePath",
+    //   state.templateBackImagePath
+    // ),
     bubbleType: getSessionStorageOrDefault("bubbleType", state.bubbleType),
     templateIndex: getSessionStorageOrDefault(
       "templateIndex",
@@ -233,14 +233,14 @@ const EditDesignTemplate = () => {
     if (location.state) {
       sessionStorage.setItem("totalColumns", state.totalColumns);
       sessionStorage.setItem("timingMarks", JSON.stringify(state.timingMarks));
-      sessionStorage.setItem(
-        "templateImagePath",
-        JSON.stringify(state.templateImagePath)
-      );
-      sessionStorage.setItem(
-        "templateBackImagePath",
-        JSON.stringify(state.templateBackImagePath)
-      );
+      // sessionStorage.setItem(
+      //   "templateImagePath",
+      //   JSON.stringify(state.templateImagePath)
+      // );
+      // sessionStorage.setItem(
+      //   "templateBackImagePath",
+      //   JSON.stringify(state.templateBackImagePath)
+      // );
       sessionStorage.setItem("bubbleType", JSON.stringify(state.bubbleType));
       sessionStorage.setItem("templateIndex", state.templateIndex);
       sessionStorage.setItem("templateId", JSON.stringify(state.templateId));

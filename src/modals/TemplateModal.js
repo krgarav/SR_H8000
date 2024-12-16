@@ -39,14 +39,14 @@ import {
 import DataContext from "store/DataContext";
 import Select, { components } from "react-select";
 import { useNavigate } from "react-router-dom";
-import ShadesOfGrey from "./shadesOfGrey";
+import ShadesOfGrey from "../ui/shadesOfGrey";
 import { MultiSelect } from "react-multi-select-component";
 import axios from "axios";
-import ImageSelection from "./imageSelection";
+import ImageSelection from "../ui/imageSelection";
 import { getScannedImage } from "helper/TemplateHelper";
 import { toast } from "react-toastify";
-import Jobcard from "./Jobcard";
-import DuplexJob from "./DuplexJob";
+import Jobcard from "../ui/Jobcard";
+import DuplexJob from "../ui/DuplexJob";
 import Papa from "papaparse";
 import { getSampleData } from "helper/TemplateHelper";
 import { v4 as uuidv4 } from "uuid";
@@ -55,8 +55,7 @@ import { imageParamsData } from "data/helperData";
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
 import CustomTooltip from "components/CustomTooltip";
-
-const BookletTemplateModal = (props) => {
+const TemplateModal = (props) => {
   const [modalShow, setModalShow] = useState(false);
   const [name, setName] = useState("");
   const [size, setSize] = useState({ id: 1, name: "A4" });
@@ -119,7 +118,7 @@ const BookletTemplateModal = (props) => {
   });
   const [printOrientation, setPrintOrientation] = useState();
   const [printMode, setPrintMode] = useState();
-  const [printCustom, setPrintCustom] = useState({ id: "date", name: "Date" });
+  const [printCustom, setPrintCustom] = useState(printCustomOption[0]);
   const [startPosition, setStartPosition] = useState(null);
   const [fontSpace, setFontSpace] = useState(null);
   const [printDigit, setPrintDigit] = useState(null);
@@ -144,6 +143,8 @@ const BookletTemplateModal = (props) => {
       setDifference(newValue[1]);
     }
   };
+
+  const handleAdditionalSensitivity = () => {};
   const navigate = useNavigate();
 
   const jobHandler = (e) => {
@@ -1222,17 +1223,6 @@ const BookletTemplateModal = (props) => {
                             >
                               <ShadesOfGrey />
                             </div>
-
-                            {/* <input
-                              type="range"
-                              id="sensitivityRange"
-                              min="1"
-                              max="16"
-                              value={sensitivity}
-                              onChange={(e) => setSensitivity(e.target.value)}
-                              title={sensitivity}
-                              style={{ cursor: "pointer" }}
-                            /> */}
                             <Box
                               sx={{
                                 width: "94%",
@@ -2462,4 +2452,4 @@ const BookletTemplateModal = (props) => {
   );
 };
 
-export default BookletTemplateModal;
+export default TemplateModal;
