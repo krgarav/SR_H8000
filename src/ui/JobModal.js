@@ -51,7 +51,7 @@ const JobModal = (props) => {
   const [secondDataName, setSecondDataName] = useState("");
   const [imageName, setImageName] = useState("");
   const [currentDirState, setCurrentDirState] = useState("data");
-  const [showSecondSensitivity, setShowSeconodSensitivity] = useState(false);
+  const [showSecondSensitivity, setShowSecondSensitivity] = useState(false);
 
   const changeHandler = (val) => {
     // if (!selectedDataDirectory && val === true) {
@@ -161,7 +161,9 @@ const JobModal = (props) => {
       jobName: jobName,
       imageName: imageName,
       dataFileName: dataName,
-      sensitivityValue: +sensitivityValue?.id || 0,
+      secondSensitivity: +sensitivityValue?.id || 0,
+      secondDataPath: selectedSecondDataDirectory,
+      secondDataFileName: secondDataName,
       entryAt: new Date().toISOString(),
     };
     const response = await createJob(jobObj);
@@ -193,7 +195,7 @@ const JobModal = (props) => {
     }
   };
   const secondarySensitivityHandler = (event) => {
-    setShowSeconodSensitivity(event.target.checked);
+    setShowSecondSensitivity(event.target.checked);
   };
   return (
     <>
@@ -249,7 +251,6 @@ const JobModal = (props) => {
                 className="mt-1"
               />
             </div>
-            {/* <div className="col-md-10"> */}
             <label
               htmlFor="example-text-input"
               className="col-md-2 col-form-label"
@@ -259,7 +260,11 @@ const JobModal = (props) => {
             </label>
             <div className="col-md-2 d-flex col-form-label ">
               <label className="custom-toggle  ">
-                <input type="checkbox" onClick={secondarySensitivityHandler} />
+                <input
+                  type="checkbox"
+                  checked={showSecondSensitivity}
+                  onClick={secondarySensitivityHandler}
+                />
                 <span
                   className="custom-toggle-slider rounded-circle"
                   data-label-off="No"
@@ -516,7 +521,7 @@ const JobModal = (props) => {
               <Row className="mb-2">
                 <label
                   htmlFor="example-text-input"
-                  className="col-md-2  "
+                  className="col-md-2 col-form-label "
                   style={{ fontSize: ".9rem" }}
                 >
                   Data File Name :
@@ -635,22 +640,19 @@ const JobModal = (props) => {
                 >
                   Image Path:
                 </label>
-                {selectedImageDirectory && (
-                  <div className="col-md-7">
-                    <input
-                      type="text"
-                      disabled
-                      value={selectedImageDirectory}
-                      className="form-control"
-                      placeholder="Enter the data path"
-                      onChange={(e) => setDataPath(e.target.value)}
-                    />
-                  </div>
-                )}
-                <div
-                  className={selectedImageDirectory ? "col-md-3" : "col-md-4"}
-                >
+
+                <div className="d-flex gap-2 col-md-10">
+                  <input
+                    style={{ width: "80%", marginRight: "2px" }}
+                    type="text"
+                    disabled
+                    value={selectedImageDirectory}
+                    className="form-control"
+                    placeholder="No image path selected"
+                    onChange={(e) => setDataPath(e.target.value)}
+                  />
                   <Button
+                    style={{ width: "20%" }}
                     variant="info"
                     onClick={() => {
                       setCurrentDirState("image");

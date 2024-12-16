@@ -50,13 +50,12 @@ const EditJobModal = (props) => {
   const [currentDirState, setCurrentDirState] = useState("data");
   const [loading, setLoading] = useState(false);
   const [sensitivityValue, setSensitivityValue] = useState("");
+  const [secondDataName, setSecondDataName] = useState("");
+  const [showSecondSensitivity, setShowSecondSensitivity] = useState(false);
+  const [selectedSecondDataDirectory, setSelectedSecondDataDirectory] =
+    useState("");
 
   const changeHandler = (val) => {
-    // if (!selectedDataDirectory && val === true) {
-    //   toast.error("Please select data directory first");
-    //   setImageEnable(false);
-    //   return;
-    // }
     setImageEnable(val);
   };
   useEffect(() => {
@@ -66,19 +65,6 @@ const EditJobModal = (props) => {
       setModalShow(false);
     }
   }, [props.show]);
-
-  // useEffect(() => {
-  //   const getTemplates = async () => {
-  //     const template = await fetchAllTemplate();
-  //     const structuredTemplate = template?.map((item) => ({
-  //       id: item.id,
-  //       name: item.layoutName,
-  //     }));
-
-  //     setAllTemplateOptions(structuredTemplate);
-  //   };
-  //   getTemplates();
-  // }, []);
 
   useEffect(() => {
     const getUsers = async () => {
@@ -95,6 +81,7 @@ const EditJobModal = (props) => {
     };
     getUsers();
   }, []);
+  console.log(showSecondSensitivity);
   useEffect(() => {
     const getData = async () => {
       try {
@@ -111,10 +98,21 @@ const EditJobModal = (props) => {
         setSelectedTemplate(
           comparewithId(structuredTemplate, jobData.templateId)
         );
+        // setShowSecondSensitivity("checked");
+        console.log(res?.result[0]?.secondSensitivity);
+        if (res?.result[0]?.secondSensitivity > 0) {
+          setShowSecondSensitivity(true);
+
+          setSecondDataName(res?.result[0]?.secondDataFileName);
+          setSelectedSecondDataDirectory(res?.result[0]?.secondDataPath);
+        } else {
+          setShowSecondSensitivity(false);
+        }
         setAllTemplateOptions(structuredTemplate);
         setDataName(jobData.dataFileName);
         setSelectedDataDirectory(jobData.dataPath);
         setDataType(comparewithId(fileType, jobData.dataType));
+
         const input = document.getElementById("image-enable-input");
         if (input) {
           if (jobData.imageColor || jobData.imagePath || jobData.imageType) {
@@ -142,6 +140,10 @@ const EditJobModal = (props) => {
     };
     getData();
   }, []);
+
+  const secondarySensitivityHandler = (event) => {
+    setShowSecondSensitivity(event.target.checked);
+  };
   const createTemplateHandler = async () => {
     if (!jobName) {
       toast.error("Please enter job name");
@@ -240,7 +242,7 @@ const EditJobModal = (props) => {
       <Modal
         show={modalShow}
         onHide={props.onHide}
-        size="lg"
+        size="xl"
         aria-labelledby="modal-custom-navbar"
         centered
         dialogClassName="modal-90w"
@@ -291,15 +293,15 @@ const EditJobModal = (props) => {
               />
             </div>
           </Row>
-          <Row className="mb-3">
+          <Row className="mb-1">
             <label
               htmlFor="example-text-input"
-              className="col-md-2 "
+              className="col-md-2 col-form-label "
               style={{ fontSize: ".9rem" }}
             >
               Select Template:
             </label>
-            <div className="col-md-10">
+            <div className="col-md-6 ">
               <Select
                 value={selectedTemplate}
                 onChange={(selectedValue) => setSelectedTemplate(selectedValue)}
@@ -307,7 +309,29 @@ const EditJobModal = (props) => {
                 getOptionLabel={(option) => option?.name || ""}
                 getOptionValue={(option) => option?.id?.toString() || ""}
                 placeholder="Select template..."
+                className="mt-1"
               />
+            </div>
+            <label
+              htmlFor="example-text-input"
+              className="col-md-2 col-form-label"
+              style={{ fontSize: ".9rem" }}
+            >
+              Secondary Sensitivity:
+            </label>
+            <div className="col-md-2 d-flex col-form-label ">
+              <label className="custom-toggle  ">
+                <input
+                  type="checkbox"
+                  checked={showSecondSensitivity}
+                  onClick={secondarySensitivityHandler}
+                />
+                <span
+                  className="custom-toggle-slider rounded-circle"
+                  data-label-off="No"
+                  data-label-on="Yes"
+                ></span>
+              </label>
             </div>
           </Row>
           <Row className="mb-2">
@@ -316,7 +340,7 @@ const EditJobModal = (props) => {
               className="col-md-2"
               style={{ fontSize: ".9rem" }}
             >
-              Secondary Sensitivity:
+              Sensitivity Value:
             </label>
             <div className="col-md-10">
               <Select
@@ -329,56 +353,224 @@ const EditJobModal = (props) => {
               />
             </div>
           </Row>
-          <Row className="mb-2">
-            <label
-              htmlFor="example-text-input"
-              className="col-md-2  "
-              style={{ fontSize: ".9rem" }}
-            >
-              Data File Name :
-            </label>
-            <div className="col-md-10">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Enter the name of data file"
-                value={dataName}
-                onChange={(e) => setDataName(e.target.value)}
-              />
-            </div>
-          </Row>
-          <Row className="mb-3">
-            <label
-              htmlFor="example-text-input"
-              className="col-md-2  col-form-label"
-              style={{ fontSize: ".9rem" }}
-            >
-              Data Path:
-            </label>
-            {selectedDataDirectory && (
-              <div className="col-md-7">
-                <input
-                  type="text"
-                  disabled
-                  value={selectedDataDirectory}
-                  className="form-control"
-                  placeholder="Enter the data path"
-                  onChange={(e) => setDataPath(e.target.value)}
-                />
-              </div>
-            )}
-            <div className={selectedDataDirectory ? "col-md-3" : "col-md-4"}>
-              <Button
-                variant="info"
-                onClick={() => {
-                  setCurrentDirState("data");
-                  setDirectoryPickerModal(true);
-                }}
-              >
-                Select Directory
-              </Button>
-            </div>
-          </Row>
+          {showSecondSensitivity && (
+            <>
+              <Row className="mb-2">
+                <label
+                  htmlFor="example-text-input"
+                  className="col-md-2 col-form-label  "
+                  style={{ fontSize: ".9rem" }}
+                >
+                  First Data File Name:
+                </label>
+                <div className="col-md-4">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter the name of data file"
+                    value={dataName}
+                    onChange={(e) => setDataName(e.target.value)}
+                  />
+                </div>
+                <label
+                  htmlFor="example-text-input"
+                  className="col-md-2  "
+                  style={{ fontSize: ".9rem" }}
+                >
+                  Second Data File Name:
+                </label>
+                <div className="col-md-4">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter the name of data file"
+                    value={secondDataName}
+                    onChange={(e) => setSecondDataName(e.target.value)}
+                  />
+                </div>
+              </Row>
+              <Row className="mb-3">
+                <label
+                  htmlFor="example-text-input"
+                  className="col-md-2  col-form-label"
+                  style={{ fontSize: ".9rem" }}
+                >
+                  First Data Path:
+                </label>
+
+                {/* {selectedDataDirectory && ( */}
+                <div className="col-md-4 d-flex ">
+                  <input
+                    type="text"
+                    disabled
+                    value={selectedDataDirectory}
+                    className="form-control"
+                    placeholder="No data path selected"
+                    onChange={(e) => setDataPath(e.target.value)}
+                  />
+                  <Button
+                    variant="info"
+                    onClick={() => {
+                      setCurrentDirState("data");
+                      setDirectoryPickerModal(true);
+                    }}
+                    // style={{ height: "70%" }}
+                  >
+                    Directory
+                  </Button>
+                </div>
+                {/* )} */}
+
+                <label
+                  htmlFor="example-text-input"
+                  className="col-md-2  col-form-label"
+                  style={{ fontSize: ".9rem" }}
+                >
+                  Second Data Path:
+                </label>
+                {/* {selectedDataDirectory && ( */}
+                <div className="col-md-4 d-flex">
+                  <input
+                    style={{ width: "70%" }}
+                    type="text"
+                    disabled
+                    value={selectedSecondDataDirectory}
+                    className="form-control"
+                    placeholder="No data path selected"
+                    ref={(input) => {
+                      if (input) {
+                        input.scrollLeft = input.scrollWidth; // Scroll to the end of the input
+                      }
+                    }}
+                    // onChange={(e) => setDataPath(e.target.value)}
+                  />
+                  <Button
+                    variant="info"
+                    onClick={() => {
+                      setCurrentDirState("data2");
+                      setDirectoryPickerModal(true);
+                    }}
+                    // style={{ height: "70%" }}
+                  >
+                    Directory
+                  </Button>
+
+                  {/* <button
+                    onClick={() => {
+                      setCurrentDirState("data2");
+                      setDirectoryPickerModal(true);
+                    }}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      padding: "0.1rem 0.4rem",
+                      backgroundColor: "#e5e7eb", // Tailwind's bg-gray-200
+                      color: "#111827", // Tailwind's text-gray-900
+                      borderRadius: "0.375rem", // Tailwind's rounded-md
+                      border: "1px solid #d1d5db", // Tailwind's border-gray-300
+                      boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)", // Tailwind's shadow-sm
+                      cursor: "pointer",
+                      fontSize: "0.775rem", // Tailwind's text-sm
+                      fontWeight: "500",
+                      width:"30%",
+                      transition: "all 0.2s ease-in-out",
+                    }}
+                    onMouseOver={(e) => {
+                      e.target.style.backgroundColor = "#d1d5db"; // Tailwind's hover:bg-gray-300
+                      e.target.style.borderColor = "#9ca3af"; // Tailwind's hover:border-gray-400
+                    }}
+                    onMouseOut={(e) => {
+                      e.target.style.backgroundColor = "#e5e7eb"; // Reset to bg-gray-200
+                      e.target.style.borderColor = "#d1d5db"; // Reset to border-gray-300
+                    }}
+                  >
+                    Choose Directory
+                  </button> */}
+                </div>
+                {/* )} */}
+                {/* <div
+                  className={selectedDataDirectory ? "col-md-3" : "col-md-4"}
+                >
+                  <Button
+                    variant="info"
+                    onClick={() => {
+                      setCurrentDirState("data");
+                      setDirectoryPickerModal(true);
+                    }}
+                  >
+                    Choose Directory
+                  </Button>
+                </div> */}
+              </Row>
+            </>
+          )}
+          {!showSecondSensitivity && (
+            <>
+              <Row className="mb-2">
+                <label
+                  htmlFor="example-text-input"
+                  className="col-md-2 col-form-label "
+                  style={{ fontSize: ".9rem" }}
+                >
+                  Data File Name :
+                </label>
+                <div className="col-md-10">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter the name of data file"
+                    value={dataName}
+                    onChange={(e) => setDataName(e.target.value)}
+                  />
+                </div>
+              </Row>
+              <Row className="mb-3">
+                <label
+                  htmlFor="example-text-input"
+                  className="col-md-2  col-form-label"
+                  style={{ fontSize: ".9rem" }}
+                >
+                  Data Path:
+                </label>
+                {/* {selectedDataDirectory && ( */}
+                <div className="d-flex gap-2 col-md-10">
+                  <input
+                    style={{ width: "80%", marginRight: "2px" }}
+                    type="text"
+                    disabled
+                    value={selectedDataDirectory}
+                    className="form-control"
+                    placeholder="No data path selected"
+                    onChange={(e) => setDataPath(e.target.value)}
+                  />
+                  <Button
+                    style={{ width: "20%" }}
+                    variant="info"
+                    onClick={() => {
+                      setCurrentDirState("data");
+                      setDirectoryPickerModal(true);
+                    }}
+                  >
+                    Choose Directory
+                  </Button>
+                </div>
+                {/* )} */}
+                {/* <div
+                            className={selectedDataDirectory ? "col-md-3" : "col-md-4"}
+                          >
+                            <Button
+                              variant="info"
+                              onClick={() => {
+                                setCurrentDirState("data");
+                                setDirectoryPickerModal(true);
+                              }}
+                            >
+                              Choose Directory
+                            </Button>
+                          </div> */}
+              </Row>
+            </>
+          )}
           <Row className="mb-2">
             <label
               htmlFor="example-text-input"
@@ -424,29 +616,26 @@ const EditJobModal = (props) => {
                 >
                   Image Path:
                 </label>
-                {selectedImageDirectory && (
-                  <div className="col-md-7">
-                    <input
-                      type="text"
-                      disabled
-                      value={selectedImageDirectory}
-                      className="form-control"
-                      placeholder="Enter the data path"
-                      onChange={(e) => setDataPath(e.target.value)}
-                    />
-                  </div>
-                )}
-                <div
-                  className={selectedImageDirectory ? "col-md-3" : "col-md-4"}
-                >
+
+                <div className="d-flex gap-2 col-md-10">
+                  <input
+                    style={{ width: "80%", marginRight: "2px" }}
+                    type="text"
+                    disabled
+                    value={selectedImageDirectory}
+                    className="form-control"
+                    placeholder="No image path selected"
+                    onChange={(e) => setDataPath(e.target.value)}
+                  />
                   <Button
+                    style={{ width: "20%" }}
                     variant="info"
                     onClick={() => {
                       setCurrentDirState("image");
                       setDirectoryPickerModal(true);
                     }}
                   >
-                    Select Directory
+                    Choose Directory
                   </Button>
                 </div>
               </Row>
