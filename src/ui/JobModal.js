@@ -25,7 +25,9 @@ import { jwtDecode } from "jwt-decode";
 import { v4 as uuidv4 } from "uuid";
 import { createJob } from "helper/job_helper";
 import DirectoryPicker from "views/DirectoryPicker";
-
+import ShadesOfGrey from "./shadesOfGrey";
+import { Box, Slider } from "@mui/material";
+import CustomTooltip from "components/CustomTooltip";
 const JobModal = (props) => {
   const [modalShow, setModalShow] = useState(false);
   const [allTemplateOptions, setAllTemplateOptions] = useState([]);
@@ -52,6 +54,9 @@ const JobModal = (props) => {
   const [imageName, setImageName] = useState("");
   const [currentDirState, setCurrentDirState] = useState("data");
   const [showSecondSensitivity, setShowSecondSensitivity] = useState(false);
+  const [sensitivity, setSensitivity] = useState(5);
+  const [difference, setDifference] = useState(8);
+  const [value, setValue] = React.useState([5, 8]);
 
   const changeHandler = (val) => {
     // if (!selectedDataDirectory && val === true) {
@@ -161,7 +166,7 @@ const JobModal = (props) => {
       jobName: jobName,
       imageName: imageName,
       dataFileName: dataName,
-      secondSensitivity: +sensitivityValue?.id || 0,
+      secondSensitivity: +sensitivity || 0,
       secondDataPath: selectedSecondDataDirectory,
       secondDataFileName: secondDataName,
       entryAt: new Date().toISOString(),
@@ -197,12 +202,37 @@ const JobModal = (props) => {
   const secondarySensitivityHandler = (event) => {
     setShowSecondSensitivity(event.target.checked);
   };
+  const getShadeFromValue = (value) => {
+    // Example function to map slider value to a shade
+    const shades = Array.from({ length: 16 }, (_, i) => {
+      const greyValue = Math.floor(255 - i * (255 / 16));
+      return `rgb(${greyValue}, ${greyValue}, ${greyValue})`;
+    });
+    const index = Math.floor((value[0] / 16) * shades.length);
+    return shades[index] || shades[0];
+  };
+  const handleChange = (event, newValue, activeThumb) => {
+    const minDistance = 1;
+    if (!Array.isArray(newValue)) {
+      return;
+    }
+
+    if (activeThumb === 0) {
+      setValue([Math.min(newValue[0], value[1] - minDistance), value[1]]);
+      setSensitivity(newValue[0]);
+      setDifference(newValue[1]);
+    } else {
+      setValue([value[0], Math.max(newValue[1], value[0] + minDistance)]);
+      setSensitivity(newValue[0]);
+      setDifference(newValue[1]);
+    }
+  };
   return (
     <>
       <Modal
         show={modalShow}
         onHide={props.onHide}
-        size="xl"
+        size="lg"
         aria-labelledby="modal-custom-navbar"
         centered
         dialogClassName="modal-90w"
@@ -286,24 +316,78 @@ const JobModal = (props) => {
           </Row>
 
           {showSecondSensitivity && (
-            <Row className="mb-2">
+            <Row className="mb-3">
               <label
                 htmlFor="example-text-input"
-                className="col-md-2"
+                className="col-md-2  "
                 style={{ fontSize: ".9rem" }}
               >
-                Sensitivity Value:
+                Sensitivity Difference Value:
               </label>
-              <div className="col-md-10">
-                <Select
-                  value={sensitivityValue}
-                  onChange={(selectedValue) =>
-                    setSensitivityValue(selectedValue)
-                  }
-                  options={sensitivityType}
-                  getOptionLabel={(option) => option?.name || ""}
-                  getOptionValue={(option) => option?.id?.toString() || ""}
-                  placeholder="Select secondary sensitivity..."
+              <div
+                className="col-md-10"
+                style={{
+                  display: "flex",
+                  gap: "5px",
+                  width: "100%",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    width: "100%",
+                  }}
+                >
+                  <div
+                    style={{
+                      borderRadius: "6px",
+                      overflow: "hidden",
+                      // width: "250%",
+                    }}
+                  >
+                    <ShadesOfGrey width={"28px"} />
+                  </div>
+                  <Box
+                    sx={{
+                      width: "94%",
+                      justifyContent: "center",
+                      alignSelf: "center",
+                    }}
+                  >
+                    <Slider
+                      getAriaLabel={() => "Sensitivity range"}
+                      value={value}
+                      onChange={handleChange}
+                      valueLabelDisplay="auto"
+                      min={1}
+                      max={16}
+                      disableSwap
+                      size="large"
+                      color="PRIMARY"
+                      slots={{
+                        ValueLabel: (props) => (
+                          <CustomTooltip
+                            {...props}
+                            shade={getShadeFromValue(value)} // Pass the shade based on the value
+                          />
+                        ),
+                      }}
+                    />
+                  </Box>
+                </div>
+
+                <input
+                  value={`${sensitivity} - ${difference}`}
+                  onChange={(e) => setSensitivity(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "2px",
+                    textAlign: "center",
+                  }}
+                  className="form-control"
+                  type="text"
+                  disabled
                 />
               </div>
             </Row>
@@ -357,6 +441,7 @@ const JobModal = (props) => {
                 {/* {selectedDataDirectory && ( */}
                 <div className="col-md-4 d-flex ">
                   <input
+                    // style={{ width: "70%" }}
                     type="text"
                     disabled
                     value={selectedDataDirectory}
@@ -370,7 +455,7 @@ const JobModal = (props) => {
                       setCurrentDirState("data");
                       setDirectoryPickerModal(true);
                     }}
-                    // style={{ height: "70%" }}
+                    style={{ height: "70%" }}
                   >
                     Directory
                   </Button>
@@ -406,7 +491,7 @@ const JobModal = (props) => {
                       setCurrentDirState("data2");
                       setDirectoryPickerModal(true);
                     }}
-                    // style={{ height: "70%" }}
+                    style={{ height: "70%" }}
                   >
                     Directory
                   </Button>

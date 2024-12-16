@@ -17,12 +17,13 @@ const BookletModal = (props) => {
     }
   }, [props.show]);
   const handleJob = (text) => {
-    // if (text === "Simplex") {
-    //   setSimplexModalShow(true);
-    // } else if (text === "Booklet") {
-    //   setBookletModalShow(true);
-    // }
-    setShowTemplateModal(true);
+    if (text === "Simplex") {
+      setShowTemplateModal(true);
+      setSimplexModalShow(true);
+    } else if (text === "Booklet") {
+      setShowTemplateModal(true);
+      setSimplexModalShow(false);
+    }
   };
   return (
     <>
@@ -51,7 +52,7 @@ const BookletModal = (props) => {
               <Jobcard
                 handleJob={handleJob}
                 text={"Duplex"}
-                secondary={"(coming soon)"}
+                // secondary={"(coming soon)"}
               />
             </Col>
             <Col md={4}>
@@ -59,13 +60,13 @@ const BookletModal = (props) => {
             </Col>
           </Row>
         </Modal.Body>
-
         <Modal.Footer>
           <Button variant="secondary" onClick={props.onHide}>
             Close
           </Button>
         </Modal.Footer>
       </Modal>
+
       {showTemplateModal && (
         <TemplateModal
           show={showTemplateModal}

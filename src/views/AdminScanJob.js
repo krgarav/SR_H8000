@@ -231,11 +231,9 @@ const AdminScanJob = () => {
   useEffect(() => {
     const secondSensitivity = localStorage.getItem("secondSensitivity");
     if (secondSensitivity === 0) {
-      console.log("else called");
       setIsSecondSensitivity(false);
     } else if (secondSensitivity > 0) {
       setIsSecondSensitivity(true);
-      console.log("else called");
     }
   }, []);
 

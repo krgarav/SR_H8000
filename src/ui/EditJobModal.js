@@ -25,7 +25,9 @@ import DirectoryPicker from "views/DirectoryPicker";
 import { getJobDetail } from "helper/job_helper";
 import { updateJob } from "helper/job_helper";
 import TextLoader from "loaders/TextLoader";
-
+import ShadesOfGrey from "./shadesOfGrey";
+import { Box, Slider } from "@mui/material";
+import CustomTooltip from "components/CustomTooltip";
 const comparewithId = (optiondata, optionvalue) => {
   const filter = optiondata.find((item) => item.id === optionvalue);
   return filter;
@@ -54,6 +56,9 @@ const EditJobModal = (props) => {
   const [showSecondSensitivity, setShowSecondSensitivity] = useState(false);
   const [selectedSecondDataDirectory, setSelectedSecondDataDirectory] =
     useState("");
+  const [sensitivity, setSensitivity] = useState(5);
+  const [difference, setDifference] = useState(8);
+  const [value, setValue] = React.useState([5, 8]);
 
   const changeHandler = (val) => {
     setImageEnable(val);
@@ -81,7 +86,7 @@ const EditJobModal = (props) => {
     };
     getUsers();
   }, []);
-  console.log(showSecondSensitivity);
+
   useEffect(() => {
     const getData = async () => {
       try {
@@ -92,17 +97,14 @@ const EditJobModal = (props) => {
           id: item.id,
           name: item.layoutName,
         }));
-        console.log(res);
         const jobData = res?.result[0];
         setJobName(jobData.jobName);
         setSelectedTemplate(
           comparewithId(structuredTemplate, jobData.templateId)
         );
-        // setShowSecondSensitivity("checked");
-        console.log(res?.result[0]?.secondSensitivity);
         if (res?.result[0]?.secondSensitivity > 0) {
           setShowSecondSensitivity(true);
-
+          setSensitivity(res?.result[0]?.secondSensitivity);
           setSecondDataName(res?.result[0]?.secondDataFileName);
           setSelectedSecondDataDirectory(res?.result[0]?.secondDataPath);
         } else {
@@ -126,9 +128,7 @@ const EditJobModal = (props) => {
             );
           }
         }
-        console.log(
-          comparewithId(sensitivityType, jobData.secondSensitivity.toString())
-        );
+
         setSensitivityValue(
           comparewithId(sensitivityType, jobData.secondSensitivity.toString())
         );
@@ -140,7 +140,31 @@ const EditJobModal = (props) => {
     };
     getData();
   }, []);
+  const handleChange = (event, newValue, activeThumb) => {
+    const minDistance = 1;
+    if (!Array.isArray(newValue)) {
+      return;
+    }
 
+    if (activeThumb === 0) {
+      setValue([Math.min(newValue[0], value[1] - minDistance), value[1]]);
+      setSensitivity(newValue[0]);
+      setDifference(newValue[1]);
+    } else {
+      setValue([value[0], Math.max(newValue[1], value[0] + minDistance)]);
+      setSensitivity(newValue[0]);
+      setDifference(newValue[1]);
+    }
+  };
+  const getShadeFromValue = (value) => {
+    // Example function to map slider value to a shade
+    const shades = Array.from({ length: 16 }, (_, i) => {
+      const greyValue = Math.floor(255 - i * (255 / 16));
+      return `rgb(${greyValue}, ${greyValue}, ${greyValue})`;
+    });
+    const index = Math.floor((value[0] / 16) * shades.length);
+    return shades[index] || shades[0];
+  };
   const secondarySensitivityHandler = (event) => {
     setShowSecondSensitivity(event.target.checked);
   };
@@ -242,7 +266,7 @@ const EditJobModal = (props) => {
       <Modal
         show={modalShow}
         onHide={props.onHide}
-        size="xl"
+        size="lg"
         aria-labelledby="modal-custom-navbar"
         centered
         dialogClassName="modal-90w"
@@ -334,25 +358,84 @@ const EditJobModal = (props) => {
               </label>
             </div>
           </Row>
-          <Row className="mb-2">
-            <label
-              htmlFor="example-text-input"
-              className="col-md-2"
-              style={{ fontSize: ".9rem" }}
-            >
-              Sensitivity Value:
-            </label>
-            <div className="col-md-10">
-              <Select
-                value={sensitivityValue}
-                onChange={(selectedValue) => setSensitivityValue(selectedValue)}
-                options={sensitivityType}
-                getOptionLabel={(option) => option?.name || ""}
-                getOptionValue={(option) => option?.id?.toString() || ""}
-                placeholder="Select secondary sensitivity..."
-              />
-            </div>
-          </Row>
+          {showSecondSensitivity && (
+            <Row className="mb-3">
+              <label
+                htmlFor="example-text-input"
+                className="col-md-2  "
+                style={{ fontSize: ".9rem" }}
+              >
+                Sensitivity Difference Value:
+              </label>
+              <div
+                className="col-md-10"
+                style={{
+                  display: "flex",
+                  gap: "5px",
+                  width: "100%",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    width: "100%",
+                  }}
+                >
+                  <div
+                    style={{
+                      borderRadius: "6px",
+                      overflow: "hidden",
+                      // width: "250%",
+                    }}
+                  >
+                    <ShadesOfGrey width={"28px"} />
+                  </div>
+                  <Box
+                    sx={{
+                      width: "94%",
+                      justifyContent: "center",
+                      alignSelf: "center",
+                    }}
+                  >
+                    <Slider
+                      getAriaLabel={() => "Sensitivity range"}
+                      value={value}
+                      onChange={handleChange}
+                      valueLabelDisplay="auto"
+                      min={1}
+                      max={16}
+                      disableSwap
+                      size="large"
+                      color="PRIMARY"
+                      slots={{
+                        ValueLabel: (props) => (
+                          <CustomTooltip
+                            {...props}
+                            shade={getShadeFromValue(value)} // Pass the shade based on the value
+                          />
+                        ),
+                      }}
+                    />
+                  </Box>
+                </div>
+
+                <input
+                  value={`${sensitivity} - ${difference}`}
+                  onChange={(e) => setSensitivity(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "2px",
+                    textAlign: "center",
+                  }}
+                  className="form-control"
+                  type="text"
+                  disabled
+                />
+              </div>
+            </Row>
+          )}
+
           {showSecondSensitivity && (
             <>
               <Row className="mb-2">
@@ -414,7 +497,7 @@ const EditJobModal = (props) => {
                       setCurrentDirState("data");
                       setDirectoryPickerModal(true);
                     }}
-                    // style={{ height: "70%" }}
+                    style={{ height: "70%" }}
                   >
                     Directory
                   </Button>
@@ -450,7 +533,7 @@ const EditJobModal = (props) => {
                       setCurrentDirState("data2");
                       setDirectoryPickerModal(true);
                     }}
-                    // style={{ height: "70%" }}
+                    style={{ height: "70%" }}
                   >
                     Directory
                   </Button>
@@ -535,7 +618,7 @@ const EditJobModal = (props) => {
                 {/* {selectedDataDirectory && ( */}
                 <div className="d-flex gap-2 col-md-10">
                   <input
-                    style={{ width: "80%", marginRight: "2px" }}
+                    style={{ width: "70%", marginRight: "2px" }}
                     type="text"
                     disabled
                     value={selectedDataDirectory}
@@ -544,7 +627,7 @@ const EditJobModal = (props) => {
                     onChange={(e) => setDataPath(e.target.value)}
                   />
                   <Button
-                    style={{ width: "20%" }}
+                    // style={{ width: "20%" }}
                     variant="info"
                     onClick={() => {
                       setCurrentDirState("data");
@@ -619,7 +702,7 @@ const EditJobModal = (props) => {
 
                 <div className="d-flex gap-2 col-md-10">
                   <input
-                    style={{ width: "80%", marginRight: "2px" }}
+                    style={{ width: "72%", marginRight: "2px" }}
                     type="text"
                     disabled
                     value={selectedImageDirectory}
@@ -628,7 +711,7 @@ const EditJobModal = (props) => {
                     onChange={(e) => setDataPath(e.target.value)}
                   />
                   <Button
-                    style={{ width: "20%" }}
+                    // style={{ width: "20%" }}
                     variant="info"
                     onClick={() => {
                       setCurrentDirState("image");
