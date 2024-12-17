@@ -30,6 +30,8 @@ import { VirtualScroll } from "@syncfusion/ej2-grids";
 import { getTotalExcellRow } from "helper/Booklet32Page_helper";
 import { getDataByRowRange } from "helper/Booklet32Page_helper";
 import getSocketBaseUrl from "services/getSocketApi";
+import DualJsonData from "data/dualJsonData";
+import splitOddEven from "services/OddEvenSplit";
 function emptyMessageTemplate() {
   return (
     <div className="text-center">
@@ -46,9 +48,9 @@ let num = JSON.parse(localStorage.getItem("lastSerialNo"), 10) || 1;
 const AdminScanJob = () => {
   const [count, setCount] = useState(true);
   const [processedData, setProcessedData] = useState([]);
+  const [secondProcessedData, setSecondProcessedData] = useState([]);
   const [scanning, setScanning] = useState(false);
   const [headData, setHeadData] = useState(["Student Data"]);
-  // const [headData, setHeadData] = useState(Object.keys(jsonData[0]));
   const filterSettings = { type: "Excel" };
   // const toolbar = ['Add', 'Edit', 'Delete', 'Update', 'Cancel', 'ExcelExport', 'CsvExport'];
   const editSettings = {
@@ -74,7 +76,6 @@ const AdminScanJob = () => {
   const [socketBaseUrl, setSocketBaseUrl] = useState(null);
   const [isSecondSensitivity, setIsSecondSensitivity] = useState(false);
   const template = emptyMessageTemplate;
-  console.log(isSecondSensitivity);
   const location = useLocation();
 
   const serialRef = useRef();
@@ -82,11 +83,107 @@ const AdminScanJob = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (lastSerialNo) {
-      localStorage.setItem("lastSerialNo", JSON.stringify(lastSerialNo));
-    }
-  }, [lastSerialNo]);
+  // useEffect(() => {
+  //   const { oddData, evenData } = splitOddEven(DualJsonData.Data);
+  //   let evenSerialNo = num;
+  //   const updateEvenDatas = evenData.map((row) => {
+  //     const flattenedRow = {};
+  //     const mismatchData = {};
+
+  //     Object.keys(row).forEach((key) => {
+  //       flattenedRow[key] = row[key].Value; // Add the value to the flattened row
+  //       mismatchData[key] = row[key].Mismatch; // Keep mismatch information
+  //     });
+
+  //     flattenedRow.MismatchData = mismatchData; // Add mismatch info as a separate field
+  //     return flattenedRow;
+  //   });
+  //   if (updateEvenDatas.length !== 0) {
+  //     const newDataKeys = Object.keys(updateEvenDatas[0])
+  //       .filter((key) => key !== "MismatchData") // Exclude 'MismatchData' key
+  //       .map((key) => {
+  //         return key.endsWith(".") ? key.slice(0, -1) : key; // Remove trailing '.'
+  //       });
+  //     setHeadData(["Serial No", ...newDataKeys]);
+
+  //     let updatedData = updateEvenDatas.map((item) => {
+  //       const newItem = {};
+  //       for (const key in item) {
+  //         const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+  //         newItem[newKey] = item[key];
+  //       }
+  //       newItem["Serial No"] = evenSerialNo++;
+  //       return newItem;
+  //     });
+
+  //     setSecondProcessedData((prevData) => {
+  //       const combinedData = [...prevData, ...updatedData];
+  //       const lastSlNo = combinedData[combinedData.length - 1]["Serial No"];
+  //       setLastSerialNo(lastSlNo);
+  //       if (combinedData.length > 100) {
+  //         return combinedData.slice(-100);
+  //       }
+  //       return combinedData;
+  //     });
+  //     if (gridRef) {
+  //       gridRef?.current?.refresh();
+  //     }
+  //   }
+
+  //   const updatedOddDatas = oddData.map((row) => {
+  //     const flattenedRow = {};
+  //     const mismatchData = {};
+
+  //     Object.keys(row).forEach((key) => {
+  //       flattenedRow[key] = row[key].Value; // Add the value to the flattened row
+  //       mismatchData[key] = row[key].Mismatch; // Keep mismatch information
+  //     });
+
+  //     flattenedRow.MismatchData = mismatchData; // Add mismatch info as a separate field
+  //     return flattenedRow;
+  //   });
+
+  //   let oddSerialNo = num;
+  //   if (updatedOddDatas.length !== 0) {
+  //     const newDataKeys = Object.keys(updatedOddDatas[0])
+  //       .filter((key) => key !== "MismatchData") // Exclude 'MismatchData' key
+  //       .map((key) => {
+  //         return key.endsWith(".") ? key.slice(0, -1) : key; // Remove trailing '.'
+  //       });
+  //     setHeadData(["Serial No", ...newDataKeys]);
+
+  //     let updatedData = updatedOddDatas.map((item) => {
+  //       const newItem = {};
+  //       for (const key in item) {
+  //         const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+  //         newItem[newKey] = item[key];
+  //       }
+  //       newItem["Serial No"] = oddSerialNo++;
+  //       return newItem;
+  //     });
+
+  //     setProcessedData((prevData) => {
+  //       const combinedData = [...prevData, ...updatedData];
+  //       const lastSlNo = combinedData[combinedData.length - 1]["Serial No"];
+  //       setLastSerialNo(lastSlNo);
+  //       if (combinedData.length > 100) {
+  //         return combinedData.slice(-100);
+  //       }
+  //       return combinedData;
+  //     });
+  //     if (gridRef) {
+  //       gridRef?.current?.refresh();
+  //     }
+  //   }
+
+  //   num = num + 1; // Increment the number for the next iteration
+  // }, []);
+  // console.log(processedData);
+  // useEffect(() => {
+  //   if (lastSerialNo) {
+  //     localStorage.setItem("lastSerialNo", JSON.stringify(lastSerialNo));
+  //   }
+  // }, [lastSerialNo]);
   useEffect(() => {
     const response = async () => {
       const urls = await getSocketBaseUrl();
@@ -118,7 +215,7 @@ const AdminScanJob = () => {
           console.log(event.data);
           if (event.data) {
             const data = JSON.parse(event.data);
-
+console.log(data)
             if (data?.Data) {
               if (data.Data.length !== 0) {
                 const newDataKeys = Object.keys(data.Data[0]).map((key) => {
@@ -155,10 +252,11 @@ const AdminScanJob = () => {
         } else {
           if (event.data) {
             const data = JSON.parse(event.data);
-
             if (data?.Data) {
               if (data.Data.length !== 0) {
-                const updatedDatas = data.Data.map((row) => {
+                const { oddData, evenData } = splitOddEven(data.Data);
+                let evenSerialNo = num;
+                const updateEvenDatas = evenData.map((row) => {
                   const flattenedRow = {};
                   const mismatchData = {};
 
@@ -170,21 +268,68 @@ const AdminScanJob = () => {
                   flattenedRow.MismatchData = mismatchData; // Add mismatch info as a separate field
                   return flattenedRow;
                 });
-                if (updatedDatas.length !== 0) {
-                  const newDataKeys = Object.keys(updatedDatas[0])
+                if (updateEvenDatas.length !== 0) {
+                  const newDataKeys = Object.keys(updateEvenDatas[0])
                     .filter((key) => key !== "MismatchData") // Exclude 'MismatchData' key
                     .map((key) => {
                       return key.endsWith(".") ? key.slice(0, -1) : key; // Remove trailing '.'
                     });
                   setHeadData(["Serial No", ...newDataKeys]);
 
-                  let updatedData = updatedDatas.map((item) => {
+                  let updatedData = updateEvenDatas.map((item) => {
                     const newItem = {};
                     for (const key in item) {
                       const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
                       newItem[newKey] = item[key];
                     }
-                    newItem["Serial No"] = num++;
+                    newItem["Serial No"] = evenSerialNo++;
+                    return newItem;
+                  });
+
+                  setSecondProcessedData((prevData) => {
+                    const combinedData = [...prevData, ...updatedData];
+                    const lastSlNo =
+                      combinedData[combinedData.length - 1]["Serial No"];
+                    setLastSerialNo(lastSlNo);
+                    if (combinedData.length > 100) {
+                      return combinedData.slice(-100);
+                    }
+                    return combinedData;
+                  });
+                  if (gridRef) {
+                    gridRef?.current?.refresh();
+                  }
+                }
+
+                const updatedOddDatas = oddData.map((row) => {
+                  const flattenedRow = {};
+                  const mismatchData = {};
+
+                  Object.keys(row).forEach((key) => {
+                    flattenedRow[key] = row[key].Value; // Add the value to the flattened row
+                    mismatchData[key] = row[key].Mismatch; // Keep mismatch information
+                  });
+
+                  flattenedRow.MismatchData = mismatchData; // Add mismatch info as a separate field
+                  return flattenedRow;
+                });
+
+                let oddSerialNo = num;
+                if (updatedOddDatas.length !== 0) {
+                  const newDataKeys = Object.keys(updatedOddDatas[0])
+                    .filter((key) => key !== "MismatchData") // Exclude 'MismatchData' key
+                    .map((key) => {
+                      return key.endsWith(".") ? key.slice(0, -1) : key; // Remove trailing '.'
+                    });
+                  setHeadData(["Serial No", ...newDataKeys]);
+
+                  let updatedData = updatedOddDatas.map((item) => {
+                    const newItem = {};
+                    for (const key in item) {
+                      const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+                      newItem[newKey] = item[key];
+                    }
+                    newItem["Serial No"] = oddSerialNo++;
                     return newItem;
                   });
 
@@ -202,6 +347,8 @@ const AdminScanJob = () => {
                     gridRef?.current?.refresh();
                   }
                 }
+
+                num = num + 1; // Increment the number for the next iteration
               }
             }
           }
@@ -441,20 +588,6 @@ const AdminScanJob = () => {
     return () => clearInterval(intervalId);
   }, [scanning]);
 
-  const intervalCreation = (data) => {
-    const interval = setInterval(() => {
-      setItems((prevItems) => {
-        const nextIndex = prevItems.length;
-        if (nextIndex < data.length) {
-          return [...prevItems, data[nextIndex]];
-        } else {
-          clearInterval(interval);
-          return prevItems;
-        }
-      });
-    }, 1000);
-  };
-
   const handleStart = async () => {
     // setShowPrintModal(true);
     // return
@@ -640,23 +773,6 @@ const AdminScanJob = () => {
       const res = await finishJob(obj);
 
       if (res?.success) {
-        const token = localStorage.getItem("token");
-
-        // if (token) {
-        //   // const userInfo = jwtDecode(token);
-        //   // const userId = userInfo.UserId;
-
-        //   // const response2 = await getUrls();
-        //   // const GetDataURL = response2?.GENERATE_EXCEL;
-
-        //   try {
-        //     // Fire and forget
-        //     // axios.get(`${GetDataURL}?Id=${selectedValue}&UserId=${userId}`);
-        //   } catch (error) {
-        //     console.error("Excel generation failed", error);
-        //   }
-        // }
-
         toast.success("Completed the job!");
         setTimeout(() => navigate("/admin/job-queue", { replace: true }), 500); // Delay for toast visibility
       }
@@ -675,7 +791,7 @@ const AdminScanJob = () => {
     }
   };
   const rowDataBound = (args) => {
-    console.log(args.row);
+  
     // Loop through each column's data
     console.log(originalData);
     const originalItem = originalData[args.row]; // Match the row index to original data
@@ -887,7 +1003,7 @@ const AdminScanJob = () => {
               // ref={gridRef}
               dataBound={dataBound}
               actionComplete={handleSave}
-              dataSource={processedData}
+              dataSource={secondProcessedData}
               height={gridHeight}
               allowSorting={false}
               editSettings={editSettings}

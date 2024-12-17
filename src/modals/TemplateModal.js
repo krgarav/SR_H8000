@@ -570,10 +570,12 @@ const TemplateModal = (props) => {
       // toast.error(error.message);
     }
   };
+
   const systemHandler = () => {
     // document.getElementById("formFile").click();
     setFileModal(true);
   };
+
   const saveHandler = () => {
     if (!image) {
       alert("Please select image");
@@ -587,6 +589,7 @@ const TemplateModal = (props) => {
     //   alert("Please select image");
     // }
   };
+
   const saveFileHandler = () => {
     if (!image) {
       alert("Please select image");
@@ -598,6 +601,7 @@ const TemplateModal = (props) => {
     }
     setFileModal(false);
   };
+
   return (
     <>
       <Modal
@@ -2286,6 +2290,7 @@ const TemplateModal = (props) => {
           </Button>
         </Modal.Footer>
       </Modal>
+
       <Modal
         show={imageModal}
         // onHide={props.onHide}
@@ -2397,42 +2402,75 @@ const TemplateModal = (props) => {
           <Modal.Title id="modal-custom-navbar">Select Image</Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ height: "65dvh", overflow: "auto" }}>
-          <Row className="d-flex justify-content-center mt-4">
-            <label>Choose Front Image</label>
-            <input
-              className="form-control"
-              type="file"
-              id="formFile"
-              onChange={handleImageUpload}
-              accept="image/*"
-            />
-            {image && (
-              <img src={image} alt="Scanned" width={100} height={100} />
-            )}
-          </Row>
-          <Row className="d-flex justify-content-center mt-4">
-            <label>Choose Back Image</label>
-            <input
-              className="form-control"
-              type="file"
-              id="formFile"
-              onChange={handleImage2Upload}
-              accept="image/*"
-            />
-            {imageBack && (
-              <img src={imageBack} alt="Scanned" width={100} height={100} />
-            )}
-          </Row>
-          <Row className="d-flex justify-content-center mt-4">
-            <label>Choose Excel File</label>
-            <input
-              className="form-control"
-              type="file"
-              id="formFile"
-              onChange={handleExcelUpload}
-              accept=".xls,.xlsx,.csv"
-            />
-          </Row>
+          {props.title === "SIMPLEX" && (
+            <>
+              <Row className="d-flex justify-content-center mt-4">
+                <label>Choose Front Image</label>
+                <input
+                  className="form-control"
+                  type="file"
+                  id="formFile"
+                  onChange={handleImageUpload}
+                  accept="image/*"
+                />
+                {image && (
+                  <img src={image} alt="Scanned" width={100} height={100} />
+                )}
+              </Row>
+              <Row className="d-flex justify-content-center mt-4">
+                <label>Choose Back Image</label>
+                <input
+                  className="form-control"
+                  type="file"
+                  id="formFile"
+                  onChange={handleImage2Upload}
+                  accept="image/*"
+                />
+                {imageBack && (
+                  <img src={imageBack} alt="Scanned" width={100} height={100} />
+                )}
+              </Row>
+              <Row className="d-flex justify-content-center mt-4">
+                <label>Choose Excel File</label>
+                <input
+                  className="form-control"
+                  type="file"
+                  id="formFile"
+                  onChange={handleExcelUpload}
+                  accept=".xls,.xlsx,.csv"
+                />
+              </Row>
+            </>
+          )}
+
+          {props.title === "BOOKLET" && (
+            <>
+              <Row className="d-flex justify-content-center mt-4">
+                <label>Upload Images</label>
+                <input
+                  className="form-control"
+                  type="file"
+                  id="formFile"
+                  onChange={handleImage2Upload}
+                  accept="image/*"
+                  multiple
+                />
+                {imageBack && (
+                  <img src={imageBack} alt="Scanned" width={100} height={100} />
+                )}
+              </Row>
+              <Row className="d-flex justify-content-center mt-4">
+                <label>Upload Excel File</label>
+                <input
+                  className="form-control"
+                  type="file"
+                  id="formFile"
+                  onChange={handleExcelUpload}
+                  accept=".xls,.xlsx,.csv"
+                />
+              </Row>
+            </>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button

@@ -283,7 +283,7 @@ const JobModal = (props) => {
             </div>
             <label
               htmlFor="example-text-input"
-              className="col-md-2 col-form-label"
+              className="col-md-2"
               style={{ fontSize: ".9rem" }}
             >
               Secondary Sensitivity:
@@ -432,7 +432,7 @@ const JobModal = (props) => {
               <Row className="mb-3">
                 <label
                   htmlFor="example-text-input"
-                  className="col-md-2  col-form-label"
+                  className="col-md-2 "
                   style={{ fontSize: ".9rem" }}
                 >
                   First Data Path:
@@ -455,7 +455,7 @@ const JobModal = (props) => {
                       setCurrentDirState("data");
                       setDirectoryPickerModal(true);
                     }}
-                    style={{ height: "70%" }}
+                    style={{ height: "85%" }}
                   >
                     Directory
                   </Button>
@@ -464,7 +464,7 @@ const JobModal = (props) => {
 
                 <label
                   htmlFor="example-text-input"
-                  className="col-md-2  col-form-label"
+                  className="col-md-2"
                   style={{ fontSize: ".9rem" }}
                 >
                   Second Data Path:
@@ -491,7 +491,7 @@ const JobModal = (props) => {
                       setCurrentDirState("data2");
                       setDirectoryPickerModal(true);
                     }}
-                    style={{ height: "70%" }}
+                    style={{ height: "85%" }}
                   >
                     Directory
                   </Button>
@@ -632,7 +632,7 @@ const JobModal = (props) => {
                 {/* {selectedDataDirectory && ( */}
                 <div className="d-flex gap-2 col-md-10">
                   <input
-                    style={{ width: "80%", marginRight: "2px" }}
+                    style={{ width: "70%", marginRight: "2px" }}
                     type="text"
                     disabled
                     value={selectedDataDirectory}
@@ -641,7 +641,7 @@ const JobModal = (props) => {
                     onChange={(e) => setDataPath(e.target.value)}
                   />
                   <Button
-                    style={{ width: "20%" }}
+                    style={{ width: "30%" }}
                     variant="info"
                     onClick={() => {
                       setCurrentDirState("data");
