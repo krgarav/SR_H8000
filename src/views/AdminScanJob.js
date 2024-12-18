@@ -215,7 +215,7 @@ const AdminScanJob = () => {
           console.log(event.data);
           if (event.data) {
             const data = JSON.parse(event.data);
-console.log(data)
+            console.log(data);
             if (data?.Data) {
               if (data.Data.length !== 0) {
                 const newDataKeys = Object.keys(data.Data[0]).map((key) => {
@@ -359,6 +359,8 @@ console.log(data)
       // Event listener for errors
       socket.onerror = (err) => {
         console.error("WebSocket error:", err);
+        setScanning(false);
+        setStarting(false);
         // setError("An error occurred with the WebSocket connection.");
       };
 
@@ -373,7 +375,7 @@ console.log(data)
         console.log("WebSocket connection closed on component unmount.");
       };
     }
-  }, [socketBaseUrl]);
+  }, [socketBaseUrl, scanning]);
 
   useEffect(() => {
     const secondSensitivity = localStorage.getItem("secondSensitivity");
@@ -464,63 +466,63 @@ console.log(data)
     }
   };
 
-  const getScanData = async () => {
-    // Start numbering from the last serial number
-    try {
-      const token = localStorage.getItem("token");
-      const userInfo = jwtDecode(token);
-      const userId = userInfo.UserId;
+  // const getScanData = async () => {
+  //   // Start numbering from the last serial number
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     const userInfo = jwtDecode(token);
+  //     const userId = userInfo.UserId;
 
-      const res = await axios.get(
-        proccessUrl + `?Id=${selectedValue}&UserId=${userId}`
-      );
-      const data = res.data;
+  //     const res = await axios.get(
+  //       proccessUrl + `?Id=${selectedValue}&UserId=${userId}`
+  //     );
+  //     const data = res.data;
 
-      if (data?.result?.success) {
-        const newDataKeys = Object.keys(data.result.data[0]).map((key) => {
-          return key.endsWith(".") ? key.slice(0, -1) : key;
-        });
-        setHeadData(["Serial No", ...newDataKeys]);
+  //     if (data?.result?.success) {
+  //       const newDataKeys = Object.keys(data.result.data[0]).map((key) => {
+  //         return key.endsWith(".") ? key.slice(0, -1) : key;
+  //       });
+  //       setHeadData(["Serial No", ...newDataKeys]);
 
-        let updatedData = data.result.data.map((item) => {
-          const newItem = {};
-          for (const key in item) {
-            const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
-            newItem[newKey] = item[key];
-          }
-          newItem["Serial No"] = num++;
-          return newItem;
-        });
+  //       let updatedData = data.result.data.map((item) => {
+  //         const newItem = {};
+  //         for (const key in item) {
+  //           const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+  //           newItem[newKey] = item[key];
+  //         }
+  //         newItem["Serial No"] = num++;
+  //         return newItem;
+  //       });
 
-        setProcessedData((prevData) => {
-          const combinedData = [...prevData, ...updatedData];
-          const lastSlNo = combinedData[combinedData.length - 1]["Serial No"];
-          localStorage.setItem("lastSerialNo", JSON.stringify(lastSlNo));
-          if (combinedData.length > 100) {
-            return combinedData.slice(-100);
-          }
-          return combinedData;
-        });
+  //       setProcessedData((prevData) => {
+  //         const combinedData = [...prevData, ...updatedData];
+  //         const lastSlNo = combinedData[combinedData.length - 1]["Serial No"];
+  //         localStorage.setItem("lastSerialNo", JSON.stringify(lastSlNo));
+  //         if (combinedData.length > 100) {
+  //           return combinedData.slice(-100);
+  //         }
+  //         return combinedData;
+  //       });
 
-        // setLastSerialNo(num - 1); // Update the last serial number
-        gridRef.current.refresh();
-        return res;
-      }
+  //       // setLastSerialNo(num - 1); // Update the last serial number
+  //       gridRef.current.refresh();
+  //       return res;
+  //     }
 
-      return {
-        success: false,
-        data: res?.data?.result,
-        message: "The API response did not indicate success.",
-      };
-    } catch (error) {
-      console.error(error);
-      setTimeout(() => {
-        handleStop();
-      }, 1000);
-      toast.error("Unable to fetch data!!!");
-      return error;
-    }
-  };
+  //     return {
+  //       success: false,
+  //       data: res?.data?.result,
+  //       message: "The API response did not indicate success.",
+  //     };
+  //   } catch (error) {
+  //     console.error(error);
+  //     setTimeout(() => {
+  //       handleStop();
+  //     }, 1000);
+  //     toast.error("Unable to fetch data!!!");
+  //     return error;
+  //   }
+  // };
   // const getScanData = async () => {
   //   let num = 1;
   //   try {
@@ -574,19 +576,19 @@ console.log(data)
   //     return error;
   //   }
   // };
-  useEffect(() => {
-    if (!scanning) return;
+  // useEffect(() => {
+  //   if (!scanning) return;
 
-    const intervalId = setInterval(() => {
-      if (scanning) {
-        getScanData();
-      } else {
-        clearInterval(intervalId);
-      }
-    }, 3000);
+  //   const intervalId = setInterval(() => {
+  //     if (scanning) {
+  //       getScanData();
+  //     } else {
+  //       clearInterval(intervalId);
+  //     }
+  //   }, 3000);
 
-    return () => clearInterval(intervalId);
-  }, [scanning]);
+  //   return () => clearInterval(intervalId);
+  // }, [scanning]);
 
   const handleStart = async () => {
     // setShowPrintModal(true);
@@ -791,7 +793,6 @@ console.log(data)
     }
   };
   const rowDataBound = (args) => {
-  
     // Loop through each column's data
     console.log(originalData);
     const originalItem = originalData[args.row]; // Match the row index to original data
