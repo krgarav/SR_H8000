@@ -21,7 +21,7 @@ const BookletModal = (props) => {
       setShowTemplateModal(true);
       setSimplexModalShow(true);
     } else if (text === "Booklet") {
-      setShowTemplateModal(true);
+      setBookletModalShow(true);
       setSimplexModalShow(false);
     }
   };
@@ -75,13 +75,13 @@ const BookletModal = (props) => {
         />
       )}
 
-      {/* {bookletModalShow && (
+      {bookletModalShow && (
         <BookletTemplateModal
           show={bookletModalShow}
           onHide={() => setBookletModalShow(false)}
           title="BOOKLET"
         />
-      )} */}
+      )}
     </>
   );
 };

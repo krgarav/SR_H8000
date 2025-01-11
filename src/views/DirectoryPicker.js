@@ -30,6 +30,7 @@ const DirectoryPicker = ({ handleChange }) => {
   const [selectedDirectory, setSelectedDirectory] = useState("");
   const [loading, setLoading] = React.useState(true);
   const handleFileSelect = (args: FileOpenEventArgs) => {
+    console.log(args)
     if (args.fileDetails.isFile === false) {
       // It's a directory
       const path = args.fileDetails.filterPath;

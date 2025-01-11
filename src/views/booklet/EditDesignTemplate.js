@@ -52,7 +52,7 @@ const getSessionStorageOrDefault = (key, defaultValue) => {
   }
 };
 
-const EditDesignTemplate = () => {
+const EditBookletDesignTemplate = () => {
   const [draggingIndex, setDraggingIndex] = useState(null);
   const [dragStart2, setDragStart2] = useState({ x: 0, y: 0 });
   const [dragOffset, setDragOffset] = useState({ left: 0, top: 0 });
@@ -2846,4 +2846,4 @@ const EditDesignTemplate = () => {
   );
 };
 
-export default EditDesignTemplate;
+export default EditBookletDesignTemplate;

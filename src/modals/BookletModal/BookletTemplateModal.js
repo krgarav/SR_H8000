@@ -55,6 +55,9 @@ import { imageParamsData } from "data/helperData";
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
 import CustomTooltip from "components/CustomTooltip";
+import ImageUrls from "data/imageData";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import { Carousel } from "react-responsive-carousel";
 
 const BookletTemplateModal = (props) => {
   const [modalShow, setModalShow] = useState(false);
@@ -101,6 +104,7 @@ const BookletTemplateModal = (props) => {
   const [imageFile, setImageFile] = useState();
   const [imageModal, setImageModal] = useState();
   const [image, setImage] = useState();
+  const [images, setImages] = useState(ImageUrls);
   const [imageTempFile, setTempImageFile] = useState();
   const [imageBack, setImageBack] = useState();
   const [selectedUI, setSelectedUI] = useState("SIMPLEX");
@@ -127,7 +131,7 @@ const BookletTemplateModal = (props) => {
   const [printCustomValue, setPrintCustomValue] = useState(null);
   const [scannerLoading, setScannerLoading] = useState(false);
   const [value, setValue] = React.useState([5, 6]);
-
+  const navigate = useNavigate();
   const handleChange = (event, newValue, activeThumb) => {
     const minDistance = 1;
     if (!Array.isArray(newValue)) {
@@ -144,7 +148,7 @@ const BookletTemplateModal = (props) => {
       setDifference(newValue[1]);
     }
   };
-  const navigate = useNavigate();
+
 
   const jobHandler = (e) => {
     setSelectedUI(e);
@@ -275,35 +279,8 @@ const BookletTemplateModal = (props) => {
     }
   };
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    console.log(file);
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImageSrc(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-    if (file) {
-      setImage(URL.createObjectURL(file));
-      setTempImageFile(file);
-    }
-  };
-  const handleImage2Upload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setBackImageSrc(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-    if (file) {
-      setImageBack(URL.createObjectURL(file));
-      // setTempImageFile(file);
-    }
-  };
+ 
+
   const getShadeFromValue = (value) => {
     // Example function to map slider value to a shade
     const shades = Array.from({ length: 16 }, (_, i) => {
@@ -338,8 +315,6 @@ const BookletTemplateModal = (props) => {
         return;
       }
     }
-    console.log(face);
-    // return
     if (
       !name ||
       !numberOfLines ||
@@ -384,8 +359,7 @@ const BookletTemplateModal = (props) => {
         toast.error("Please Select ID Field ");
         return;
       }
-      console.log(idPresent);
-      console.log(idPresent.id === "present");
+    
 
       if (idPresent && idPresent.id === "present") {
         if (Object.values(face).length === 0) {
@@ -437,9 +411,6 @@ const BookletTemplateModal = (props) => {
       }
       return;
     }
-
-    // console.log("called");
-    // return
     const key = uuidv4();
     try {
       const emptyExcelJsonFile = excelJsonFile.map((row) => {
@@ -468,6 +439,7 @@ const BookletTemplateModal = (props) => {
             iReject: 0,
             idMarksPattern: "000000000000000000000000",
             excelJsonFile: excelJsonFile,
+            images: images,
             numberedExcelJsonFile: emptyExcelJsonFile,
           },
           barcodeData: {
@@ -512,7 +484,7 @@ const BookletTemplateModal = (props) => {
       localStorage.setItem("Template", JSON.stringify(templateData));
       const index = dataCtx.setAllTemplates(templateData);
       setModalShow(false);
-      navigate("/admin/template/design-template");
+      navigate("/admin/template/booklet/design-template");
     } catch (error) {
       console.error("Error uploading file: ", error);
     }
@@ -574,29 +546,20 @@ const BookletTemplateModal = (props) => {
     setFileModal(true);
   };
   const saveHandler = () => {
-    if (!image) {
-      alert("Please select image");
+   if (!excelJsonFile) {
+      alert("Please select excel file");
     } else {
       setImageModal(false);
     }
-    // if (imageTempFile) {
-    //   // setImageFile(imageTempFile);
-    //   setImageModal(false);
-    // } else {
-    //   alert("Please select image");
-    // }
   };
   const saveFileHandler = () => {
-    if (!image) {
-      alert("Please select image");
-      return;
-    }
     if (!excelJsonFile) {
       alert("Please select excel file");
       return;
     }
     setFileModal(false);
   };
+
   return (
     <>
       <Modal
@@ -635,7 +598,6 @@ const BookletTemplateModal = (props) => {
             <div className="d-flex" style={{ justifyContent: "space-evenly" }}>
               <Jobcard text="SIMPLEX" handleJob={jobHandler} />
               <Jobcard text={"DUPLEX"} handleJob={jobHandler} />
-              {/* <DuplexJob/> */}
             </div>
           )}
 
@@ -769,105 +731,7 @@ const BookletTemplateModal = (props) => {
                           )}
                         </div>
                       </Row>
-                      {/* <Row className="mb-3">
-                                            <label
-                                                htmlFor="example-text-input"
-                                                className="col-md-2 "
-                                                style={{ fontSize: ".9rem" }}
-                                            >
-                                                Size:
-                                            </label>
-                                            <div className="col-md-10">
-                                                <Select
-                                                    value={size}
-                                                    onChange={(selectedValue) => setSize(selectedValue)}
-                                                    options={sizeData}
-                                                    getOptionLabel={(option) => option?.name || ""}
-                                                    getOptionValue={(option) =>
-                                                        option?.id?.toString() || ""
-                                                    }
-                                                />
-                                                {!size && (
-                                                    <span style={{ color: "red", display: "block" }}>
-                                                        This feild is required
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </Row> */}
-                      {/* <Row className="mb-3">
-                          <Col md={6}>
-                            <Row>
-                              <label
-                                htmlFor="example-text-input"
-                                className="col-md-4 col-form-label"
-                                style={{ fontSize: ".9rem" }}
-                              >
-                                No. of Rows
-                              </label>
-                              <div className="col-md-6">
-                                <input
-                                  type="number"
-                                  className="form-control"
-                                  value={numberOfLines}
-                                  placeholder="Enter rows"
-                                  onChange={(e) => {
-                                    settoggle((item) => ({
-                                      ...item,
-                                      row: false,
-                                    }));
-                                    setNumberOfLines(e.target.value);
-                                  }}
-                                  style={{
-                                    border: toggle.row ? "1px solid red" : "",
-                                  }}
-                                />
-                                {!numberOfLines && (
-                                  <span
-                                    style={{ color: "red", display: spanDisplay }}
-                                  >
-                                    This feild is required
-                                  </span>
-                                )}
-                              </div>
-                            </Row>
-                          </Col>
-                          <Col md={6}>
-                            <Row>
-                              <label
-                                htmlFor="example-text-input"
-                                className="col-md-6 col-form-label "
-                                style={{ fontSize: ".9rem" }}
-                              >
-                                Number of columns
-                              </label>
-                              <div className="col-md-6">
-                                <input
-                                  placeholder="Enter columns"
-                                  type="number"
-                                  className="form-control"
-                                  value={numberOfFrontSideColumn}
-                                  onChange={(e) => {
-                                    settoggle((item) => ({
-                                      ...item,
-                                      col: false,
-                                    }));
-                                    setNumberOfFrontSideColumn(e.target.value);
-                                  }}
-                                  style={{
-                                    border: toggle.col ? "1px solid red" : "",
-                                  }}
-                                />
-                                {!numberOfFrontSideColumn && (
-                                  <span
-                                    style={{ color: "red", display: spanDisplay }}
-                                  >
-                                    This feild is required
-                                  </span>
-                                )}
-                              </div>
-                            </Row>
-                          </Col>
-                        </Row> */}
+
                       <Row className="mb-3">
                         <label
                           htmlFor="example-text-input"
@@ -2241,16 +2105,6 @@ const BookletTemplateModal = (props) => {
                         <input class="form-control" type="file" id="formFile" onChange={handleImageUpload} accept="image/*" />
                     </div> */}
             <div>
-              {/* {imageFile?.name}  */}
-              {/* {!imageFile && <Button onClick={imageModalHandler}>Select Image</Button>}
-
-                            {imageFile &&
-                                <div >
-                                    <Button variant='info' onClick={imageModalHandler}>Choose another</Button>
-                                    <img src={image} alt="Fetched Thumbnail" style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
-                                </div>
-                            } */}
-
               <div>
                 {selectedUI &&
                   (!image ? (
@@ -2296,6 +2150,7 @@ const BookletTemplateModal = (props) => {
           </Button>
         </Modal.Footer>
       </Modal>
+
       <Modal
         show={imageModal}
         // onHide={props.onHide}
@@ -2369,13 +2224,40 @@ const BookletTemplateModal = (props) => {
                   </div>
                 </Col>
               </Row>
+              <Row className="d-flex justify-content-center mt-2">
+                {images && (
+                  <div className=" my-1">
+                    <div className="row justify-content-center">
+                      <div className="col-12 col-md-8">
+                        <Carousel
+                          showArrows={true}
+                          showThumbs={false}
+                          infiniteLoop
+                          emulateTouch
+                        >
+                          {images.map((item, index) => (
+                            <div key={index}>
+                              <img
+                                src={item.imageUrl}
+                                alt={`Slide ${index + 1}`}
+                                className="img-fluid rounded"
+                                style={{
+                                  maxHeight: "400px", // Restrict the height
+                                  objectFit: "cover", // Maintain aspect ratio
+                                  width: "100%", // Ensure responsive width
+                                }}
+                              />
+                              <p className="legend">{`Legend ${index + 1}`}</p>
+                            </div>
+                          ))}
+                        </Carousel>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {!images && <p>Please select the image</p>}
+              </Row>
             </div>
-            <Row className="d-flex justify-content-center mt-4">
-              {image && (
-                <img src={image} alt="Scanned" width={200} height={200} />
-              )}
-              {!image && <p>Please select the image</p>}
-            </Row>
           </>
         </Modal.Body>
         <Modal.Footer>
@@ -2395,7 +2277,6 @@ const BookletTemplateModal = (props) => {
 
       <Modal
         show={fileModal}
-        // onHide={props.onHide}
         size="sm"
         aria-labelledby="modal-custom-navbar"
         centered
@@ -2404,35 +2285,9 @@ const BookletTemplateModal = (props) => {
         keyboard={false}
       >
         <Modal.Header>
-          <Modal.Title id="modal-custom-navbar">Select Image</Modal.Title>
+          <Modal.Title id="modal-custom-navbar">Select Images</Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ height: "65dvh", overflow: "auto" }}>
-          <Row className="d-flex justify-content-center mt-4">
-            <label>Choose Front Image</label>
-            <input
-              className="form-control"
-              type="file"
-              id="formFile"
-              onChange={handleImageUpload}
-              accept="image/*"
-            />
-            {image && (
-              <img src={image} alt="Scanned" width={100} height={100} />
-            )}
-          </Row>
-          <Row className="d-flex justify-content-center mt-4">
-            <label>Choose Back Image</label>
-            <input
-              className="form-control"
-              type="file"
-              id="formFile"
-              onChange={handleImage2Upload}
-              accept="image/*"
-            />
-            {imageBack && (
-              <img src={imageBack} alt="Scanned" width={100} height={100} />
-            )}
-          </Row>
           <Row className="d-flex justify-content-center mt-4">
             <label>Choose Excel File</label>
             <input

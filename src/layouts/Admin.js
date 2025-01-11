@@ -31,6 +31,9 @@ import FolderStructure from "views/FolderStructure";
 import AdminScanJob from "views/AdminScanJob";
 import DesignTemplate from "views/simplex/DesignTemplate";
 import EditDesignTemplate from "views/simplex/EditDesignTemplate";
+import BookletTemplateModal from "modals/BookletModal/BookletTemplateModal";
+import EditBookletDesignTemplate from "views/booklet/EditDesignTemplate";
+import DesignBookletTemplate from "views/booklet/DesignTemplate";
 
 const Admin = (props) => {
   const mainContent = React.useRef(null);
@@ -78,7 +81,7 @@ const Admin = (props) => {
         }}
       />
       <div className="main-content" ref={mainContent}>
-        <div style={{ position: "sticky" ,top:0,zIndex: 999 }}>
+        <div style={{ position: "sticky", top: 0, zIndex: 999 }}>
           <AdminNavbar
             {...props}
             brandText={getBrandText(props?.location?.pathname)}
@@ -92,6 +95,11 @@ const Admin = (props) => {
             path="/template/design-template"
             element={<DesignTemplate />}
           />
+          <Route
+            path="/template/booklet/design-template"
+            element={<DesignBookletTemplate />}
+          />
+
           <Route
             path="/template/edit-template"
             element={<EditDesignTemplate />}

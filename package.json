@@ -9,9 +9,9 @@
   },
   "author": "OMR INDIA OUTSOURCES",
   "license": "IOS",
-     "scripts": {
+  "scripts": {
     "start": "react-scripts start --port 3002",
-      "update-config": "node scripts/updateConfig.js",
+    "update-config": "node scripts/updateConfig.js",
     "build": "npm run update-config && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
@@ -76,6 +76,7 @@
     "react-file-tree": "^0.0.8",
     "react-icons": "^5.2.1",
     "react-multi-select-component": "^4.3.4",
+    "react-responsive-carousel": "^3.2.23",
     "react-rnd": "^10.4.11",
     "react-router-dom": "6.21.1",
     "react-scripts": "5.0.1",
