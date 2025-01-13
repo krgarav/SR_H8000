@@ -58,6 +58,7 @@ import CustomTooltip from "components/CustomTooltip";
 import ImageUrls from "data/imageData";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
+import { getUrls } from "helper/url_helper";
 
 const BookletTemplateModal = (props) => {
   const [modalShow, setModalShow] = useState(false);
@@ -130,7 +131,21 @@ const BookletTemplateModal = (props) => {
   const [printCustomValue, setPrintCustomValue] = useState(null);
   const [scannerLoading, setScannerLoading] = useState(false);
   const [value, setValue] = React.useState([5, 6]);
+  const [showFront, setShowFront] = useState(true);
+  const [baseUrl, setBaseUrl] = useState(null);
   const navigate = useNavigate();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getUrls();
+        const GetDataURL = response.MAIN_URL;
+        setBaseUrl(GetDataURL);
+      } catch (error) {
+        console.log("Error", error);
+      }
+    };
+    fetchData();
+  }, []);
   const handleChange = (event, newValue, activeThumb) => {
     const minDistance = 1;
     if (!Array.isArray(newValue)) {
@@ -487,8 +502,8 @@ const BookletTemplateModal = (props) => {
       const response = await getSampleData();
       console.log(response);
 
-      const { Data, Images } = response;
-      const jsonData = Data;
+      const { data, images } = response;
+      const jsonData = data;
       const correctedJson = jsonData
         .map((item) => {
           const filteredItem = Object.fromEntries(
@@ -507,7 +522,7 @@ const BookletTemplateModal = (props) => {
       setNumberOfLines(Row); //setting number of rows in excel
       setNumberOfFrontSideColumn(Column); //setting number of columns in excel
       setExcelJsonFile(correctedJson);
-      setImages(Images);
+      setImages(images);
     } catch (error) {
       console.log(error);
       toast.error(error.message);
@@ -2203,28 +2218,81 @@ const BookletTemplateModal = (props) => {
                   <div className=" my-1">
                     <div className="row justify-content-center">
                       <div className="col-12 col-md-8">
-                        <Carousel
-                          showArrows={true}
-                          showThumbs={false}
-                          infiniteLoop
-                          emulateTouch
-                        >
-                          {images.map((item, index) => (
-                            <div key={index}>
-                              <img
-                                src={item.imageUrl}
-                                alt={`Slide ${index + 1}`}
-                                className="img-fluid rounded"
-                                style={{
-                                  maxHeight: "400px", // Restrict the height
-                                  objectFit: "cover", // Maintain aspect ratio
-                                  width: "100%", // Ensure responsive width
-                                }}
-                              />
-                              <p className="legend">{`Legend ${index + 1}`}</p>
-                            </div>
-                          ))}
-                        </Carousel>
+                        {/* Toggle Buttons */}
+                        <div className="d-flex justify-content-center mb-3">
+                          <button
+                            className={`btn ${
+                              showFront ? "btn-primary" : "btn-outline-primary"
+                            } me-2`}
+                            onClick={() => setShowFront(true)}
+                          >
+                            Show Front Images
+                          </button>
+                          <button
+                            className={`btn ${
+                              !showFront ? "btn-primary" : "btn-outline-primary"
+                            }`}
+                            onClick={() => setShowFront(false)}
+                          >
+                            Show Back Images
+                          </button>
+                        </div>
+
+                        {/* Front Image Carousel */}
+                        {showFront && (
+                          <Carousel
+                            showArrows={true}
+                            showThumbs={false}
+                            infiniteLoop
+                            emulateTouch
+                          >
+                            {images.map((item, index) => (
+                              <div key={index}>
+                                <img
+                                  src={`${baseUrl}GetTemplateImage?filePath=${item.frontImagePath}`}
+                                  alt={`Front Slide ${index + 1}`}
+                                  className="img-fluid rounded"
+                                  style={{
+                                    maxHeight: "400px",
+                                    objectFit: "cover",
+                                    width: "100%",
+                                  }}
+                                />
+                                <p className="legend">{`Front Image ${
+                                  index + 1
+                                }`}</p>
+                              </div>
+                            ))}
+                          </Carousel>
+                        )}
+
+                        {/* Back Image Carousel */}
+                        {!showFront && (
+                          <Carousel
+                            showArrows={true}
+                            showThumbs={false}
+                            infiniteLoop
+                            emulateTouch
+                          >
+                            {images.map((item, index) => (
+                              <div key={index}>
+                                <img
+                                  src={`${baseUrl}GetTemplateImage?filePath=${item.backImagePath}`}
+                                  alt={`Back Slide ${index + 1}`}
+                                  className="img-fluid rounded"
+                                  style={{
+                                    maxHeight: "400px",
+                                    objectFit: "cover",
+                                    width: "100%",
+                                  }}
+                                />
+                                <p className="legend">{`Back Image ${
+                                  index + 1
+                                }`}</p>
+                              </div>
+                            ))}
+                          </Carousel>
+                        )}
                       </div>
                     </div>
                   </div>

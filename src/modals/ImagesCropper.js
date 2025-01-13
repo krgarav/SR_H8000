@@ -16,6 +16,8 @@ import {
 import classes from "./ImageCropper.module.css";
 import { toast } from "react-toastify";
 import DataContext from "store/DataContext";
+import { getUrls } from "helper/url_helper";
+import { sideOption } from "data/helperData";
 const ImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
   const dataCtx = useContext(DataContext);
   const cropperRef = useRef(null);
@@ -29,7 +31,21 @@ const ImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
   const [show, setShow] = useState(false);
   const [options, setOptions] = useState([]);
   const [prefix, setPrefix] = useState("");
-
+  const [baseUrl, setBaseUrl] = useState(null);
+  const [side, setSide] = useState(sideOption[0]);
+  console.log(images);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getUrls();
+        const GetDataURL = response.MAIN_URL;
+        setBaseUrl(GetDataURL);
+      } catch (error) {
+        console.log("Error", error);
+      }
+    };
+    fetchData();
+  }, []);
   useEffect(() => {
     const coordinateOptns = selectedCoordinateData.map((item) => {
       return { id: item.name, label: item.name };
@@ -151,7 +167,7 @@ const ImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
       toast.error("Image Name cannot be empty");
       return;
     }
-   
+
     saveHandler();
     setShow(false);
     setImageName("");
@@ -327,10 +343,22 @@ const ImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
         <Modal.Body
           style={{ width: "100%", height: "65dvh", overflow: "auto" }}
         >
-          <div
-            style={{ width: "100%", display: "flex", justifyContent: "center" }}
-          >
-            <div>
+          <div className="d-flex flex-row align-items-center">
+            <div className="d-flex align-items-center w-10 ">
+              <label htmlFor="prefixName" className="form-label mr-2">
+                Side:
+              </label>
+              <Select
+                value={side}
+                onChange={(selectedValue) => setSide(selectedValue)}
+                options={sideOption}
+                getOptionLabel={(option) => option?.name || ""}
+                getOptionValue={(option) => option?.id?.toString() || ""}
+                placeholder="Select side..."
+                className="w-100"
+              />
+            </div>
+            <div className="d-flex justify-content-center flex-grow-1">
               <Button
                 // active={currentImage === imageSrc}
                 onClick={prevHandler}
@@ -345,25 +373,33 @@ const ImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
               </Button>
             </div>
           </div>
-
-          <Cropper
-            src={images[currentImageIndex].imageUrl}
-            style={{ height: "50dvh", width: "100%" }}
-            initialAspectRatio={1}
-            guides={true}
-            ref={cropperRef}
-            cropend={() => getCropData()}
-            viewMode={1}
-            minCropBoxHeight={10}
-            minCropBoxWidth={10}
-            background={true}
-            responsive={true}
-            autoCropArea={0}
-            checkOrientation={false}
-            rotatable={true}
-            autoCrop={false}
-          />
-
+          <div className="border border-primary">
+            <Cropper
+              src={
+                side.name === "Front"
+                  ? `${baseUrl}GetTemplateImage?filePath=${images[currentImageIndex].frontImagePath}`
+                  : `${baseUrl}GetTemplateImage?filePath=${images[currentImageIndex].backImagePath}`
+              }
+              style={{ height: "50dvh", width: "100%" }}
+              initialAspectRatio={1}
+              guides={true}
+              ref={cropperRef}
+              cropend={() => getCropData()}
+              viewMode={1}
+              minCropBoxHeight={10}
+              minCropBoxWidth={10}
+              background={true}
+              responsive={true}
+              autoCropArea={0}
+              checkOrientation={false}
+              rotatable={true}
+              autoCrop={false}
+            />
+          </div>
+          <div
+            className="mb-2"
+            style={{ width: "100%", display: "flex", justifyContent: "center" }}
+          ></div>
           <br />
           <br />
           {cropData && (

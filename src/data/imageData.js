@@ -1,24 +1,52 @@
 const ImageUrls = [
-  { imageUrl: "https://picsum.photos/id/1/200/300" },
-  { imageUrl: "https://picsum.photos/id/2/200/300" },
-  { imageUrl: "https://picsum.photos/id/3/200/300" },
-  { imageUrl: "https://picsum.photos/id/4/200/300" },
-  { imageUrl: "https://picsum.photos/id/5/200/300" },
-  { imageUrl: "https://picsum.photos/id/6/200/300" },
-  { imageUrl: "https://picsum.photos/id/7/200/300" },
-  { imageUrl: "https://picsum.photos/id/8/200/300" },
-  { imageUrl: "https://picsum.photos/id/9/200/300" },
-  { imageUrl: "https://picsum.photos/id/10/200/300" },
-  { imageUrl: "https://picsum.photos/id/11/200/300" },
-  { imageUrl: "https://picsum.photos/id/12/200/300" },
-  { imageUrl: "https://picsum.photos/id/13/200/300" },
-  { imageUrl: "https://picsum.photos/id/14/200/300" },
-  { imageUrl: "https://picsum.photos/id/15/200/300" },
-  { imageUrl: "https://picsum.photos/id/16/200/300" },
-  { imageUrl: "https://picsum.photos/id/17/200/300" },
-  { imageUrl: "https://picsum.photos/id/18/200/300" },
-  { imageUrl: "https://picsum.photos/id/19/200/300" },
-  { imageUrl: "https://picsum.photos/id/20/200/300" },
+  {
+    frontImagePath: "Scan Data\\Sample Data\\1_Front.jpg",
+    backImagePath: "Scan Data\\Sample Data\\2_Back.jpg",
+  },
+  {
+    frontImagePath: "Scan Data\\Sample Data\\3_Front.jpg",
+    backImagePath: "Scan Data\\Sample Data\\4_Back.jpg",
+  },
+  {
+    frontImagePath: "Scan Data\\Sample Data\\5_Front.jpg",
+    backImagePath: "Scan Data\\Sample Data\\6_Back.jpg",
+  },
+  {
+    frontImagePath: "Scan Data\\Sample Data\\7_Front.jpg",
+    backImagePath: "Scan Data\\Sample Data\\8_Back.jpg",
+  },
+  {
+    frontImagePath: "Scan Data\\Sample Data\\9_Front.jpg",
+    backImagePath: "Scan Data\\Sample Data\\10_Back.jpg",
+  },
+  {
+    frontImagePath: "Scan Data\\Sample Data\\11_Front.jpg",
+    backImagePath: "Scan Data\\Sample Data\\12_Back.jpg",
+  },
+  {
+    frontImagePath: "Scan Data\\Sample Data\\13_Front.jpg",
+    backImagePath: "Scan Data\\Sample Data\\14_Back.jpg",
+  },
+  {
+    frontImagePath: "Scan Data\\Sample Data\\15_Front.jpg",
+    backImagePath: "Scan Data\\Sample Data\\16_Back.jpg",
+  },
+  {
+    frontImagePath: "Scan Data\\Sample Data\\17_Front.jpg",
+    backImagePath: "Scan Data\\Sample Data\\18_Back.jpg",
+  },
+  {
+    frontImagePath: "Scan Data\\Sample Data\\19_Front.jpg",
+    backImagePath: "Scan Data\\Sample Data\\20_Back.jpg",
+  },
+  {
+    frontImagePath: "Scan Data\\Sample Data\\21_Front.jpg",
+    backImagePath: "Scan Data\\Sample Data\\22_Back.jpg",
+  },
+  {
+    frontImagePath: "Scan Data\\Sample Data\\23_Front.jpg",
+    backImagePath: "Scan Data\\Sample Data\\24_Back.jpg",
+  },
 ];
 
 export default ImageUrls;

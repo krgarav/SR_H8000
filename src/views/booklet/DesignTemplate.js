@@ -104,6 +104,7 @@ const DesignBookletTemplate = () => {
   const [imageModalShow, setImageModalShow] = useState(false);
   const [imagesSelectedCount, setImagesSelectedCount] = useState(0);
   const [sizes, setSizes] = useState({});
+  
   const location = useLocation();
   const {
     totalColumns,
@@ -126,6 +127,7 @@ const DesignBookletTemplate = () => {
   const numRows = timingMarks;
   const numCols = totalColumns;
   const divRefs = useRef([]);
+
   const { width } = useWindowSize();
   const isWideScreen = width >= 994;
   const handleDragStop = (e, d) => {
@@ -148,6 +150,8 @@ const DesignBookletTemplate = () => {
       return newState;
     });
   };
+
+   
   useEffect(() => {
     setTimeout(() => {
       setLocalData(JSON.parse(localStorage.getItem("Template")));
@@ -913,8 +917,7 @@ const DesignBookletTemplate = () => {
 
         return newSelectedFields;
       });
-      //   console.log(templateIndex,selectedFieldType,coordinateIndex);
-      //   if(templateIndex,selectedFieldType,coordinateIndex)
+
       dataCtx.modifyRegionWithUUID(
         templateIndex,
         newData,
@@ -924,7 +927,6 @@ const DesignBookletTemplate = () => {
       setSelection(null);
     }
   };
-  console.log(dataCtx.allTemplates);
   const handleSkewMarkOptionChange = (event) => {
     setSkewOption(event.target.value);
   };
@@ -1478,7 +1480,7 @@ const DesignBookletTemplate = () => {
                                 result[rowIndex][colIndex] !== undefined
                                   ? "black"
                                   : "";
-                              console.log(num);
+
                               if (num || num === 0) {
                                 bgColor = "lightgreen";
                               }
@@ -1861,9 +1863,7 @@ const DesignBookletTemplate = () => {
         </Modal.Header>
         <Modal.Body style={{ height: "55vh", overflowX: "auto" }}>
           {selectedFieldType === "imageArea" && (
-            <>
-              {/* <ImageCropper images={templateImagePath} /> */}
-            </>
+            <>{/* <ImageCropper images={templateImagePath} /> */}</>
           )}
           {selectedFieldType !== "imageArea" && (
             <>

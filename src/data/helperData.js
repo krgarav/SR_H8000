@@ -243,3 +243,8 @@ export const sensitivityType = [
   { id: "15", name: "15" },
   { id: "16", name: "16" },
 ];
+
+export const sideOption = [
+  { id: "1", name: "Front" },
+  { id: "2", name: "Back" },
+];
