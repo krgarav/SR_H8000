@@ -56,7 +56,7 @@ import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
 import CustomTooltip from "components/CustomTooltip";
 import ImageUrls from "data/imageData";
-import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 
 const BookletTemplateModal = (props) => {
@@ -106,7 +106,6 @@ const BookletTemplateModal = (props) => {
   const [image, setImage] = useState();
   const [images, setImages] = useState(ImageUrls);
   const [imageTempFile, setTempImageFile] = useState();
-  const [imageBack, setImageBack] = useState();
   const [selectedUI, setSelectedUI] = useState("SIMPLEX");
   const [activeTab, setActiveTab] = useState("simplex");
   const [barcodeEnable, setBarcodeEnable] = useState({
@@ -148,7 +147,6 @@ const BookletTemplateModal = (props) => {
       setDifference(newValue[1]);
     }
   };
-
 
   const jobHandler = (e) => {
     setSelectedUI(e);
@@ -219,11 +217,7 @@ const BookletTemplateModal = (props) => {
       setModalShow(false);
     }
   }, [props.show]);
-  // useEffect(() => {
-  //   if (props.onHide) {
-  //     setSelectedUI("");
-  //   }
-  // }, [props.onHide]);
+
   const Option = (props) => {
     return (
       <components.Option {...props}>
@@ -278,8 +272,6 @@ const BookletTemplateModal = (props) => {
       });
     }
   };
-
- 
 
   const getShadeFromValue = (value) => {
     // Example function to map slider value to a shade
@@ -359,7 +351,6 @@ const BookletTemplateModal = (props) => {
         toast.error("Please Select ID Field ");
         return;
       }
-    
 
       if (idPresent && idPresent.id === "present") {
         if (Object.values(face).length === 0) {
@@ -495,9 +486,9 @@ const BookletTemplateModal = (props) => {
     try {
       const response = await getSampleData();
       console.log(response);
-      const jsonData = response?.data;
-      const base64ImageUrl = response?.frontImage;
-      const base64ImageUrl2 = response?.backImage;
+
+      const { Data, Images } = response;
+      const jsonData = Data;
       const correctedJson = jsonData
         .map((item) => {
           const filteredItem = Object.fromEntries(
@@ -512,33 +503,16 @@ const BookletTemplateModal = (props) => {
       const Column = Object.keys(correctedJson[1]).filter(
         (item) => item !== ""
       ).length;
-      console.log(Object.values(jsonData[1]));
-      setNumberOfLines(Row);
-      setNumberOfFrontSideColumn(Column);
+
+      setNumberOfLines(Row); //setting number of rows in excel
+      setNumberOfFrontSideColumn(Column); //setting number of columns in excel
       setExcelJsonFile(correctedJson);
-      const csv = Papa.unparse(correctedJson);
-      // Create a Blob from the CSV string
-      const blob = new Blob([csv], { type: "text/csv" });
-
-      // Create a File object from the Blob
-      const csvfile = new File([blob], "data.csv", { type: "text/csv" });
-
-      // Set the File object to state
-      setExcelFile(csvfile);
-
-      const file = base64ToFile(base64ImageUrl, "image.png");
-      // Convert the File object to an image URL
-      const imageUrl = URL.createObjectURL(file);
-      setTempImageFile(file);
-      // Set the image URL to be used in the component
-      setImage(imageUrl);
-      setImageSrc(base64ImageUrl);
-      setBackImageSrc(base64ImageUrl2);
-      setScannerLoading(false);
+      setImages(Images);
     } catch (error) {
       console.log(error);
+      toast.error(error.message);
+    } finally {
       setScannerLoading(false);
-      // toast.error(error.message);
     }
   };
   const systemHandler = () => {
@@ -546,7 +520,7 @@ const BookletTemplateModal = (props) => {
     setFileModal(true);
   };
   const saveHandler = () => {
-   if (!excelJsonFile) {
+    if (!excelJsonFile) {
       alert("Please select excel file");
     } else {
       setImageModal(false);
