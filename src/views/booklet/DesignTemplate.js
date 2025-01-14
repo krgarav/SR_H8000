@@ -26,6 +26,18 @@ import deepcopy from "deepcopy";
 import resetJson from "data/resetJson";
 import { useWindowSize } from "react-use";
 import ImagesCropper from "modals/ImagesCropper";
+import { getUrls } from "helper/url_helper";
+
+// Helper function to fetch an image and convert it to a File object
+async function fetchImageAsFile(imagePath, baseUrl) {
+  const response = await fetch(
+    `${baseUrl}GetTemplateImage?filePath=${imagePath}`
+  ); // Fetch the image
+  const blob = await response.blob(); // Convert response to a Blob
+  const fileName = imagePath.split("\\").pop(); // Extract file name from path
+  return new File([blob], fileName, { type: blob.type }); // Create a File object
+}
+
 // Function to get values from sessionStorage or provide default
 const getLocalStorageOrDefault = (key, defaultValue) => {
   const stored = localStorage.getItem(key);
@@ -104,7 +116,7 @@ const DesignBookletTemplate = () => {
   const [imageModalShow, setImageModalShow] = useState(false);
   const [imagesSelectedCount, setImagesSelectedCount] = useState(0);
   const [sizes, setSizes] = useState({});
-  
+  const [baseUrl, setBaseUrl] = useState(null);
   const location = useLocation();
   const {
     totalColumns,
@@ -150,8 +162,18 @@ const DesignBookletTemplate = () => {
       return newState;
     });
   };
-
-   
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getUrls();
+        const GetDataURL = response.MAIN_URL;
+        setBaseUrl(GetDataURL);
+      } catch (error) {
+        console.log("Error", error);
+      }
+    };
+    fetchData();
+  }, []);
   useEffect(() => {
     setTimeout(() => {
       setLocalData(JSON.parse(localStorage.getItem("Template")));
@@ -1115,6 +1137,7 @@ const DesignBookletTemplate = () => {
 
     // Extract layout parameters and its coordinates
     const layoutParameters = template[0].layoutParameters;
+
     const idpatttern = "000000000000000000000000";
     if (layoutParameters.idMarksPattern === idpatttern) {
       layoutParameters.columnNumber = 1;
@@ -1124,7 +1147,7 @@ const DesignBookletTemplate = () => {
       layoutParameters.rowStart = 1;
       layoutParameters.rowStep = 1;
     }
-
+    layoutParameters.isBooklet = true;
     const Coordinate = layoutParameters.Coordinate;
     let layoutCoordinates = {};
     // Transform layout coordinates into the required format
@@ -1236,7 +1259,7 @@ const DesignBookletTemplate = () => {
     // Create a File object from the Blob
     const csvfile = new File([blob], "data.csv", { type: "text/csv" });
     // const imageFile = base64ToFile(templateImagePath, "front.png");
-    const backImageFile = base64ToFile(templateBackImagePath, "back.png");
+
     // Send the request and handle the response
 
     try {
@@ -1246,12 +1269,27 @@ const DesignBookletTemplate = () => {
       if (res === undefined) {
         toast.error("Something went wrong ");
       }
+      const ConvertedImageFile = images;
       if (res?.success === true) {
         const layoutId = res?.layoutId;
         const formdata = new FormData();
+        for (const item of ConvertedImageFile) {
+          // Fetch and convert front and back images to File objects
+          const frontImageFile = await fetchImageAsFile(
+            item.frontImagePath,
+            baseUrl
+          );
+          const backImageFile = await fetchImageAsFile(
+            item.backImagePath,
+            baseUrl
+          );
+
+          // Append the files to FormData
+          formdata.append("FrontImageFile", frontImageFile);
+          formdata.append("BackImageFile", backImageFile);
+        }
         formdata.append("LayoutId", layoutId);
-        // formdata.append("FrontImageFile", imageFile);
-        formdata.append("BackImageFile", backImageFile);
+
         formdata.append("ExcelFile", csvfile);
         // Iterate over the FormData entries and log them
         for (let [key, value] of formdata.entries()) {

@@ -32,7 +32,18 @@ import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CopyModal from "modals/CopyModal/CopyModal";
+import EditImagesCropper from "modals/EditImagesCropper";
+import splitFrontBackImagePaths from "services/splitImages";
 
+// Helper function to fetch an image and convert it to a File object
+async function fetchImageAsFile(imagePath, baseUrl) {
+  const response = await fetch(
+    `${baseUrl}GetTemplateImage?filePath=${imagePath}`
+  ); // Fetch the image
+  const blob = await response.blob(); // Convert response to a Blob
+  const fileName = imagePath.split("\\").pop(); // Extract file name from path
+  return new File([blob], fileName, { type: blob.type }); // Create a File object
+}
 // Function to get values from sessionStorage or provide default
 const getSessionStorageOrDefault = (key, defaultValue) => {
   const stored = sessionStorage.getItem(key);
@@ -116,6 +127,7 @@ const EditBookletDesignTemplate = () => {
   const [selectedField, setSelectedField] = useState();
   const [showCopy, setShowCopy] = useState(false);
   const [sensitivity, setSensitivity] = useState(5);
+  const [baseUrl, setBaseUrl] = useState(null);
   const emptyExcelJsonFile = getSessionStorageOrDefault(
     "excelJsonFile",
     state.excelJsonFile
@@ -131,19 +143,12 @@ const EditBookletDesignTemplate = () => {
       state.totalColumns
     ),
     timingMarks: getSessionStorageOrDefault("timingMarks", state.timingMarks),
-    // templateImagePath: getSessionStorageOrDefault(
-    //   "templateImagePath",
-    //   state.templateImagePath
-    // ),
-    // templateBackImagePath: getSessionStorageOrDefault(
-    //   "templateBackImagePath",
-    //   state.templateBackImagePath
-    // ),
     bubbleType: getSessionStorageOrDefault("bubbleType", state.bubbleType),
     templateIndex: getSessionStorageOrDefault(
       "templateIndex",
       state.templateIndex
     ),
+    images: getSessionStorageOrDefault("images", state.images),
     templateId: getSessionStorageOrDefault("templateId", state.templateId),
     excelJsonFile: getSessionStorageOrDefault(
       "excelJsonFile",
@@ -167,12 +172,7 @@ const EditBookletDesignTemplate = () => {
         ...item,
         totalColumns: JSON.parse(sessionStorage.getItem("totalColumns")),
         timingMarks: JSON.parse(sessionStorage.getItem("timingMarks")),
-        templateImagePath: JSON.parse(
-          sessionStorage.getItem("templateImagePath")
-        ),
-        templateBackImagePath: JSON.parse(
-          sessionStorage.getItem("templateBackImagePath")
-        ),
+        images: JSON.parse(sessionStorage.getItem("images")),
         bubbleType: JSON.parse(sessionStorage.getItem("bubbleType")),
         excelJsonFile: JSON.parse(sessionStorage.getItem("excelJsonFile")),
         numberedExcelJsonFile: JSON.parse(
@@ -182,6 +182,18 @@ const EditBookletDesignTemplate = () => {
     });
   };
   console.log(selectedCoordinates);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getUrls();
+        const GetDataURL = response.MAIN_URL;
+        setBaseUrl(GetDataURL);
+      } catch (error) {
+        console.log("Error", error);
+      }
+    };
+    fetchData();
+  }, []);
   // **************************PREVENT FROM RELOADING*********************
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -233,14 +245,7 @@ const EditBookletDesignTemplate = () => {
     if (location.state) {
       sessionStorage.setItem("totalColumns", state.totalColumns);
       sessionStorage.setItem("timingMarks", JSON.stringify(state.timingMarks));
-      // sessionStorage.setItem(
-      //   "templateImagePath",
-      //   JSON.stringify(state.templateImagePath)
-      // );
-      // sessionStorage.setItem(
-      //   "templateBackImagePath",
-      //   JSON.stringify(state.templateBackImagePath)
-      // );
+
       sessionStorage.setItem("bubbleType", JSON.stringify(state.bubbleType));
       sessionStorage.setItem("templateIndex", state.templateIndex);
       sessionStorage.setItem("templateId", JSON.stringify(state.templateId));
@@ -248,6 +253,7 @@ const EditBookletDesignTemplate = () => {
         "excelJsonFile",
         JSON.stringify(state.excelJsonFile)
       );
+      sessionStorage.setItem("images", JSON.stringify(state.images));
       const emptyExcelJsonFile = state.excelJsonFile.map((row) => {
         return Object.keys(row).reduce((acc, key) => {
           acc[key] = ""; // Set each value to an empty string
@@ -1201,6 +1207,7 @@ const EditBookletDesignTemplate = () => {
     const layoutParameters = template[0].layoutParameters;
     layoutParameters.id = data.templateId;
     const Coordinate = layoutParameters.Coordinate;
+    layoutParameters.isBooklet = true;
     let layoutCoordinates = {};
     // Transform layout coordinates into the required format
     if (Coordinate) {
@@ -1302,12 +1309,7 @@ const EditBookletDesignTemplate = () => {
       formFieldWindowParameters,
     };
     console.log(fullRequestData);
-    // Send the request and handle the response
-    const imageFile = base64ToFile(data.templateImagePath.image, "front.jpg");
-    const backImageFile = base64ToFile(
-      data.templateBackImagePath.image,
-      "back.jpg"
-    );
+
     const csv = Papa.unparse(data.excelJsonFile);
     // Create a Blob from the CSV string
     const blob = new Blob([csv], { type: "text/csv" });
@@ -1323,15 +1325,28 @@ const EditBookletDesignTemplate = () => {
     } catch (error) {
       console.log(error);
     }
-
+    const ConvertedImageFile = splitFrontBackImagePaths(data.images);
     try {
       const res = await createTemplate(fullRequestData);
       if (res.success === true) {
         const layoutId = res?.layoutId;
         const formdata = new FormData();
         formdata.append("LayoutId", layoutId);
-        formdata.append("FrontImageFile", imageFile);
-        formdata.append("BackImageFile", backImageFile);
+        for (const item of ConvertedImageFile) {
+          // Fetch and convert front and back images to File objects
+          const frontImageFile = await fetchImageAsFile(
+            item.frontImagePath,
+            baseUrl
+          );
+          const backImageFile = await fetchImageAsFile(
+            item.backImagePath,
+            baseUrl
+          );
+
+          // Append the files to FormData
+          formdata.append("FrontImageFile", frontImageFile);
+          formdata.append("BackImageFile", backImageFile);
+        }
         formdata.append("ExcelFile", csvfile);
         const res2 = await sendFile(formdata);
         setLoading(false);
@@ -2796,10 +2811,9 @@ const EditBookletDesignTemplate = () => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ height: "60vh" }}>
-          <EditImageCropper
+          <EditImagesCropper
             handleImage={handleImage}
-            imageSrc={data.templateImagePath?.image}
-            backImageSrc={data.templateBackImagePath?.image}
+            images={data.images}
             selectedCoordinateData={selectedCoordinates}
           />
         </Modal.Body>

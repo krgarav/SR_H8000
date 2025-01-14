@@ -29,6 +29,7 @@ import { checkJobStatus } from "helper/TemplateHelper";
 import Placeholder from "ui/Placeholder";
 import CloneTemplateHandler from "services/CloneTemplate";
 import BookletModal from "ui/BookletModal";
+import { getUrls } from "helper/url_helper";
 
 const Template = () => {
   const [modalShow, setModalShow] = useState(false);
@@ -37,14 +38,25 @@ const Template = () => {
   const [toggle, setToggle] = useState(false);
   const [loading, setLoading] = useState(false);
   const [templateLoading, setTemplateLoading] = useState(false);
-
+  const [baseUrl, setBaseUrl] = useState(null);
   const navigate = useNavigate();
   const dataCtx = useContext(DataContext);
 
   useEffect(() => {
     sessionStorage.clear();
   }, []);
-
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getUrls();
+        const GetDataURL = response.MAIN_URL;
+        setBaseUrl(GetDataURL);
+      } catch (error) {
+        console.log("Error", error);
+      }
+    };
+    fetchData();
+  }, []);
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
@@ -106,47 +118,49 @@ const Template = () => {
 
       const templateId = tempData.id;
       const res = await getLayoutDataById(templateId);
+      const { csvPath, imagePaths } = res;
 
-      if (!res?.templateFiles || res.templateFiles.length < 3) {
+      if (!csvPath) {
+        toast.error("No CSV found in this template. Cannot open the template.");
+        return;
+      }
+      console.log(";jj");
+      if (!imagePaths) {
         toast.error(
           "No images found in this template. Cannot open the template."
         );
         return;
       }
 
-      const [frontImgFile, backImgFile, csvFile] = res.templateFiles.slice(
-        0,
-        3
-      );
-      const csvPath = csvFile?.excelPath;
-      const frontImgPath = frontImgFile?.imagePath;
-      const backImgPath = backImgFile?.imagePath;
+      const csvData = await getTemplateCsv(csvPath);
+      console.log(arr);
 
-      if (!frontImgPath || !backImgPath || !csvPath) {
-        toast.error(
-          "Required files are missing in this template. Cannot open the template."
-        );
-        return;
+      if (arr[0].layoutParameters.isBooklet) {
+        console.log("hoiuho");
+        navigate("/admin/template/booklet/edit-design-template", {
+          state: {
+            templateIndex: index,
+            timingMarks: +tempData.timingMarks,
+            totalColumns: +tempData.totalColumns,
+            bubbleType: tempData.bubbleType,
+            templateId: tempData.id,
+            excelJsonFile: csvData.data,
+            images: imagePaths,
+          },
+        });
+      } else {
+        // navigate("/admin/template/edit-template", {
+        //   state: {
+        //     templateIndex: index,
+        //     timingMarks: +tempData.timingMarks,
+        //     totalColumns: +tempData.totalColumns,
+        //     bubbleType: tempData.bubbleType,
+        //     templateId: tempData.id,
+        //     excelJsonFile: csvData.data,
+        //     images: imagePaths,
+        //   },
+        // });
       }
-
-      const [frontImg, backImg, csvData] = await Promise.all([
-        getTemplateImage(frontImgPath),
-        getTemplateImage(backImgPath),
-        getTemplateCsv(csvPath),
-      ]);
-
-      navigate("/admin/template/edit-template", {
-        state: {
-          templateIndex: index,
-          timingMarks: +tempData.timingMarks,
-          totalColumns: +tempData.totalColumns,
-          templateImagePath: frontImg,
-          templateBackImagePath: backImg,
-          bubbleType: tempData.bubbleType,
-          templateId: tempData.id,
-          excelJsonFile: csvData.data,
-        },
-      });
     } catch (error) {
       // toast.error("An error occurred. Cannot open the template.");
     } finally {

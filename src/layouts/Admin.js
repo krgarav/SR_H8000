@@ -99,7 +99,10 @@ const Admin = (props) => {
             path="/template/booklet/design-template"
             element={<DesignBookletTemplate />}
           />
-
+          <Route
+            path="/template/booklet/edit-design-template"
+            element={<EditBookletDesignTemplate />}
+          />
           <Route
             path="/template/edit-template"
             element={<EditDesignTemplate />}
