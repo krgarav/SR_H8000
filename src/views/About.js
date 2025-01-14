@@ -132,7 +132,7 @@ const About = () => {
                     <div className="text-center mb-4">
                       <h4>Application Version</h4>
                       <p className="lead">
-                        Version: <strong>{releaseVersion}</strong>
+                        Version: <strong>{version}</strong>
                       </p>
                       <p>
                         Release Date: <strong>{releaseVersion}</strong>
