@@ -55,6 +55,10 @@ import { imageParamsData } from "data/helperData";
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
 import CustomTooltip from "components/CustomTooltip";
+import { getUrls } from "helper/url_helper";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Carousel } from "react-responsive-carousel";
+import { SimplexImageUrl } from "data/imageData";
 const SimplexTemplateModal = (props) => {
   const [modalShow, setModalShow] = useState(false);
   const [name, setName] = useState("");
@@ -126,7 +130,21 @@ const SimplexTemplateModal = (props) => {
   const [printCustomValue, setPrintCustomValue] = useState(null);
   const [scannerLoading, setScannerLoading] = useState(false);
   const [value, setValue] = React.useState([5, 6]);
-
+  const [images, setImages] = useState(SimplexImageUrl);
+  const [baseUrl, setBaseUrl] = useState(null);
+  const [showFront, setShowFront] = useState(true);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getUrls();
+        const GetDataURL = response.MAIN_URL;
+        setBaseUrl(GetDataURL);
+      } catch (error) {
+        console.log("Error", error);
+      }
+    };
+    fetchData();
+  }, []);
   const handleChange = (event, newValue, activeThumb) => {
     const minDistance = 1;
     if (!Array.isArray(newValue)) {
@@ -143,8 +161,6 @@ const SimplexTemplateModal = (props) => {
       setDifference(newValue[1]);
     }
   };
-
-  const handleAdditionalSensitivity = () => {};
   const navigate = useNavigate();
 
   const jobHandler = (e) => {
@@ -469,6 +485,7 @@ const SimplexTemplateModal = (props) => {
             iReject: 0,
             idMarksPattern: "000000000000000000000000",
             excelJsonFile: excelJsonFile,
+            images: images,
             numberedExcelJsonFile: emptyExcelJsonFile,
           },
           barcodeData: {
@@ -508,12 +525,10 @@ const SimplexTemplateModal = (props) => {
           },
         },
       ];
-      console.log(templateData);
-
       localStorage.setItem("Template", JSON.stringify(templateData));
       const index = dataCtx.setAllTemplates(templateData);
       setModalShow(false);
-      navigate("/admin/template/design-template");
+      navigate("/admin/template/simplex/design-template");
     } catch (error) {
       console.error("Error uploading file: ", error);
     }
@@ -524,9 +539,8 @@ const SimplexTemplateModal = (props) => {
     try {
       const response = await getSampleData();
       console.log(response);
-      const jsonData = response?.data;
-      const base64ImageUrl = response?.frontImage;
-      const base64ImageUrl2 = response?.backImage;
+      const { data, images } = response;
+      const jsonData = data;
       const correctedJson = jsonData
         .map((item) => {
           const filteredItem = Object.fromEntries(
@@ -541,33 +555,17 @@ const SimplexTemplateModal = (props) => {
       const Column = Object.keys(correctedJson[1]).filter(
         (item) => item !== ""
       ).length;
-      console.log(Object.values(jsonData[1]));
       setNumberOfLines(Row);
       setNumberOfFrontSideColumn(Column);
       setExcelJsonFile(correctedJson);
-      const csv = Papa.unparse(correctedJson);
-      // Create a Blob from the CSV string
-      const blob = new Blob([csv], { type: "text/csv" });
-
-      // Create a File object from the Blob
-      const csvfile = new File([blob], "data.csv", { type: "text/csv" });
-
-      // Set the File object to state
-      setExcelFile(csvfile);
-
-      const file = base64ToFile(base64ImageUrl, "image.png");
-      // Convert the File object to an image URL
-      const imageUrl = URL.createObjectURL(file);
-      setTempImageFile(file);
-      // Set the image URL to be used in the component
-      setImage(imageUrl);
-      setImageSrc(base64ImageUrl);
-      setBackImageSrc(base64ImageUrl2);
+      setImages(images);
       setScannerLoading(false);
     } catch (error) {
       console.log(error);
       setScannerLoading(false);
       // toast.error(error.message);
+    } finally {
+      setScannerLoading(false);
     }
   };
 
@@ -577,24 +575,14 @@ const SimplexTemplateModal = (props) => {
   };
 
   const saveHandler = () => {
-    if (!image) {
-      alert("Please select image");
+    if (!excelJsonFile) {
+      alert("Please select excel file");
     } else {
       setImageModal(false);
     }
-    // if (imageTempFile) {
-    //   // setImageFile(imageTempFile);
-    //   setImageModal(false);
-    // } else {
-    //   alert("Please select image");
-    // }
   };
 
   const saveFileHandler = () => {
-    if (!image) {
-      alert("Please select image");
-      return;
-    }
     if (!excelJsonFile) {
       alert("Please select excel file");
       return;
@@ -2364,13 +2352,93 @@ const SimplexTemplateModal = (props) => {
                   </div>
                 </Col>
               </Row>
+              <Row className="d-flex justify-content-center mt-2">
+                {images.length > 0 && (
+                  <div className=" my-1">
+                    <div className="row justify-content-center">
+                      <div className="col-12 col-md-8">
+                        {/* Toggle Buttons */}
+                        <div className="d-flex justify-content-center mb-3">
+                          <button
+                            className={`btn ${
+                              showFront ? "btn-primary" : "btn-outline-primary"
+                            } me-2`}
+                            onClick={() => setShowFront(true)}
+                          >
+                            Show Front Images
+                          </button>
+                          <button
+                            className={`btn ${
+                              !showFront ? "btn-primary" : "btn-outline-primary"
+                            }`}
+                            onClick={() => setShowFront(false)}
+                          >
+                            Show Back Images
+                          </button>
+                        </div>
+
+                        {/* Front Image Carousel */}
+                        {showFront && (
+                          <Carousel
+                            showArrows={true}
+                            showThumbs={false}
+                            infiniteLoop
+                            emulateTouch
+                          >
+                            {images.map((item, index) => (
+                              <div key={index}>
+                                <img
+                                  src={`${baseUrl}GetTemplateImage?filePath=${item.frontImagePath}`}
+                                  alt={`Front Slide ${index + 1}`}
+                                  className="img-fluid rounded"
+                                  style={{
+                                    maxHeight: "400px",
+                                    objectFit: "cover",
+                                    width: "100%",
+                                  }}
+                                />
+                                <p className="legend">{`Front Image ${
+                                  index + 1
+                                }`}</p>
+                              </div>
+                            ))}
+                          </Carousel>
+                        )}
+
+                        {/* Back Image Carousel */}
+                        {!showFront && (
+                          <Carousel
+                            showArrows={true}
+                            showThumbs={false}
+                            infiniteLoop
+                            emulateTouch
+                          >
+                            {images.map((item, index) => (
+                              <div key={index}>
+                                <img
+                                  src={`${baseUrl}GetTemplateImage?filePath=${item.backImagePath}`}
+                                  alt={`Back Slide ${index + 1}`}
+                                  className="img-fluid rounded"
+                                  style={{
+                                    maxHeight: "400px",
+                                    objectFit: "cover",
+                                    width: "100%",
+                                  }}
+                                />
+                                <p className="legend">{`Back Image ${
+                                  index + 1
+                                }`}</p>
+                              </div>
+                            ))}
+                          </Carousel>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {images.length === 0 && <p>Please select the image</p>}
+              </Row>
             </div>
-            <Row className="d-flex justify-content-center mt-4">
-              {image && (
-                <img src={image} alt="Scanned" width={200} height={200} />
-              )}
-              {!image && <p>Please select the image</p>}
-            </Row>
           </>
         </Modal.Body>
         <Modal.Footer>
@@ -2404,32 +2472,6 @@ const SimplexTemplateModal = (props) => {
         <Modal.Body style={{ height: "65dvh", overflow: "auto" }}>
           {props.title === "SIMPLEX" && (
             <>
-              <Row className="d-flex justify-content-center mt-4">
-                <label>Choose Front Image</label>
-                <input
-                  className="form-control"
-                  type="file"
-                  id="formFile"
-                  onChange={handleImageUpload}
-                  accept="image/*"
-                />
-                {image && (
-                  <img src={image} alt="Scanned" width={100} height={100} />
-                )}
-              </Row>
-              <Row className="d-flex justify-content-center mt-4">
-                <label>Choose Back Image</label>
-                <input
-                  className="form-control"
-                  type="file"
-                  id="formFile"
-                  onChange={handleImage2Upload}
-                  accept="image/*"
-                />
-                {imageBack && (
-                  <img src={imageBack} alt="Scanned" width={100} height={100} />
-                )}
-              </Row>
               <Row className="d-flex justify-content-center mt-4">
                 <label>Choose Excel File</label>
                 <input

@@ -485,8 +485,6 @@ const BookletTemplateModal = (props) => {
           },
         },
       ];
-      console.log(templateData);
-
       localStorage.setItem("Template", JSON.stringify(templateData));
       const index = dataCtx.setAllTemplates(templateData);
       setModalShow(false);

@@ -92,7 +92,7 @@ const Admin = (props) => {
           {getRoutes(routes)}
           <Route path="*" element={<Navigate to="/admin/index" replace />} />
           <Route
-            path="/template/design-template"
+            path="/template/simplex/design-template"
             element={<DesignTemplate />}
           />
           <Route
