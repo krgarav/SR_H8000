@@ -16,7 +16,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DataContext from "store/DataContext";
 import axios from "axios";
-import TemplateModal from "../modals/TemplateModal";
+import TemplateModal from "../modals/SimplexTemplateModal";
 import { fetchAllTemplate } from "helper/TemplateHelper";
 import { deleteTemplate } from "helper/TemplateHelper";
 import CryptoJS from "crypto-js";
@@ -124,7 +124,7 @@ const Template = () => {
         toast.error("No CSV found in this template. Cannot open the template.");
         return;
       }
-      console.log(";jj");
+
       if (!imagePaths) {
         toast.error(
           "No images found in this template. Cannot open the template."
@@ -136,7 +136,6 @@ const Template = () => {
       console.log(arr);
 
       if (arr[0].layoutParameters.isBooklet) {
-        console.log("hoiuho");
         navigate("/admin/template/booklet/edit-design-template", {
           state: {
             templateIndex: index,

@@ -1,14 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Modal, Button, Nav, Form, Tab, Row, Col } from "react-bootstrap";
-import TemplateModal from "../modals/TemplateModal";
+import TemplateModal from "../modals/SimplexTemplateModal";
 import Jobcard from "./Jobcard";
 import BookletTemplateModal from "../modals/BookletModal/BookletTemplateModal";
+import DuplexTemplateModal from "modals/DuplexModal/DuplexTemplateModal";
+import SimplexTemplateModal from "../modals/SimplexTemplateModal";
 
 const BookletModal = (props) => {
   const [modalShow, setModalShow] = useState(false);
   const [bookletModalShow, setBookletModalShow] = useState(false);
   const [simplexModalShow, setSimplexModalShow] = useState(false);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [showDuplexModal, setShowDuplexModal] = useState(false);
   useEffect(() => {
     if (props.show) {
       setModalShow(true);
@@ -18,11 +21,11 @@ const BookletModal = (props) => {
   }, [props.show]);
   const handleJob = (text) => {
     if (text === "Simplex") {
-      setShowTemplateModal(true);
       setSimplexModalShow(true);
     } else if (text === "Booklet") {
       setBookletModalShow(true);
-      setSimplexModalShow(false);
+    } else {
+      setShowDuplexModal(true);
     }
   };
   return (
@@ -45,7 +48,7 @@ const BookletModal = (props) => {
 
         <Modal.Body style={{ overflow: "auto", alignItems: "center" }}>
           <Row md={12}>
-            {/* <Col md={4}>
+            <Col md={4}>
               <Jobcard handleJob={handleJob} text={"Simplex"} />
             </Col>
             <Col md={4}>
@@ -54,13 +57,13 @@ const BookletModal = (props) => {
                 text={"Duplex"}
                 // secondary={"(coming soon)"}
               />
-            </Col> */}
+            </Col>
 
-            <Col md={4}></Col>
+            {/* <Col md={4}></Col> */}
             <Col md={4}>
               <Jobcard handleJob={handleJob} text={"Booklet"} />
             </Col>
-            <Col md={4}></Col>
+            {/* <Col md={4}></Col> */}
           </Row>
         </Modal.Body>
         <Modal.Footer>
@@ -70,11 +73,20 @@ const BookletModal = (props) => {
         </Modal.Footer>
       </Modal>
 
-      {showTemplateModal && (
-        <TemplateModal
-          show={showTemplateModal}
-          onHide={() => setShowTemplateModal(false)}
-          title={simplexModalShow ? "SIMPLEX" : "BOOKLET"}
+      {simplexModalShow && (
+        <SimplexTemplateModal
+          show={simplexModalShow}
+          onHide={() => setSimplexModalShow(false)}
+          title={"SIMPLEX"}
+        />
+      )}
+      {showDuplexModal && (
+        <DuplexTemplateModal
+          show={showDuplexModal}
+          onHide={() => {
+            setShowDuplexModal(false);
+          }}
+          title="DUPLEX"
         />
       )}
 

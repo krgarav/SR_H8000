@@ -1,11 +1,11 @@
 const ImageUrls = [
   {
     frontImagePath: "Scan Data\\Sample Data\\1_Front.jpg",
-    backImagePath: "Scan Data\\Sample Data\\2_Back.jpg",
+    backImagePath: "Scan Data\\Sample Data\\1_Back.jpg",
   },
   {
-    frontImagePath: "Scan Data\\Sample Data\\3_Front.jpg",
-    backImagePath: "Scan Data\\Sample Data\\4_Back.jpg",
+    frontImagePath: "Scan Data\\Sample Data\\2_Front.jpg",
+    backImagePath: "Scan Data\\Sample Data\\2_Back.jpg",
   },
   {
     frontImagePath: "Scan Data\\Sample Data\\5_Front.jpg",
@@ -48,5 +48,15 @@ const ImageUrls = [
     backImagePath: "Scan Data\\Sample Data\\24_Back.jpg",
   },
 ];
-
+const SimplexImageUrl = [
+  {
+    frontImagePath: "Scan Data\\Sample Data\\1_Front.jpg",
+    backImagePath: "Scan Data\\Sample Data\\1_Back.jpg",
+  },
+  {
+    frontImagePath: "Scan Data\\Sample Data\\2_Front.jpg",
+    backImagePath: "Scan Data\\Sample Data\\2_Back.jpg",
+  },
+];
 export default ImageUrls;
+export { SimplexImageUrl };

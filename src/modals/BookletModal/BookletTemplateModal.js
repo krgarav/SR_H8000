@@ -105,7 +105,7 @@ const BookletTemplateModal = (props) => {
   const [imageFile, setImageFile] = useState();
   const [imageModal, setImageModal] = useState();
   const [image, setImage] = useState();
-  const [images, setImages] = useState(ImageUrls);
+  const [images, setImages] = useState([]);
   const [imageTempFile, setTempImageFile] = useState();
   const [selectedUI, setSelectedUI] = useState("SIMPLEX");
   const [activeTab, setActiveTab] = useState("simplex");
@@ -2214,7 +2214,7 @@ const BookletTemplateModal = (props) => {
                 </Col>
               </Row>
               <Row className="d-flex justify-content-center mt-2">
-                {images && (
+                {images.length>0 && (
                   <div className=" my-1">
                     <div className="row justify-content-center">
                       <div className="col-12 col-md-8">
@@ -2297,7 +2297,7 @@ const BookletTemplateModal = (props) => {
                     </div>
                   </div>
                 )}
-                {!images && <p>Please select the image</p>}
+                {images.length===0  && <p>Please select the image</p>}
               </Row>
             </div>
           </>
