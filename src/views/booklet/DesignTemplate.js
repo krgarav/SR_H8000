@@ -133,8 +133,6 @@ const DesignBookletTemplate = () => {
     templateBackImagePath,
     numberedExcelJsonFile,
   } = localData[0].layoutParameters;
-
-  const rndRef = useRef();
   const navigate = useNavigate();
   const numRows = timingMarks;
   const numCols = totalColumns;
@@ -1265,9 +1263,9 @@ const DesignBookletTemplate = () => {
     try {
       setLoading(true);
       const res = await createTemplate(fullRequestData);
-      console.log(res);
       if (res === undefined) {
-        toast.error("Something went wrong ");
+        toast.error("Something went wrong, template not created!");
+        return;
       }
       const ConvertedImageFile = images;
       if (res?.success === true) {
@@ -1291,19 +1289,15 @@ const DesignBookletTemplate = () => {
         formdata.append("LayoutId", layoutId);
 
         formdata.append("ExcelFile", csvfile);
-        // Iterate over the FormData entries and log them
-        for (let [key, value] of formdata.entries()) {
-          console.log(`${key}: ${value}`);
-        }
+
         const res2 = await sendFile(formdata);
-        console.log(res2);
+     
         setLoading(false);
 
-        alert(`Response : ${JSON.stringify(res2?.message)}`);
-
         if (res2?.success) {
-          // sessionStorage.clear();
-          toast.success("Layout Saved");
+          toast.success(
+            `Response : ${JSON.stringify(res2?.message)},Layout Saved`
+          );
           navigate("/admin/template", { replace: true });
         }
       }

@@ -25,6 +25,18 @@ import processDirection from "data/processDirection";
 import deepcopy from "deepcopy";
 import resetJson from "data/resetJson";
 import { useWindowSize } from "react-use";
+import { getUrls } from "helper/url_helper";
+import ImagesCropper from "modals/ImagesCropper";
+// Helper function to fetch an image and convert it to a File object
+async function fetchImageAsFile(imagePath, baseUrl) {
+  const response = await fetch(
+    `${baseUrl}GetTemplateImage?filePath=${imagePath}`
+  ); // Fetch the image
+  const blob = await response.blob(); // Convert response to a Blob
+  const fileName = imagePath.split("\\").pop(); // Extract file name from path
+  return new File([blob], fileName, { type: blob.type }); // Create a File object
+}
+
 // Function to get values from sessionStorage or provide default
 const getLocalStorageOrDefault = (key, defaultValue) => {
   const stored = localStorage.getItem(key);
@@ -103,11 +115,12 @@ const DesignTemplate = () => {
   const [imageModalShow, setImageModalShow] = useState(false);
   const [imagesSelectedCount, setImagesSelectedCount] = useState(0);
   const [sizes, setSizes] = useState({});
+  const [baseUrl, setBaseUrl] = useState(null);
   const location = useLocation();
   const {
     totalColumns,
     timingMarks,
-    templateImagePath,
+    images,
     bubbleType,
     key: templateIndex,
     iSensitivity,
@@ -119,8 +132,6 @@ const DesignTemplate = () => {
     templateBackImagePath,
     numberedExcelJsonFile,
   } = localData[0].layoutParameters;
-
-  const rndRef = useRef();
   const navigate = useNavigate();
   const numRows = timingMarks;
   const numCols = totalColumns;
@@ -147,6 +158,18 @@ const DesignTemplate = () => {
       return newState;
     });
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getUrls();
+        const GetDataURL = response.MAIN_URL;
+        setBaseUrl(GetDataURL);
+      } catch (error) {
+        console.log("Error", error);
+      }
+    };
+    fetchData();
+  }, []);
   useEffect(() => {
     setTimeout(() => {
       setLocalData(JSON.parse(localStorage.getItem("Template")));
@@ -1232,37 +1255,49 @@ const DesignTemplate = () => {
 
     // Create a File object from the Blob
     const csvfile = new File([blob], "data.csv", { type: "text/csv" });
-    const imageFile = base64ToFile(templateImagePath, "front.png");
-    const backImageFile = base64ToFile(templateBackImagePath, "back.png");
+
     // Send the request and handle the response
 
     try {
       setLoading(true);
       const res = await createTemplate(fullRequestData);
-      console.log(res);
       if (res === undefined) {
-        toast.error("Something went wrong ");
+        toast.error("Something went wrong, template not created!");
+        return;
       }
+      const ConvertedImageFile = images;
       if (res?.success === true) {
         const layoutId = res?.layoutId;
         const formdata = new FormData();
-        formdata.append("LayoutId", layoutId);
-        formdata.append("FrontImageFile", imageFile);
-        formdata.append("BackImageFile", backImageFile);
-        formdata.append("ExcelFile", csvfile);
-        // Iterate over the FormData entries and log them
-        for (let [key, value] of formdata.entries()) {
-          console.log(`${key}: ${value}`);
+
+        for (const item of ConvertedImageFile) {
+          // Fetch and convert front and back images to File objects
+          const frontImageFile = await fetchImageAsFile(
+            item.frontImagePath,
+            baseUrl
+          );
+          const backImageFile = await fetchImageAsFile(
+            item.backImagePath,
+            baseUrl
+          );
+
+          // Append the files to FormData
+          formdata.append("FrontImageFile", frontImageFile);
+          formdata.append("BackImageFile", backImageFile);
         }
+
+        formdata.append("LayoutId", layoutId);
+
+        formdata.append("ExcelFile", csvfile);
+
         const res2 = await sendFile(formdata);
-        console.log(res2);
+
         setLoading(false);
 
-        alert(`Response : ${JSON.stringify(res2?.message)}`);
-
         if (res2?.success) {
-          // sessionStorage.clear();
-          toast.success("Layout Saved");
+          toast.success(
+            `Response : ${JSON.stringify(res2?.message)},Layout Saved`
+          );
           navigate("/admin/template", { replace: true });
         }
       }
@@ -1860,9 +1895,7 @@ const DesignTemplate = () => {
         </Modal.Header>
         <Modal.Body style={{ height: "55vh", overflowX: "auto" }}>
           {selectedFieldType === "imageArea" && (
-            <>
-              <ImageCropper imageSrc={templateImagePath} />
-            </>
+            <>{/* <ImageCropper imageSrc={templateImagePath} /> */}</>
           )}
           {selectedFieldType !== "imageArea" && (
             <>
@@ -2506,10 +2539,9 @@ const DesignTemplate = () => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ height: "60vh" }}>
-          <ImageCropper
+          <ImagesCropper
             handleImage={handleImage}
-            imageSrc={templateImagePath}
-            backImageSrc={templateBackImagePath}
+            images={images}
             selectedCoordinateData={selectedCoordinates}
           />
         </Modal.Body>
