@@ -118,6 +118,7 @@ const Template = () => {
 
       const templateId = tempData.id;
       const res = await getLayoutDataById(templateId);
+      console.log(res)
       const { csvPath, imagePaths } = res;
 
       if (!csvPath) {
@@ -148,17 +149,17 @@ const Template = () => {
           },
         });
       } else {
-        // navigate("/admin/template/edit-template", {
-        //   state: {
-        //     templateIndex: index,
-        //     timingMarks: +tempData.timingMarks,
-        //     totalColumns: +tempData.totalColumns,
-        //     bubbleType: tempData.bubbleType,
-        //     templateId: tempData.id,
-        //     excelJsonFile: csvData.data,
-        //     images: imagePaths,
-        //   },
-        // });
+        navigate("/admin/template/edit-template", {
+          state: {
+            templateIndex: index,
+            timingMarks: +tempData.timingMarks,
+            totalColumns: +tempData.totalColumns,
+            bubbleType: tempData.bubbleType,
+            templateId: tempData.id,
+            excelJsonFile: csvData.data,
+            images: imagePaths,
+          },
+        });
       }
     } catch (error) {
       // toast.error("An error occurred. Cannot open the template.");

@@ -170,12 +170,12 @@ const EditDesignTemplate = () => {
         ...item,
         totalColumns: JSON.parse(sessionStorage.getItem("totalColumns")),
         timingMarks: JSON.parse(sessionStorage.getItem("timingMarks")),
-        templateImagePath: JSON.parse(
-          sessionStorage.getItem("templateImagePath")
-        ),
-        templateBackImagePath: JSON.parse(
-          sessionStorage.getItem("templateBackImagePath")
-        ),
+        // templateImagePath: JSON.parse(
+        //   sessionStorage.getItem("templateImagePath")
+        // ),
+        // templateBackImagePath: JSON.parse(
+        //   sessionStorage.getItem("templateBackImagePath")
+        // ),
         bubbleType: JSON.parse(sessionStorage.getItem("bubbleType")),
         excelJsonFile: JSON.parse(sessionStorage.getItem("excelJsonFile")),
         numberedExcelJsonFile: JSON.parse(
@@ -1233,7 +1233,7 @@ const EditDesignTemplate = () => {
   };
 
   const sendHandler = async () => {
-    setLoading(true);
+    // setLoading(true);
     // Retrieve the selected template
     const template = dataCtx.allTemplates[data.templateIndex];
 
@@ -1342,6 +1342,7 @@ const EditDesignTemplate = () => {
       formFieldWindowParameters,
     };
     console.log(fullRequestData);
+    return
     // Send the request and handle the response
     const imageFile = base64ToFile(data.templateImagePath.image, "front.jpg");
     const backImageFile = base64ToFile(

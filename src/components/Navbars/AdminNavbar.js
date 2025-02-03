@@ -46,8 +46,8 @@ const AdminNavbar = (props) => {
     if (token) {
       const decoded = jwtDecode(token);
 
-      setName(decoded.UserName.split("@")[0])
-      setRole(decoded.Role)
+      // setName(decoded.UserName.split("@")[0])
+      // setRole(decoded.Role)
     }
 
     // console.log(userName.)

@@ -50,6 +50,9 @@ const AdminJobQueue = () => {
       fetchAssignedJobs();
     }
   }, []);
+  useEffect(() => {
+    localStorage.removeItem("secondSensitivity");
+  }, []);
   const startHandler = async (item) => {
     const { id, templateId, templateName } = item;
 

@@ -44,7 +44,7 @@ function emptyMessageTemplate() {
     </div>
   );
 }
-let num = JSON.parse(localStorage.getItem("lastSerialNo"), 10) || 1;
+let num =  1;
 const AdminScanJob = () => {
   const [count, setCount] = useState(true);
   const [processedData, setProcessedData] = useState([]);
@@ -80,6 +80,7 @@ const AdminScanJob = () => {
 
   const serialRef = useRef();
   const gridRef = useRef();
+  const numRef = useRef(1);
 
   const navigate = useNavigate();
 
@@ -191,6 +192,7 @@ const AdminScanJob = () => {
     };
     response();
   }, []);
+  console.log(socketBaseUrl)
   useEffect(() => {
     if (socketBaseUrl) {
       // Create a WebSocket connection
@@ -211,45 +213,86 @@ const AdminScanJob = () => {
       socket.onmessage = (event) => {
         // console.log(event.data);
         // console.log(typeof secondSensitivity);
-        if (secondSensitivity === "0") {
-          console.log(event.data);
+        console.log("secondSensitivity",secondSensitivity);
+        if (secondSensitivity ===null|| secondSensitivity == 0 ) {
+          console.log("if triggered",event.data);
           if (event.data) {
             const data = JSON.parse(event.data);
-            console.log(data);
+            // if (data?.Data) {
+            //   if (data.Data.length !== 0) {
+            //     const newDataKeys = Object.keys(data.Data[0]).map((key) => {
+            //       return key.endsWith(".") ? key.slice(0, -1) : key;
+            //     });
+            //     setHeadData(["Serial No", ...newDataKeys]);
+
+            //     let updatedData = data.Data.map((item) => {
+            //       const newItem = {};
+            //       for (const key in item) {
+            //         const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
+            //         newItem[newKey] = item[key];
+            //       }
+            //       newItem["Serial No"] = num++;
+            //       return newItem;
+            //     });
+
+            //     setProcessedData((prevData) => {
+            //       const combinedData = [...prevData, ...updatedData];
+                  
+            //       if (combinedData.length > 100) {
+            //         return combinedData.slice(-100);
+            //       }
+            //       return combinedData;
+            //     });
+            //     if (gridRef) {
+            //       gridRef?.current?.refresh();
+            //     }
+            //   }
+            // }
+
             if (data?.Data) {
               if (data.Data.length !== 0) {
                 const newDataKeys = Object.keys(data.Data[0]).map((key) => {
                   return key.endsWith(".") ? key.slice(0, -1) : key;
                 });
-                setHeadData(["Serial No", ...newDataKeys]);
+                setHeadData([ "Serial No",...newDataKeys]);
+            
+                let localNum = num; // Use a local variable to track Serial No
+            
 
+                // if(processedData.length>0){
+                //   localNum = processedData[processedData.length-1]["Serial No"]+1;
+                // }
                 let updatedData = data.Data.map((item) => {
                   const newItem = {};
                   for (const key in item) {
                     const newKey = key.endsWith(".") ? key.slice(0, -1) : key;
                     newItem[newKey] = item[key];
                   }
-                  newItem["Serial No"] = num++;
+                  newItem["Serial No"] = localNum++; // Increment local counter
                   return newItem;
                 });
-
+            
                 setProcessedData((prevData) => {
                   const combinedData = [...prevData, ...updatedData];
-                  const lastSlNo =
-                    combinedData[combinedData.length - 1]["Serial No"];
-                  setLastSerialNo(lastSlNo);
+            
                   if (combinedData.length > 100) {
                     return combinedData.slice(-100);
                   }
                   return combinedData;
                 });
+            
+                num = localNum; // Update global num after processing
+            
                 if (gridRef) {
                   gridRef?.current?.refresh();
                 }
               }
             }
+            
           }
+         
         } else {
+          console.log("else triggered",event.data);
           if (event.data) {
             const data = JSON.parse(event.data);
             if (data?.Data) {
@@ -288,9 +331,8 @@ const AdminScanJob = () => {
 
                   setSecondProcessedData((prevData) => {
                     const combinedData = [...prevData, ...updatedData];
-                    const lastSlNo =
-                      combinedData[combinedData.length - 1]["Serial No"];
-                    setLastSerialNo(lastSlNo);
+                  
+                    
                     if (combinedData.length > 100) {
                       return combinedData.slice(-100);
                     }
@@ -300,7 +342,7 @@ const AdminScanJob = () => {
                     gridRef?.current?.refresh();
                   }
                 }
-
+              
                 const updatedOddDatas = oddData.map((row) => {
                   const flattenedRow = {};
                   const mismatchData = {};
