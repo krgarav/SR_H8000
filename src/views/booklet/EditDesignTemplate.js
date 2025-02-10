@@ -1297,7 +1297,7 @@ const EditBookletDesignTemplate = () => {
           : {};
         return { ...rest, formFieldCoordinates };
       });
-
+      const { imageCroppingDTO } = template[0];
     // Assemble the full request data
     const fullRequestData = {
       layoutParameters: updatedLayout,
@@ -1307,6 +1307,7 @@ const EditBookletDesignTemplate = () => {
       questionsWindowParameters,
       skewMarksWindowParameters,
       formFieldWindowParameters,
+      imageCroppingDTO
     };
     console.log(fullRequestData);
 

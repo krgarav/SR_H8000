@@ -38,7 +38,7 @@ const EditImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
 
   images = splitFrontBackImagePaths(images);
   useEffect(() => {
-    console.log(side)
+    console.log(side);
     setCroppingSide(side.name === "Front" ? "frontSide" : "backSide");
   }, [side]);
   useEffect(() => {
@@ -186,10 +186,11 @@ const EditImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
       toast.error("Cropping side cannot be empty");
       return;
     }
+
     saveHandler();
     setShow(false);
     setImageName("");
-    setCroppingSide("");
+    setCroppingSide(side.name === "Front" ? "frontSide" : "backSide");
   };
   const allData = allImages.map((item, index) => {
     return (
@@ -392,9 +393,17 @@ const EditImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
             </Button>
           </div>
         </CardHeader>
-        <div>
-          <Table className="align-items-center table-flush mb-5" responsive>
-            <thead className="thead-light">
+        <div style={{ height: "50vh", overflow: "auto" }}>
+          <Table className="align-items-center table-flush mb-5">
+            <thead
+              className="thead-light"
+              style={{
+                position: "sticky",
+                top: 0,
+                zIndex: 1,
+                backgroundColor: "white",
+              }}
+            >
               <tr>
                 <th scope="col" className="text-center">
                   SL no.
@@ -411,7 +420,9 @@ const EditImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
                 <th scope="col" className="text-center"></th>
               </tr>
             </thead>
-            <tbody style={{ textAlign: "center" }}>
+            <tbody
+              style={{ textAlign: "center", height: "40vh", overflow: "auto" }}
+            >
               {allData.length > 0 ? (
                 allData
               ) : (
@@ -487,7 +498,6 @@ const EditImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
               <Select
                 value={side}
                 onChange={(selectedValue) => {
-                
                   setSide(selectedValue);
                 }}
                 options={sideOption}
@@ -542,7 +552,7 @@ const EditImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
           {cropData && (
             <Row className="">
               <div
-                className="col-12"
+                className="col-12 d-flex flex-column align-items-center"
                 style={{
                   width: "100%",
                   justifyContent: "center",
@@ -553,9 +563,11 @@ const EditImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
                   src={cropData.croppedImage}
                   alt="Cropped"
                   className="img-fluid"
-                  style={{ width: 500, height: 200 }}
+                  style={{ width: 500, height: 200, objectFit: "contain" }}
                 />
+                 <small className="text-center">Preview</small>
               </div>
+             
             </Row>
           )}
         </Modal.Body>
