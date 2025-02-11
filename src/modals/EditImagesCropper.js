@@ -21,6 +21,7 @@ import DataContext from "store/DataContext";
 import { getUrls } from "helper/url_helper";
 import { sideOption } from "data/helperData";
 import splitFrontBackImagePaths from "services/splitImages";
+import cropImageToBase64 from "services/ImageCropper";
 const EditImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
   const dataCtx = useContext(DataContext);
   const cropperRef = useRef(null);
@@ -35,6 +36,8 @@ const EditImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [baseUrl, setBaseUrl] = useState(null);
   const [side, setSide] = useState(sideOption[0]);
+  const [showImage, setShowImage] = useState(false);
+  const [currentImage, setCurrentImage] = useState(null);
 
   images = splitFrontBackImagePaths(images);
   useEffect(() => {
@@ -124,6 +127,7 @@ const EditImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
       toast.warn("You are already on the first page!", { toastId });
     }
   };
+
   const nextHandler = () => {
     const toastId = "lastPageWarning";
     if (currentImageIndex < images.length - 1) {
@@ -192,12 +196,25 @@ const EditImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
     setImageName("");
     setCroppingSide(side.name === "Front" ? "frontSide" : "backSide");
   };
+  const handleRowClick = async (item) => {
+    setShowImage(true);
+    setCurrentImage(null);
+    const { topLeftX, topLeftY, bottomRightX, bottomRightY } = item;
+    const imgUrl = await cropImageToBase64(
+      "http://192.168.1.55:81/GetTemplateImage?filePath=Template%20Image\\20233_be6d6754-7a36-404f-b3d5-0833aaea64d9_20232_3032cb98-1768-45ab-9e50-5e47f969940a_20231_6e1c12e3-edf2-428c-b989-976f05a95a09_20230_d0c7a4c2-425f-4116-a6c6-123e9fda9c56_1_Front.jpg",
+      topLeftX,
+      topLeftY,
+      bottomRightX,
+      bottomRightY
+    );
+    setCurrentImage(imgUrl);
+  };
   const allData = allImages.map((item, index) => {
     return (
       <>
         <tr
           key={index}
-          // onClick={() => handleRowClick(d, i)}
+          onClick={() => handleRowClick(item)}
           style={{ cursor: "pointer" }} // Adds a pointer cursor on hover
         >
           <td>{index + 1}</td>
@@ -205,11 +222,10 @@ const EditImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
           <td>{item.croppingSide}</td>
           <td>
             {" "}
-            TopLeftX={Math.floor(item.topLeftX)}&nbsp; TopRightY=
-            {Math.floor(item.topLeftY)}
+            Top-Left: ({Math.floor(item.topLeftX)}, {Math.floor(item.topLeftY)}){" "}
             <br />
-            BottomLeftX={Math.floor(item.bottomRightX)}&nbsp; BottomRightY=
-            {Math.floor(item.bottomRightY)}
+            Bottom-Right: ({Math.floor(item.bottomRightX)},{" "}
+            {Math.floor(item.bottomRightY)})
           </td>
           <td className="text-right">
             <UncontrolledDropdown>
@@ -240,144 +256,6 @@ const EditImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
 
   return (
     <>
-      <div className="justify-content-center">
-        {/* <Cropper
-          src={imageSrc}
-          style={{ height: 300, width: "100%" }}
-          initialAspectRatio={1}
-          guides={true}
-          ref={cropperRef}
-          // cropend={() => getCropData()}
-          viewMode={1}
-          minCropBoxHeight={10}
-          minCropBoxWidth={10}
-          background={true}
-          responsive={true}
-          // autoCropArea={0}
-          checkOrientation={false}
-          rotatable={true}
-        // autoCrop={false}
-        /> */}
-
-        {/* {cropData && (
-          <Modal
-            show={modalShow}
-            size="sm"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-          >
-            <Modal.Header>
-              <Modal.Title id="contained-modal-title-vcenter">
-                Image Detail
-              </Modal.Title>
-            </Modal.Header>
-            <Modal.Body style={{ height: "60vh" }}>
-              <Row>
-                <label htmlFor="imageName" className="col-md-4 ">
-                  Image Name:
-                </label>
-                <div className="col-md-8">
-                  <input
-                    id="imageName"
-                    type="text"
-                    placeholder="Enter Image Name"
-                    className="form-control"
-                    onChange={(e) => setImageName(e.target.value)}
-                  />
-                </div>
-              </Row>
-              <Row>
-                <label htmlFor="croppingSide" className="col-md-4">
-                  Cropping Side:
-                </label>
-                <div className="col-md-8">
-                  <input
-                    id="croppingSide"
-                    type="text"
-                    placeholder="Enter Cropping Side"
-                    className="form-control"
-                    onChange={(e) => setCroppingSide(e.target.value)}
-                  />
-                </div>
-              </Row>
-              <Row className="">
-                <div className="col-12">
-                  <img
-                    src={cropData.croppedImage}
-                    alt="Cropped"
-                    className="img-fluid"
-                  />
-                </div>
-              </Row>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button
-                type="button"
-                variant="danger"
-                onClick={() => setModalShow(false)}
-                className="waves-effect waves-light"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                variant="success"
-                onClick={saveHandler2}
-                // onClick={() => setModalShow(false)}
-                className="waves-effect waves-light"
-              >
-                Save
-              </Button>
-            </Modal.Footer>
-          </Modal>
-        )} */}
-
-        {/* {cropData &&
-        <Row>
-          <label
-            htmlFor="example-text-input"
-            className="col-md-2  col-form-label"
-          >
-            Image Name:
-          </label>
-          <div className="col-md-2">
-            <input
-              id="imageArea"
-              type="text"
-              placeholder="Enter Image Name"
-              className="form-control"
-            />
-          </div>
-          <label
-            htmlFor="example-text-input"
-            className="col-md-2 "
-          >
-            Cropping Side:
-          </label>
-          <div className="col-md-2">
-            <input
-              id="imageArea"
-              type="text"
-              placeholder="Enter Image Name"
-              className="form-control"
-            />
-          </div>
-          <div className="col-md-4">
-            <Button>Select Coordinate</Button>
-          </div>
-
-
-        </Row>} */}
-        {/* {cropData && (
-        <div>
-          <h3>Cropped Image</h3>
-          <img src={cropData.croppedImage} alt="Cropped" />
-          <h3>Coordinates</h3>
-          <pre>{JSON.stringify(cropData.coordinates, null, 2)}</pre>
-        </div>
-      )} */}
-      </div>
-
       <Card className="shadow">
         <CardHeader className="border-0">
           <div className="d-flex justify-content-between">
@@ -393,7 +271,7 @@ const EditImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
             </Button>
           </div>
         </CardHeader>
-        <div style={{ height: "50vh", overflow: "auto" }}>
+        <div style={{ maxHeight: "50vh", overflow: "auto" }}>
           <Table className="align-items-center table-flush mb-5">
             <thead
               className="thead-light"
@@ -421,7 +299,11 @@ const EditImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
               </tr>
             </thead>
             <tbody
-              style={{ textAlign: "center", height: "40vh", overflow: "auto" }}
+              style={{
+                textAlign: "center",
+                maxHeight: "40vh",
+                overflow: "auto",
+              }}
             >
               {allData.length > 0 ? (
                 allData
@@ -503,8 +385,38 @@ const EditImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
                 options={sideOption}
                 getOptionLabel={(option) => option?.name || ""}
                 getOptionValue={(option) => option?.id?.toString() || ""}
-                placeholder="Select side..."
                 className="w-100"
+              />
+            </div>
+            <div className="d-flex align-items-center ">
+              <span>
+                {currentImageIndex + 1} of {images.length}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <div className="border border-primary">
+              <Cropper
+                src={
+                  side.name === "Front"
+                    ? `${baseUrl}GetTemplateImage?filePath=${images[currentImageIndex].frontImagePath}`
+                    : `${baseUrl}GetTemplateImage?filePath=${images[currentImageIndex].backImagePath}`
+                }
+                style={{ height: "50dvh", width: "100%" }}
+                initialAspectRatio={1}
+                guides={true}
+                ref={cropperRef}
+                cropend={() => getCropData()}
+                viewMode={1}
+                minCropBoxHeight={10}
+                minCropBoxWidth={10}
+                background={true}
+                responsive={true}
+                autoCropArea={0}
+                checkOrientation={false}
+                rotatable={true}
+                autoCrop={false}
               />
             </div>
             <div className="d-flex justify-content-center flex-grow-1">
@@ -523,53 +435,8 @@ const EditImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
             </div>
           </div>
 
-          <div className="border border-primary">
-            <Cropper
-              src={
-                side.name === "Front"
-                  ? `${baseUrl}GetTemplateImage?filePath=${images[currentImageIndex].frontImagePath}`
-                  : `${baseUrl}GetTemplateImage?filePath=${images[currentImageIndex].backImagePath}`
-              }
-              style={{ height: "50dvh", width: "100%" }}
-              initialAspectRatio={1}
-              guides={true}
-              ref={cropperRef}
-              cropend={() => getCropData()}
-              viewMode={1}
-              minCropBoxHeight={10}
-              minCropBoxWidth={10}
-              background={true}
-              responsive={true}
-              autoCropArea={0}
-              checkOrientation={false}
-              rotatable={true}
-              autoCrop={false}
-            />
-          </div>
-
           <br />
           <br />
-          {cropData && (
-            <Row className="">
-              <div
-                className="col-12 d-flex flex-column align-items-center"
-                style={{
-                  width: "100%",
-                  justifyContent: "center",
-                  display: "flex",
-                }}
-              >
-                <img
-                  src={cropData.croppedImage}
-                  alt="Cropped"
-                  className="img-fluid"
-                  style={{ width: 500, height: 200, objectFit: "contain" }}
-                />
-                 <small className="text-center">Preview</small>
-              </div>
-             
-            </Row>
-          )}
         </Modal.Body>
         <Modal.Footer>
           <Button
@@ -592,6 +459,49 @@ const EditImagesCropper = ({ images, handleImage, selectedCoordinateData }) => {
         </Modal.Footer>
       </Modal>
       {/* ******************************************************************** */}
+
+      <Modal show={showImage} style={{ zIndex: 9999 }}>
+        <Modal.Header closeButton>
+          <Modal.Title
+            style={{
+              display: "flex",
+              width: "80%",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          ></Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div
+            className="col-12 d-flex flex-column align-items-center"
+            style={{
+              width: "100%",
+              justifyContent: "center",
+              display: "flex",
+            }}
+          >
+            {currentImage && (
+              <img
+                src={currentImage}
+                alt="Cropped"
+                className="img-fluid"
+                style={{ width: 500, height: 200, objectFit: "contain" }}
+              />
+            )}
+            <small className="text-center">Preview</small>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            type="button"
+            variant="danger"
+            onClick={() => setShowImage(false)}
+            className="waves-effect waves-light"
+          >
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };
