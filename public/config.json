@@ -1,5 +1,5 @@
 {
-  "backendUrl": "192.168.1.55:81",
+  "backendUrl": "192.168.1.51:81",
   "version": "2.1.2",
   "last_version_date": "01-02-2025"
 }

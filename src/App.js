@@ -19,6 +19,7 @@ import DataContext from "store/DataContext";
 import { fetchAllTemplate } from "helper/TemplateHelper";
 import TextLoader from "loaders/TextLoader";
 import { toast } from "react-toastify";
+import DesignImageTemplate from "views/simplex/DesignImageTemplate";
 const useTokenRedirect = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -39,7 +40,6 @@ const useTokenRedirect = () => {
           setTimeout(() => {
             navigate("/auth/login", { replace: true });
           }, 100);
-       
         }
         if (decoded.Role === "Operator") {
           if (location.pathname.includes("operator")) {
@@ -138,11 +138,11 @@ const App = () => {
     }, 400);
   };
 
-  useTokenRedirect();
+  // useTokenRedirect();
 
-  if (templateLoading) {
-    return <TextLoader message={"Loading, Please wait..."} />; // Show loader while fetching templates
-  }
+  // if (templateLoading) {
+  //   return <TextLoader message={"Loading, Please wait..."} />; // Show loader while fetching templates
+  // }
   return (
     <>
       <IpModal
@@ -156,7 +156,8 @@ const App = () => {
         <Route path="/operator/*" element={<Operator />} />
         <Route path="/moderator/*" element={<Moderator />} />
         <Route path="/auth/*" element={<AuthLayout />} />
-        <Route path="*" element={<Navigate to="/auth/login" replace />} />
+        <Route path="/design-template" element={<DesignImageTemplate />} />
+        <Routes path="*" element={<Navigate to="/auth/login" replace />} />
       </Routes>
     </>
   );
