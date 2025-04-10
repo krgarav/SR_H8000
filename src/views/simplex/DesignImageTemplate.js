@@ -11,8 +11,37 @@ import {
   DropdownItem,
 } from "reactstrap";
 import SmallHeader from "components/Headers/SmallHeader";
+import ReactDOM from "react-dom";
 // import CroppedData from "components/CroppedData";
 
+const Popup = (props) => {
+  return ReactDOM.createPortal(
+    <div
+    style={props.style}
+      // style={{
+      //   position: "fixed",
+      //   top: 0,
+      //   left: 0,
+      //   width: "100vw",
+      //   height: "100vh",
+      //   background: "rgba(0, 0, 0, 0.5)",
+      //   zindex: 9998,
+      //   // zIndex: 9999,
+      //   // position: "fixed",
+      //   // top: "50%",
+      //   // left: "50%",
+      //   // transform: "translate(-50%, -50%)",
+      //   // background: "#000",
+      //   // color: "#fff",
+      //   // padding: "20px",
+      //   // borderRadius: "8px"
+      // }}
+    >
+      gfdgf
+    </div>,
+    document.getElementById("tyrt") // target div outside root
+  );
+};
 const DesignImageTemplate = () => {
   const [image, setImage] = useState(null);
   const [cropData, setCropData] = useState(null);
@@ -32,7 +61,7 @@ const DesignImageTemplate = () => {
       return { ...prev, selectedFieldType: selectedFieldType };
     });
   }, [selectedFieldType]);
-  console.log(updatesBoxData);
+
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (cropperRef.current?.cropper) {
@@ -53,6 +82,7 @@ const DesignImageTemplate = () => {
             return;
           }
           console.log(cropBoxes);
+          
           if (cropBoxes.length > 0) {
             const boxes = cropBoxes.map((item, index) => {
               // 🔥 Adjust for zoom and position using canvasData
@@ -74,11 +104,45 @@ const DesignImageTemplate = () => {
                     left: `${relativeLeft}px`,
                     width: `${relativeWidth}px`,
                     height: `${relativeHeight}px`,
-                    border: "2px solid blue ",
+                    border: "2px solid blue",
                     pointerEvents: "none",
-                    zIndex: 999,
+                    zIndex: 9999,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-evenly",
+                    alignItems: "center",
+                    padding: "4px",
+                    boxSizing: "border-box",
                   }}
-                ></div>
+                >
+                  {Array.from({ length: 10 }).map((_, rowIdx) => (
+                    <div
+                      key={rowIdx}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-evenly",
+                        alignItems: "center",
+                        width: "100%",
+                        height: `${100 / 10}%`, // 10 rows
+                      }}
+                    >
+                      {Array.from({ length: 8 }).map((_, colIdx) => (
+                        <div
+                          key={colIdx}
+                          style={{
+                            aspectRatio: "1", // keep it a circle
+                            height: "80%", // slightly smaller than row height to add spacing
+                            borderRadius: "50%",
+                            border: "1px solid black",
+                            backgroundColor: "white",
+                            boxSizing: "border-box",
+                          }}
+                        />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+                
               );
             });
             console.log(boxes);
@@ -169,7 +233,7 @@ const DesignImageTemplate = () => {
     setAllFields((prev) => [...prev, fieldDetails]);
     setModalShow(false);
   };
-  console.log(allFields);
+
   const handleCancel = () => {
     // setDragStart(null);
     // setSelection(null);
@@ -239,11 +303,11 @@ const DesignImageTemplate = () => {
       });
 
       // Optional: Also scroll/move the image to the crop box
-      cropper.setCanvasData({ left: relativeLeft, top: relativeTop });
+      // cropper.setCanvasData({ left: relativeLeft, top: relativeTop });
     }
     setFieldDetails(allFields[i]);
     // setAllCoordinates(updatedData);
-    // setModalShow(true);
+    setModalShow(true);
   };
 
   const LoadedTemplates = allFields?.map((d, i) => (

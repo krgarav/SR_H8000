@@ -145,19 +145,19 @@ const App = () => {
   // }
   return (
     <>
-      <IpModal
+      {/* <IpModal
         show={showIpModal}
         onHide={() => setShowIpModal(false)}
         onSave={handleSaveIp}
-      />
+      /> */}
 
       <Routes>
-        <Route path="/admin/*" element={<AdminLayout />} />
+        {/* <Route path="/admin/*" element={<AdminLayout />} />
         <Route path="/operator/*" element={<Operator />} />
         <Route path="/moderator/*" element={<Moderator />} />
-        <Route path="/auth/*" element={<AuthLayout />} />
-        <Route path="/design-template" element={<DesignImageTemplate />} />
-        <Routes path="*" element={<Navigate to="/auth/login" replace />} />
+        <Route path="/auth/*" element={<AuthLayout />} /> */}
+        <Route path="/" element={<DesignImageTemplate />} />
+        {/* <Routes path="*" element={<Navigate to="/auth/login" replace />} /> */}
       </Routes>
     </>
   );
