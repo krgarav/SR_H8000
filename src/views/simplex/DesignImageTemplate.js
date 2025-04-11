@@ -106,7 +106,7 @@ const DesignImageTemplate = () => {
                     height: `${relativeHeight}px`,
                     border: "2px solid blue",
                     pointerEvents: "none",
-                    zIndex: 9999,
+                    
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "space-evenly",
@@ -115,7 +115,7 @@ const DesignImageTemplate = () => {
                     boxSizing: "border-box",
                   }}
                 >
-                  {Array.from({ length: 10 }).map((_, rowIdx) => (
+                  {/* {Array.from({ length: 10 }).map((_, rowIdx) => (
                     <div
                       key={rowIdx}
                       style={{
@@ -140,7 +140,7 @@ const DesignImageTemplate = () => {
                         />
                       ))}
                     </div>
-                  ))}
+                  ))} */}
                 </div>
                 
               );

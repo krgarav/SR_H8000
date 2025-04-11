@@ -1,0 +1,15 @@
+{
+  "name": " SQC_2023-24_Template",
+  "fields": [
+    {
+      "fieldName": "RollNumber",
+      "fieldType": "Integer",
+      "x": 1440,
+      "y": 617,
+      "width": 538,
+      "height": 601,
+      "rows": 10,
+      "columns": 10
+    }
+  ]
+}
